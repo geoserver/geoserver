@@ -54,6 +54,9 @@
           <xs:element name="measurement" minOccurs="0" maxOccurs="unbounded" type="st:MeasurementPropertyType"/>
           <xs:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0" maxOccurs="1"/>
           <xs:element name="nullableField" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="groupAttribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="groupAttribute2" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="numericAttribute" minOccurs="0" maxOccurs="1" type="xs:double"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

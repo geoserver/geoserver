@@ -3,6 +3,9 @@
   "id": "2",
   "name": "station 2",
   "inferredAttribute": "ok",
+  "groupAttribute": "groupAttribute1",
+  "groupAttribute2": "groupAttribute21",
+  "numericValue": 26.0,
   "contact": {
     "mail": "station2@mail.com"
   },

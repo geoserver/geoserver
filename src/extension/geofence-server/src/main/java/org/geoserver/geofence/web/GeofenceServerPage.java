@@ -18,7 +18,11 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-import wicketdnd.*;
+import wicketdnd.DragSource;
+import wicketdnd.DropTarget;
+import wicketdnd.Location;
+import wicketdnd.Operation;
+import wicketdnd.Transfer;
 import wicketdnd.theme.WebTheme;
 
 /**

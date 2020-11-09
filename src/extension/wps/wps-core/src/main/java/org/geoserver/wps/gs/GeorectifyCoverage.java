@@ -6,7 +6,8 @@
 package org.geoserver.wps.gs;
 
 import com.google.common.base.Splitter;
-import java.awt.*;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.IndexColorModel;

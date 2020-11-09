@@ -38,7 +38,6 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
             String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        FeatureTypeInfo featureType = getFeatureType(request);
         String baseUrl = request.getBaseUrl();
         jw.key("links");
         jw.array();
@@ -71,19 +70,22 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // backpointer to the collection
-        String basePath =
-                "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_COLLECTION;
-            String linkTitle = "The collection description as " + format;
-            writeLink(jw, linkTitle, format.toString(), linkType, href);
+        FeatureTypeInfo featureType = getFeatureType(request);
+        if (featureType != null) {
+            String basePath =
+                    "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+            for (MediaType format :
+                    requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+                String href =
+                        ResponseUtils.buildURL(
+                                baseUrl,
+                                basePath,
+                                Collections.singletonMap("f", format.toString()),
+                                URLMangler.URLType.SERVICE);
+                String linkType = Link.REL_COLLECTION;
+                String linkTitle = "The collection description as " + format;
+                writeLink(jw, linkTitle, format.toString(), linkType, href);
+            }
         }
         jw.endArray();
     }

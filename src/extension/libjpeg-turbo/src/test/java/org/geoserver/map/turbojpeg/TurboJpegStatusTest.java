@@ -5,7 +5,7 @@
 
 package org.geoserver.map.turbojpeg;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 

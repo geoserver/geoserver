@@ -5,8 +5,8 @@
 
 package org.geoserver.cluster.hazelcast;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.*;
 
 import org.easymock.EasyMock;
 import org.geoserver.platform.ExtensionFilter;

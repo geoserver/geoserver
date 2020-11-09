@@ -22,8 +22,12 @@
             <tr>
           </#if>
           <#assign odd = !odd>
-        
-          <td><a href="${serviceLink("/collections/${collection}/zone")}?zone_id=${feature.zoneId.value?url('ISO-8859-1')}">${feature.fid}</a></td>    
+          
+          <#if zoneLink(featureInfo, feature)??>
+          <td><a href="${zoneLink(featureInfo, feature)}">${feature.fid}</a></td>
+          <#else>
+          <td>${feature.fid}</td>
+          </#if>    
           <#list feature.attributes as attribute>
             <#if !attribute.isGeometry>
               <td>${attribute.value?string}</td>

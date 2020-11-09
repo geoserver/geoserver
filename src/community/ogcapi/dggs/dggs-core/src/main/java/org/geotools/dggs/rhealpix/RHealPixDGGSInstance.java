@@ -22,6 +22,7 @@ import static org.geotools.dggs.rhealpix.RHealPixUtils.setCellId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -37,9 +38,11 @@ import jep.SharedInterpreter;
 import org.geotools.data.store.EmptyIterator;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
+import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.filter.function.FilterFunction_offset;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -50,6 +53,8 @@ import org.locationtech.jts.geom.prep.PreparedPolygon;
 import org.locationtech.jts.operation.predicate.RectangleContains;
 import org.locationtech.jts.operation.predicate.RectangleIntersects;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 public class RHealPixDGGSInstance implements DGGSInstance {
 
@@ -60,6 +65,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     final GeometryFactory gf = new GeometryFactory();
     final Set<String> northPoleZones;
     final Set<String> southPoleZones;
+    final SoftValueHashMap<String, RHealPixZone> zoneCache = new SoftValueHashMap<>(10000);
 
     public RHealPixDGGSInstance(JEPWebRuntime runtime, String identifier) {
         this.runtime = runtime;
@@ -98,15 +104,20 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     @Override
     public RHealPixZone getZone(String id) {
-        try {
-            @SuppressWarnings("PMD.CloseResource") // the runtime is responsible for closing it
-            SharedInterpreter interpreter = runtime.getInterpreter();
-            setCellId(interpreter, "id", id);
-            interpreter.exec("c = dggs.cell(id)");
-            return new RHealPixZone(this, id);
-        } catch (JepException e) {
-            throw new IllegalArgumentException("Invalid zone identifier '" + id + "'", e);
+        RHealPixZone zone = zoneCache.get(id);
+        if (zone == null) {
+            try {
+                @SuppressWarnings("PMD.CloseResource") // the runtime is responsible for closing it
+                SharedInterpreter interpreter = runtime.getInterpreter();
+                setCellId(interpreter, "id", id);
+                interpreter.exec("c = dggs.cell(id)");
+                zone = new RHealPixZone(this, id);
+                zoneCache.put(id, zone);
+            } catch (JepException e) {
+                throw new IllegalArgumentException("Invalid zone identifier '" + id + "'", e);
+            }
         }
+        return zone;
     }
 
     @Override
@@ -128,7 +139,8 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution) {
+    public Iterator<Zone> zonesFromEnvelope(
+            Envelope envelope, int targetResolution, boolean compact) {
         // WAY USING DIRECT LIBRARY CALLS. Faster, but memory bound.
         //        return runtime.runSafe(
         //                interpreter -> {
@@ -147,17 +159,94 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         if (intersection.isNull()) {
             return new EmptyIterator();
         }
-        return new RHealPixZoneIterator<>(
-                this,
-                zone -> {
-                    return zone.getResolution() < resolution
-                            && (overlaps(zone.getBoundary(), envelope, true));
-                },
-                zone -> {
-                    return zone.getResolution() == resolution
-                            && overlaps(zone.getBoundary(), envelope, false);
-                },
-                zone -> (Zone) zone);
+        if (compact) {
+            // makes the representation more compact, and yet not as compact as it could be,
+            // a parent is returned only if fully contained, but there are cases where the
+            // envelope does not contain the parent while still overlapping all children
+            List<String> identifiers = new ArrayList<>();
+            new RHealPixZoneIterator<>(
+                            this,
+                            zone -> {
+                                int r = zone.getResolution();
+                                if (r >= targetResolution) return false;
+                                Polygon boundary = zone.getBoundary();
+                                return overlaps(boundary, envelope, true)
+                                        && !contained(boundary, envelope, true);
+                            },
+                            zone -> {
+                                int r = zone.getResolution();
+                                Polygon boundary = zone.getBoundary();
+                                return (r == targetResolution
+                                                && overlaps(boundary, envelope, false))
+                                        || (r < targetResolution
+                                                && contained(boundary, envelope, true));
+                            },
+                            zone -> zone.getId())
+                    .forEachRemaining(id -> identifiers.add(id));
+            compact(identifiers);
+            return identifiers.stream().map(id -> (Zone) new RHealPixZone(this, id)).iterator();
+        } else {
+            return new RHealPixZoneIterator<>(
+                    this,
+                    zone -> {
+                        return zone.getResolution() < targetResolution
+                                && (overlaps(zone.getBoundary(), envelope, true));
+                    },
+                    zone -> {
+                        return zone.getResolution() == targetResolution
+                                && overlaps(zone.getBoundary(), envelope, false);
+                    },
+                    zone -> (Zone) zone);
+        }
+    }
+
+    public void compact(List<String> identifiers) {
+        Collections.sort(identifiers);
+        int r = maxResolution(identifiers);
+        while (r > 0) {
+            if (compact(identifiers, r)) r--;
+            else break;
+        }
+    }
+
+    private int maxResolution(List<String> identifiers) {
+        return identifiers.stream().mapToInt(id -> id.length()).max().getAsInt() - 1;
+    }
+
+    boolean compact(List<String> identifiers, int resolution) {
+        int position = identifiers.size() - 1;
+        boolean compacted = false;
+        String parent = null;
+        int count = 0;
+        while (position >= 0) {
+            String id = identifiers.get(position);
+            if ((id.length() - 1) != resolution) {
+                parent = null;
+                count = 0;
+            }
+            if (id.length() > 1) {
+                String idParent = id.substring(0, id.length() - 1);
+                if (parent == null || !idParent.equals(parent)) {
+                    parent = idParent;
+                    count = 1;
+                } else {
+                    count++;
+                    if (count == 9) {
+                        for (int i = 1; i < 9; i++) {
+                            identifiers.remove(position + 1);
+                        }
+                        identifiers.set(position, parent);
+                        compacted = true;
+                        parent = null;
+                        count = 0;
+                    }
+                }
+            } else {
+                parent = null;
+            }
+            position--;
+        }
+        return compacted;
     }
 
     private boolean overlaps(Polygon polygon, Envelope envelope, boolean testAcrossDateline) {
@@ -354,7 +443,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> polygon(Polygon polygon, int resolution) {
+    public Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact) {
         // get a set of seed cells at a resolution a few levels above the target one
         Envelope envelope = polygon.getEnvelopeInternal();
         Envelope intersection = envelope.intersection(WORLD);
@@ -401,5 +490,10 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                             }
                         })
                 .iterator();
+    }
+
+    @Override
+    public Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo) {
+        return ff.like(ff.property(DGGSStore.ZONE_ID), zoneId + "%", "%", "?", "\\", true);
     }
 }

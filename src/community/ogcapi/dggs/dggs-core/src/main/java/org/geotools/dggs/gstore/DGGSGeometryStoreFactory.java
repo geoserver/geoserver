@@ -47,19 +47,7 @@ public class DGGSGeometryStoreFactory implements DataStoreFactorySpi {
     @Override
     public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
         String factoryId = (String) DGGS_FACTORY_ID.lookUp(params);
-        if (factoryId == null)
-            throw new IOException("Cannot create a store with a missing factory id");
-
-        DGGSFactory factory =
-                DGGSFactoryFinder.getExtensionFactories()
-                        .filter(f -> factoryId.equals(f.getId()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new IOException(
-                                                "Cannot find DGGS factory for id " + factoryId));
-        @SuppressWarnings("PMD.CloseResource") // will be closed by the store
-        DGGSInstance instance = factory.createInstance(params);
+        DGGSInstance instance = DGGSFactoryFinder.createInstance(factoryId, params);
         DGGSGeometryStore store = new DGGSGeometryStore(instance);
 
         String namespace = (String) NAMESPACE.lookUp(params);

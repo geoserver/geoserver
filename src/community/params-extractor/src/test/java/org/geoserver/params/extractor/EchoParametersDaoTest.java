@@ -5,7 +5,7 @@
 package org.geoserver.params.extractor;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.InputStream;
 import java.util.List;

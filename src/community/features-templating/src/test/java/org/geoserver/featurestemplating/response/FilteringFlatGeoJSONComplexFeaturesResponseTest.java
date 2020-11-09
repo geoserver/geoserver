@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

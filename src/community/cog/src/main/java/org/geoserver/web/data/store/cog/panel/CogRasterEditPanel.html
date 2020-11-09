@@ -1,0 +1,21 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+	<fieldset>
+		<legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
+		<div><span wicket:id="url"></span></div>
+		<ul>
+			<li class="choiceItem">
+				<input id="isCog" type="checkbox" wicket:id="isCog" />
+				<label for="isCog">
+					<wicket:message key="CogInput.isCog">is Cloud Optimized GeoTIFF remote data</wicket:message>
+				</label>
+			</li>
+			<li wicket:id="container">
+				<span wicket:id="cogSettings"></span>
+			</li>
+		</ul>
+	</fieldset>
+</wicket:panel>
+</body>
+</html>

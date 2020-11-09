@@ -4,12 +4,11 @@
  */
 package org.geoserver.catalog.impl;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 
 public class MetadataLinkInfoImplTest {
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testSetAbsoluteHttp() {
@@ -36,9 +35,13 @@ public class MetadataLinkInfoImplTest {
     public void testSetAbsoluteTelnet() {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("telnet:example.com");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
+                    public void run() throws Throwable {
+                        info.setContent("telnet:example.com");
+                    };
+                });
     }
 
     @Test
@@ -73,17 +76,25 @@ public class MetadataLinkInfoImplTest {
     public void testSetNotAURL() {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
+                    public void run() throws Throwable {
+                        info.setContent("::^%/[*] FOO ::");
+                    };
+                });
     }
 
     @Test
     public void testNotAURLButStartsOK() {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("https://example.com/::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
+                    public void run() throws Throwable {
+                        info.setContent("https://example.com/::^%/[*] FOO ::");
+                    };
+                });
     }
 }

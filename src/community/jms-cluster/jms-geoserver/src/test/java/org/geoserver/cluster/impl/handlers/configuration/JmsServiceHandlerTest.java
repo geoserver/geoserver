@@ -5,7 +5,7 @@
 package org.geoserver.cluster.impl.handlers.configuration;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collection;
 import java.util.Collections;

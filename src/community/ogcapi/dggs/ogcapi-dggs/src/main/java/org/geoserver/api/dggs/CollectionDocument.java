@@ -19,13 +19,17 @@ import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
 import org.geoserver.api.features.FeaturesResponse;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.data.Query;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -53,10 +57,10 @@ public class CollectionDocument extends AbstractCollectionDocument {
 
         String baseUrl = APIRequestInfo.get().getBaseURL();
 
-        // links
-        Collection<MediaType> formats =
+        // zones links
+        Collection<MediaType> zoneFormats =
                 APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
-        for (MediaType format : formats) {
+        for (MediaType format : zoneFormats) {
             String apiUrl =
                     ResponseUtils.buildURL(
                             baseUrl,
@@ -70,6 +74,28 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             format.toString(),
                             collectionId + " items as " + format.toString(),
                             "zones"));
+        }
+
+        // DAPA links, if time is available
+        DimensionInfo time = featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time != null) {
+            Collection<MediaType> dapaFormats =
+                    APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
+            for (MediaType format : dapaFormats) {
+                String apiUrl =
+                        ResponseUtils.buildURL(
+                                baseUrl,
+                                "ogc/dggs/collections/" + collectionId + "/dapa",
+                                Collections.singletonMap("f", format.toString()),
+                                URLMangler.URLType.SERVICE);
+                addLink(
+                        new Link(
+                                apiUrl,
+                                "dapa",
+                                format.toString(),
+                                "DAPA for " + collectionId + " as " + format.toString(),
+                                "dapa"));
+            }
         }
 
         addSelfLinks("ogc/dggs/collections/" + id);
@@ -114,8 +140,12 @@ public class CollectionDocument extends AbstractCollectionDocument {
         return mapPreviewURL;
     }
 
-    public int[] getResolutions() {
-        return fs.getDGGS().getResolutions();
+    public int[] getResolutions() throws IOException {
+        UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
+        fs.getFeatures(Query.ALL).accepts(visitor, null);
+        int[] resolutions =
+                visitor.getResult().toList().stream().mapToInt(v -> (Integer) v).toArray();
+        return resolutions;
     }
 
     @JsonProperty("dggs-id")

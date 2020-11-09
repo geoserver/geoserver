@@ -6,7 +6,9 @@
 package org.geoserver.wcs.response;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;

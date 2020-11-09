@@ -7,7 +7,8 @@ package org.geoserver.catalog;
 
 import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.equal;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.Arrays;

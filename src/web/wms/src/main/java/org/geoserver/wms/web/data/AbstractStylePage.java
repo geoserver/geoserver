@@ -731,6 +731,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         try {
             Styles.handler("css");
         } catch (Exception e) {
+            LOGGER.finest(e.getLocalizedMessage()); // fool spotbugs?
             return;
         }
 

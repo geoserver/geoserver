@@ -6,7 +6,10 @@
 
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLConstants.*;
+import static org.geoserver.security.xml.XMLConstants.NSP_RR;
+import static org.geoserver.security.xml.XMLConstants.NSP_UR;
+import static org.geoserver.security.xml.XMLConstants.NS_RR;
+import static org.geoserver.security.xml.XMLConstants.NS_UR;
 
 import java.util.HashMap;
 import java.util.Iterator;

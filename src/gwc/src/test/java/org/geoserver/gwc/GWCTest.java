@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,9 +130,8 @@ import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.mockito.ArgumentCaptor;
@@ -204,8 +204,6 @@ public class GWCTest {
 
         return Files.asResource(directory.dir());
     }
-
-    @Rule public ExpectedException expected = ExpectedException.none();
 
     private BlobStoreAggregator blobStoreAggregator;
 
@@ -1472,9 +1470,18 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresNull() throws ConfigurationException {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("stores is null");
-        mediator.setBlobStores(null);
+
+        NullPointerException e =
+                assertThrows(
+                        NullPointerException.class,
+                        new ThrowingRunnable() {
+
+                            @Override
+                            public void run() throws Throwable {
+                                mediator.setBlobStores(null);
+                            }
+                        });
+        assertTrue(e.getMessage().contains("stores is null"));
     }
 
     @Test

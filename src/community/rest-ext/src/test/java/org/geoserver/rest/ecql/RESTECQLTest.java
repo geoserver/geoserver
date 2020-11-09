@@ -83,10 +83,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         testExpression("test2", "mosaic_test2", expression, fileNames);
     }
 
-    /**
-     * Initial settings for the root key, mapper and expression used
-     *
-     */
+    /** Initial settings for the root key, mapper and expression used */
     private void initialSetup(String expression) {
         // Selection of the root directory
         String root = getTestData().getDataDirectoryRoot().getAbsolutePath();
@@ -110,7 +107,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     /**
      * Private method for adding the selected coverage inside the defined workspace via REST and
      * then checking if the coverage has been placed inside the defined directory
-     *
      */
     private void testExpression(
             String workspace, String coverageStore, String expression, List<String> fileNames)
@@ -160,10 +156,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         }
     }
 
-    /**
-     * Private method for creating a new file object associated to the input path.
-     *
-     */
+    /** Private method for creating a new file object associated to the input path. */
     private File extractFile(
             String expression, CoverageStoreInfo cs, String itemPath, String filename)
             throws CQLException {
@@ -180,10 +173,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         return new File(url, newPath);
     }
 
-    /**
-     * Creation of a new workspace defined by the input "workspace" name
-     *
-     */
+    /** Creation of a new workspace defined by the input "workspace" name */
     private void createWorkSpace(String workspace) throws Exception {
         // Check if the workspace is already present
         if (getCatalog().getWorkspaceByName(workspace) != null) {

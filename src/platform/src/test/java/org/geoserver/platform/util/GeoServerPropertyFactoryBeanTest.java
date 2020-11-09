@@ -6,15 +6,16 @@
 
 package org.geoserver.platform.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
 
 import org.easymock.EasyMock;
 import org.geoserver.util.PropertyRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 import org.springframework.context.ApplicationContext;
 
 public class GeoServerPropertyFactoryBeanTest {
@@ -22,7 +23,6 @@ public class GeoServerPropertyFactoryBeanTest {
     public static final String PROPERTY_NAME = "FOO";
 
     public @Rule PropertyRule foo = PropertyRule.system(PROPERTY_NAME);
-    public @Rule ExpectedException exception = ExpectedException.none();
 
     GeoServerPropertyFactoryBean<String> factory;
 
@@ -64,15 +64,29 @@ public class GeoServerPropertyFactoryBeanTest {
 
     @Test
     public void testGetUnsetDefault() throws Exception {
-        exception.expect(IllegalStateException.class);
-        factory.createInstance();
+        assertThrows(
+                IllegalStateException.class,
+                new ThrowingRunnable() {
+
+                    @Override
+                    public void run() throws Throwable {
+                        factory.createInstance();
+                    }
+                });
     }
 
     @Test
     public void testGetBadDefault() throws Exception {
-        exception.expect(IllegalStateException.class);
-        factory.setDefaultValue("UNKNOWN");
-        factory.createInstance();
+        assertThrows(
+                IllegalStateException.class,
+                new ThrowingRunnable() {
+
+                    @Override
+                    public void run() throws Throwable {
+                        factory.setDefaultValue("UNKNOWN");
+                        factory.createInstance();
+                    }
+                });
     }
 
     @Test

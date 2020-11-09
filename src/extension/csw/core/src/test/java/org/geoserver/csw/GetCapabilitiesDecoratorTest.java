@@ -5,8 +5,8 @@
  */
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.junit.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import org.custommonkey.xmlunit.XMLUnit;

@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.staticRasterStore;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.util.Collections;
 import java.util.Map;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;

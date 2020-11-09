@@ -4,8 +4,15 @@
  */
 package org.geoserver.platform.resource;
 
-import static org.geoserver.platform.resource.Paths.*;
-import static org.junit.Assert.*;
+import static org.geoserver.platform.resource.Paths.extension;
+import static org.geoserver.platform.resource.Paths.name;
+import static org.geoserver.platform.resource.Paths.names;
+import static org.geoserver.platform.resource.Paths.parent;
+import static org.geoserver.platform.resource.Paths.path;
+import static org.geoserver.platform.resource.Paths.sidecar;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import org.junit.Test;

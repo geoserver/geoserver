@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.sextante;
 
-import org.locationtech.jts.geom.Geometry;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -13,6 +12,7 @@ import es.unex.sextante.exceptions.IteratorException;
 import java.util.NoSuchElementException;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 

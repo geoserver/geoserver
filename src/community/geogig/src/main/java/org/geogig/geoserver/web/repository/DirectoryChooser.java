@@ -244,10 +244,7 @@ public class DirectoryChooser extends Panel {
         }
     }
 
-    /**
-     * Called when a file name is clicked. By default it does nothing
-     *
-     */
+    /** Called when a file name is clicked. By default it does nothing */
     protected void geogigDirectoryClicked(File file, AjaxRequestTarget target) {
         // do nothing, subclasses will override
     }
@@ -255,7 +252,6 @@ public class DirectoryChooser extends Panel {
     /**
      * Action undertaken as a directory is clicked. Default behavior is to drill down into the
      * directory.
-     *
      */
     protected void directoryClicked(File file, AjaxRequestTarget target) {
         // explicitly change the root model, inform the other components the model has changed
@@ -281,7 +277,6 @@ public class DirectoryChooser extends Panel {
     /**
      * Set the file table fixed height. Set it to null if you don't want fixed height with overflow,
      * and to a valid CSS measure if you want it instead. Default value is "25em"
-     *
      */
     public void setFileTableHeight(String height) {
         directoryListingTable.setTableHeight(height);

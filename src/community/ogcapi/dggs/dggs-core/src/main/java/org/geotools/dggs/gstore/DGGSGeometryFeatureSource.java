@@ -18,20 +18,19 @@ package org.geotools.dggs.gstore;
 
 import static org.geotools.dggs.DGGSInstance.WORLD;
 import static org.geotools.dggs.gstore.DGGSStore.DGGS_INTRINSIC;
-import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION;
-import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION_DELTA;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
@@ -51,20 +50,22 @@ import org.geotools.dggs.NeighborFunction;
 import org.geotools.dggs.Zone;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.visitor.FeatureAttributeVisitor;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.filter.FilterAttributeExtractor;
-import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.util.ConverterFactory;
-import org.geotools.util.Converters;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Expression;
@@ -73,24 +74,18 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.spatial.BBOX;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeatureSource {
 
     static final Logger LOGGER = Logging.getLogger(DGGSGeometryFeatureSource.class);
 
-    /* The GetMap scale denominator, as an {@link Double}, duplicated here to avoid a dependency
-     * onto gs-wms */
-    private static final String WMS_SCALE_DENOMINATOR = "WMS_SCALE_DENOMINATOR";
-
-    private static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
-    private static final double DISTANCE_SCALE_FACTOR = 0.0254 / (25.4 / 0.28);
-
     private final DGGSGeometryStore store;
+    private DGGSResolutionCalculator resolutions;
 
     public DGGSGeometryFeatureSource(ContentEntry entry, DGGSGeometryStore store) {
         super(entry, Query.ALL);
         this.store = store;
+        this.resolutions = store.resolutions;
     }
 
     @Override
@@ -112,8 +107,8 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
             return 0;
         }
 
-        int targetResolution = getTargetResolution(query);
-        if (targetResolution < 0 || targetResolution >= store.levelThresholds.length) return 0;
+        int targetResolution = resolutions.getTargetResolution(query, 0);
+        if (!resolutions.isValid(targetResolution)) return 0;
 
         // delegate to the DGGS, which can do optimized count calculations
         Filter filter = query.getFilter();
@@ -360,95 +355,13 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
         }
 
         // map geometry to list of ids, then create an iterator against them
-        int targetResolution = getTargetResolution(query);
-        if (targetResolution < 0 || targetResolution >= store.levelThresholds.length) return null;
+        int targetResolution = resolutions.getTargetResolution(query, 0);
+        if (!store.resolutions.isValid(targetResolution)) return null;
 
         if (query.getFilter() instanceof BBOX) {
             query.setFilter(Filter.INCLUDE); // replaced filter with source iterator
         }
-        return store.dggs.zonesFromEnvelope(bounds, targetResolution);
-    }
-
-    private int getTargetResolution(Query query) {
-        Hints hints = query.getHints();
-
-        Optional<Map> viewParams =
-                Optional.ofNullable(hints.get(Hints.VIRTUAL_TABLE_PARAMETERS))
-                        .filter(Map.class::isInstance)
-                        .map(Map.class::cast);
-
-        // did the user ask for a specific resolution?
-        Optional<Integer> requestedResolution =
-                viewParams.map(m -> m.get(VP_RESOLUTION)).map(n -> safeConvert(n, Integer.class));
-        if (requestedResolution.isPresent()) {
-            return validateResolution(requestedResolution.get().intValue());
-        }
-
-        // the simplificaiton distance varies too much as we pan around on projections
-        // with significant deformations (e.g., polar, web mercator) leading to resolution
-        // switches and excess zone generation. Try something more stable and predictable first,
-        // like the OGC scale denominator.
-        Optional<Double> distance;
-        Double sd =
-                safeConvert(EnvFunction.getLocalValues().get(WMS_SCALE_DENOMINATOR), Double.class);
-        if (sd != null) {
-            distance = Optional.of(scaleToDistance(DefaultGeographicCRS.WGS84, sd));
-        } else {
-            distance =
-                    Optional.ofNullable(hints.get(Hints.GEOMETRY_DISTANCE))
-                            .filter(Number.class::isInstance)
-                            .map(Number.class::cast)
-                            .map(n -> n.doubleValue());
-        }
-
-        // do we have a resoution delta?
-        int resolutionDelta =
-                viewParams
-                        .map(m -> m.get(VP_RESOLUTION_DELTA))
-                        .map(n -> safeConvert(n, Integer.class))
-                        .orElse(0);
-
-        // compute resolution and eventually apply delta
-        return distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resolutionDelta)
-                .orElse(0);
-    }
-
-    private <T> T safeConvert(Object n, Class<T> target) {
-        return Converters.convert(n, target, new Hints(ConverterFactory.SAFE_CONVERSION, true));
-    }
-
-    /**
-     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator
-     * computation rules
-     *
-     * @param crs The CRS of the data
-     * @param scaleDenominator The target scale denominator
-     * @return
-     */
-    static double scaleToDistance(CoordinateReferenceSystem crs, double scaleDenominator) {
-        return scaleDenominator * DISTANCE_SCALE_FACTOR / RendererUtilities.toMeters(1, crs);
-    }
-
-    private int getResolutionFromThresholds(double distance) {
-        if (distance == 0) return 0;
-
-        double[] thresholds = store.levelThresholds;
-        for (int i = 0; i < thresholds.length; i++) {
-            if (thresholds[i] < distance) return i;
-        }
-        return thresholds.length - 1;
-    }
-
-    private int validateResolution(int resolution) {
-        if (resolution < 0 || resolution >= store.levelThresholds.length) {
-            throw new IllegalArgumentException(
-                    "Requested resolution "
-                            + resolution
-                            + " is not valid, please provide a value between 0 and "
-                            + (store.levelThresholds.length - 1));
-        }
-
-        return resolution;
+        return store.dggs.zonesFromEnvelope(bounds, targetResolution, false);
     }
 
     @Override
@@ -477,5 +390,46 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
     @Override
     protected boolean canRetype() {
         return true;
+    }
+
+    @Override
+    protected boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
+        if (visitor instanceof FeatureAttributeVisitor) {
+            FeatureAttributeVisitor fav = (FeatureAttributeVisitor) visitor;
+            Set<String> attributes = getAttributeSet(fav);
+            // can optimize a few visits based on resolution alone
+            if (attributes != null
+                    && Collections.singleton(DGGSStore.RESOLUTION).equals(attributes)) {
+                int[] resolutions = getDGGS().getResolutions();
+                if (fav instanceof MinVisitor) {
+                    ((MinVisitor) fav).setValue(resolutions[0]);
+                    return true;
+                } else if (fav instanceof MaxVisitor) {
+                    ((MaxVisitor) fav).setValue(resolutions[resolutions.length - 1]);
+                    return true;
+                } else if (fav instanceof UniqueVisitor) {
+                    // converting an array to a list it's harder than it seems, Arrays.asList
+                    // would produce a List with one item, the array given as a param
+                    List<Integer> rl =
+                            Arrays.stream(resolutions)
+                                    .mapToObj(v -> v)
+                                    .collect(Collectors.toList());
+                    ((UniqueVisitor) fav).setValue(rl);
+                    return true;
+                }
+            }
+        }
+        // fall back on default behavior
+        return super.handleVisitor(query, visitor);
+    }
+
+    private Set<String> getAttributeSet(FeatureAttributeVisitor fav) {
+        Set<String> result = new HashSet<>();
+        for (Expression ex : fav.getExpressions()) {
+            AttributeDescriptor ad = ex.evaluate(getSchema(), AttributeDescriptor.class);
+            if (ad == null) return null;
+            result.add(ad.getLocalName());
+        }
+        return result;
     }
 }

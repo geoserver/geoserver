@@ -4,7 +4,7 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.property.PropertyDataStoreFactory;

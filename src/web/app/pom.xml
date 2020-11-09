@@ -1770,6 +1770,11 @@
           <artifactId>gs-web-dggs</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-dggs-clickhouse</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1829,6 +1834,16 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-gsr</artifactId>
           <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>cog</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog</artifactId>
+          <version>${gs.version}</version>
         </dependency>
       </dependencies>
     </profile>

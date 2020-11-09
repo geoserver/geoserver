@@ -6,7 +6,11 @@ SAP HANA
 Supported versions
 ------------------
 
-The module supports HANA 1 SPS 12 and all HANA 2 versions including the `free express edition <https://www.sap.com/sap-hana-express>`_.
+The module supports
+
+* SAP HANA 1 SPS 12
+* SAP HANA 2 (all SPS including the `free express edition <https://www.sap.com/sap-hana-express>`_)
+* `SAP HANA Cloud <https://www.sap.com/products/hana/cloud.html>`_
 
 .. _hana_install:
 

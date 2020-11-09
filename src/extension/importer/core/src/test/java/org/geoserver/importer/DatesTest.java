@@ -5,8 +5,16 @@
  */
 package org.geoserver.importer;
 
-import static java.util.Calendar.*;
-import static org.junit.Assert.*;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.FEBRUARY;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.JANUARY;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;

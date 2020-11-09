@@ -4,7 +4,11 @@
  */
 package org.geoserver.security;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.opengis.filter.Filter;

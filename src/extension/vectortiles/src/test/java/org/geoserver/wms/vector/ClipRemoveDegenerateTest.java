@@ -4,7 +4,8 @@
  */
 package org.geoserver.wms.vector;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.geoserver.wms.vector.PipelineBuilder.Clip;
 import org.geoserver.wms.vector.PipelineBuilder.ClipRemoveDegenerateGeometries;

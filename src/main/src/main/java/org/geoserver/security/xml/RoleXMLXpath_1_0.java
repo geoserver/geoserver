@@ -6,7 +6,22 @@
 
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLConstants.*;
+import static org.geoserver.security.xml.XMLConstants.A_GROUPNAME_RR;
+import static org.geoserver.security.xml.XMLConstants.A_PARENTID_RR;
+import static org.geoserver.security.xml.XMLConstants.A_PROPERTY_NAME_RR;
+import static org.geoserver.security.xml.XMLConstants.A_ROLEID_RR;
+import static org.geoserver.security.xml.XMLConstants.A_ROLEREFID_RR;
+import static org.geoserver.security.xml.XMLConstants.A_USERNAME_RR;
+import static org.geoserver.security.xml.XMLConstants.E_GROUPLIST_RR;
+import static org.geoserver.security.xml.XMLConstants.E_GROUPROLES_RR;
+import static org.geoserver.security.xml.XMLConstants.E_PROPERTY_RR;
+import static org.geoserver.security.xml.XMLConstants.E_ROLELIST_RR;
+import static org.geoserver.security.xml.XMLConstants.E_ROLEREF_RR;
+import static org.geoserver.security.xml.XMLConstants.E_ROLEREGISTRY_RR;
+import static org.geoserver.security.xml.XMLConstants.E_ROLE_RR;
+import static org.geoserver.security.xml.XMLConstants.E_USERLIST_RR;
+import static org.geoserver.security.xml.XMLConstants.E_USERROLES_RR;
+import static org.geoserver.security.xml.XMLConstants.NSP_RR;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;

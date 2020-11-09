@@ -20,7 +20,10 @@ import java.io.IOException;
 import org.geotools.data.DataStore;
 import org.opengis.feature.type.AttributeDescriptor;
 
-/** Interface for stores implementing DGGS access */
+/**
+ * Interface for stores implementing DGGS access. Each feature type returned by a DGGSStore must
+ * have at a minimum a {@link #ZONE_ID} and a {@link #RESOLUTION} field
+ */
 public interface DGGSStore extends DataStore {
 
     /** A view parameter to forcefully choose a resolution */
@@ -28,6 +31,10 @@ public interface DGGSStore extends DataStore {
 
     /** A view parameter to forcefully choose a resolution */
     public static final String VP_RESOLUTION_DELTA = "resOffset";
+
+    public static final String RESOLUTION = "resolution";
+    /** The zoneId property, in the source and returned features */
+    public static final String ZONE_ID = "zoneId";
 
     /**
      * Marks attributes that are well known properties of a DGGS, that a DGGS aware client would not

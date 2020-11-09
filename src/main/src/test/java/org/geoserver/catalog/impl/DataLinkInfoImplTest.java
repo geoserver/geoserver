@@ -5,13 +5,12 @@
  */
 package org.geoserver.catalog.impl;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 
 /** @author Marcus Sen, British Geological Survey */
 public class DataLinkInfoImplTest {
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testSetAbsoluteHttp() {
@@ -38,9 +37,15 @@ public class DataLinkInfoImplTest {
     public void testSetAbsoluteTelnet() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
 
-        info.setContent("telnet:example.com");
+                    @Override
+                    public void run() throws Throwable {
+                        info.setContent("telnet:example.com");
+                    }
+                });
     }
 
     @Test
@@ -75,17 +80,25 @@ public class DataLinkInfoImplTest {
     public void testSetNotAURL() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
+                    public void run() throws Throwable {
+                        info.setContent("::^%/[*] FOO ::");
+                    };
+                });
     }
 
     @Test
     public void testNotAURLButStartsOK() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("https://example.com/::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                new ThrowingRunnable() {
+                    public void run() throws Throwable {
+                        info.setContent("https://example.com/::^%/[*] FOO ::");
+                    };
+                });
     }
 }

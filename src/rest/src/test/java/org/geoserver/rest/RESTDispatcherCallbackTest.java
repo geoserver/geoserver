@@ -9,7 +9,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.easymock.EasyMock;
 import org.geoserver.data.test.SystemTestData;

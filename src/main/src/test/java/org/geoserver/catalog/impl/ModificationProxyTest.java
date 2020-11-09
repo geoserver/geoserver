@@ -5,11 +5,11 @@
 
 package org.geoserver.catalog.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

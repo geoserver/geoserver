@@ -86,6 +86,7 @@
           <descriptor>release/ext-taskmanager-core.xml</descriptor>
           <descriptor>release/ext-taskmanager-s3.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
+		  <descriptor>release/ext-cog.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
           <descriptor>release/ext-mapml.xml</descriptor>
           <descriptor>release/ext-qos.xml</descriptor>
@@ -290,6 +291,7 @@
         <module>gsr</module>
         <module>importer-bdb</module>
         <module>imagemosaic-jdbc</module>
+		<module>cog</module>
       </modules>
     </profile>
     <profile>
@@ -659,6 +661,12 @@
       <id>ghrsst</id>
       <modules>
         <module>netcdf-ghrsst</module>
+      </modules>
+    </profile>    
+    <profile>
+      <id>cog</id>
+      <modules>
+        <module>cog</module>
       </modules>
     </profile>    
     <profile>

@@ -7,13 +7,23 @@ package org.geoserver.community.mbstyle.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.Styles;
 import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.styling.*;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Test;
 
 public class MBStyleHandlerTest extends GeoServerSystemTestSupport {

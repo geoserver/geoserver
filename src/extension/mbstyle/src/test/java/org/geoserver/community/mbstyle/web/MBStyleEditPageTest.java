@@ -5,10 +5,12 @@
  */
 package org.geoserver.community.mbstyle.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.web.GeoServerWicketTestSupport;

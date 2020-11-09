@@ -16,10 +16,10 @@ import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADIN
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMOVAL;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -448,17 +448,18 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // verify Layer`s resource is updated with metadata
         assertNotNull(layerInfo.getResource().getMetadata().get(FeatureTypeInfo.OTHER_SRS));
 
-        // click first item in SRS (4326)
+        // click first item in SRS (urn:ogc:def:crs:EPSG::4326)
         tester.clickLink(
                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
 
-        // assert that native SRS has changed from EPSG:26713 to EPSG:4326
+        // assert that native SRS has changed from EPSG:26713 to urn:ogc:def:crs:EPSG::4326
         String newNativeSRS =
                 tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
                         .getDefaultModelObjectAsString();
         assertFalse(newNativeSRS.equalsIgnoreCase(actualNativeSRS));
+        assertTrue(newNativeSRS.equalsIgnoreCase("urn:ogc:def:crs:EPSG::4326"));
 
         // click submit and go back to LayerPage
         FormTester ft = tester.newFormTester("publishedinfo");

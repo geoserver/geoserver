@@ -40,7 +40,7 @@ public class GeoServerWicketOnlineTestSupport {
      * @return The JSESSIONID associated with the authenticated session.
      */
     public String login(String username, String password) throws IOException {
-        // GET the homepage, and aquire a fresh (unauthenticated) JSESSIONID
+        // GET the homepage, and acquire a fresh (unauthenticated) JSESSIONID
         HttpURLConnection huc = get("web/", null);
         String cookie = huc.getHeaderField("Set-Cookie");
         String jsessionid = parseJsessionid(cookie);
@@ -67,6 +67,11 @@ public class GeoServerWicketOnlineTestSupport {
             if (location.startsWith(GEOSERVER_BASE_URL)) {
                 location = location.substring(GEOSERVER_BASE_URL.length() + 1);
             }
+            /*
+             * if (GEOSERVER_BASE_URL.endsWith("geoserver") &&
+             * location.startsWith("/geoserver")){ location =
+             * location.substring("geoserver".length()+1); }
+             */
             huc.disconnect();
 
             huc = prepareGet(location, jsessionid, null);

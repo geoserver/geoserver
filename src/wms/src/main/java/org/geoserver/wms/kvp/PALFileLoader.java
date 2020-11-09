@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms.kvp;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.IndexColorModel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

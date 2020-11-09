@@ -5,13 +5,26 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import static org.geoserver.opensearch.eo.JDBCOpenSearchAccessTest.GS_PRODUCT;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.Date;

@@ -4,7 +4,8 @@
  */
 package org.geoserver.fgdb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -162,10 +163,7 @@ public class OGRDataStoreFactoryTest {
         return s == -1 ? null : name.substring(0, s);
     }
 
-    /**
-     * * Unpack archive to directory (maintaining directory structure).
-     *
-     */
+    /** * Unpack archive to directory (maintaining directory structure). */
     public static void unpack(File archive, File directory) throws IOException {
         // see http://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder
         ZipInputStream zip = new ZipInputStream(new FileInputStream(archive));

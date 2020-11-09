@@ -27,7 +27,13 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
@@ -396,7 +402,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 new CRSPanel(
                         "nativeSRS",
                         new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
-                        otherSRS) {
+                        otherSRS,
+                        !otherSRS.isEmpty()) {
 
                     /** serialVersionUID */
                     private static final long serialVersionUID = -7725670382699858126L;

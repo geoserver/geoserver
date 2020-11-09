@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.wicket.browser;
 
-import java.awt.*;
+import java.awt.AWTError;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;

@@ -76,15 +76,17 @@ class RHealPixZoneIterator<R> implements Iterator<R> {
             RHealPixZone zone = rpix.getZone(test);
             if (accept.apply(zone)) {
                 next = map.apply(zone);
-            }
-            if (drill.apply(zone)) {
-                candidates.addAll(
-                        rpix.runtime.runSafe(
-                                si -> {
-                                    setCellId(si, "id", test);
-                                    si.exec("c = Cell(dggs, id)");
-                                    return si.getValue("list(c.subcells())", List.class);
-                                }));
+            } else {
+                if (drill.apply(zone)) {
+                    candidates.addAll(
+                            0,
+                            rpix.runtime.runSafe(
+                                    si -> {
+                                        setCellId(si, "id", test);
+                                        si.exec("c = Cell(dggs, id)");
+                                        return si.getValue("list(c.subcells())", List.class);
+                                    }));
+                }
             }
         }
 

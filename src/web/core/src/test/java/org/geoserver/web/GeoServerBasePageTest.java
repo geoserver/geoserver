@@ -5,7 +5,7 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.core.util.string.ComponentRenderer;
 import org.apache.wicket.markup.html.list.ListView;

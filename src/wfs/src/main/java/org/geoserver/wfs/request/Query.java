@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.XlinkPropertyNameType;
@@ -56,6 +57,8 @@ public abstract class Query extends RequestObject {
 
     public abstract List<String> getPropertyNames();
 
+    public abstract void setPropertyNames(List<String> names);
+
     public abstract Filter getFilter();
 
     public abstract List<SortBy> getSortBy();
@@ -81,6 +84,11 @@ public abstract class Query extends RequestObject {
         @Override
         public List<String> getPropertyNames() {
             return eGet(adaptee, "propertyName", List.class);
+        }
+
+        @Override
+        public void setPropertyNames(List<String> names) {
+            eSet(adaptee, "propertyNames", names);
         }
 
         @Override
@@ -130,6 +138,12 @@ public abstract class Query extends RequestObject {
                 l.add(name.getLocalPart());
             }
             return l;
+        }
+
+        @Override
+        public void setPropertyNames(List<String> names) {
+            List<QName> qnames = names.stream().map(n -> new QName(n)).collect(Collectors.toList());
+            eSet(adaptee, "abstractProjectionClause", qnames);
         }
 
         @Override

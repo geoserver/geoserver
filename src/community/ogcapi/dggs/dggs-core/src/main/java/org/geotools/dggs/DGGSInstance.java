@@ -25,12 +25,18 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 /**
  * A particular DGGS instance, provides access to zones and conversion operations between zones and
  * classic geometries. A DDGS system can be providing a single instance (e.g., H3) or multiple
  * configurable ones (e.g., rHEALPix)
  */
+// TODO: parametrize on T, type of the id, String for rpix but Long for H3. Trying to use
+// the string everywhere pretty much failed, leading to bad performance in clickhouse store
+// though we might have to do some experiments to check if the numeric id works any better,
+// the non hierarchical structure of the H3 ids gets lots of the blame here (
 public interface DGGSInstance extends AutoCloseable {
 
     static final ReferencedEnvelope WORLD =
@@ -63,20 +69,28 @@ public interface DGGSInstance extends AutoCloseable {
     /** Returns the zone containing the specified position, at the given resolution */
     Zone getZone(double lat, double lon, int resolution);
 
-    /** Retuns zones covering the desired envelope at the target resolution */
-    Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution);
+    /**
+     * Retuns zones covering the desired envelope at the target resolution
+     *
+     * @param envelope The envelope being queried
+     * @param resolution The target resolution
+     * @param compact If true, return a lower number of zones needed to cover the area, using parent
+     *     zones as needed. Not required to be the minimum set of zones, meant to speed up data
+     *     queries only.
+     */
+    Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution, boolean compact);
 
     /**
      * Returns the count of zones covering the desired envelope, at the target resolution. The
-     * default implementation just uses {@link #zonesFromEnvelope(Envelope, int)}, subclasses can
-     * provide a better optimized implemnetation
+     * default implementation just uses {@link #zonesFromEnvelope(Envelope, int, boolean)},
+     * subclasses can provide a better optimized implemnetation
      *
      * @param envelope The area of search
      * @param resolution The target resolution
      * @return A zone count
      */
     default long countZonesFromEnvelope(Envelope envelope, int resolution) {
-        return Iterators.size(zonesFromEnvelope(envelope, resolution));
+        return Iterators.size(zonesFromEnvelope(envelope, resolution, false));
     }
 
     /**
@@ -105,7 +119,7 @@ public interface DGGSInstance extends AutoCloseable {
 
     /**
      * Returns the count of children zones. The default implementation just uses {@link
-     * #children(String, int)}, subclasses can provide a better optimized implemnetation
+     * #children(String, int)}, subclasses can provide a better optimized implementation
      */
     default long countChildren(String id, int resolution) {
         return Iterators.size(children(id, resolution));
@@ -146,16 +160,41 @@ public interface DGGSInstance extends AutoCloseable {
     /**
      * Maps a polygon and a resolution to the corresponding list of DGGS zones.
      *
-     * @param point A point expressed in CRS84
+     * @param polygon A polygon expressed in CRS84
      * @param resolution The target resolution
+     * @param compact If true, return the minimum number of zones needed to cover the area, using
+     *     parent zones as needed.
      */
-    Iterator<Zone> polygon(Polygon polygon, int resolution);
+    Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact);
 
     /**
      * Returns the count of zones in the polygon. The default implementation just uses {@link
-     * #polygon(String, int)}, subclasses can provide a better optimized implemnetation
+     * #polygon(POlygon, int, boolean)}, subclasses can provide a better optimized implemnetation
+     *
+     * @param polygon A polygon expressed in CRS84
+     * @param resolution The target resolution
      */
     default long countPolygon(Polygon polygon, int resolution) {
-        return Iterators.size(polygon(polygon, resolution));
+        return Iterators.size(polygon(polygon, resolution, false));
     }
+
+    /**
+     * Given a parent id, returns a filter matching all possible children of a given parent.
+     *
+     * <p>Typically implemented as a range or like search based on the hierarchical structure of the
+     * zoneId.
+     *
+     * <p>Used to optimize filters in database searches, as opposed to enumerating all children one
+     * by one.
+     *
+     * <p>The caller is already adding a "AND resolution <=|== targetResolution" in the query, the
+     * resolution and "upTo" values are to be used only to encode zoneId related filters.
+     *
+     * @param ff The filter factory used to build the response Filter
+     * @param zoneId The parent zone id
+     * @param upTo If true, return a filter matching all the children, from the direct ones, up to
+     *     the given solution. If false, return a filter matching only the children at the target
+     *     resolution instead.
+     */
+    Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo);
 }

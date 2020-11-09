@@ -6,10 +6,12 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Test;

@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;

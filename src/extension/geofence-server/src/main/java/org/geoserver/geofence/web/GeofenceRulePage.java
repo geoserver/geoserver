@@ -23,7 +23,13 @@ import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -414,6 +420,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             super(id);
 
             add(new TextField<>("priority", ruleFormModel.bind("rule.priority")).setRequired(true));
+
             add(
                     roleChoice =
                             new DropDownChoice<>(
@@ -563,6 +570,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             }
                         }
                     });
+
+            add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
 
             add(
                     grantTypeChoice =

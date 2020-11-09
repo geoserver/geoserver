@@ -5,8 +5,8 @@
 package org.geoserver.web.data.store.raster;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import javax.xml.namespace.QName;
 import org.apache.wicket.Component;

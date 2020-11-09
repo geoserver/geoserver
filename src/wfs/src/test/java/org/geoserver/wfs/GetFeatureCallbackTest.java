@@ -5,7 +5,7 @@
 package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.*;
+import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
 
 import java.util.List;
 import org.geotools.data.Query;

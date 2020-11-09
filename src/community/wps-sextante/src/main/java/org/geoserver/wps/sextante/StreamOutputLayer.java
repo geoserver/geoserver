@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.sextante;
 
-import org.locationtech.jts.geom.Geometry;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
@@ -13,6 +12,7 @@ import es.unex.sextante.outputs.IOutputChannel;
 import java.awt.geom.Rectangle2D;
 import java.io.PrintStream;
 import java.util.List;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A class to test the StreamOutputChannel class. It does nothing but streaming text descriptions of

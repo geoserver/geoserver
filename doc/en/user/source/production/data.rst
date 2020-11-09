@@ -52,7 +52,8 @@ An overview is a downsampled version of the same image, that is, a zoomed out ve
 
    gdaladdo -r average mytiff.tif 2 4 8 16
 
-As a final note, Geotiff supports various kinds of compression, but we do suggest to not use it. Whilst it allows for much smaller files, the decompression process is expensive and will be performed on each data access, significantly slowing down rendering. In our experience, the decompression time is higher than the pure disk data reading.
+As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed.
+Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O altough at the expenses of some CPU cycles.
 
 Handling huge data sets
 -----------------------

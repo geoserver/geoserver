@@ -5,7 +5,8 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Locale;
 import org.apache.wicket.IConverterLocator;

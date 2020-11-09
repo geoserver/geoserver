@@ -5,7 +5,8 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.NamespaceInfo;

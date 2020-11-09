@@ -5,10 +5,11 @@
  */
 package org.geoserver.script.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.platform.GeoServerExtensions;
@@ -27,9 +28,11 @@ public class ScriptPageTest extends GeoServerWicketTestSupport {
         // Add a few scripts
         scriptManager = GeoServerExtensions.bean(ScriptManager.class);
         File appDir = scriptManager.script("apps/app1").dir();
-        FileUtils.writeStringToFile(new File(appDir, "main.py"), "print 'foo'");
+        FileUtils.writeStringToFile(
+                new File(appDir, "main.py"), "print 'foo'", Charset.defaultCharset());
         File wpsDir = scriptManager.script("wps").dir();
-        FileUtils.writeStringToFile(new File(wpsDir, "buffer.groovy"), "buffer");
+        FileUtils.writeStringToFile(
+                new File(wpsDir, "buffer.groovy"), "buffer", Charset.defaultCharset());
         // Login and load the page
         login();
         tester.startPage(ScriptPage.class);

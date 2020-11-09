@@ -15,6 +15,9 @@
       </li>
       <li><a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('zones', 'text/html')!}&limit=${service.maxNumberOfZonesForPreview}">DGGS zone listing</a>.
       </li>
+      <#if (collection.getLinkUrl('dapa', 'text/html'))??>
+      <li><a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('dapa', 'text/html')!}">DAPA support</a>.</li>
+      </#if>
       <#if collection.mapPreviewURL??>
       <li>The layer can also be explored in this <a href="${collection.mapPreviewURL}">map preview</a></li>
       </#if>

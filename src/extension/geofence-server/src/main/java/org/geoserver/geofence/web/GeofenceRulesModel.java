@@ -13,6 +13,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.LayerDetails;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
@@ -84,6 +85,9 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     public static final Property<ShortRule> ACCESS =
             new RuleBeanProperty<ShortRule>("access", "access");
 
+    public static final Property<ShortRule> ADDRESS_RANGE =
+            new RuleBeanProperty<ShortRule>("addressRange", "addressRange");
+
     public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<ShortRule>("buttons");
 
     private static RuleAdminService adminService() {
@@ -124,7 +128,16 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ShortRule>>
             getProperties() {
         return Arrays.asList(
-                PRIORITY, ROLE, USER, SERVICE, REQUEST, WORKSPACE, LAYER, ACCESS, BUTTONS);
+                PRIORITY,
+                ROLE,
+                USER,
+                SERVICE,
+                REQUEST,
+                WORKSPACE,
+                LAYER,
+                ACCESS,
+                ADDRESS_RANGE,
+                BUTTONS);
     }
 
     @Override
@@ -270,6 +283,11 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setWorkspace(shortRule.getWorkspace());
         rule.setLayer(shortRule.getLayer());
         rule.setAccess(shortRule.getAccess());
+
+        rule.setAddressRange(
+                shortRule.getAddressRange() != null
+                        ? new IPAddressRange(shortRule.getAddressRange())
+                        : null);
     }
 
     public LayerDetails getDetails(Long ruleId) {

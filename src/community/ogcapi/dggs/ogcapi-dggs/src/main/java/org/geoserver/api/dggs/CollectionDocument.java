@@ -4,6 +4,8 @@
  */
 package org.geoserver.api.dggs;
 
+import static org.geoserver.ows.URLMangler.URLType.SERVICE;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,7 +26,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.data.Query;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
@@ -66,7 +67,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             baseUrl,
                             "ogc/dggs/collections/" + collectionId + "/zones",
                             Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+                            SERVICE);
             addLink(
                     new Link(
                             apiUrl,
@@ -82,19 +83,36 @@ public class CollectionDocument extends AbstractCollectionDocument {
             Collection<MediaType> dapaFormats =
                     APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
             for (MediaType format : dapaFormats) {
-                String apiUrl =
+                String dapaURL =
                         ResponseUtils.buildURL(
                                 baseUrl,
-                                "ogc/dggs/collections/" + collectionId + "/dapa",
+                                "ogc/dggs/collections/" + collectionId + "/processes",
                                 Collections.singletonMap("f", format.toString()),
-                                URLMangler.URLType.SERVICE);
+                                SERVICE);
                 addLink(
                         new Link(
-                                apiUrl,
-                                "dapa",
+                                dapaURL,
+                                "ogc-dapa-processes",
                                 format.toString(),
                                 "DAPA for " + collectionId + " as " + format.toString(),
-                                "dapa"));
+                                "ogc-dapa-processes"));
+            }
+            Collection<MediaType> variablesFormats =
+                    APIRequestInfo.get().getProducibleMediaTypes(DAPAVariables.class, true);
+            for (MediaType format : variablesFormats) {
+                String variablesURL =
+                        ResponseUtils.buildURL(
+                                baseUrl,
+                                "ogc/dggs/collections/" + collectionId + "/variables",
+                                Collections.singletonMap("f", format.toString()),
+                                SERVICE);
+                addLink(
+                        new Link(
+                                variablesURL,
+                                "ogc-dapa-variables",
+                                format.toString(),
+                                "DAPA variables for " + collectionId + " as " + format.toString(),
+                                "ogc-dapa-variables"));
             }
         }
 
@@ -105,8 +123,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
             Map<String, String> kvp = new HashMap<>();
             kvp.put("LAYERS", featureType.prefixedName());
             kvp.put("FORMAT", "application/openlayers");
-            this.mapPreviewURL =
-                    ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
+            this.mapPreviewURL = ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, SERVICE);
         }
 
         // setup resolutions

@@ -73,4 +73,21 @@ class ClickHouseDialect extends BasicSQLDialect {
         f2s.setCapabilities(BASE_DBMS_CAPABILITIES);
         return f2s;
     }
+
+    @Override
+    public boolean isLimitOffsetSupported() {
+        return true;
+    }
+
+    @Override
+    public void applyLimitOffset(StringBuffer sql, int limit, int offset) {
+        if (limit >= 0 && limit < Integer.MAX_VALUE) {
+            sql.append(" LIMIT " + limit);
+            if (offset > 0) {
+                sql.append(" OFFSET " + offset);
+            }
+        } else if (offset > 0) {
+            sql.append(" OFFSET " + offset);
+        }
+    }
 }

@@ -66,7 +66,7 @@ public class FeatureCollectionMessageConverter
     }
 
     public Operation wrapOperation(SimpleFeatureCollection fc, Operation originalOperation) {
-        // bridge over expectations from  the WFS subsystem
+        // bridge over expectations from the WFS subsystem
         GetFeatureType rawRequest = Wfs20Factory.eINSTANCE.createGetFeatureType();
         rawRequest.setResultType(ResultTypeType.RESULTS);
         rawRequest.setBaseUrl(APIRequestInfo.get().getBaseURL());

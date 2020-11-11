@@ -16,8 +16,8 @@
        </#list>
        </ul>
        
-       <h2>Endpoints</h2>
-       <p>The following analysis methods are supported on ${model.id}.</p>
+       <h2>Processes</h2>
+       <p>The following processes are supported on ${model.id}.</p>
        <#list model.endpoints as ep>
           <h3>${ep.id}</h3>
           <p>${ep.title?html}.<br/>${ep.description?html?replace("\n", "<br>")}<br>

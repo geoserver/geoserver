@@ -20,11 +20,13 @@ import org.opengis.feature.type.GeometryDescriptor;
 /** List of DAPA variables for a collection */
 public class DAPAVariables extends AbstractDocument {
 
+    String collectionId;
     List<DAPAVariable> variables;
 
     public DAPAVariables(String collectionId, FeatureTypeInfo info) throws IOException {
         Set<String> excludedAttributes = getExcludedAttributes(info);
         SimpleFeatureType schema = (SimpleFeatureType) info.getFeatureType();
+        this.collectionId = collectionId;
         this.variables =
                 schema.getAttributeDescriptors()
                         .stream()
@@ -62,5 +64,13 @@ public class DAPAVariables extends AbstractDocument {
 
     public void setVariables(List<DAPAVariable> variables) {
         this.variables = variables;
+    }
+
+    public String getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
 }

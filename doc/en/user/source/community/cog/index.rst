@@ -80,8 +80,8 @@ The GeoServer Global Settings page contains the default COG settings presented w
    Default Global COG Settings
 
 
-HTTP Client configuration
--------------------------
+HTTP Client (OkHttp) configuration
+----------------------------------
 HTTP client configuration (based on `OkHttp client <https://square.github.io/okhttp/>`_) can be specified through Environment variables. 
 
 .. list-table::
@@ -125,19 +125,15 @@ On the table below, replace the "$ALIAS$" template with HTTP or HTTPS or S3 if y
      - Default password (secret access key) for AWS basic authentication credentials
 
 Client configuration (System Properties)
------------------------------------------------------------------
-Note that all the settings reported in the previous tables can also be specified using System Properties instead of Environment variables.
+----------------------------------------
+Note that all the IIO  settings reported in the previous tables can also be specified using System Properties instead of Environment variables.
 You just need to replace UPPER CASE words with lower case words and underscores with dots.
 So, the value for Maximum HTTP requests can be specified by setting either a ``IIO_HTTP_MAX_REQUESTS`` Environment variable or a ``iio.http.max.requests`` Java System Property alternatively (Environment variables are checked first).
+
+By default, when accessing a COG, a first chunk of 16 KB is read in attempt to parset the header so that the reader will know offset and length of the available tiles. When dealing with big files, there might be the case that the whole header won't fit in the first chunk so additional reads (chunks of the same size) will be progressively made to complete the parsing.
+A ``it.geosolutions.cog.default.header.length`` System Propery can be configured to set the length (in bytes) of the reading chunk.
 
 Current Limitations
 -------------------
 
 * At the moment, COG ImageMosaic doesn't support neither harvesting nor automatic index creation. Therefore, make sure to have an index already defined on a database, containing the COG granules URLs and set the ``UseExistingSchema=true`` flag on the mosaic/indexer.properties file. In case the mosaic folder containing indexer and datastore properties files has different naming with respect to the table in the database, make sure to also set ``Name`` and ``TypeName`` properties in indexer.properties, matching the actual table name. See :ref:`mosaic_datastore_properties` for details on index stored on a database.
-
-* At the moment, the portion of the COG needed to serve a request is read from network to memory, using as few requests as possible. This has two implications: 
-
-   * WMS serving is normally fine as long as internal overviews are present, the COG reader will never read large amount of data this way
-
-   * WCS serving at native resolution can be problematic, it's best to disable it, or to set tight service limits on it
-

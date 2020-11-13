@@ -32,6 +32,9 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
  * Factory for {@link org.geotools.dggs.gstore.DGGSStore} based on ClickHouse storage . TODO:
  * generalize this so that it can take DGGS parameters as well.
  */
+// TODO: add a limit to the complexity of queries the store is willing to accept? And suggest the
+// user to switch to a lower resolution instead. Though maybe this ought to be done at the
+// service level, and propagated down to the store as a Hint?
 public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
 
     ClickHouseJDBCDataStoreFactory delegate = new ClickHouseJDBCDataStoreFactory();
@@ -54,7 +57,7 @@ public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
     @Override
     public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
         // setup the JDBC data store based on Clickhouse
-        Map<String, Serializable> delegateParams = new HashMap<>(params);
+        Map<String, Object> delegateParams = new HashMap<>(params);
         delegateParams.put(JDBCDataStoreFactory.DBTYPE.key, delegate.getDatabaseID());
         delegateParams.put(
                 JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));

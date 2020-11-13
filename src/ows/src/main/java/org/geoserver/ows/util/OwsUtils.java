@@ -275,6 +275,11 @@ public class OwsUtils {
             if (ex == cause || cause == null) break;
             else ex = cause;
         } while (true);
+
+        // some exceptions have no description, use the exception name itself then
+        if (s.length() == 0 && e != null) {
+            s.append(e.getClass().getName());
+        }
     }
 
     /**

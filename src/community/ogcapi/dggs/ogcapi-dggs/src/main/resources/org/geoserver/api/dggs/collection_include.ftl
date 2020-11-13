@@ -15,6 +15,10 @@
       </li>
       <li><a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('zones', 'text/html')!}&limit=${service.maxNumberOfZonesForPreview}">DGGS zone listing</a>.
       </li>
+      <#if (collection.getLinkUrl('ogc-dapa-processes', 'text/html'))??>
+      <li><a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('ogc-dapa-processes', 'text/html')!}">DAPA processes</a>.</li>
+      <li><a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('ogc-dapa-variables', 'text/html')!}">DAPA variables</a>.</li>
+      </#if>
       <#if collection.mapPreviewURL??>
       <li>The layer can also be explored in this <a href="${collection.mapPreviewURL}">map preview</a></li>
       </#if>

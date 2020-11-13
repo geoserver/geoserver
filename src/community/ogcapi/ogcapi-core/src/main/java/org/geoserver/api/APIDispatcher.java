@@ -290,6 +290,11 @@ public class APIDispatcher extends AbstractController {
             // and then the dispatcher callbacks
             returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
 
+            // make it available for further integration, the Spring converter API is too narrow
+            // to be bridged to the OGC service responses sometimes (which do need the actual
+            // response, not just its class)
+            APIRequestInfo.get().setResult(returnValue);
+
             returnValueHandlers.handleReturnValue(
                     returnValue,
                     new ReturnValueMethodParameter(handler.getMethod(), returnValue),

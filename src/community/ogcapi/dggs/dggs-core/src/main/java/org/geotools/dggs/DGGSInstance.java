@@ -33,6 +33,10 @@ import org.opengis.filter.FilterFactory2;
  * classic geometries. A DDGS system can be providing a single instance (e.g., H3) or multiple
  * configurable ones (e.g., rHEALPix)
  */
+// TODO: parametrize on T, type of the id, String for rpix but Long for H3. Trying to use
+// the string everywhere pretty much failed, leading to bad performance in clickhouse store
+// though we might have to do some experiments to check if the numeric id works any better,
+// the non hierarchical structure of the H3 ids gets lots of the blame here (
 public interface DGGSInstance extends AutoCloseable {
 
     static final ReferencedEnvelope WORLD =
@@ -182,6 +186,9 @@ public interface DGGSInstance extends AutoCloseable {
      *
      * <p>Used to optimize filters in database searches, as opposed to enumerating all children one
      * by one.
+     *
+     * <p>The caller is already adding a "AND resolution <=|== targetResolution" in the query, the
+     * resolution and "upTo" values are to be used only to encode zoneId related filters.
      *
      * @param ff The filter factory used to build the response Filter
      * @param zoneId The parent zone id

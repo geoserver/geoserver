@@ -44,6 +44,7 @@ public class APIRequestInfo {
     String baseURL;
     List<MediaType> requestedMediaTypes;
     APIDispatcher dispatcher;
+    Object result;
 
     /**
      * Constructs a {@link APIRequestInfo} object, generating content based on the passed request.
@@ -225,5 +226,19 @@ public class APIRequestInfo {
         String pathInfo = request.getPathInfo();
         String servletPath = request.getServletPath();
         return ResponseUtils.appendPath(servletPath, pathInfo);
+    }
+
+    /**
+     * The result, as set after the dispatcher callbacks processs
+     *
+     * @return
+     */
+    public Object getResult() {
+        return result;
+    }
+
+    /** Allows the dispatcher to set the result */
+    void setResult(Object result) {
+        this.result = result;
     }
 }

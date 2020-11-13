@@ -35,10 +35,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 public class MessageConverterResponseAdapter<T>
         implements HttpMessageConverter<T>, ApplicationContextAware {
 
-    Class<T> valueClass;
-    Class responseBinding;
-    List<Response> responses;
-    private List<MediaType> supportedMediaTypes;
+    protected final Class<T> valueClass;
+    protected final Class responseBinding;
+    protected List<Response> responses;
+    protected List<MediaType> supportedMediaTypes;
 
     public MessageConverterResponseAdapter(Class<T> valueClass, Class responseBinding) {
         this.valueClass = valueClass;
@@ -92,15 +92,20 @@ public class MessageConverterResponseAdapter<T>
         response.write(value, httpOutputMessage.getBody(), operation);
     }
 
-    protected Operation getOperation(T featuresResponse, Request dr) {
+    protected Operation getOperation(T result, Request dr) {
         return dr.getOperation();
     }
 
     public Optional<Response> getResponse(MediaType mediaType) {
+        @SuppressWarnings("unchecked")
+        T result = (T) APIRequestInfo.get().getResult();
+        Request dr = Dispatcher.REQUEST.get();
+        Operation originalOperation = dr.getOperation();
+        Operation op = result != null ? getOperation(result, dr) : originalOperation;
         return responses
                 .stream()
                 .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
-                .filter(r -> r.canHandle(Dispatcher.REQUEST.get().getOperation()))
+                .filter(r -> r.canHandle(op))
                 .findFirst();
     }
 
@@ -123,7 +128,7 @@ public class MessageConverterResponseAdapter<T>
         return r -> responseBinding.isAssignableFrom(r.getBinding());
     }
 
-    private Stream<MediaType> getMediaTypeStream(Response r) {
+    protected Stream<MediaType> getMediaTypeStream(Response r) {
         return r.getOutputFormats()
                 .stream()
                 .filter(f -> f.contains("/"))

@@ -4,16 +4,20 @@
  */
 package org.geoserver.api;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
@@ -203,6 +207,19 @@ public class APIBBoxParser {
             return x > 0 ? 180 : -180;
         } else {
             return mod - 180;
+        }
+    }
+
+    public static Geometry toGeometry(String spec) throws FactoryException {
+        ReferencedEnvelope[] parse = parse(spec);
+        List<Polygon> polygons =
+                Arrays.stream(parse).map(bbox -> JTS.toGeometry(bbox)).collect(Collectors.toList());
+        if (polygons.size() == 1) {
+            return polygons.get(0);
+        } else {
+            return polygons.get(0)
+                    .getFactory()
+                    .createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
         }
     }
 }

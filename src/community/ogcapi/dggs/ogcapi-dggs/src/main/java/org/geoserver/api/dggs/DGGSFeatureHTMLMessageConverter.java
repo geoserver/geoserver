@@ -97,7 +97,9 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
         APIRequestInfo requestInfo = APIRequestInfo.get();
         Map<String, String> kvp = new HashMap<>();
         kvp.put("f", "html");
-        kvp.put("zone_id", (String) getAttribute(feature, "zoneId"));
+        Object zoneId = getAttribute(feature, "zoneId");
+        if (zoneId == null) return null;
+        kvp.put("zone_id", (String) zoneId);
         if (time != null) {
             if (time.getEndAttribute() == null) {
                 Date date = getDateAttribute(feature, time.getAttribute());
@@ -127,6 +129,8 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
 
     private Object getAttribute(SimpleHash feature, String attribute)
             throws TemplateModelException {
-        return ((SimpleHash) feature.get(attribute)).get("rawValue").toString();
+        SimpleHash hash = (SimpleHash) feature.get(attribute);
+        if (hash == null) return null;
+        return hash.get("rawValue").toString();
     }
 }

@@ -19,7 +19,7 @@ package org.geootols.dggs.clickhouse;
 import static org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore.DEFAULT_GEOMETRY;
 import static org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore.GEOMETRY;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +42,7 @@ import org.geotools.feature.SchemaException;
 import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -208,6 +209,13 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
         }
         if (split.post != Filter.INCLUDE) {
             result = new FilteringSimpleFeatureCollection(result, split.post);
+        } else if (delegate.getDataStore() instanceof JDBCDataStore) {
+            result =
+                    new ClickhouseAggregatorCollection(
+                            result,
+                            (JDBCDataStore) delegate.getDataStore(),
+                            new Query(split.pre),
+                            getSchema());
         }
         result = reprojectFeatureCollection(result, query);
         return result;

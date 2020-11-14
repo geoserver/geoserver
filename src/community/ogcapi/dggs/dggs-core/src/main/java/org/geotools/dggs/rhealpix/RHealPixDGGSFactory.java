@@ -46,7 +46,7 @@ public class RHealPixDGGSFactory implements DGGSFactory {
     }
 
     @Override
-    public DGGSInstance createInstance(Map<String, Serializable> params) throws IOException {
+    public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
         return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "TB16-Pix");
     }
 

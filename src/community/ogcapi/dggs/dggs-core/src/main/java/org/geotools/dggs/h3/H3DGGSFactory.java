@@ -38,7 +38,7 @@ public class H3DGGSFactory implements DGGSFactory {
     }
 
     @Override
-    public DGGSInstance createInstance(Map<String, Serializable> params) throws IOException {
+    public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
         return new H3DGGSInstance(H3Core.newInstance());
     }
 

@@ -45,7 +45,7 @@ public class DGGSGeometryStoreFactory implements DataStoreFactorySpi {
             new Param("namespace", String.class, "Namespace prefix", false);
 
     @Override
-    public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createDataStore(Map<String, ?> params) throws IOException {
         String factoryId = (String) DGGS_FACTORY_ID.lookUp(params);
         DGGSInstance instance = DGGSFactoryFinder.createInstance(factoryId, params);
         DGGSGeometryStore store = new DGGSGeometryStore(instance);
@@ -59,7 +59,7 @@ public class DGGSGeometryStoreFactory implements DataStoreFactorySpi {
     }
 
     @Override
-    public DataStore createNewDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createNewDataStore(Map<String, ?> params) throws IOException {
         return createDataStore(params);
     }
 

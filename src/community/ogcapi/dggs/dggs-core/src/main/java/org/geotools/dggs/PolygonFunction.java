@@ -3,6 +3,7 @@ package org.geotools.dggs;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.filter.capability.FunctionName;
@@ -28,6 +29,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
                     "zoneId:String",
                     "polygon:org.locationtech.jts.geom.Polygon",
                     "resolution:Integer",
+                    "compact:Boolean",
                     "dggs:org.geotools.dggs.DGGSInstance");
 
     public PolygonFunction() {
@@ -46,14 +48,16 @@ public class PolygonFunction extends DGGSSetFunctionBase {
                     // check params
                     Polygon polygon = (Polygon) getParameterValue(object, 1);
                     Integer resolution = (Integer) getParameterValue(object, 2);
-                    DGGSInstance dggs = (DGGSInstance) getParameterValue(object, 3);
+                    Boolean compact =
+                            Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
+                    DGGSInstance dggs = (DGGSInstance) getParameterValue(object, 4);
                     if (polygon == null || resolution == null || dggs == null)
                         return Collections.emptyIterator();
 
                     // check resolution first
                     if (dggs.getZone(testedZoneId).getResolution() != resolution)
                         return Collections.emptyIterator();
-                    return dggs.polygon(polygon, resolution, false);
+                    return dggs.polygon(polygon, resolution, compact);
                 });
     }
 
@@ -61,10 +65,10 @@ public class PolygonFunction extends DGGSSetFunctionBase {
     public void setDGGSInstance(DGGSInstance dggs) {
         Literal dggsLiteral = FF.literal(dggs);
         List<Expression> parameters = getParameters();
-        if (parameters.size() == 3) {
+        if (parameters.size() == 4) {
             parameters.add(dggsLiteral);
         } else {
-            parameters.set(3, dggsLiteral);
+            parameters.set(4, dggsLiteral);
         }
         setParameters(parameters);
     }
@@ -74,9 +78,10 @@ public class PolygonFunction extends DGGSSetFunctionBase {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         Polygon polygon = (Polygon) getParameterValue(null, 1);
         Integer resolution = (Integer) getParameterValue(null, 2);
-        DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 3);
+        Boolean compact = Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
+        DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 4);
 
-        return dggs.polygon(polygon, resolution, false);
+        return dggs.polygon(polygon, resolution, compact);
     }
 
     @Override
@@ -84,7 +89,8 @@ public class PolygonFunction extends DGGSSetFunctionBase {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         Polygon polygon = (Polygon) getParameterValue(null, 1);
         Integer resolution = (Integer) getParameterValue(null, 2);
-        DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 3);
+        Boolean compact = Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
+        DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 4);
 
         return dggs.countPolygon(polygon, resolution);
     }

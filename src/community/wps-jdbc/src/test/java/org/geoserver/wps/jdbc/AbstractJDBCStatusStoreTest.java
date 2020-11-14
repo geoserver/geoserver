@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
@@ -23,6 +22,7 @@ import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
 import org.junit.After;
 import org.junit.Assume;
@@ -78,10 +78,8 @@ public abstract class AbstractJDBCStatusStoreTest extends AbstractProcessStoreTe
     protected void setupDataStore() {
         Properties props = getFixture();
 
-        Map<Object, Object> params = props;
         try {
-            datastore = DataStoreFinder.getDataStore(params);
-
+            datastore = DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
         } catch (IOException e) {
         }
 

@@ -17,7 +17,6 @@
 package org.geotools.dggs;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.Parameter;
 

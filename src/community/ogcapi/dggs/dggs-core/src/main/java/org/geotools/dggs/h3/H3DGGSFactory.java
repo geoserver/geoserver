@@ -18,7 +18,6 @@ package org.geotools.dggs.h3;
 
 import com.uber.h3core.H3Core;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.Parameter;
 import org.geotools.dggs.DGGSFactory;

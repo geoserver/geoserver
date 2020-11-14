@@ -17,7 +17,6 @@
 package org.geotools.dggs.gstore;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;

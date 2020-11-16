@@ -22,15 +22,15 @@ public class APIFilterParser {
     public static String CQL_OBJECT = "cql-object";
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT}) and
-     * defaults the geometry liters in spatial filters to CRS84
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and {@link #CQL_OBJECT})
+     * and defaults the geometry liters in spatial filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
         if (filter == null) {
             return null;
         }
 
-        // right now there is a spec only for cql-text, will be extended when more languages are
+        // right now there is a spec only for cql-text and cql-object, will be extended when more languages are
         // recognized (could have its own extension point too, if we want to allow easy extension
         // with new custom languages)
         if (filterLang != null && (!filterLang.equals(CQL_TEXT)&&!filterLang.equals(CQL_OBJECT))) {

@@ -22,31 +22,35 @@ public class APIFilterParser {
     public static String CQL_OBJECT = "cql-object";
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and {@link #CQL_OBJECT})
-     * and defaults the geometry liters in spatial filters to CRS84
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
+     * {@link #CQL_OBJECT}) and defaults the geometry liters in spatial filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
         if (filter == null) {
             return null;
         }
 
-        // right now there is a spec only for cql-text and cql-object, will be extended when more languages are
+        // right now there is a spec only for cql-text and cql-object, will be extended when more
+        // languages are
         // recognized (could have its own extension point too, if we want to allow easy extension
         // with new custom languages)
-        if (filterLang != null && (!filterLang.equals(CQL_TEXT)&&!filterLang.equals(CQL_OBJECT))) {
+        if (filterLang != null
+                && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_OBJECT))) {
             throw new InvalidParameterValueException(
                     "Only supported filter-lang options at the moment is "
-                            + CQL_TEXT + " and " + CQL_OBJECT
+                            + CQL_TEXT
+                            + " and "
+                            + CQL_OBJECT
                             + " but '"
                             + filterLang
                             + "' was found instead");
         }
 
         try {
-            Filter parsedFilter=null;
-            if(filterLang==null||filterLang.equals(CQL_TEXT)) {
+            Filter parsedFilter = null;
+            if (filterLang == null || filterLang.equals(CQL_TEXT)) {
                 parsedFilter = ECQL.toFilter(filter);
-            }else if(filterLang.equals(CQL_OBJECT)){
+            } else if (filterLang.equals(CQL_OBJECT)) {
                 CQLJsonCompiler cqlJsonCompiler =
                         new CQLJsonCompiler(filter, new FilterFactoryImpl());
                 cqlJsonCompiler.compileFilter();
@@ -55,9 +59,13 @@ public class APIFilterParser {
 
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead
-            DefaultCRSFilterVisitor crsDefaulter =
-                    new DefaultCRSFilterVisitor(FF, DefaultGeographicCRS.WGS84);
-            return (Filter) parsedFilter.accept(crsDefaulter, null);
+            if (parsedFilter != null) {
+                DefaultCRSFilterVisitor crsDefaulter =
+                        new DefaultCRSFilterVisitor(FF, DefaultGeographicCRS.WGS84);
+                return (Filter) parsedFilter.accept(crsDefaulter, null);
+            } else {
+                return null;
+            }
         } catch (CQLException e) {
             throw new InvalidParameterValueException(e.getMessage(), e);
         }

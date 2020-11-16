@@ -131,7 +131,7 @@ You just need to replace UPPER CASE words with lower case words and underscores 
 So, the value for Maximum HTTP requests can be specified by setting either a ``IIO_HTTP_MAX_REQUESTS`` Environment variable or a ``iio.http.max.requests`` Java System Property alternatively (Environment variables are checked first).
 
 By default, when accessing a COG, a first chunk of 16 KB is read in attempt to parset the header so that the reader will know offset and length of the available tiles. When dealing with files hosting many tiles, it might happen that the whole header won't fit in the first chunk. In this case additional reads (chunks of the same size) will be progressively made to complete loading the header.
-A ``it.geosolutions.cog.default.header.length`` System Propery can be configured to set the length (in bytes) of the reading chunk.
+A ``it.geosolutions.cog.default.header.length`` system propery can be configured to set the length (in bytes) of the reading chunk. Tuning this so that the header is read with few extra requests can help improve performance. A value too large can cause memory comsumption issues and will reduce efficiency, as un-necessary data will be read.
 
 Current Limitations
 -------------------

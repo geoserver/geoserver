@@ -40,6 +40,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
@@ -250,9 +251,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             boolean hasGeom) {
         // Bounding box for featurecollection
         if (hasGeom && featureBounding) {
+            CoordinateReferenceSystem crs = null;
             ReferencedEnvelope e = null;
             for (int i = 0; i < resultsList.size(); i++) {
                 FeatureCollection collection = resultsList.get(i);
+                FeatureType schema = collection.getSchema();
+                if (crs == null && schema.getGeometryDescriptor() != null)
+                    crs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
                 if (e == null) {
                     e = collection.getBounds();
                 } else {
@@ -261,7 +266,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             }
 
             if (e != null) {
-                jsonWriter.setAxisOrder(CRS.getAxisOrder(e.getCoordinateReferenceSystem()));
+                jsonWriter.setAxisOrder(CRS.getAxisOrder(crs));
                 jsonWriter.writeBoundingBox(e);
             }
         }

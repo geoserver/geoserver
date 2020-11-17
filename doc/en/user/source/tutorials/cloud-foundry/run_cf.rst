@@ -131,7 +131,7 @@ Changing the manifest file
 The manifest file allows you to configure:
  * Resource limits (memory and cpu)
  * configure the route URL
- * Set environment variables, for instance to set a specific tomcat version::
+ * Set environment variables, for instance to set a specific tomcat version
 
 .. code-block:: YAML 
 

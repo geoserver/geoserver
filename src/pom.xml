@@ -1198,7 +1198,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.13-java7</version>
+      <version>1.4.14</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>

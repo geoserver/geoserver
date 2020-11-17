@@ -1,7 +1,7 @@
 .. _run_cf:
 
 Running GeoServer in Cloud Foundry
-==============================
+==================================
 
 Many organizations are moving applications and databases workload to cloud providers. One target platform for apps is `Cloud Foundry <https://www.cloudfoundry.org/>`_.
 While it is not the best environment for intense usage of GeoServer, it is sufficient for simple usage. This tutorial is a simple guide on a basic deployment. 
@@ -9,21 +9,21 @@ While it is not the best environment for intense usage of GeoServer, it is suffi
 For more advanced deployments, refer to section `Advanced Topics`_
 
 Java Environment
--------
+----------------
 Cloud Foundry runs micro services written in multiple languages using the abtraction concept of language buildpacks. The `java buildpack <https://github.com/cloudfoundry/java-buildpack>`_ supports OpenJDK and proprietary JREs and tomcat from version `6.0.0 to 9.x.y <http://download.pivotal.io.s3.amazonaws.com/tomcat/index.yml>`_   
 
 Cloud Foundry client
--------
+--------------------
 To interact with cloud foundry, install the `command line tool <https://docs.cloudfoundry.org/cf-cli/install-go-cli.html>`_ for your platform.
 
 Get a Cloud Foundry trial account (or use your organization paid plan)
--------
+----------------------------------------------------------------------
 Register for a free trial account with `SAP <https://www.sap.com/cmp/td/sap-cloud-platform-trial.html>`_ or IBM. 
 
 **Warning** At this time, `IBM <https://www.ibm.com/cloud/free>`_ doesn't allow more 64 MB of memory in free instances which prevents from starting the geoserver. The tutorial will be updated if this changes, however, the cloud foundry commands and manifest files are identical because Cloud Foundry truly is multi cloud!
 
 Cloud Foundry on SAP Cloud Platform
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `Logon to your cockpit <https://account.hanatrial.ondemand.com/cockpit/>`_ and select your trial organization
 
 .. image:: ./sap_cp_trial1.png
@@ -65,7 +65,7 @@ And now that you are logged in, you can list the apps::
 
 
 Publish geoserver
--------
+-----------------
 
 Now that you are logged in to a cloud foundry space, you can publish geoserver as a servlet.
 Download geoserver as a war file.
@@ -108,10 +108,10 @@ This should take two minutes the first time then you can check your application 
 You can open the url in your browser. HTTP is automatically redirected to HTTPS and traffic is encrypted using the cloud foundry platform certificates which are trusted by most browser :-)
 
 Advanced Topics
------------------------
+---------------
 
 Changing the memory limit
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the command **cf scale**, for instance to set the limit at 2Gigabytes, execute::
 
@@ -126,7 +126,7 @@ This restarts the application and displays the new limit::
 As for most parameters, resource limits can also be set in the manifest file
 
 Changing the manifest file
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The manifest file allows you to configure:
  * Resource limits (memory and cpu)
@@ -147,7 +147,8 @@ The manifest file allows you to configure:
         JBP_CONFIG_TOMCAT: '{ tomcat: { version: 8.0.+ } }'
 
 Scaling challenges
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Total Memory limit of 8 GB.
 The goal of Cloud Foundry as a micro service platform is to break a monolithic application into smaller blocks. The containers are restricted to 8 GB in IBM and SAP platforms. 
+

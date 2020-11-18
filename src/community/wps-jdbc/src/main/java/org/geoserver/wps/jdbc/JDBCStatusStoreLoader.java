@@ -18,6 +18,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -41,7 +42,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         try {
             Properties params = getParameters();
 
-            store = DataStoreFinder.getDataStore(params);
+            store = DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(params));
 
         } catch (IOException e) {
             LOGGER.info("can't find or create JDBC Status store configuration file");

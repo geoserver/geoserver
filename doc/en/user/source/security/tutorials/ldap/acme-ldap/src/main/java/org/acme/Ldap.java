@@ -57,8 +57,6 @@ import org.apache.directory.shared.ldap.schema.loader.ldif.LdifSchemaLoader;
 import org.apache.directory.shared.ldap.schema.manager.impl.DefaultSchemaManager;
 import org.apache.directory.shared.ldap.schema.registries.SchemaLoader;
 
-import com.sun.tools.javac.comp.Enter;
-
 import static java.lang.String.format;
 
 /**

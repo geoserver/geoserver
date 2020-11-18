@@ -244,6 +244,7 @@ paths:
         - $ref: '#/components/parameters/collectionId'
         - $ref: '#/components/parameters/bbox'
         - $ref: '#/components/parameters/polygon'
+        - $ref: '#/components/parameters/compact'
         - $ref: '#/components/parameters/resolution'
         - $ref: '#/components/parameters/datetime'
         - $ref: '#/components/parameters/properties'          
@@ -1545,6 +1546,18 @@ components:
         type: string
       style: form
       explode: false
+    compact:
+      name: compact
+      in: query
+      description: |-
+        The optional compact parameter controls whether the polygon will be filled with zones
+        at the target resolution level only (compact=false) or using higher level zones when
+        fully fitting inside the polygon (compact=true) 
+      required: false
+      schema:
+        type: boolean
+        default: false
+      style: form
     limit:
       name: limit
       in: query

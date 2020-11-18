@@ -472,7 +472,10 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                                     || testContains(prepared, zone.getBoundary());
                         },
                         zone -> (Zone) zone);
-        // expand the cells that are at a lower resolution using the fast children computation
+        // if compact iteration, we are done
+        if (compact) return compactIterator;
+        // otherwise expand the cells that are at a lower resolution using the fast children
+        // computation
         return stream(spliteratorUnknownSize(compactIterator, Spliterator.ORDERED), false)
                 .flatMap(
                         z -> {

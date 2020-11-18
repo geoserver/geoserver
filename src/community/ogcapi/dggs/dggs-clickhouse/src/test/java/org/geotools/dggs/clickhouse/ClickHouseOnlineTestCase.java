@@ -16,7 +16,6 @@
  */
 package org.geotools.dggs.clickhouse;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 import org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore;
@@ -37,7 +36,7 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
 
         ClickHouseDGGStoreFactory factory = new ClickHouseDGGStoreFactory();
         @SuppressWarnings("unchecked")
-        Map<String, Serializable> params = (Map) fixture;
+        Map<String, ?> params = (Map) fixture;
         this.dataStore = (ClickHouseDGGSDataStore) factory.createDataStore(params);
     }
 

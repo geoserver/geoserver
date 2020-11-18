@@ -42,7 +42,7 @@ public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
         add(parameterPanel);
     }
 
-    private List<? extends Serializable> getDGGSFactoryIds() {
+    private List<String> getDGGSFactoryIds() {
         return DGGSFactoryFinder.getFactoryIdentifiers().collect(Collectors.toList());
     }
 }

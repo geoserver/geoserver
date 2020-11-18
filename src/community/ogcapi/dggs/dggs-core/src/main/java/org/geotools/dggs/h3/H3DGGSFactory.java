@@ -18,7 +18,6 @@ package org.geotools.dggs.h3;
 
 import com.uber.h3core.H3Core;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.Parameter;
 import org.geotools.dggs.DGGSFactory;
@@ -38,7 +37,7 @@ public class H3DGGSFactory implements DGGSFactory {
     }
 
     @Override
-    public DGGSInstance createInstance(Map<String, Serializable> params) throws IOException {
+    public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
         return new H3DGGSInstance(H3Core.newInstance());
     }
 

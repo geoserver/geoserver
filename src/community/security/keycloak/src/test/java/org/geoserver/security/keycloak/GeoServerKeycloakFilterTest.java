@@ -237,7 +237,7 @@ public class GeoServerKeycloakFilterTest {
         assertTrue(authn instanceof UsernamePasswordAuthenticationToken);
         assertFalse(authn.getAuthorities().isEmpty());
         for (GrantedAuthority a : authn.getAuthorities()) {
-            assertTrue(a.getAuthority().startsWith("ROLE_"));
+            assertFalse(a.getAuthority().startsWith("ROLE_"));
         }
     }
 }

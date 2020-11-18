@@ -99,6 +99,7 @@ public class DefaultGeoServerLoaderTest {
         File dataDir = URLs.urlToFile(DefaultGeoServerLoaderTest.class.getResource("/data_dir/nested_layer_groups"));
         File styleDir = new File(dataDir, "styles");
         styleDir.mkdir();
+        
         for(File style:styleDir.listFiles(new FileFilter() {
             
             @Override

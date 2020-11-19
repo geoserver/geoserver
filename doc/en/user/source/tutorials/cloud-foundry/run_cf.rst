@@ -14,7 +14,7 @@ Cloud Foundry runs micro services written in multiple languages using the abstra
 
 Cloud Foundry client
 --------------------
-To interact with cloud foundry, install the `command line tool <https://docs.cloudfoundry.org/cf-cli/install-go-cli.html>`_ for your platform.
+To interact with Cloud Foundry, install the `command line tool <https://docs.cloudfoundry.org/cf-cli/install-go-cli.html>`_ for your platform.
 
 Get a Cloud Foundry trial account (or use your organization paid plan)
 ----------------------------------------------------------------------
@@ -64,11 +64,11 @@ And now that you are logged in, you can list the apps::
 
 
 
-Publish geoserver
+Publish GeoServer
 -----------------
 
-Now that you are logged in to a cloud foundry space, you can publish geoserver as a servlet.
-Download geoserver as a war file.
+Now that you are logged in to a Cloud Foundry space, you can publish GeoServer as a servlet.
+Download GeoServer as a war file.
 Create a deployment configuration file called **manifest.yml**:
 
 .. code-block:: YAML 
@@ -82,7 +82,7 @@ Create a deployment configuration file called **manifest.yml**:
     buildpacks:
         - java_buildpack
 
-The default behavior is to use the latest OpenJRE and tomcat versions. And *voilà*, you're ready to publish geoserver !!::
+The default behavior is to use the latest OpenJRE and tomcat versions. And *voilà*, you're ready to publish GeoServer!::
 
     $ cf push -f manifest.yml
     Pushing from manifest to org your.email@here.com / space dev as your.email@here.com...
@@ -105,7 +105,7 @@ This should take two minutes the first time then you can check your application 
     name        requested state   instances   memory   disk   urls
     geoserver   started           1/1         1G       1G     geoserver-humble-puku-pi.cfapps.eu10.hana.ondemand.com
 
-You can open the url in your browser. HTTP is automatically redirected to HTTPS and traffic is encrypted using the cloud foundry platform certificates which are trusted by most browser :-)
+You can open the url in your browser. HTTP is automatically redirected to HTTPS and traffic is encrypted using the Cloud Foundry platform certificates which are trusted by most browsers.
 
 Advanced Topics
 ---------------

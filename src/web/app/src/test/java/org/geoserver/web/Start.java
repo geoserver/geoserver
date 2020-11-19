@@ -85,7 +85,7 @@ public class Start {
                                 jettyServer,
                                 new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
                                 new HttpConnectionFactory(httpsConfig));
-                https.setPort(8443);
+                https.setPort(Integer.getInteger("jetty.ssl.port", 8443));
             }
 
             jettyServer.setConnectors(
@@ -181,15 +181,19 @@ public class Start {
     }
 
     private static SslContextFactory createSSLContextFactory(String hostname) {
-        String password = "changeit";
+        String password = System.getProperty("jetty.keystore.password", "changeit");
 
-        File userHome = new File(System.getProperty("user.home"));
-        File geoserverDir = new File(userHome, ".geoserver");
-        if (!geoserverDir.exists()) {
-            geoserverDir.mkdir();
+        String keyStoreLocation = System.getProperty("jetty.keystore");
+        if (keyStoreLocation == null) {
+            File userHome = new File(System.getProperty("user.home"));
+            File geoserverDir = new File(userHome, ".geoserver");
+            if (!geoserverDir.exists()) {
+                geoserverDir.mkdir();
+            }
+            keyStoreLocation = new File(geoserverDir, "keystore.jks").getPath();
         }
 
-        File keyStoreFile = new File(geoserverDir, "keystore.jks");
+        File keyStoreFile = new File(keyStoreLocation);
         try {
             assureSelfSignedServerCertificate(hostname, keyStoreFile, password);
         } catch (Exception e) {

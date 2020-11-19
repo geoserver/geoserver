@@ -10,7 +10,7 @@ For more advanced deployments, refer to section `Advanced Topics`_
 
 Java Environment
 ----------------
-Cloud Foundry runs micro services written in multiple languages using the abtraction concept of language buildpacks. The `java buildpack <https://github.com/cloudfoundry/java-buildpack>`_ supports OpenJDK and proprietary JREs and tomcat from version `6.0.0 to 9.x.y <http://download.pivotal.io.s3.amazonaws.com/tomcat/index.yml>`_   
+Cloud Foundry runs micro services written in multiple languages using the abstraction concept of language buildpacks. The `java buildpack <https://github.com/cloudfoundry/java-buildpack>`_ supports OpenJDK and proprietary JREs and tomcat from version `6.0.0 to 9.x.y <http://download.pivotal.io.s3.amazonaws.com/tomcat/index.yml>`_   
 
 Cloud Foundry client
 --------------------
@@ -151,4 +151,3 @@ Scaling challenges
 
 Total Memory limit of 8 GB.
 The goal of Cloud Foundry as a micro service platform is to break a monolithic application into smaller blocks. The containers are restricted to 8 GB in IBM and SAP platforms. 
-

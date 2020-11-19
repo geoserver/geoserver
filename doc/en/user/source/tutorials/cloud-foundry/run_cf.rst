@@ -20,7 +20,7 @@ Get a Cloud Foundry trial account (or use your organization paid plan)
 ----------------------------------------------------------------------
 Register for a free trial account with `SAP <https://www.sap.com/cmp/td/sap-cloud-platform-trial.html>`_ or IBM. 
 
-**Warning** At this time, `IBM <https://www.ibm.com/cloud/free>`_ doesn't allow more 64 MB of memory in free instances which prevents from starting the geoserver. The tutorial will be updated if this changes, however, the cloud foundry commands and manifest files are identical because Cloud Foundry truly is multi cloud!
+**Warning** At this time, `IBM <https://www.ibm.com/cloud/free>`_ doesn't allow more 64 MB of memory in free instances which prevents from starting the geoserver. The tutorial will be updated if this changes, however, the Cloud Foundry commands and manifest files are identical because Cloud Foundry truly is multi cloud!
 
 Cloud Foundry on SAP Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

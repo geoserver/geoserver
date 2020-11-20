@@ -146,6 +146,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     int width,
             @DescribeParameter(name = "height", min = 1, description = "Map height", minValue = 1)
                     int height,
+            @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
+                    Integer headerHeight,
             @DescribeParameter(
                         name = "layer",
                         min = 1,
@@ -180,6 +182,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                         time,
                         width,
                         height,
+                        headerHeight,
                         layers,
                         format,
                         progressListener,
@@ -273,17 +276,20 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE, "kmz");
     }
 
+    @SuppressWarnings("unchecked")
     RenderedImage buildImage(
             ReferencedEnvelope bbox,
             String decorationName,
             String time,
             int width,
             int height,
+            Integer headerHeight,
             Layer[] layers,
             String format,
             ProgressListener progressListener,
             Map<String, WebMapServer> serverCache)
             throws Exception {
+
         // build GetMap template parameters
         CaseInsensitiveMap template = new CaseInsensitiveMap(new HashMap());
         template.put("service", "WMS");
@@ -318,7 +324,14 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             }
         }
 
+        int headerHeightSize = 0;
+        if (headerHeight != null) {
+            headerHeightSize = headerHeight.intValue();
+        }
+
         // loop over layers and accumulate
+        int mapsImageHeight = height - headerHeightSize;
+        template.put("height", String.valueOf(mapsImageHeight));
         RenderedImage result = null;
         progressListener.started();
         int i = 0;
@@ -328,8 +341,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             RenderedImage image;
             if (layer.getCapabilities() == null) {
                 GetMapRequest request = produceGetMapRequest(layer, template);
-                if (singleDecorated) {
-                    request.setFormatOptions(Collections.singletonMap("layout", decorationName));
+                // keep compatibility for single decoration definition
+                if (singleDecorated && mapsImageHeight == height) {
+                	request.setFormatOptions(Collections.singletonMap("layout", decorationName));
                     if (time != null) { // allow text decoration timestamping
                         request.getEnv().put("time", time);
                     }
@@ -348,21 +362,30 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             } else {
                 result = mergeImage(result, image);
             }
-
             // past the first layer switch transparency on to allow overlaying
             template.put("transparent", "true");
-
             // track progress and bail out if necessary
-            progressListener.progress(95f * (++i) / layers.length);
+            progressListener.progress(95f * (++i) / layers.length / 2);
         }
 
-        // Decoration handling, we'll put together a empty GetMap for it
+        // if header is present
+        if (mapsImageHeight < height) {
+            // back to original request size
+            template.put("height", String.valueOf(height));
+            // add empty image
+            RenderedImage finalResultImage = getEmptyLayer(format, width, height, bbox);
+            // merge previous results into a full sized image
+            mergeMapImagesStack(finalResultImage, result, headerHeightSize);
+            result = finalResultImage;
+        }
+
+        // decoration handling, we'll put together a empty GetMap for it
         GetMapRequest request = new GetMapRequest();
         if (time != null) { // allow text decoration timestamping
             request.getEnv().put("time", time);
         }
         request.setFormat(format);
-        if (!singleDecorated && decorationName != null) {
+        if (decorationName != null) {
             request.setFormatOptions(Collections.singletonMap("layout", decorationName));
             WMSMapContent content = new WMSMapContent(request);
             try {
@@ -379,9 +402,63 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             }
         }
 
+        // finally add all legend decorators
+        for (Layer layer : layers) {
+            LOGGER.log(Level.FINE, "Rendering layer decorations %s", layer);
+            RenderedImage image;
+            if (layer.getCapabilities() == null) {
+                // if layer contains a DecorationName then generate decoration with empty map
+                GetMapRequest decoratorMapRequest = produceGetMapRequest(layer, template);
+                String layerDecorationName = layer.getDecorationName();
+                if (layerDecorationName != null && !layerDecorationName.isEmpty()) {
+                    applyDecorations(decoratorMapRequest, layerDecorationName, time);
+                    // render
+                    GetMap mapBuilder = new GetMap(wms);
+                    RenderedImageMap map = (RenderedImageMap) mapBuilder.run(decoratorMapRequest);
+                    image = map.getImage();
+                    map.getMapContext().dispose();
+                    if (result != null) {
+                        result = mergeImage(result, image);
+                    }
+                }
+            } 
+            // track progress and bail out if necessary
+            progressListener.progress(95f * (++i) / layers.length / 2);
+        }
+
         progressListener.progress(100);
 
         return result;
+    }
+
+    private RenderedImage getEmptyLayer(
+            String format, int width, int height, ReferencedEnvelope bbox) {
+        // Empty layer for header
+        GetMapRequest request = new GetMapRequest();
+        request.setFormat(format);
+        WMSMapContent content = new WMSMapContent(request);
+        try {
+            content.setMapWidth(width);
+            content.setMapHeight(height);
+            content.setTransparent(true);
+            content.getViewport().setBounds(bbox);
+            RenderedImageMapOutputFormat renderer = new RenderedImageMapOutputFormat(wms);
+            RenderedImageMap map = renderer.produceMap(content);
+            return map.getImage();
+        } finally {
+            content.dispose();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applyDecorations(GetMapRequest request, String decoration, String time) {
+        Map<String, String> aMap = new HashMap<String, String>();
+        aMap.put("layout", decoration);
+        aMap.put(RenderedImageMapOutputFormat.DECORATIONS_ONLY_FORMAT_OPTION, "true");
+        request.setFormatOptions(aMap);
+        if (time != null) { // allow text decoration timestamping
+            request.getEnv().put("time", time);
+        }
     }
 
     /** Retrieves the image from the remote web map server */
@@ -501,12 +578,23 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return requestFormat;
     }
 
+    private RenderedImage mergeMapImagesStack(
+            RenderedImage result, RenderedImage image, int headerHeight) {
+        if (!(result instanceof BufferedImage)) {
+            result = PlanarImage.wrapRenderedImage(result).getAsBufferedImage();
+        }
+        BufferedImage bi = (BufferedImage) result;
+        Graphics2D graphics = (Graphics2D) bi.getGraphics();
+        graphics.drawRenderedImage(image, AffineTransform.getTranslateInstance(0, headerHeight));
+        graphics.dispose();
+        return result;
+    }
+
     private RenderedImage mergeImage(RenderedImage result, RenderedImage image) {
         // make sure we can paint on it
         if (!(result instanceof BufferedImage)) {
             result = PlanarImage.wrapRenderedImage(result).getAsBufferedImage();
         }
-
         // could use mosaic here, but would require keeping all images in memory to build the op,
         // this way at most two at any time are around, so uses less memory overall
         BufferedImage bi = (BufferedImage) result;

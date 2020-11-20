@@ -100,6 +100,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                         description = "A WMS decoration layout name to watermark" + " the output"
                     )
                     String decorationName,
+            @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
+                    Integer headerHeight,
             @DescribeParameter(
                         name = "time",
                         min = 1,
@@ -172,6 +174,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 mapTime,
                                 width,
                                 height,
+                                headerHeight,
                                 layers,
                                 "image/png",
                                 new DefaultProgressListener(),

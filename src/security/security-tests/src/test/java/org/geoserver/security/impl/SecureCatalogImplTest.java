@@ -87,6 +87,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@SuppressWarnings("unchecked") // the hamcrest assertions in here are a unchecked warning nightmare
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
     public static final Logger LOGGER = Logging.getLogger(SecureCatalogImplTest.class);

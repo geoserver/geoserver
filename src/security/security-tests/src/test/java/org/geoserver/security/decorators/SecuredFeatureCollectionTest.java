@@ -11,8 +11,8 @@ import static org.junit.Assert.fail;
 
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -27,7 +27,7 @@ import org.opengis.filter.sort.SortBy;
 
 public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
-    private FeatureStore store;
+    private SimpleFeatureStore store;
 
     private SimpleFeature feature;
 
@@ -47,7 +47,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
         DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(feature);
 
-        store = createNiceMock(FeatureStore.class);
+        store = createNiceMock(SimpleFeatureStore.class);
         expect(store.getSchema()).andReturn(schema).anyTimes();
         expect(store.getFeatures()).andReturn(fc).anyTimes();
         expect(store.getFeatures((Filter) anyObject())).andReturn(fc).anyTimes();
@@ -63,7 +63,8 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
     @Test
     public void testHide() throws Exception {
 
-        SecuredFeatureStore ro = new SecuredFeatureStore(store, WrapperPolicy.hide(null));
+        SecuredFeatureStore<SimpleFeatureType, SimpleFeature> ro =
+                new SecuredFeatureStore<>(store, WrapperPolicy.hide(null));
 
         DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(feature);
@@ -87,7 +88,8 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
     @Test
     public void testReadOnly() throws Exception {
-        SecuredFeatureStore ro = new SecuredFeatureStore(store, WrapperPolicy.readOnlyHide(null));
+        SecuredFeatureStore<SimpleFeatureType, SimpleFeature> ro =
+                new SecuredFeatureStore<>(store, WrapperPolicy.readOnlyHide(null));
 
         // let's check the iterator, should allow read but not remove
         FeatureCollection rofc = ro.getFeatures();
@@ -108,8 +110,8 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
     @Test
     public void testChallenge() throws Exception {
 
-        SecuredFeatureStore ro =
-                new SecuredFeatureStore(store, WrapperPolicy.readOnlyChallenge(null));
+        SecuredFeatureStore<SimpleFeatureType, SimpleFeature> ro =
+                new SecuredFeatureStore<>(store, WrapperPolicy.readOnlyChallenge(null));
 
         DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(feature);

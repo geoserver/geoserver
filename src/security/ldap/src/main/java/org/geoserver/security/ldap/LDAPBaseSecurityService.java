@@ -211,7 +211,7 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     }
 
     protected String getUserNameFromMembership(final String user) {
-        final AtomicReference<String> userName = new AtomicReference<String>(user);
+        final AtomicReference<String> userName = new AtomicReference<>(user);
 
         if (lookupUserForDn) {
             authenticateIfNeeded(
@@ -240,7 +240,7 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     }
 
     protected String lookupDn(String username) {
-        final AtomicReference<String> dn = new AtomicReference<String>(username);
+        final AtomicReference<String> dn = new AtomicReference<>(username);
         if (lookupUserForDn) {
             authenticateIfNeeded(
                     new AuthenticatedLdapEntryContextCallback() {
@@ -265,7 +265,7 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
         return dn.get();
     }
 
-    protected ContextMapper counter(AtomicInteger count) {
+    protected ContextMapper<Object> counter(AtomicInteger count) {
         return ctx -> {
             count.set(count.get() + 1);
             return null;

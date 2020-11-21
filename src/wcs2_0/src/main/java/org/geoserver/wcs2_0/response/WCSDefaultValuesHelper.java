@@ -249,7 +249,9 @@ public class WCSDefaultValuesHelper {
         if (end != null) {
             endTime = (Number) f.getAttribute(end);
         }
-        return new NumberRange(startTime.getClass(), startTime, endTime);
+        @SuppressWarnings("unchecked")
+        NumberRange<?> result = new NumberRange(startTime.getClass(), startTime, endTime);
+        return result;
     }
 
     /** Set default time value from the provided feature */
@@ -504,8 +506,10 @@ public class WCSDefaultValuesHelper {
             // use "min" as the default
             Number minElevation = accessor.getMinElevation();
             if (minElevation != null) {
-                elevationSubset =
+                @SuppressWarnings("unchecked")
+                NumberRange<?> cast =
                         new NumberRange(minElevation.getClass(), minElevation, minElevation);
+                elevationSubset = cast;
             }
         }
 

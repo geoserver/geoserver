@@ -7,6 +7,7 @@ package org.geoserver.wcs2_0.util;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -297,7 +298,7 @@ public class RequestUtils {
         final Format coverageFormat = reader.getFormat();
 
         final ParameterValueGroup readParams = coverageFormat.getReadParameters();
-        final Map parameters = CoverageUtils.getParametersKVP(readParams);
+        final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
         final int minX = originalRange.getLow(0);
         final int minY = originalRange.getLow(1);
         final int width = originalRange.getSpan(0);

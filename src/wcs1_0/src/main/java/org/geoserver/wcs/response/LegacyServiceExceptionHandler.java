@@ -73,7 +73,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
     /** The central configuration, used to decide whether to dump a verbose stack trace, or not */
     protected GeoServer geoServer;
 
-    public LegacyServiceExceptionHandler(List services, GeoServer geoServer) {
+    public LegacyServiceExceptionHandler(List<Service> services, GeoServer geoServer) {
         super(services);
         this.geoServer = geoServer;
     }

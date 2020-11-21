@@ -33,7 +33,7 @@ public class Wcs10GetCoverageResponse extends Response {
     // private final static Hints IGNORE_OVERVIEWS = new Hints(
     // Hints.IGNORE_COVERAGE_OVERVIEW, Boolean.TRUE);
 
-    private static final Hints hints = new Hints(new HashMap(5));
+    private static final Hints hints = new Hints(new HashMap<>(5));
 
     static {
         // ///////////////////////////////////////////////////////////////////

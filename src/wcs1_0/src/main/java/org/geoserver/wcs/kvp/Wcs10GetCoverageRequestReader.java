@@ -130,6 +130,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     /** @param kvp */
+    @SuppressWarnings("unchecked") // due to EMF model not having generics
     private DomainSubsetType parseDomainSubset(Map kvp) {
         final DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
         final SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
@@ -197,7 +198,9 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         } else if (time != null) {
             timeSequence = Wcs10Factory.eINSTANCE.createTimeSequenceType();
             if (time instanceof Collection) {
-                for (Object tPos : (Collection<Object>) time) {
+                @SuppressWarnings("unchecked")
+                Collection<Object> timeCollection = (Collection<Object>) time;
+                for (Object tPos : timeCollection) {
                     addToTimeSequence(timeSequence, tPos);
                 }
             }
@@ -357,6 +360,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     /** */
+    @SuppressWarnings("unchecked") // due to EMF model not having generics
     private void addToTimeSequence(TimeSequenceType timeSequence, Object tPos) {
         if (tPos instanceof Date) {
             final TimePositionType timePosition = Gml4wcsFactory.eINSTANCE.createTimePositionType();
@@ -375,6 +379,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
+    @SuppressWarnings("unchecked") // due to EMF model not having generics
     private RangeSubsetType parseRangeSubset(Map kvp, String coverageName) {
         final RangeSubsetType rangeSubset = Wcs10Factory.eINSTANCE.createRangeSubsetType();
 
@@ -514,7 +519,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private OutputType parseOutputElement(final Map<String, String> kvp) throws Exception {
+    private OutputType parseOutputElement(final Map kvp) throws Exception {
         final OutputType output = Wcs10Factory.eINSTANCE.createOutputType();
         final CodeType crsType = Gml4wcsFactory.eINSTANCE.createCodeType();
         final CodeType formatType = Gml4wcsFactory.eINSTANCE.createCodeType();

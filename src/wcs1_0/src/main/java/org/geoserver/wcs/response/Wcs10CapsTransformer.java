@@ -562,7 +562,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
         /** @param originalArray */
         private String[] orderDoubleArray(String[] originalArray) {
-            List finalArray = Arrays.asList(originalArray);
+            List<String> finalArray = Arrays.asList(originalArray);
 
             Collections.sort(
                     finalArray,
@@ -580,7 +580,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
         /** @param originalArray */
         private String[] orderTimeArray(String[] originalArray) {
-            List finalArray = Arrays.asList(originalArray);
+            List<String> finalArray = Arrays.asList(originalArray);
 
             Collections.sort(
                     finalArray,

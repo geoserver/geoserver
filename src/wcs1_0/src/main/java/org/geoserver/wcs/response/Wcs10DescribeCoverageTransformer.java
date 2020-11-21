@@ -576,6 +576,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                         if (raw instanceof Double) {
                             elevations.add((Double) raw);
                         } else {
+                            @SuppressWarnings("unchecked")
                             NumberRange<Double> range = (NumberRange<Double>) raw;
                             double midValue = (range.getMinimum() + range.getMaximum()) / 2;
                             elevations.add(midValue);
@@ -599,12 +600,11 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /** @param ci */
         private void handleSupportedCRSs(CoverageInfo ci) throws Exception {
-            Set supportedCRSs = new LinkedHashSet();
+            Set<String> supportedCRSs = new LinkedHashSet<>();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
             if (ci.getResponseSRS() != null) supportedCRSs.addAll(ci.getResponseSRS());
             start("wcs:supportedCRSs");
-            for (Iterator it = supportedCRSs.iterator(); it.hasNext(); ) {
-                String crsName = (String) it.next();
+            for (String crsName : supportedCRSs) {
                 CoordinateReferenceSystem crs = CRS.decode(crsName, true);
                 // element("requestResponseCRSs", urnIdentifier(crs));
                 element("wcs:requestResponseCRSs", CRS.lookupIdentifier(crs, false));

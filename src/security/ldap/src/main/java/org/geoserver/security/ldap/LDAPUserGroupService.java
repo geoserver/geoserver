@@ -166,7 +166,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
         return gsUser;
     }
 
-    protected ContextMapper addToUsers(SortedSet<GeoServerUser> users) {
+    protected ContextMapper<Object> addToUsers(SortedSet<GeoServerUser> users) {
         return ctx -> {
             users.add(createUser((DirContextAdapter) ctx));
             return null;

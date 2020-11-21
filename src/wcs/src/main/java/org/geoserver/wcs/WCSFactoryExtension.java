@@ -14,6 +14,7 @@ public class WCSFactoryExtension extends ServiceFactoryExtension<WCSInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T create(Class<T> clazz) {
         return (T) new WCSInfoImpl();
     }

@@ -221,8 +221,8 @@ public class WCSUtils {
         //
         // ///////////////////////////////////////////////////////////////////
         final int numDimensions = coverage.getNumSampleDimensions();
-        final Map dims = new HashMap();
-        final ArrayList selectedBands = new ArrayList();
+        final Map<String, Integer> dims = new HashMap<>();
+        final List<Integer> selectedBands = new ArrayList<>();
 
         for (int d = 0; d < numDimensions; d++) {
             dims.put("band" + (d + 1), Integer.valueOf(d));

@@ -57,9 +57,9 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
         if (mimeTypes.isEmpty()) {
             throw new IllegalArgumentException("Empty list of mimeTypes provided");
         }
-        this.mimeTypes = new CaseInsensitiveMap(new HashMap<String, String>(mimeTypes));
-        this.outputFormats = new ArrayList<String>(outputFormats);
-        this.fileExtensions = new CaseInsensitiveMap(fileExtensions);
+        this.mimeTypes = new CaseInsensitiveMap<>(new HashMap<>(mimeTypes));
+        this.outputFormats = new ArrayList<>(outputFormats);
+        this.fileExtensions = new CaseInsensitiveMap<>(fileExtensions);
         this.geoserver = geoserver;
     }
 

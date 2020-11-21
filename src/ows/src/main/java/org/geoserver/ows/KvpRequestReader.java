@@ -7,7 +7,6 @@ package org.geoserver.ows;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -142,9 +141,9 @@ public class KvpRequestReader {
      * @param rawKvp The raw kvp set (unparsed), map of String,String
      * @return A new request object, or the original
      */
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
+        for (Map.Entry<String, Object> entry : kvp.entrySet()) {
             String property = (String) entry.getKey();
             Object value = entry.getValue();
 

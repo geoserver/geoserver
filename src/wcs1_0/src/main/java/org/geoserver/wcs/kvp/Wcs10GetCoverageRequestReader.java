@@ -75,7 +75,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // grab coverage info to perform further checks

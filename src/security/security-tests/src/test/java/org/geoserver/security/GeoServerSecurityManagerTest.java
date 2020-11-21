@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.resource.Files;
@@ -37,7 +36,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         TestingAuthenticationToken auth =
                 new TestingAuthenticationToken(
-                        "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                        "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
         auth.setAuthenticated(true);
         assertTrue(secMgr.checkAuthenticationForAdminRole(auth));
     }
@@ -117,7 +116,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -139,7 +138,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -162,7 +161,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 

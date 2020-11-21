@@ -8,7 +8,6 @@ package org.geoserver.wcs.kvp;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -35,7 +34,7 @@ public class SourceCoverageKvpParser extends KvpParser {
 
     @Override
     public Object parse(String value) throws Exception {
-        Collection coverages = new ArrayList();
+        List<String> coverages = new ArrayList<>();
         final List<String> identifiers = KvpUtils.readFlat(value);
         if (identifiers == null || identifiers.size() == 0) {
             throw new WcsException(
@@ -61,6 +60,6 @@ public class SourceCoverageKvpParser extends KvpParser {
                     "sourcecoverage");
         }
 
-        return ((ArrayList) coverages).get(0);
+        return coverages.get(0);
     }
 }

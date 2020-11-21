@@ -29,7 +29,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     @Test
     public void testMissingParams() throws Exception {
-        Map<String, Object> raw = baseMap();
+        Map<String, String> raw = baseMap();
 
         try {
             reader.read(reader.createRequest(), parseKvp(raw), raw);
@@ -68,8 +68,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
-    private Map<String, Object> baseMap() {
-        Map<String, Object> raw = new HashMap<String, Object>();
+    private Map<String, String> baseMap() {
+        Map<String, String> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.0.0");
         raw.put("request", "GetCoverage");
@@ -78,7 +78,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     @Test
     public void testUnknownCoverageParams() throws Exception {
-        Map<String, Object> raw = baseMap();
+        Map<String, String> raw = baseMap();
         final String layerId = "fairyTales:rumpelstilskin";
         raw.put("sourcecoverage", layerId);
         raw.put("format", "SuperCoolFormat");
@@ -95,7 +95,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     @Test
     public void testBasic() throws Exception {
-        Map<String, Object> raw = baseMap();
+        Map<String, String> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
         raw.put("SourceCoverage", layerId);
         raw.put("version", "1.0.0");
@@ -114,7 +114,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     @Test
     public void testInterpolation() throws Exception {
-        Map<String, Object> raw = baseMap();
+        Map<String, String> raw = baseMap();
         String layerId = getLayerId(TASMANIA_BM);
         raw.put("SourceCoverage", layerId);
         raw.put("version", "1.0.0");
@@ -182,7 +182,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     @Test
     public void testUnsupportedCRS() throws Exception {
-        Map<String, Object> raw = baseMap();
+        Map<String, String> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
         raw.put("SourceCoverage", layerId);
         raw.put("version", "1.0.0");

@@ -73,6 +73,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             throw new UnsupportedOperationException("This method should never be reached");
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTRangeSubset node, Object data) {
             RangeSubsetType rs = wcsf.createRangeSubsetType();
             for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -83,6 +84,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             return rs;
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTFieldSubset node, Object data) {
             FieldSubsetType fs = wcsf.createFieldSubsetType();
 
@@ -101,6 +103,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             return fs;
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTAxisSubset node, Object data) {
             AxisSubsetType as = wcsf.createAxisSubsetType();
             as.setIdentifier(((SimpleNode) node.jjtGetChild(0)).getContent());

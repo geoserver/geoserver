@@ -345,6 +345,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
          * Given a set of sample dimensions, this will return a valid range only if all sample
          * dimensions have one, otherwise null
          */
+        @SuppressWarnings("unchecked") // dimension range does not have a specific Number type
         protected NumberRange getCoverageRange(List<CoverageDimensionInfo> dimensions) {
             NumberRange range = null;
             for (CoverageDimensionInfo dimension : dimensions) {
@@ -405,6 +406,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             }
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         protected void handleSupportedCRSs(CoverageInfo ci) throws Exception {
             Set supportedCRSs = new LinkedHashSet();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());

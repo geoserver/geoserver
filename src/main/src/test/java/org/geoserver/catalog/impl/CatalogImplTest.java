@@ -3002,7 +3002,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         keywords.add(new Keyword("keyword2"));
         filter =
                 factory.equal(
-                        factory.literal(strValues),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ANY);
@@ -3015,7 +3015,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         keywords.add(new Keyword("keyword1"));
         filter =
                 factory.equal(
-                        factory.literal(strValues),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ALL);
@@ -3028,7 +3028,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         keywords.add(new Keyword("blah"));
         filter =
                 factory.equal(
-                        factory.literal(strValues),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ONE);

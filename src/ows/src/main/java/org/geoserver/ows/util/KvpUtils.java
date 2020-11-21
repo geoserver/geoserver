@@ -370,7 +370,7 @@ public class KvpUtils {
         purgeParsers(parsers, service, version, request);
 
         // parser the kvp's
-        ArrayList<Throwable> errors = new ArrayList<Throwable>();
+        ArrayList<Throwable> errors = new ArrayList<>();
         for (Map.Entry<String, Object> entry : kvp.entrySet()) {
             String key = entry.getKey();
 

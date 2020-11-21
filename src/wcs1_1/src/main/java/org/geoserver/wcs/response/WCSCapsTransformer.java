@@ -166,7 +166,9 @@ public class WCSCapsTransformer extends TransformerBase {
                 allSections = true;
                 sections = Collections.emptyList();
             } else {
-                sections = request.getSections().getSection();
+                @SuppressWarnings("unchecked")
+                List<String> cast = request.getSections().getSection();
+                sections = cast;
                 allSections = sections.contains("All");
             }
             final Set<String> knownSections =

@@ -2306,7 +2306,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @param raw Map of String,String.
      */
-    protected Map parseKvp(Map<String, String> raw) throws Exception {
+    protected Map<String, Object> parseKvp(Map<String, Object> raw) throws Exception {
 
         // parse like the dispatcher but make sure we don't change the original map
         HashMap<String, Object> input = new HashMap<>(raw);

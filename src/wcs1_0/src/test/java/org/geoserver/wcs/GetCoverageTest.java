@@ -124,8 +124,8 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
 
-    private Map<String, String> baseMap() {
-        Map<String, String> raw = new HashMap<>();
+    private Map<String, Object> baseMap() {
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.0.0");
         raw.put("request", "GetCoverage");
@@ -161,7 +161,7 @@ public class GetCoverageTest extends WCSTestSupport {
         envelopeBuilder.append(newEnvelope.getMaximum(0)).append(",");
         envelopeBuilder.append(newEnvelope.getMaximum(1));
 
-        Map<String, String> raw = baseMap();
+        Map<String, Object> raw = baseMap();
         final String layerID = getLayerId(TASMANIA_BM);
         raw.put("sourcecoverage", layerID);
         raw.put("version", "1.0.0");
@@ -190,7 +190,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDeferredLoading() throws Exception {
-        Map<String, String> raw = baseMap();
+        Map<String, Object> raw = baseMap();
         final String getLayerId = getLayerId(SPATIO_TEMPORAL);
         raw.put("sourcecoverage", getLayerId);
         raw.put("format", "image/tiff");
@@ -353,7 +353,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     /** Runs GetCoverage on the specified parameters and returns an array of coverages */
-    GridCoverage[] executeGetCoverageKvp(Map<String, String> raw) throws Exception {
+    GridCoverage[] executeGetCoverageKvp(Map<String, Object> raw) throws Exception {
         final GetCoverageType getCoverage =
                 (GetCoverageType) kvpreader.read(kvpreader.createRequest(), parseKvp(raw), raw);
         return service.getCoverage(getCoverage);

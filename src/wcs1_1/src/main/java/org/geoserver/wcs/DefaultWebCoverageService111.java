@@ -101,6 +101,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         return geoServer.getService(WCSInfo.class);
     }
 
+    @SuppressWarnings("unchecked") // EMF objects without generics
     public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
         List<String> provided = new ArrayList<String>();
@@ -704,7 +705,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         // check the coordinates, but make sure the case 175,-175 is handled
         // as valid for the longitude axis in a geographic coordinate system
         // see section 7.6.2 of the WCS 1.1.1 spec)
+        @SuppressWarnings("unchecked")
         List<Double> lower = bbox.getLowerCorner();
+        @SuppressWarnings("unchecked")
         List<Double> upper = bbox.getUpperCorner();
         for (int i = 0; i < lower.size(); i++) {
             if (lower.get(i) > upper.get(i)) {
@@ -923,6 +926,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
      * Checks that the elements of the RangeSubset part of the request do make sense by comparing
      * them to the coverage metadata
      */
+    @SuppressWarnings("unchecked") // EMF model without generics
     private void checkRangeSubset(CoverageInfo info, RangeSubsetType rangeSubset) {
         // quick escape if no range subset has been specified (it's legal)
         if (rangeSubset == null) return;

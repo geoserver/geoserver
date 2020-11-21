@@ -55,7 +55,7 @@ public class WCSDimensionsValueParser {
             if (l > h) {
                 throwInvalidRangeException(low, high);
             }
-            selectedValues.add(new NumberRange(Integer.class, l, h));
+            selectedValues.add(new NumberRange<>(Integer.class, l, h));
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ public class WCSDimensionsValueParser {
             if (l > h) {
                 throwInvalidRangeException(low, high);
             }
-            selectedValues.add(new NumberRange(Double.class, l, h));
+            selectedValues.add(new NumberRange<>(Double.class, l, h));
             return true;
         }
         return false;

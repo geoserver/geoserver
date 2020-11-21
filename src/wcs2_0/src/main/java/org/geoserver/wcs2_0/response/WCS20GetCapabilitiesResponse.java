@@ -44,6 +44,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
             // look for an accepted format
+            @SuppressWarnings("unchecked") // EMF model with no generics
             List<String> formats = request.getAcceptFormats().getOutputFormat();
             for (String format : formats) {
                 if (format.endsWith("/xml")) {

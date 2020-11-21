@@ -510,9 +510,10 @@ public class GetCoverage {
         // properties);
         if (reader instanceof StructuredGridCoverage2DReader && coverageDimensions != null) {
             // Setting dimensions as properties
-            Map map = coverage.getProperties();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = coverage.getProperties();
             if (map == null) {
-                map = new HashMap();
+                map = new HashMap<>();
             }
             for (DimensionBean coverageDimension : coverageDimensions) {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
@@ -613,8 +614,8 @@ public class GetCoverage {
             NumberRange<?> requestedElevationRange,
             DimensionInfo elevationDimension)
             throws IOException {
-        NumberRange actualElevationSubset =
-                new NumberRange(
+        NumberRange<Double> actualElevationSubset =
+                new NumberRange<>(
                         Double.class, accessor.getMinElevation(), accessor.getMaxElevation());
         if (!requestedElevationRange.intersects(actualElevationSubset)) {
             throw new WCS20Exception(

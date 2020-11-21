@@ -139,7 +139,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     private void assertScalingByHalf(Map<String, Object> raw) throws Exception {
-        Map kvp = parseKvp(raw);
+        Map<String, Object> kvp = parseKvp(raw);
         WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType getCoverageRequest =
                 (GetCoverageType) reader.read(reader.createRequest(), kvp, raw);

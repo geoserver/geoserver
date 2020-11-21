@@ -544,13 +544,18 @@ public class WCSDimensionsSubsetHelper {
                     NumberRange range = (NumberRange) curr;
                     if (range.contains(sliceNumber)) {
                         return true;
-                    } else if (range.getMaxValue().compareTo(sliceNumber) < 0) {
+                    } else if (compareNumbers(range.getMaxValue(), sliceNumber) < 0) {
                         return false;
                     }
                 }
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked") // we don't know what's in the Range max value
+    private int compareNumbers(Comparable maxValue, Number number) {
+        return maxValue.compareTo(number);
     }
 
     /** Parses a number range out of the dimension subsetting directives */
@@ -974,6 +979,7 @@ public class WCSDimensionsSubsetHelper {
                     (endElevationAttribute != null)
                             ? (Number) feature.getAttribute(endElevationAttribute)
                             : startValue;
+            @SuppressWarnings("unchecked")
             NumberRange range = new NumberRange(startValue.getClass(), startValue, endValue);
             subRequest.setElevationSubset(range);
         }
@@ -981,6 +987,7 @@ public class WCSDimensionsSubsetHelper {
         // ---------------------------------
         // Updating custom dimensions subset
         // ---------------------------------
+        @SuppressWarnings("unchecked")
         List<String> customDomains =
                 (List<String>)
                         (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
@@ -1007,7 +1014,9 @@ public class WCSDimensionsSubsetHelper {
                     } else if (classDataType.endsWith("Date")) {
                         value = new DateRange((Date) value, (Date) endValue);
                     } else {
-                        value = new NumberRange(objectClass, (Number) value, (Number) endValue);
+                        value =
+                                newGenericNumberRange(
+                                        objectClass, (Number) value, (Number) endValue);
                     }
                 }
                 List<Object> dimensionValues = new ArrayList<Object>();
@@ -1016,6 +1025,11 @@ public class WCSDimensionsSubsetHelper {
             }
         }
         subRequest.setDimensionsSubset(dimensionsSubset);
+    }
+
+    @SuppressWarnings("unchecked") // used when the range class is not known at compile time
+    private NumberRange newGenericNumberRange(Class numberClass, Number start, Number end) {
+        return new NumberRange(numberClass, start, end);
     }
 
     /**
@@ -1261,6 +1275,7 @@ public class WCSDimensionsSubsetHelper {
         if (accessor == null) {
             return dimensions;
         }
+        @SuppressWarnings("unchecked")
         List<String> customDimensions =
                 (List<String>)
                         (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
@@ -1348,7 +1363,9 @@ public class WCSDimensionsSubsetHelper {
      *     current coverage
      */
     public void setCoverageDimensionProperty(
-            Map properties, GridCoverageRequest coverageRequest, DimensionBean coverageDimension) {
+            Map<String, Object> properties,
+            GridCoverageRequest coverageRequest,
+            DimensionBean coverageDimension) {
         Utilities.ensureNonNull("properties", properties);
         Utilities.ensureNonNull("coverageDimension", coverageDimension);
         final DimensionType dimensionType = coverageDimension.getDimensionType();

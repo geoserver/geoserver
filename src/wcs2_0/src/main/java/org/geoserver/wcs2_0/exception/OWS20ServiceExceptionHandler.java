@@ -63,7 +63,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
      *
      * @param services List of services this handler handles exceptions for.
      */
-    public OWS20ServiceExceptionHandler(List services) {
+    public OWS20ServiceExceptionHandler(List<Service> services) {
         super(services);
     }
 

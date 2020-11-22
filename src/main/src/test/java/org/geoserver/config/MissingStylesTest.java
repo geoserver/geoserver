@@ -1,11 +1,20 @@
 package org.geoserver.config;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Set;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -16,11 +25,13 @@ public class MissingStylesTest extends GeoServerSystemTestSupport {
     Catalog catalog;
     XStreamPersister xp;
     protected GeoServer geoServer;
+    private File dir;
 
     @Before
     public void setUp() throws Exception {
         geoServer = getGeoServer();
         catalog = getCatalog();
+        dir = testData.getDataDirectoryRoot();
     }
 
     @Test
@@ -30,19 +41,45 @@ public class MissingStylesTest extends GeoServerSystemTestSupport {
      * @throws Exception
      */
     public void testMissingStyleFile() throws Exception {
-
-        File dir = testData.getDataDirectoryRoot();
-        File f = new File(dir, "styles/foostyle.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml");
         assertFalse(f.exists());
+
         StyleInfo s = catalog.getFactory().createStyle();
         s.setName("foostyle");
         s.setFilename("foostyle.sld");
         catalog.add(s);
         assertTrue(f.exists());
-        assertTrue(catalog.getStyles().contains(s));
+
+        LayerInfo layer = catalog.getLayerByName("Bridges");
+        layer.getStyles().add(catalog.getStyleByName("foostyle"));
+        assertFalse(layer.getStyles().isEmpty());
+        catalog.save(layer);
         f.delete();
+        assertFalse(f.exists());
+        geoServer.reset();
+        geoServer.reload();
+        layer = catalog.getLayerByName("Bridges");
+        assertTrue(layer.getStyles().isEmpty());
+    }
+
+    @Test
+    public void testMissingDefaultStyle() throws Exception {
+        LayerInfo layer = catalog.getLayerByName("Bridges");
+        System.out.println(layer.getTitle());
+        StyleInfo style = layer.getDefaultStyle();
+        System.out.println(style.getName());
+
+        File f = new File(dir, "styles/" + style.getFilename().replace("sld", "xml"));
+        assertTrue(f.exists());
+        f.delete();
+        geoServer.reset();
         geoServer.reload();
         assertFalse(f.exists());
-        assertFalse(catalog.getStyles().contains(s));
+        layer = catalog.getLayerByName("Bridges");
+        style = layer.getDefaultStyle();
+        System.out.println(style.getName());
+        assertNotNull(style);
+        
+
     }
 }

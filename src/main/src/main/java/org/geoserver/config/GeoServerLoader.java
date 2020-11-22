@@ -213,18 +213,25 @@ public abstract class GeoServerLoader {
 
                 LOGGER.info("Loaded layer '" + l.getName() + "'");
                 boolean badStyles = false;
+                if (null == l.getDefaultStyle().getStyle()) {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Layer '" + l.getName() + "' references a missing style");
+                    badStyles = true;
+                    l.setDefaultStyle(catalog.getStyleByName("generic"));
+                }
                 for (StyleInfo style : l.getStyles()) {
                     if (null == style) {
                         LOGGER.log(
                                 Level.SEVERE,
                                 "Layer '" + l.getName() + "' references a missing style");
+                        badStyles = true;
                     }
-                    badStyles = true;
                 }
                 if (badStyles) {
                     l.getStyles().removeAll(Collections.singleton(null));
                 }
-                if (null == l.getDefaultStyle()) {
+                if (null == l.getDefaultStyle().getStyle()) {
                     l.setDefaultStyle(catalog.getStyleByName("generic"));
                 }
             } catch (Exception e) {

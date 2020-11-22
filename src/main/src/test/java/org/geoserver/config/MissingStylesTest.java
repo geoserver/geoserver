@@ -5,16 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Set;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -79,7 +72,5 @@ public class MissingStylesTest extends GeoServerSystemTestSupport {
         style = layer.getDefaultStyle();
         System.out.println(style.getName());
         assertNotNull(style);
-        
-
     }
 }

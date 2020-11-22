@@ -215,8 +215,7 @@ public abstract class GeoServerLoader {
                 boolean badStyles = false;
                 if (null == l.getDefaultStyle().getStyle()) {
                     LOGGER.log(
-                            Level.SEVERE,
-                            "Layer '" + l.getName() + "' references a missing style");
+                            Level.SEVERE, "Layer '" + l.getName() + "' references a missing style");
                     badStyles = true;
                     l.setDefaultStyle(catalog.getStyleByName("generic"));
                 }

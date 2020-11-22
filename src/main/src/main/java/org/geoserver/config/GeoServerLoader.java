@@ -224,7 +224,7 @@ public abstract class GeoServerLoader {
                 if (badStyles) {
                     l.getStyles().removeAll(Collections.singleton(null));
                 }
-                if (null==l.getDefaultStyle()) {
+                if (null == l.getDefaultStyle()) {
                     l.setDefaultStyle(catalog.getStyleByName("generic"));
                 }
             } catch (Exception e) {

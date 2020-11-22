@@ -10,8 +10,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
 import org.geoserver.catalog.Catalog;
@@ -81,7 +81,7 @@ public class DefaultGeoServerLoaderTest {
         loader = new DefaultGeoServerLoader(resourceLoader);
         catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
-        
+
         XStreamPersisterFactory xpf = new XStreamPersisterFactory();
         xp = xpf.createXMLPersister();
 
@@ -94,29 +94,7 @@ public class DefaultGeoServerLoaderTest {
     public void tearDown() {
         GeoServerExtensionsHelper.clear(); // clear singleton
     }
-    @Test 
-    public void testMissingStyleFile() throws IOException {
-        File dataDir = URLs.urlToFile(DefaultGeoServerLoaderTest.class.getResource("/data_dir/nested_layer_groups"));
-        File styleDir = new File(dataDir, "styles");
-        styleDir.mkdir();
-        
-        for(File style:styleDir.listFiles(new FileFilter() {
-            
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().endsWith(".sld");
-            }
-        })){
-            System.out.println(style);
-        }
-        XStreamPersisterFactory xpf = new XStreamPersisterFactory();
-        XStreamPersister xp = xpf.createXMLPersister();
-        xp.setCatalog(catalog);
-        loader.initializeStyles(catalog, xp);
-        for (StyleInfo si:catalog.getStyles()) {
-            System.out.println(si.getName());
-        }
-    }
+
     @Test
     public void testGeneratedStyles() throws Exception {
         XStreamPersisterFactory xpf = new XStreamPersisterFactory();

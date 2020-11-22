@@ -147,12 +147,13 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType queryType = wfsfactory.createQueryType();
 
         // <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ogc:PropertyName">
         // JD:difference in spec here, moved from ogc:PropertyName to string
-        List propertyNames = node.getChildValues(PropertyName.class);
+        List<PropertyName> propertyNames = node.getChildValues(PropertyName.class);
 
         for (Iterator p = propertyNames.iterator(); p.hasNext(); ) {
             PropertyName propertyName = (PropertyName) p.next();
@@ -172,8 +173,9 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         queryType.setHandle((String) node.getAttributeValue("handle"));
 
         // <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
-        List typeNameList = new ArrayList();
-        typeNameList.add(node.getAttributeValue("typeName"));
+        @SuppressWarnings("unchecked")
+        List<QName> typeNameList = new ArrayList();
+        typeNameList.add((QName) node.getAttributeValue("typeName"));
         queryType.setTypeName(typeNameList);
 
         // <xsd:attribute name="featureVersion" type="xsd:string" use="optional">

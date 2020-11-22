@@ -99,7 +99,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
 
     public GML3OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
         this(
-                new HashSet(Arrays.asList(new Object[] {"gml3", "text/xml; subtype=gml/3.1.1"})),
+                new HashSet<>(Arrays.asList("gml3", "text/xml; subtype=gml/3.1.1")),
                 geoServer,
                 configuration);
     }
@@ -181,10 +181,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                                     + " in the GeoServer catalog");
 
                 // add it to the map
-                Set metas = ns2metas.get(namespaceURI);
+                Set<ResourceInfo> metas = ns2metas.get(namespaceURI);
 
                 if (metas == null) {
-                    metas = new HashSet();
+                    metas = new HashSet<>();
                     ns2metas.put(namespaceURI, metas);
                 }
 
@@ -277,6 +277,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                     FeatureType featureType = meta.getFeatureType();
                     Object userSchemaLocation = featureType.getUserData().get("schemaURI");
                     if (userSchemaLocation != null && userSchemaLocation instanceof Map) {
+                        @SuppressWarnings("unchecked")
                         Map<String, String> schemaURIs = (Map<String, String>) userSchemaLocation;
                         for (String namespace : schemaURIs.keySet()) {
                             encoder.setSchemaLocation(namespace, schemaURIs.get(namespace));

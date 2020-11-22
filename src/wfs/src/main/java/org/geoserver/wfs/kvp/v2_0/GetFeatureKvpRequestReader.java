@@ -19,7 +19,8 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         // special cite compliance check to ensure the client specified typeNames rather than just
         // typeName (but typename is a parameter in a StoredQuery in CITE tests!!)
         if (!kvp.containsKey("typenames")

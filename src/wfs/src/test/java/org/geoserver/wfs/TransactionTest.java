@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -534,7 +535,7 @@ public class TransactionTest extends WFSTestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         cat.add(ds);

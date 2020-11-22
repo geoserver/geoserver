@@ -80,6 +80,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         UpdateElementType updateElement = wfsfactory.createUpdateElementType();
 

@@ -511,7 +511,7 @@ public class LockFeature {
     }
 
     private Id fidFilter(FeatureId fid) {
-        HashSet ids = new HashSet();
+        Set<FeatureId> ids = new HashSet<>();
         ids.add(fid);
 
         return filterFactory.id(ids);

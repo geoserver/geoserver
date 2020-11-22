@@ -201,6 +201,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType query = wfsfactory.createQueryType();
 

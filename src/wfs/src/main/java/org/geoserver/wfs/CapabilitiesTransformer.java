@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -173,12 +172,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
     protected Set<FunctionName> getAvailableFunctionNames() {
         // Sort them up for easier visual inspection
-        SortedSet sortedFunctions =
-                new TreeSet(
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                String n1 = ((FunctionName) o1).getName();
-                                String n2 = ((FunctionName) o2).getName();
+        SortedSet<FunctionName> sortedFunctions =
+                new TreeSet<>(
+                        new Comparator<FunctionName>() {
+                            public int compare(FunctionName fn1, FunctionName fn2) {
+                                String n1 = fn1.getName();
+                                String n2 = fn2.getName();
 
                                 return n1.toLowerCase().compareTo(n2.toLowerCase());
                             }
@@ -566,13 +565,13 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     Collection featureProducers =
                             GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
-                    Map dupes = new HashMap();
+                    Set<String> dupes = new HashSet<>();
                     for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
                         WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
                         for (String name : format.getCapabilitiesElementNames()) {
-                            if (!dupes.containsKey(name)) {
+                            if (!dupes.contains(name)) {
                                 element(name, null);
-                                dupes.put(name, new Object());
+                                dupes.add(name);
                             }
                         }
                     }
@@ -740,7 +739,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 end("Operations");
 
-                List featureTypes = new ArrayList(catalog.getFeatureTypes());
+                List<FeatureTypeInfo> featureTypes = new ArrayList<>(catalog.getFeatureTypes());
 
                 // filter out disabled feature types
                 for (Iterator it = featureTypes.iterator(); it.hasNext(); ) {
@@ -1532,11 +1531,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             protected void featureTypes(boolean crs, String namespace) {
-                List featureTypes = new ArrayList(catalog.getFeatureTypes());
+                List<FeatureTypeInfo> featureTypes = new ArrayList<>(catalog.getFeatureTypes());
 
                 // filter out disabled feature types
-                for (Iterator it = featureTypes.iterator(); it.hasNext(); ) {
-                    FeatureTypeInfo ft = (FeatureTypeInfo) it.next();
+                for (Iterator<FeatureTypeInfo> it = featureTypes.iterator(); it.hasNext(); ) {
+                    FeatureTypeInfo ft = it.next();
                     if (!ft.enabled()) it.remove();
                 }
 
@@ -1944,9 +1943,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:Keywords");
             }
 
-            protected void keywords(List keywords) {
+            protected void keywords(List<KeywordInfo> keywords) {
                 if (keywords != null) {
-                    keywords((KeywordInfo[]) keywords.toArray(new KeywordInfo[keywords.size()]));
+                    keywords(keywords.toArray(new KeywordInfo[keywords.size()]));
                 }
             }
 
@@ -2848,7 +2847,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             // default
-            Class clazz = arg.getType();
+            Class<?> clazz = arg.getType();
             if (clazz == null || clazz == Object.class) {
                 return new NameImpl(XS.STRING);
             }

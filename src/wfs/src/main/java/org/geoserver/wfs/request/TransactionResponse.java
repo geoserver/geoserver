@@ -89,6 +89,7 @@ public abstract class TransactionResponse extends RequestObject {
             eSet(adaptee, "transactionResults.handle", handle);
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         public void addInsertedFeature(String handle, FeatureId featureId) {
             InsertedFeatureType insertedFeature =
                     ((WfsFactory) getFactory()).createInsertedFeatureType();
@@ -112,6 +113,7 @@ public abstract class TransactionResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public void addAction(String code, String locator, String message) {
             // transaction failed, rollback
             ActionType action = ((WfsFactory) getFactory()).createActionType();

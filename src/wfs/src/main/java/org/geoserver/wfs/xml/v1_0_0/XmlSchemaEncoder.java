@@ -161,7 +161,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             tempResponse.append(XS_NAMESPACE);
             tempResponse.append(ELEMENT_FORM_DEFAULT + ATTR_FORM_DEFAULT);
 
-            Set prefixes = new HashSet();
+            Set<String> prefixes = new HashSet<>();
 
             // iterate through the types, and make a set of their prefixes.
             for (int i = 0; i < infos.length; i++) {
@@ -261,7 +261,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         String tempResponse = "";
 
         String generatedType = "";
-        Set validTypes = new HashSet();
+        Set<FeatureTypeInfo> validTypes = new HashSet<>();
 
         // Loop through requested tables to add element types
         for (int i = 0; i < infos.length; i++) {

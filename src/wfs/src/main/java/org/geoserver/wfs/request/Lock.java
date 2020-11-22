@@ -66,7 +66,8 @@ public abstract class Lock extends RequestObject {
 
         @Override
         public void setTypeName(QName typeName) {
-            List typeNames = eGet(adaptee, "typeNames", List.class);
+            @SuppressWarnings("unchecked")
+            List<QName> typeNames = eGet(adaptee, "typeNames", List.class);
             if (typeNames != null) {
                 typeNames.clear();
                 typeNames.add(typeName);

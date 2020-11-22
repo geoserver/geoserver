@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Map;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -49,7 +50,7 @@ public class SQLViewTest extends WFSTestSupport {
         ds.setWorkspace(ws);
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         File dbFile =
                 new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");

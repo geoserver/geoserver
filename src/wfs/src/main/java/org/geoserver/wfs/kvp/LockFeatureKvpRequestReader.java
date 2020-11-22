@@ -29,20 +29,20 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
-    protected void querySet(EObject request, String property, List values) throws WFSException {
+    protected <T> void querySet(EObject request, String property, List<T> values)
+            throws WFSException {
         // no values specified, do nothing
         if (values == null) {
             return;
         }
 
         if ("typeName".equalsIgnoreCase(property)) {
-            // in lock typename is not a list, it's a single qname
-            values =
-                    (List) values.stream().map(o -> ((List) o).get(0)).collect(Collectors.toList());
+            values = typenameWorkaround(values);
         }
 
         LockFeatureType lockFeature = (LockFeatureType) request;
-        EList lock = lockFeature.getLock();
+        @SuppressWarnings("unchecked")
+        EList<LockType> lock = lockFeature.getLock();
 
         int m = values.size();
         int n = lock.size();
@@ -67,7 +67,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
                 EObject q = (EObject) lock.get(0);
 
                 for (int i = 1; i < m; i++) {
-                    lock.add(EMFUtils.clone(q, WfsFactory.eINSTANCE, false));
+                    lock.add((LockType) EMFUtils.clone(q, WfsFactory.eINSTANCE, false));
                 }
 
                 return;
@@ -79,7 +79,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         }
         if (m < n) {
             // fill the rest with nulls
-            List newValues = new ArrayList<>();
+            List<T> newValues = new ArrayList<>();
             newValues.addAll(values);
             for (int i = 0; i < n - m; i++) {
                 newValues.add(null);
@@ -90,7 +90,15 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         EMFUtils.set(lock, property, values);
     }
 
-    protected void buildStoredQueries(EObject request, List<URI> storedQueryIds, Map kvp) {
+    @SuppressWarnings("unchecked")
+    private <T> List<T> typenameWorkaround(List<T> values) {
+        // in lock typename is not a list, it's a single qname
+        values = (List) values.stream().map(o -> ((List) o).get(0)).collect(Collectors.toList());
+        return values;
+    }
+
+    protected void buildStoredQueries(
+            EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         throw new UnsupportedOperationException("No stored queries in WFS 1.0 or 1.1");
     }
 
@@ -102,6 +110,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         // set filter from bbox
         Envelope bbox = (Envelope) kvp.get("bbox");
 
+        @SuppressWarnings("unchecked")
         List<LockType> queries = ((LockFeatureType) eObject).getLock();
         for (Iterator it = queries.iterator(); it.hasNext(); ) {
             LockType lock = (LockType) it.next();

@@ -9,6 +9,7 @@ import java.net.URI;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.wfs.WFSException;
 import org.geotools.gml2.bindings.GML2ParsingUtils;
 import org.geotools.gml3.GML;
@@ -89,7 +90,9 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         InsertElementType insertElement = wfsfactory.createInsertElementType();
 
         // features
-        insertElement.getFeature().addAll(node.getChildValues(SimpleFeature.class));
+        @SuppressWarnings("unchecked")
+        EList<SimpleFeature> feature = insertElement.getFeature();
+        feature.addAll(node.getChildValues(SimpleFeature.class));
 
         // handle
         if (node.hasAttribute("handle")) {

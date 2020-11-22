@@ -25,7 +25,7 @@ public class GML3FeatureTransformer extends FeatureTransformer {
                 handler, prefix, ns, featureTypeNamespaces, schemaLocationSupport);
     }
 
-    protected void loadGmlAttributes(Set set) {
+    protected void loadGmlAttributes(Set<String> set) {
         set.add("name");
         set.add("description");
     }

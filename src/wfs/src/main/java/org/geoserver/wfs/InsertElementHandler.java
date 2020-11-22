@@ -273,7 +273,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             throws WFSTransactionException {
         Insert insert = (Insert) element;
 
-        List typeNames = new ArrayList();
+        List<QName> typeNames = new ArrayList<>();
 
         List features = insert.getFeatures();
         if (!features.isEmpty()) {

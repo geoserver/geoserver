@@ -45,6 +45,7 @@ public abstract class LockFeatureResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void addLockedFeature(FeatureId fid) {
             LockFeatureResponseType lfr = (LockFeatureResponseType) adaptee;
             if (lfr.getFeaturesLocked() == null) {
@@ -54,6 +55,7 @@ public abstract class LockFeatureResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void addNotLockedFeature(FeatureId fid) {
             LockFeatureResponseType lfr = (LockFeatureResponseType) adaptee;
             if (lfr.getFeaturesNotLocked() == null) {
@@ -63,11 +65,13 @@ public abstract class LockFeatureResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureId> getNotLockedFeatures() {
             return eGet(adaptee, "featuresNotLocked.featureId", List.class);
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureId> getLockedFeatures() {
             return eGet(adaptee, "featuresLocked.featureId", List.class);
         }
@@ -100,11 +104,13 @@ public abstract class LockFeatureResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureId> getNotLockedFeatures() {
             return eGet(adaptee, "featuresNotLocked.resourceId", List.class);
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureId> getLockedFeatures() {
             return eGet(adaptee, "featuresLocked.resourceId", List.class);
         }

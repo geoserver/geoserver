@@ -60,7 +60,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
     public abstract LockFeatureResponse createResponse();
 
-    public abstract List getAdaptedQueries();
+    public abstract List<EObject> getAdaptedQueries();
 
     public abstract RequestObject createQuery();
 
@@ -74,7 +74,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public List<Lock> getLocks() {
-            List<Lock> locks = new ArrayList();
+            List<Lock> locks = new ArrayList<>();
             for (Object lock : eGet(adaptee, "lock", List.class)) {
                 locks.add(new Lock.WFS11((EObject) lock));
             }
@@ -83,7 +83,9 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public void addLock(Lock lock) {
-            eGet(adaptee, "lock", List.class).add(lock.getAdaptee());
+            @SuppressWarnings("unchecked")
+            List<EObject> locks = eGet(adaptee, "lock", List.class);
+            locks.add(lock.getAdaptee());
         }
 
         @Override
@@ -118,7 +120,7 @@ public abstract class LockFeatureRequest extends RequestObject {
         }
 
         @Override
-        public List getAdaptedQueries() {
+        public List<EObject> getAdaptedQueries() {
             throw new UnsupportedOperationException();
         }
 
@@ -141,7 +143,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public List<Lock> getLocks() {
-            List<Lock> locks = new ArrayList();
+            List<Lock> locks = new ArrayList<>();
             for (Object lock : eGet(adaptee, "abstractQueryExpression", List.class)) {
                 locks.add(new Lock.WFS20((EObject) lock));
             }
@@ -190,7 +192,8 @@ public abstract class LockFeatureRequest extends RequestObject {
         }
 
         @Override
-        public List<Object> getAdaptedQueries() {
+        @SuppressWarnings("unchecked")
+        public List<EObject> getAdaptedQueries() {
             return eGet(adaptee, "abstractQueryExpression", List.class);
         }
 
@@ -201,7 +204,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public List<Query> getQueries() {
-            List<Object> adaptedQueries = getAdaptedQueries();
+            List<EObject> adaptedQueries = getAdaptedQueries();
             return GetFeatureRequest.WFS20.getQueries(adaptedQueries);
         }
     }

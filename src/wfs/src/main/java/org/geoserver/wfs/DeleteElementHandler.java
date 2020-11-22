@@ -32,6 +32,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -150,7 +151,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 try {
                     while (writer.hasNext()) {
                         String fid = writer.next().getID();
-                        Set featureIds = new HashSet();
+                        Set<FeatureId> featureIds = new HashSet<>();
                         featureIds.add(factory.featureId(fid));
                         locking.unLockFeatures(factory.id(featureIds));
                         writer.remove();

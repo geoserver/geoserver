@@ -81,7 +81,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             hadAliases = true;
         }
 
-        this.aliases = new ArrayList(aliases);
+        this.aliases = new ArrayList<>(aliases);
     }
 
     public Object visitNullFilter(Object extraData) {
@@ -253,7 +253,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     }
 
     public List<Join> getJoins() {
-        List<Join> joins = new ArrayList();
+        List<Join> joins = new ArrayList<>();
 
         setupPrimary();
 

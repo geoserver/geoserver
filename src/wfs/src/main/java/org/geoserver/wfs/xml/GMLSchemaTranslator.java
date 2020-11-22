@@ -31,7 +31,7 @@ import org.locationtech.jts.geom.Polygon;
  * @version $Id$
  */
 public class GMLSchemaTranslator extends NameSpaceTranslator {
-    private HashSet elements;
+    private Set<NameSpaceElement> elements;
 
     /**
      * XMLSchemaTranslator constructor.
@@ -40,7 +40,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      */
     public GMLSchemaTranslator(String prefix) {
         super(prefix);
-        elements = new HashSet();
+        elements = new HashSet<>();
         /*elements.add(new PointElement(prefix));
         elements.add(new LineStringElement(prefix));
         elements.add(new LinearRingElement(prefix));
@@ -83,7 +83,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      */
-    public Set getElements() {
+    public Set<NameSpaceElement> getElements() {
         return elements;
     }
 

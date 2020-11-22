@@ -34,6 +34,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.util.XSDConstants;
+import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -127,7 +128,7 @@ public class ApplicationSchemaXSD extends XSD {
     }
 
     @Override
-    protected void addDependencies(Set dependencies) {
+    protected void addDependencies(Set<XSD> dependencies) {
         dependencies.add(wfs);
     }
 
@@ -280,7 +281,7 @@ public class ApplicationSchemaXSD extends XSD {
 
         if (schemaFile.getType() == Type.RESOURCE) {
             // schema file found, parse it and lookup the complex type
-            List locators = new ArrayList();
+            List<XSDSchemaLocator> locators = new ArrayList<>();
             for (XSD xsd : wfs.getAllDependencies()) {
                 locators.add(xsd.createSchemaLocator());
             }
@@ -298,10 +299,9 @@ public class ApplicationSchemaXSD extends XSD {
             if (ftSchema != null) {
                 // add the contents of this schema to the schema being built
                 // look up the complex type
-                List contents = ftSchema.getContents();
+                List<XSDSchemaContent> contents = ftSchema.getContents();
 
-                for (Iterator i = contents.iterator(); i.hasNext(); ) {
-                    XSDSchemaContent content = (XSDSchemaContent) i.next();
+                for (XSDSchemaContent content : contents) {
                     content.setElement(null);
                 }
 

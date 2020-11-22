@@ -15,7 +15,6 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
-import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.WFSException;
@@ -90,7 +89,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         final String alternamePrefix = "ex";
         final String alternameTypeName = alternamePrefix + ":" + localPart;
 
-        Map<String, String> raw = new HashMap<String, String>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -116,7 +115,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         final String typeName = qName.getLocalPart();
         final String defaultNamespace = qName.getNamespaceURI();
 
-        Map<String, String> raw = new HashMap<String, String>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -136,7 +135,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testViewParams() throws Exception {
-        Map<String, String> raw = new HashMap<String, String>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -149,16 +148,17 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
         assertEquals(1, parsedReq.getViewParams().size());
-        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
+        List viewParams = parsedReq.getViewParams();
         assertEquals(1, viewParams.size());
-        Map<String, String> vp1 = viewParams.get(0);
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp1 = (Map) viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
         assertEquals("ABCD", vp1.get("str"));
     }
 
     @Test
     public void testViewParamsMulti() throws Exception {
-        Map<String, String> raw = new HashMap<String, String>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -176,19 +176,21 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
-        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
+        List viewParams = parsedReq.getViewParams();
         assertEquals(2, viewParams.size());
-        Map<String, String> vp1 = viewParams.get(0);
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp1 = (Map) viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
         assertEquals("ABCD", vp1.get("str"));
-        Map<String, String> vp2 = viewParams.get(1);
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp2 = (Map) viewParams.get(1);
         assertEquals("WHERE PERSONS > 10", vp2.get("where"));
         assertEquals("FOO", vp2.get("str"));
     }
 
     @Test
     public void testViewParamsFanOut() throws Exception {
-        Map<String, String> raw = new HashMap<String, String>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -204,12 +206,14 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
-        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
+        List viewParams = parsedReq.getViewParams();
         assertEquals(2, viewParams.size());
-        Map<String, String> vp1 = viewParams.get(0);
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp1 = (Map) viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
         assertEquals("ABCD", vp1.get("str"));
-        Map<String, String> vp2 = viewParams.get(1);
+        @SuppressWarnings("unchecked")
+        Map<String, String> vp2 = (Map) viewParams.get(1);
         assertEquals("WHERE PERSONS > 1000000", vp2.get("where"));
         assertEquals("ABCD", vp2.get("str"));
     }

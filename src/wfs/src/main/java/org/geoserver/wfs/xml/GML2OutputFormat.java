@@ -83,7 +83,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
 
     /** Creates the producer with a reference to the GetFeature operation using it. */
     public GML2OutputFormat(GeoServer geoServer) {
-        super(geoServer, new HashSet(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
+        super(geoServer, new HashSet<>(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
 
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
@@ -236,10 +236,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         // including the lockID
         //
         // execute should also fail if all of the locks could not be aquired
-        List resultsList = results.getFeature();
+        List<FeatureCollection> resultsList = results.getFeature();
         FeatureCollection[] featureResults =
-                (FeatureCollection[])
-                        resultsList.toArray(new FeatureCollection[resultsList.size()]);
+                resultsList.toArray(new FeatureCollection[resultsList.size()]);
 
         try {
             transformer.transform(featureResults, output);

@@ -21,7 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
+import net.opengis.fes20.AbstractQueryExpressionType;
 import net.opengis.wfs.XlinkPropertyNameType;
+import net.opengis.wfs20.QueryType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -374,7 +376,8 @@ public class GetFeature {
                 !(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion()))
                         && (queries.size() == 1 || maxFeatures == Integer.MAX_VALUE));
 
-        List results = new ArrayList();
+        List<FeatureCollection<? extends FeatureType, ? extends Feature>> results =
+                new ArrayList<>();
         final List<CountExecutor> totalCountExecutors = new ArrayList<CountExecutor>();
         try {
             for (int i = 0; (i < queries.size()) && (count < maxFeatures); i++) {
@@ -394,7 +397,7 @@ public class GetFeature {
                         }
                     }
 
-                    List<FeatureTypeInfo> metas = new ArrayList();
+                    List<FeatureTypeInfo> metas = new ArrayList<>();
                     for (QName typeName : query.getTypeNames()) {
                         metas.add(featureTypeInfo(typeName, request));
                     }
@@ -492,8 +495,8 @@ public class GetFeature {
                         }
                     }
 
-                    List<List<PropertyName>> propNames = new ArrayList();
-                    List<List<PropertyName>> allPropNames = new ArrayList();
+                    List<List<PropertyName>> propNames = new ArrayList<>();
+                    List<List<PropertyName>> allPropNames = new ArrayList<>();
 
                     for (int j = 0; j < metas.size(); j++) {
                         List<String> propertyNames = reqPropertyNames.get(j);
@@ -519,7 +522,7 @@ public class GetFeature {
 
                                     if (meta.getFeatureType() instanceof SimpleFeatureType) {
                                         List<AttributeTypeInfo> atts = meta.attributes();
-                                        List attNames = new ArrayList(atts.size());
+                                        List<String> attNames = new ArrayList<>(atts.size());
                                         for (AttributeTypeInfo att : atts) {
                                             attNames.add(att.getName());
                                         }
@@ -921,7 +924,8 @@ public class GetFeature {
      * (as a different GML encoding is required in that case)
      */
     protected boolean processStoredQueries(GetFeatureRequest request) {
-        List queries = request.getAdaptedQueries();
+        @SuppressWarnings("unchecked")
+        List<AbstractQueryExpressionType> queries = (List) request.getAdaptedQueries();
         boolean foundGetFeatureById = expandStoredQueries(request, queries, storedQueryProvider);
 
         return queries.size() == 1 && foundGetFeatureById;
@@ -929,7 +933,9 @@ public class GetFeature {
 
     /** Replaces stored queries with actual ad-hoc queries */
     static boolean expandStoredQueries(
-            RequestObject request, List queries, StoredQueryProvider storedQueryProvider) {
+            RequestObject request,
+            List<AbstractQueryExpressionType> queries,
+            StoredQueryProvider storedQueryProvider) {
         boolean foundGetFeatureById = false;
         for (int i = 0; i < queries.size(); i++) {
             Object obj = queries.get(i);
@@ -957,7 +963,7 @@ public class GetFeature {
                     throw exception;
                 }
 
-                List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq);
+                List<QueryType> compiled = storedQuery.compile(sq);
                 queries.remove(i);
                 queries.addAll(i, compiled);
                 i += compiled.size();
@@ -973,7 +979,7 @@ public class GetFeature {
             int maxFeatures,
             int count,
             BigInteger total,
-            List results,
+            List<FeatureCollection<? extends FeatureType, ? extends Feature>> results,
             String lockId,
             boolean getFeatureById) {
 
@@ -1000,7 +1006,7 @@ public class GetFeature {
             // TODO: figure out what the spec says about this...
             Map<String, String> kvp = null;
             if (req.isGet()) {
-                kvp = new KvpMap(req.getRawKvp());
+                kvp = mapValuesToStrings(req.getRawKvp());
             } else {
                 // generate kvp map from request object
                 kvp = buildKvpFromRequest(request);
@@ -1009,6 +1015,20 @@ public class GetFeature {
         }
 
         return result;
+    }
+
+    private KvpMap<String, String> mapValuesToStrings(Map<String, Object> rawKvp) {
+        return rawKvp.entrySet()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                e -> e.getKey(),
+                                e -> (String) e.getValue(),
+                                (u, v) -> {
+                                    throw new IllegalStateException(
+                                            String.format("Duplicate key %s", u));
+                                },
+                                () -> new KvpMap<>()));
     }
 
     protected void buildPrevNextLinks(
@@ -1021,7 +1041,7 @@ public class GetFeature {
         // WFS 2.0 specific, must have a next and should point to the first result
         if (request.isResultTypeHits()
                 && (request.getVersion() == null || request.getVersion().startsWith("2"))) {
-            kvp = new KvpMap(kvp);
+            kvp = new KvpMap<>(kvp);
             kvp.put("RESULTTYPE", "results");
             kvp.put("STARTINDEX", "0");
         }
@@ -1053,13 +1073,13 @@ public class GetFeature {
         }
     }
 
-    protected KvpMap buildKvpFromRequest(GetFeatureRequest request) {
+    protected KvpMap<String, String> buildKvpFromRequest(GetFeatureRequest request) {
 
         // FILTER_LANGUAGE
         // RESOURCEID
         // BBOX
         // STOREDQUERY_ID
-        KvpMap kvp = new KvpMap();
+        KvpMap<String, String> kvp = new KvpMap<>();
 
         // SERVICE
         // VERSION
@@ -1487,9 +1507,9 @@ public class GetFeature {
 
     @SuppressWarnings("PMD.UnusedLocalVariable")
     List<List<String>> parsePropertyNames(Query query, List<FeatureTypeInfo> featureTypes) {
-        List<List<String>> propNames = new ArrayList();
+        List<List<String>> propNames = new ArrayList<>();
         for (FeatureTypeInfo featureType : featureTypes) {
-            propNames.add(new ArrayList());
+            propNames.add(new ArrayList<>());
         }
 
         if (featureTypes.size() == 1) {

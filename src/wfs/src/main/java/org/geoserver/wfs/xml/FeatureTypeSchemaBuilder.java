@@ -40,6 +40,7 @@ import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.impl.XSDSchemaImpl;
 import org.eclipse.xsd.util.XSDConstants;
+import org.eclipse.xsd.util.XSDSchemaLocationResolver;
 import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -94,7 +95,7 @@ public abstract class FeatureTypeSchemaBuilder {
     GeoServer gs;
 
     /** profiles used for type mapping. */
-    protected List profiles;
+    protected List<Object> profiles;
 
     /** gml schema stuff */
     protected String gmlNamespace;
@@ -112,7 +113,7 @@ public abstract class FeatureTypeSchemaBuilder {
         this.catalog = gs.getCatalog();
         this.resourceLoader = gs.getCatalog().getResourceLoader();
 
-        profiles = new ArrayList();
+        profiles = new ArrayList<>();
         profiles.add(new XSProfile());
     }
 
@@ -169,14 +170,15 @@ public abstract class FeatureTypeSchemaBuilder {
         schema.setElementFormDefault(XSDForm.get(XSDForm.QUALIFIED));
 
         // group the feature types by namespace
-        HashMap ns2featureTypeInfos = new HashMap();
+        Map<String, List<FeatureTypeInfo>> ns2featureTypeInfos = new HashMap<>();
 
         for (int i = 0; i < featureTypeInfos.length; i++) {
             String prefix = featureTypeInfos[i].getNamespace().getPrefix();
-            List l = (List) ns2featureTypeInfos.get(prefix);
+            @SuppressWarnings("unchecked")
+            List<FeatureTypeInfo> l = (List) ns2featureTypeInfos.get(prefix);
 
             if (l == null) {
-                l = new ArrayList();
+                l = new ArrayList<>();
             }
 
             l.add(featureTypeInfos[i]);
@@ -333,7 +335,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     if (resolveAppSchemaImports) {
                         // actually build the schema out for these types and set it as the resolved
                         // schema for the import
-                        List<FeatureTypeInfo> featureTypes = new ArrayList();
+                        List<FeatureTypeInfo> featureTypes = new ArrayList<>();
                         for (String typeName : typeNames.toString().split(",")) {
                             featureTypes.add(catalog.getFeatureTypeByName(typeName));
                         }
@@ -387,6 +389,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                 .getUserData()
                                 .get(Types.DECLARED_NAMESPACES_MAP);
                 if (!(mapObject instanceof Map)) continue;
+                @SuppressWarnings("unchecked")
                 final Map<String, String> featureTypeNamespaces = (Map<String, String>) mapObject;
                 featureTypeNamespaces
                         .entrySet()
@@ -621,6 +624,7 @@ public abstract class FeatureTypeSchemaBuilder {
         return wfsSchema;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     boolean findTypeInSchema(FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory)
             throws IOException {
         // look if the schema for the type is already defined
@@ -637,8 +641,9 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             // schema file found, parse it and lookup the complex type
-            List resolvers = Schemas.findSchemaLocationResolvers(xmlConfiguration);
-            List locators = new ArrayList();
+            List<XSDSchemaLocationResolver> resolvers =
+                    Schemas.findSchemaLocationResolvers(xmlConfiguration);
+            List<XSDSchemaLocator> locators = new ArrayList<>();
             locators.add(
                     new XSDSchemaLocator() {
                         public XSDSchema locateSchema(
@@ -935,7 +940,7 @@ public abstract class FeatureTypeSchemaBuilder {
         return contains;
     }
 
-    Name findTypeName(Class binding) {
+    Name findTypeName(Class<?> binding) {
         for (Iterator p = profiles.iterator(); p.hasNext(); ) {
             Object profile = p.next();
             Name name = null;

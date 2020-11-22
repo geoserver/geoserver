@@ -90,7 +90,7 @@ public class ApplicationSchemaXSD1 extends XSD {
         }
         sb.setLength(sb.length() - 1);
 
-        HashMap kvp = new HashMap();
+        HashMap<String, String> kvp = new HashMap<>();
         kvp.putAll(schemaBuilder.getDescribeFeatureTypeParams());
         kvp.put("typename", sb.toString());
 

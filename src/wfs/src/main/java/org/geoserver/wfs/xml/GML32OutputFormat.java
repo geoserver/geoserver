@@ -35,6 +35,7 @@ import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
 public class GML32OutputFormat extends GML3OutputFormat {
@@ -72,7 +73,7 @@ public class GML32OutputFormat extends GML3OutputFormat {
     }
 
     public GML32OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
-        super(new HashSet(FORMATS), geoServer, configuration);
+        super(new HashSet<>(FORMATS), geoServer, configuration);
         this.geoServer = geoServer;
     }
 
@@ -138,7 +139,9 @@ public class GML32OutputFormat extends GML3OutputFormat {
         // without the feature collection wrapper
         if (results.isGetFeatureById()) {
             List<FeatureCollection> features = results.getFeatures();
-            Feature next = DataUtilities.first(features.get(0));
+            @SuppressWarnings("unchecked")
+            FeatureCollection<? extends FeatureType, ? extends Feature> fc = features.get(0);
+            Feature next = DataUtilities.first(fc);
             if (next == null) {
                 throw new WFSException(
                         (EObject) null,

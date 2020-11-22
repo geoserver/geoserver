@@ -120,6 +120,7 @@ public class TestWfsPostOnlineIntegrationTest {
         // Use a header with bad credentials, expecting it will be ignored
         MockHttpServletResponse response = doWfsPost("admin", "badpassword", true);
 
+        System.out.println(response.getContentAsString());
         assertFalse(response.getContentAsString().contains("HTTP response: 401"));
         assertTrue(response.getContentAsString().contains("wfs:FeatureCollection"));
     }

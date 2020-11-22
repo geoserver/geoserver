@@ -141,16 +141,17 @@ public class Transaction {
         // gathering all the FeatureSources we need
         //
         // Map of required FeatureStores by typeName
-        Map stores = new HashMap();
+        Map<QName, FeatureStore> stores = new HashMap<>();
 
         // Map of required FeatureStores by typeRef (dataStoreId:typeName)
         // (This will be added to the contents are harmed)
-        Map stores2 = new HashMap();
+        Map<String, FeatureSource> stores2 = new HashMap<>();
 
         // List of type names, maintain this list because of the insert hack
         // described below
         // List typeNames = new ArrayList();
-        Map elementHandlers = gatherElementHandlers(request);
+        Map<TransactionElement, TransactionElementHandler> elementHandlers =
+                gatherElementHandlers(request);
 
         // Gather feature types required by transaction elements and validate
         // the elements
@@ -163,7 +164,7 @@ public class Transaction {
             Map.Entry entry = (Map.Entry) it.next();
             TransactionElement element = (TransactionElement) entry.getKey();
             TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
-            Map featureTypeInfos = new HashMap();
+            Map<QName, FeatureTypeInfo> featureTypeInfos = new HashMap<>();
 
             QName[] typeNames = handler.getTypeNames(request, element);
 
@@ -229,10 +230,10 @@ public class Transaction {
                         FeatureStore<? extends FeatureType, ? extends Feature> store;
                         store = (FeatureStore<? extends FeatureType, ? extends Feature>) source;
                         store.setTransaction(transaction);
-                        stores.put(elementName, source);
+                        stores.put(elementName, (FeatureStore) source);
 
                         if (elementNameDefault != null) {
-                            stores.put(elementNameDefault, source);
+                            stores.put(elementNameDefault, (FeatureStore) source);
                         }
 
                         stores2.put(typeRef, source);
@@ -444,10 +445,11 @@ public class Transaction {
     }
 
     /** Looks up the element handlers to be used for each element */
-    private Map gatherElementHandlers(TransactionRequest request) throws WFSTransactionException {
+    private Map<TransactionElement, TransactionElementHandler> gatherElementHandlers(
+            TransactionRequest request) throws WFSTransactionException {
         // JD: use a linked hashmap since the order of elements in a transaction
         // must be respected
-        Map map = new LinkedHashMap();
+        Map<TransactionElement, TransactionElementHandler> map = new LinkedHashMap<>();
 
         List<TransactionElement> elements = request.getElements();
         for (TransactionElement element : elements) {
@@ -463,7 +465,7 @@ public class Transaction {
      */
     protected final TransactionElementHandler findElementHandler(Class type)
             throws WFSTransactionException {
-        List matches = new ArrayList();
+        List<TransactionElementHandler> matches = new ArrayList<>();
 
         for (Iterator it = transactionElementHandlers.iterator(); it.hasNext(); ) {
             TransactionElementHandler handler = (TransactionElementHandler) it.next();
@@ -481,12 +483,10 @@ public class Transaction {
 
         if (matches.size() > 1) {
             // sort by class hierarchy
-            Comparator comparator =
-                    new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            TransactionElementHandler h1 = (TransactionElementHandler) o1;
-                            TransactionElementHandler h2 = (TransactionElementHandler) o2;
-
+            Comparator<TransactionElementHandler> comparator =
+                    new Comparator<TransactionElementHandler>() {
+                        public int compare(
+                                TransactionElementHandler h1, TransactionElementHandler h2) {
                             if (h2.getElementClass().isAssignableFrom(h1.getElementClass())) {
                                 return -1;
                             }

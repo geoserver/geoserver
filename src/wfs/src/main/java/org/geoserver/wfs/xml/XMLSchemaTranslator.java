@@ -27,7 +27,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class XMLSchemaTranslator extends NameSpaceTranslator {
-    private HashSet elements;
+    private Set<NameSpaceElement> elements;
 
     /**
      * XMLSchemaTranslator constructor.
@@ -36,7 +36,7 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      */
     public XMLSchemaTranslator(String prefix) {
         super(prefix);
-        elements = new HashSet();
+        elements = new HashSet<>();
         elements.add(new BooleanElement(prefix));
         elements.add(new DecimalElement(prefix));
         elements.add(new IntegerElement(prefix));
@@ -83,7 +83,7 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      */
-    public Set getElements() {
+    public Set<NameSpaceElement> getElements() {
         return elements;
     }
 

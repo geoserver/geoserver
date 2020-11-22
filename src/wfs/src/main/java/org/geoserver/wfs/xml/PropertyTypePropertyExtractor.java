@@ -40,10 +40,10 @@ public class PropertyTypePropertyExtractor implements PropertyExtractor {
         return object instanceof PropertyType;
     }
 
-    public List properties(Object object, XSDElementDeclaration element) {
+    public List<Object[]> properties(Object object, XSDElementDeclaration element) {
         PropertyType property = (PropertyType) object;
 
-        List properties = new ArrayList(2);
+        List<Object[]> properties = new ArrayList<>(2);
 
         // the Name particle we can use as is
         properties.add(

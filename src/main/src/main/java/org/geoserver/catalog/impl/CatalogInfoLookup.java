@@ -64,8 +64,13 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return getMapForValue(maps, vc);
     }
 
-    protected <K> Map<K, T> getMapForValue(
-            ConcurrentHashMap<Class<T>, Map<K, T>> maps, Class<T> vc) {
+    @SuppressWarnings("unchecked")
+    // cannot get the layer lookup to work otherwise, "vc" cannot be parameterized to "T"
+    // or the LayerInfoLookup in DefaultCatalogFacade won't work. Issue being that the maps
+    // contains LayerInfoImpl (extracted from the values) but the container is parameterized
+    // by LayerInfo. I suppose it could be solved by having a mapping function going from class
+    // to key class (LayerInfoImpl to LayerInfo) and use it consistently across the lookup?
+    protected <K> Map<K, T> getMapForValue(ConcurrentHashMap<Class<T>, Map<K, T>> maps, Class vc) {
         Map<K, T> vcMap = maps.get(vc);
         if (vcMap == null) {
             vcMap = maps.computeIfAbsent(vc, k -> new ConcurrentSkipListMap<>());

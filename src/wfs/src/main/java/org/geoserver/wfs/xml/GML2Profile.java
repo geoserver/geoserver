@@ -11,13 +11,15 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.ProfileImpl;
 import org.geotools.gml2.GML;
 import org.geotools.gml2.GMLSchema;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.Schema;
 
 public class GML2Profile extends TypeMappingProfile {
-    static Set profiles = new HashSet();
+    static Set<Schema> profiles = new HashSet<>();
 
     static {
         // profile.add(new Name(GML.NAMESPACE, GML.POINTTYPE.getLocalPart()));
-        Set profile = new HashSet();
+        Set<Name> profile = new HashSet<>();
         profile.add(new NameImpl(GML.NAMESPACE, GML.PointPropertyType.getLocalPart()));
         // profile.add(new Name(GML.NAMESPACE, GML.MULTIPOINTTYPE.getLocalPart()));
         profile.add(new NameImpl(GML.NAMESPACE, GML.MultiPointPropertyType.getLocalPart()));

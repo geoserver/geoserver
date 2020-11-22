@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs;
 
+import java.io.Serializable;
 import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -13,8 +14,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -31,14 +32,14 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         ds.setName("foo");
         ds.setWorkspace(cat.getDefaultWorkspace());
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         ds.setEnabled(true);
         cat.add(ds);
 
-        FeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
-        FeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
+        SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
+        SimpleFeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -54,12 +55,12 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setStore(ds);
 
-        FeatureStore fs = (FeatureStore) store.getFeatureSource("Fifteen");
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("Fifteen");
         fs.addFeatures(fs1.getFeatures());
         FeatureTypeInfo ft = cb.buildFeatureType(fs);
         cat.add(ft);
 
-        fs = (FeatureStore) store.getFeatureSource("Seven");
+        fs = (SimpleFeatureStore) store.getFeatureSource("Seven");
         fs.addFeatures(fs2.getFeatures());
         ft = cb.buildFeatureType(fs);
         cat.add(ft);

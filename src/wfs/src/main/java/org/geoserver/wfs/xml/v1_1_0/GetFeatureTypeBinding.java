@@ -11,6 +11,7 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.wfs.xml.SqlViewParamsExtractor;
 import org.geotools.util.Converters;
 import org.geotools.xsd.AbstractComplexBinding;
@@ -174,7 +175,9 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
 
         // lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
-        getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
+        @SuppressWarnings("unchecked")
+        EList<QueryType> query = getFeature.getQuery();
+        query.addAll(node.getChildValues(QueryType.class));
 
         // &lt;xsd:attribute default="results" name="resultType"
         //      type="wfs:ResultTypeType" use="optional"&gt;

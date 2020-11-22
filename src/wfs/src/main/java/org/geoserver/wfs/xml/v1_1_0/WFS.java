@@ -275,7 +275,7 @@ public class WFS extends XSD {
         return schemaBuilder;
     }
 
-    protected void addDependencies(Set dependencies) {
+    protected void addDependencies(Set<XSD> dependencies) {
         super.addDependencies(dependencies);
 
         dependencies.add(OGC.getInstance());

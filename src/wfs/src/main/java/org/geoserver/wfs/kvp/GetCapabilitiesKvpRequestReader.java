@@ -22,7 +22,8 @@ public class GetCapabilitiesKvpRequestReader extends WFSKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         request = super.read(request, kvp, rawKvp);
 
         // set the version attribute on the request

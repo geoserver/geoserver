@@ -208,6 +208,7 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
         return super.getProperty(object, name);
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     private Object handleFeatureCollection(FeatureCollectionType featureCollection) {
         FeatureCollection result = null;
         if (featureCollection.getFeature().size() > 1) {

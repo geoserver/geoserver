@@ -50,7 +50,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             throws WFSTransactionException {
         Replace replace = (Replace) element;
 
-        List<QName> typeNames = new ArrayList();
+        List<QName> typeNames = new ArrayList<>();
 
         List features = replace.getFeatures();
         if (!features.isEmpty()) {
@@ -91,6 +91,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
 
         Replace replace = (Replace) element;
 
+        @SuppressWarnings("unchecked")
         List<SimpleFeature> newFeatures = replace.getFeatures();
         SimpleFeatureStore featureStore =
                 DataUtilities.simple((FeatureStore) featureStores.values().iterator().next());
@@ -99,7 +100,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         }
 
         // ids of replaced features
-        Collection<FeatureId> replaced = new ArrayList();
+        Collection<FeatureId> replaced = new ArrayList<>();
 
         try {
             SimpleFeatureCollection features = featureStore.getFeatures(replace.getFilter());
@@ -132,7 +133,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             }
 
             // first pass update all the features that match by id
-            List<SimpleFeature> leftovers = new ArrayList();
+            List<SimpleFeature> leftovers = new ArrayList<>();
 
             for (SimpleFeature newFeature : newFeatures) {
                 SimpleFeature oldFeature = oldFeatures.get(newFeature.getID());

@@ -119,7 +119,7 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public List<TransactionElement> getElements() {
-            List<TransactionElement> list = new ArrayList();
+            List<TransactionElement> list = new ArrayList<>();
             for (Iterator it = ((TransactionType) adaptee).getGroup().valueListIterator();
                     it.hasNext(); ) {
                 EObject el = (EObject) it.next();
@@ -140,6 +140,7 @@ public abstract class TransactionRequest extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public void setElements(List<TransactionElement> elements) {
             TransactionType tx = (TransactionType) adaptee;
             tx.getInsert().clear();
@@ -196,6 +197,7 @@ public abstract class TransactionRequest extends RequestObject {
                     "Replace not supported in WFS 1.1 transactions");
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         public static TransactionType unadapt(TransactionRequest request) {
             if (request instanceof WFS11) {
                 return (TransactionType) request.getAdaptee();
@@ -269,7 +271,7 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public List<TransactionElement> getElements() {
-            List<TransactionElement> list = new ArrayList();
+            List<TransactionElement> list = new ArrayList<>();
             Iterator it =
                     ((net.opengis.wfs20.TransactionType) adaptee)
                             .getAbstractTransactionAction()

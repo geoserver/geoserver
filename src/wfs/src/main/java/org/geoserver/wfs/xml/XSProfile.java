@@ -21,10 +21,10 @@ import org.opengis.feature.type.Schema;
 
 /** A profile of {@link XSSchema} which makes the java class to type mapping unique. */
 public class XSProfile extends TypeMappingProfile {
-    static Set profiles = new HashSet();
+    static Set<Schema> profiles = new HashSet<>();
 
     static {
-        Set proper = new HashSet();
+        Set<Name> proper = new HashSet<>();
         proper.add(name(XS.BYTE)); // Byte.class
         proper.add(name(XS.HEXBINARY)); // byte[].class
         proper.add(name(XS.SHORT)); // Short.class

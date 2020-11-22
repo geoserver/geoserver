@@ -52,7 +52,7 @@ public final class GMLAbstractFeatureTypeBinding
                 if (pd instanceof AttributeDescriptor) {
                     AttributeDescriptor attributeType = (AttributeDescriptor) pd;
                     String name = attributeType.getLocalName();
-                    Class type = attributeType.getType().getBinding();
+                    Class<?> type = attributeType.getType().getBinding();
 
                     if ("boundedBy".equals(name)) {
                         Node boundedByNode = node.getChild("boundedBy");

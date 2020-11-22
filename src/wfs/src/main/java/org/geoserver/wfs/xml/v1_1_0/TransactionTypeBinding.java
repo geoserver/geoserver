@@ -137,6 +137,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         TransactionType transaction = wfsfactory.createTransactionType();
 

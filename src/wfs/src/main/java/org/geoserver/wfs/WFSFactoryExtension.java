@@ -15,6 +15,6 @@ public class WFSFactoryExtension extends ServiceFactoryExtension<WFSInfo> {
 
     @Override
     public <T> T create(Class<T> clazz) {
-        return (T) new WFSInfoImpl();
+        return clazz.cast(new WFSInfoImpl());
     }
 }

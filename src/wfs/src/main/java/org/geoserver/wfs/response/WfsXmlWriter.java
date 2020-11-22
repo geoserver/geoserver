@@ -63,7 +63,7 @@ public abstract class WfsXmlWriter {
     NamespaceSupport namespaceSupport;
 
     /** HashMap schemaLocations */
-    HashMap schemaLocations;
+    Map<String, String> schemaLocations;
 
     /** The wfs version */
     String version;
@@ -79,7 +79,7 @@ public abstract class WfsXmlWriter {
         charSetEncoding = wfs.getGeoServer().getSettings().getCharset();
 
         // schema locations
-        schemaLocations = new HashMap();
+        schemaLocations = new HashMap<>();
 
         // declare the namespaces ( wfs is default )
         namespaceSupport = new NamespaceSupport();

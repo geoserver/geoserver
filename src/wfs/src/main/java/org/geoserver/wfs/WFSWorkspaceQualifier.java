@@ -218,7 +218,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         }
     }
 
-    void qualifyTypeNames(List names, WorkspaceInfo ws, NamespaceInfo ns) {
+    void qualifyTypeNames(List<QName> names, WorkspaceInfo ws, NamespaceInfo ns) {
         if (names != null) {
             for (int i = 0; i < names.size(); i++) {
                 QName name = (QName) names.get(i);

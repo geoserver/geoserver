@@ -164,7 +164,9 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
-        collections.addAll((List) featureCollection.getFeature());
+        @SuppressWarnings("unchecked")
+        List<SimpleFeatureCollection> features = (List) featureCollection.getFeature();
+        collections.addAll(features);
         Charset charset = getShapefileCharset(getFeature);
         write(collections, charset, output, GetFeatureRequest.adapt(getFeature.getParameters()[0]));
     }

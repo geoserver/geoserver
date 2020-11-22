@@ -146,6 +146,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "feature", List.class);
         }
@@ -156,6 +157,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object unadapt(Class target) {
             if (target.equals(FeatureCollectionType.class)) {
                 return adaptee;
@@ -229,6 +231,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "member", List.class);
         }
@@ -239,6 +242,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object unadapt(Class target) {
             if (target.equals(net.opengis.wfs20.FeatureCollectionType.class)) {
                 return adaptee;

@@ -32,18 +32,22 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
         super(adaptee);
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getSections() {
         return eGet(adaptee, "sections.section", List.class);
     }
 
+    @SuppressWarnings("unchecked")
     public String getUpdateSequence() {
         return eGet(adaptee, "updateSequence", String.class);
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getAcceptVersions() {
         return eGet(adaptee, "acceptVersions.version", List.class);
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getAcceptFormats() {
         return eGet(adaptee, "acceptFormats.outputFormat", List.class);
     }

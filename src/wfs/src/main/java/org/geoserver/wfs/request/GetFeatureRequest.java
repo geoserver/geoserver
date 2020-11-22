@@ -46,12 +46,14 @@ public abstract class GetFeatureRequest extends RequestObject {
         eSet(adaptee, "startIndex", startIndex);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Map<String, String>> getViewParams() {
         return eGet(adaptee, "viewParams", List.class);
     }
 
     public void setViewParams(List<Map<String, String>> viewParams) {
-        List l = eGet(adaptee, "viewParams", List.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> l = eGet(adaptee, "viewParams", List.class);
         l.clear();
         l.addAll(viewParams);
     }
@@ -116,6 +118,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<Object> getAdaptedQueries() {
             return eGet(adaptee, "query", List.class);
         }
@@ -212,6 +215,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<Object> getAdaptedQueries() {
             return eGet(adaptee, "abstractQueryExpression", List.class);
         }

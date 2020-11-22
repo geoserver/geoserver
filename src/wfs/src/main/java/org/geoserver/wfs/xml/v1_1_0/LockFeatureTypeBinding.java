@@ -124,6 +124,7 @@ public class LockFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         LockFeatureType lockFeature = wfsfactory.createLockFeatureType();
 

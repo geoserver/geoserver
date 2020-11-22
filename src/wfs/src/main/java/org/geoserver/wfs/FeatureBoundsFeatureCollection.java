@@ -73,7 +73,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         }
     }
 
-    protected Iterator openIterator() {
+    protected Iterator<SimpleFeature> openIterator() {
         return new BoundsIterator(wrapped.features(), schema);
     }
 

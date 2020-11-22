@@ -125,7 +125,7 @@ public class WFSXmlUtils {
     }
 
     public static void registerAbstractGeometryTypeBinding(
-            final Configuration config, Map bindings, QName qName) {
+            final Configuration config, Map<QName, Object> bindings, QName qName) {
         // use setter injection for AbstractGeometryType bindign to allow an
         // optional crs to be set in teh binding context for parsing, this crs
         // is set by the binding of a parent element.
@@ -179,7 +179,7 @@ public class WFSXmlUtils {
 
     static class DirectObjectParameter extends BasicComponentParameter {
         Object obj;
-        Class clazz;
+        Class<?> clazz;
 
         public DirectObjectParameter(Object obj, Class clazz) {
             super(clazz);

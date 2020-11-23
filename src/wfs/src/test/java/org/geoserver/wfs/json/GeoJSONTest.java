@@ -935,6 +935,36 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals("Infinity", getProperty(f3, "f"));
     }
 
+    @Test
+    public void testBoundingBoxAxisOrderInWfs10AndWfs11() throws Exception {
+        // test that AxisOrder of bbox coordinates are switched to EAST-NORTH,
+        // as for the other coordinates array in the json features, when the CRS
+        // has NORTH-EAST axis order
+        JSONObject rootObject =
+                (JSONObject)
+                        getAsJSON(
+                                "wfs?request=GetFeature&version=1.0.0&typename="
+                                        + getLayerId(POINT_LATLON)
+                                        + "&outputformat="
+                                        + JSONType.json);
+
+        JSONArray bbox = rootObject.getJSONArray("bbox");
+
+        JSONObject rootObjectRep =
+                (JSONObject)
+                        getAsJSON(
+                                "wfs?request=GetFeature&version=1.1.0&typename="
+                                        + getLayerId(POINT_LATLON)
+                                        + "&outputformat="
+                                        + JSONType.json
+                                        + "&srsName=urn:x-ogc:def:crs:EPSG:4326");
+
+        JSONArray bboxRep = rootObjectRep.getJSONArray("bbox");
+        // bbox should be equal since the NORTH-EAST axis order in the wfs 1.1.0
+        // should have been ignored and kept to EAST-NORTH
+        assertTrue(bboxRep.equals(bbox));
+    }
+
     private Object getProperty(JSONObject feature, String propertyName) {
         return feature.getJSONObject("properties").get(propertyName);
     }

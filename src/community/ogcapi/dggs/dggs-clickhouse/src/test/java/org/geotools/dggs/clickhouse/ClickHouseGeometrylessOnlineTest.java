@@ -16,7 +16,7 @@
  */
 package org.geotools.dggs.clickhouse;
 
-import java.util.HashMap;
+import java.util.Map;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCGeometrylessOnlineTest;
 import org.geotools.jdbc.JDBCGeometrylessTestSetup;
@@ -27,8 +27,8 @@ public class ClickHouseGeometrylessOnlineTest extends JDBCGeometrylessOnlineTest
         return new ClickHouseGeometrylessTestSetup(new ClickHouseJDBCTestSetup());
     }
 
-    protected HashMap createDataStoreFactoryParams() throws Exception {
-        HashMap params = new HashMap(super.createDataStoreFactoryParams());
+    protected Map<String, Object> createDataStoreFactoryParams() throws Exception {
+        Map<String, Object> params = super.createDataStoreFactoryParams();
         params.put(JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));
         return params;
     }

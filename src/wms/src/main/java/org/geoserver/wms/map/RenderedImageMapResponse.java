@@ -164,7 +164,8 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 image = forceIndexed8Bitmask(image, null);
             }
         } else {
-            if (!(image.getColorModel() instanceof IndexColorModel)) {
+            if (!(image.getColorModel() instanceof IndexColorModel)
+                    && (mapContent.getPalette() != null || palettedFormatCheck.apply(format))) {
                 // try to force a RGBA setup
                 image =
                         new ImageWorker(image)

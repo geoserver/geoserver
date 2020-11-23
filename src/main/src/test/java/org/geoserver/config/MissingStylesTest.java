@@ -58,9 +58,8 @@ public class MissingStylesTest extends GeoServerSystemTestSupport {
     @Test
     public void testMissingDefaultStyle() throws Exception {
         LayerInfo layer = catalog.getLayerByName("Bridges");
-        System.out.println(layer.getTitle());
+
         StyleInfo style = layer.getDefaultStyle();
-        System.out.println(style.getName());
 
         File f = new File(dir, "styles/" + style.getFilename().replace("sld", "xml"));
         assertTrue(f.exists());
@@ -70,7 +69,6 @@ public class MissingStylesTest extends GeoServerSystemTestSupport {
         assertFalse(f.exists());
         layer = catalog.getLayerByName("Bridges");
         style = layer.getDefaultStyle();
-        System.out.println(style.getName());
         assertNotNull(style);
     }
 }

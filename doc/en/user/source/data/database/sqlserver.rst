@@ -96,7 +96,7 @@ The table has the following structure (the table name is flexible, just specify 
 	   SRID INTEGER NOT NULL,
 	   TYPE VARCHAR(30) NOT NULL,
 	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
-	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
+	   CHECK(TYPE IN ('POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION') ));
 
 When the table is present the store first searches it for information about each geometry column
 to be classified, and falls back on data inspection only if the table does not contain any information.

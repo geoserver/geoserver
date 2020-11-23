@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.junit.AfterClass;
 
 /** Tests the changeset store with a custom database */
@@ -60,7 +61,8 @@ public class ChangesetCustomDBTest extends ChangesetTest {
                 ChangesetCustomDBTest.class.getResourceAsStream(CHANGESET_STORE_PROPERTIES)) {
             props.load(is);
         }
-        DataStore datastore = DataStoreFinder.getDataStore(props);
+        DataStore datastore =
+                DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
         try {
             assertThat(datastore, notNullValue());
             System.out.println(Arrays.toString(datastore.getTypeNames()));

@@ -5,7 +5,6 @@
 package org.geotools.dggs.rhealpix;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +45,7 @@ public class RHealPixDGGSFactory implements DGGSFactory {
     }
 
     @Override
-    public DGGSInstance createInstance(Map<String, Serializable> params) throws IOException {
+    public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
         return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "TB16-Pix");
     }
 

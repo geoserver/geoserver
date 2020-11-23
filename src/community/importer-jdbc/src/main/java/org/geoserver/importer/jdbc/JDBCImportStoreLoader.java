@@ -15,6 +15,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
@@ -39,7 +40,10 @@ public class JDBCImportStoreLoader implements DisposableBean {
         try {
             Properties params = getParameters();
 
-            store = (JDBCDataStore) DataStoreFinder.getDataStore(params);
+            store =
+                    (JDBCDataStore)
+                            DataStoreFinder.getDataStore(
+                                    DataUtilities.toConnectionParameters(params));
         } catch (IOException e) {
             LOGGER.info(
                     "can't find or create JDBC import store configuration file: "

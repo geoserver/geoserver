@@ -51,12 +51,12 @@ public class ImageResponseMessageConverter extends MessageConverterResponseAdapt
     }
 
     @Override
-    protected Operation getOperation(ImagesResponse featuresResponse, Request dr) {
+    protected Operation getOperation(ImagesResponse result, Request dr) {
         return new Operation(
                 dr.getOperation().getId(),
                 dr.getOperation().getService(),
                 dr.getOperation().getMethod(),
-                new Object[] {featuresResponse.getRequest()});
+                new Object[] {result.getRequest()});
     }
 
     @Override

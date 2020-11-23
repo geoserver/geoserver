@@ -110,12 +110,10 @@ public class FeatureResponseMessageConverter
     }
 
     @Override
-    protected Operation getOperation(FeaturesResponse featuresResponse, Request dr) {
+    protected Operation getOperation(FeaturesResponse result, Request dr) {
+        Operation op = dr.getOperation();
         return new Operation(
-                dr.getOperation().getId(),
-                dr.getOperation().getService(),
-                dr.getOperation().getMethod(),
-                new Object[] {featuresResponse.getRequest()});
+                "GetFeature", op.getService(), op.getMethod(), new Object[] {result.getRequest()});
     }
 
     @Override

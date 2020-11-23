@@ -92,15 +92,20 @@ public class MessageConverterResponseAdapter<T>
         response.write(value, httpOutputMessage.getBody(), operation);
     }
 
-    protected Operation getOperation(T featuresResponse, Request dr) {
+    protected Operation getOperation(T result, Request dr) {
         return dr.getOperation();
     }
 
     public Optional<Response> getResponse(MediaType mediaType) {
+        @SuppressWarnings("unchecked")
+        T result = (T) APIRequestInfo.get().getResult();
+        Request dr = Dispatcher.REQUEST.get();
+        Operation originalOperation = dr.getOperation();
+        Operation op = result != null ? getOperation(result, dr) : originalOperation;
         return responses
                 .stream()
                 .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
-                .filter(r -> r.canHandle(Dispatcher.REQUEST.get().getOperation()))
+                .filter(r -> r.canHandle(op))
                 .findFirst();
     }
 

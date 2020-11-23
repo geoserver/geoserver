@@ -613,6 +613,7 @@ public class DGGSService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "point") String pointSpec,
             @RequestParam(name = "resolution") int resolution,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
                         name = "f",
@@ -630,7 +631,7 @@ public class DGGSService {
                 runGetFeature(
                         collectionId,
                         datetime,
-                        null,
+                        properties,
                         null,
                         null,
                         format,
@@ -664,6 +665,7 @@ public class DGGSService {
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
+            @RequestParam(name = "compact", required = true, defaultValue = "true") boolean compact,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
                         name = "f",
@@ -673,14 +675,16 @@ public class DGGSService {
                     String format)
             throws Exception {
         Polygon polygon = getPolygon(polygonWKT);
-        Filter resolutionFilter = FF.lessOrEqual(FF.property(RESOLUTION), FF.literal(resolution));
+        // Filter resolutionFilter = FF.lessOrEqual(FF.property(RESOLUTION),
+        // FF.literal(resolution));
         PropertyIsEqualTo polygonFilter =
                 FF.equals(
                         FF.function(
                                 "dggsPolygon",
                                 FF.property("zoneId"),
                                 FF.literal(polygon),
-                                FF.literal(resolution)),
+                                FF.literal(resolution),
+                                FF.literal(compact)),
                         FF.literal("true"));
         // we have the zoneId, now to and access the data for it
         FeaturesResponse response =
@@ -693,12 +697,12 @@ public class DGGSService {
                         format,
                         request -> {
                             Query query = request.getQueries().get(0);
-                            query.setFilter(FF.and(polygonFilter, resolutionFilter));
+                            query.setFilter(polygonFilter);
                         },
                         collectionName ->
                                 "ogc/dggs/collections/"
                                         + ResponseUtils.urlEncode(collectionName)
-                                        + "/zones/");
+                                        + "/polygon/");
 
         return response;
     }

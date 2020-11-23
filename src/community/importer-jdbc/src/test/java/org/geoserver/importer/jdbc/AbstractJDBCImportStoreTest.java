@@ -20,6 +20,7 @@ import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.SearchingVisitor;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.test.FixtureUtilities;
 import org.junit.After;
@@ -42,7 +43,9 @@ public abstract class AbstractJDBCImportStoreTest extends ImporterTestSupport {
         Properties props = getFixture();
         Assume.assumeNotNull(props);
 
-        this.datastore = (JDBCDataStore) DataStoreFinder.getDataStore(props);
+        this.datastore =
+                (JDBCDataStore)
+                        DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
         if (datastore == null) {
             fail("Could not locate datastore with properties: " + props);
         }

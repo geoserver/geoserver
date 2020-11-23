@@ -63,7 +63,9 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
     public GeoServerKeycloakFilter() {
         this.adapterTokenStoreFactory = new SpringSecurityAdapterTokenStoreFactory();
         this.authenticationMapper = new KeycloakAuthenticationProvider();
-        authenticationMapper.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
+        SimpleAuthorityMapper simpleAuthMapper = new SimpleAuthorityMapper();
+        simpleAuthMapper.setPrefix("");
+        authenticationMapper.setGrantedAuthoritiesMapper(simpleAuthMapper);
     }
 
     @Override

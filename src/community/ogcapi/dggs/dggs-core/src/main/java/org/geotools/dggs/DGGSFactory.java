@@ -17,7 +17,6 @@
 package org.geotools.dggs;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.Parameter;
 
@@ -44,7 +43,7 @@ public interface DGGSFactory {
      * @param params
      * @return
      */
-    DGGSInstance createInstance(Map<String, Serializable> params) throws IOException;
+    DGGSInstance createInstance(Map<String, ?> params) throws IOException;
 
     /**
      * Test to see if the implementation is available for use. This method ensures all the

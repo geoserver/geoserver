@@ -17,7 +17,6 @@
 package org.geootols.dggs.clickhouse;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -50,12 +49,12 @@ public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
                     null);
 
     @Override
-    public DataStore createNewDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createNewDataStore(Map<String, ?> params) throws IOException {
         return createDataStore(params);
     }
 
     @Override
-    public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createDataStore(Map<String, ?> params) throws IOException {
         // setup the JDBC data store based on Clickhouse
         Map<String, Object> delegateParams = new HashMap<>(params);
         delegateParams.put(JDBCDataStoreFactory.DBTYPE.key, delegate.getDatabaseID());

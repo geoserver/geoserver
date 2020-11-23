@@ -77,7 +77,7 @@ public class ChangesetIndexProvider {
                 p.load(is);
             }
 
-            return DataStoreFinder.getDataStore(p);
+            return DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(p));
         } else {
             // go and create a simple H2 database for local usage
 

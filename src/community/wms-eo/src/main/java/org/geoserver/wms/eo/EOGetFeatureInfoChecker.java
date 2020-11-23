@@ -66,20 +66,21 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback
         // === ok, it is a getfeatureinfo and 1.3.0, let's do the magic!
 
         // inspect the incoming request for custom dimensions
-        final Map<String, String> rawKvpMap = request.getRawKvp();
+        final Map<String, Object> rawKvpMap = request.getRawKvp();
         Map<String, List> customDomains = new HashMap<String, List>();
         if (rawKvpMap != null) {
-            for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
+            for (Map.Entry<String, Object> kvp : rawKvpMap.entrySet()) {
                 String name = kvp.getKey();
                 if (name.startsWith("DIM_")) {
                     name = name.substring(4);
                     if (name.length() > 0 && name != null) {
                         final ArrayList<String> val = new ArrayList<String>(1);
-                        if (kvp.getValue().indexOf(",") > 0) {
-                            String[] elements = kvp.getValue().split(",");
+                        String value = (String) kvp.getValue();
+                        if (value.indexOf(",") > 0) {
+                            String[] elements = value.split(",");
                             val.addAll(Arrays.asList(elements));
                         } else {
-                            val.add(kvp.getValue());
+                            val.add(value);
                         }
                         customDomains.put(name, val);
                     }

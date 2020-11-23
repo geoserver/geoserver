@@ -27,7 +27,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -87,7 +86,7 @@ public class DGGSGeometryStoreTest {
     }
 
     public DataStore getH3Store() throws IOException {
-        Map<String, Serializable> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put(DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key, "H3");
         params.put(DGGSGeometryStoreFactory.NAMESPACE.key, NAMESPACE);
         DataStore store = DataStoreFinder.getDataStore(params);

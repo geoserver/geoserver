@@ -176,7 +176,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public static final String WORKSPACE_PARAM = "WORKSPACE";
 
     /** @see #get() */
-    private static GWC INSTANCE;
+    private static volatile GWC INSTANCE;
 
     static final Logger log = Logging.getLogger(GWC.class);
 
@@ -306,14 +306,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @return The {@link GWC} mediator bean
      * @throws IllegalStateException if no {@link GWC} instance was found.
      */
-    public static synchronized GWC get() {
-        if (GWC.INSTANCE == null) {
-            GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
-            if (GWC.INSTANCE == null) {
-                throw new IllegalStateException(
-                        "No bean of type " + GWC.class.getName() + " found by GeoServerExtensions");
-            }
-        }
+    public static GWC get() {
         GWC.INSTANCE.syncEnv();
         return GWC.INSTANCE;
     }
@@ -2396,6 +2389,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
+        GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
 
         syncEnv();
     }
@@ -2405,19 +2399,28 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
      */
     public void syncEnv() throws IllegalArgumentException {
-        if (gsEnvironment != null && gsEnvironment.isStale() && gwcEnvironment != null) {
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
-                    && gsEnvironment.getProps() != null) {
-                Properties gwcProps = gwcEnvironment.getProps();
+        if (needsSynchronization()) {
+            synchronized (this) {
+                if (needsSynchronization()) {
+                    Properties gwcProps = gwcEnvironment.getProps();
 
-                if (gwcProps == null) {
-                    gwcProps = new Properties();
+                    if (gwcProps == null) {
+                        gwcProps = new Properties();
+                    }
+                    gwcProps.putAll(gsEnvironment.getProps());
+
+                    gwcEnvironment.setProps(gwcProps);
                 }
-                gwcProps.putAll(gsEnvironment.getProps());
-
-                gwcEnvironment.setProps(gwcProps);
             }
         }
+    }
+
+    private boolean needsSynchronization() {
+        return GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
+                && gsEnvironment != null
+                && gsEnvironment.isStale()
+                && gsEnvironment.getProps() != null
+                && gwcEnvironment != null;
     }
 
     /**

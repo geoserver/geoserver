@@ -31,4 +31,12 @@
 		<property name="descriptionKey" value="KeycloakAuthFilterPanel.description" />
 	</bean>
 
+	<!-- Keycloak role service panel infos -->
+	<bean id="keycloakRoleServicePanelInfo" class="org.geoserver.web.security.keycloak.KeycloakRoleServicePanelInfo">
+		<property name="id" value="security.keycloakRoleService" />
+		<property name="shortTitleKey" value="KeycloakRoleServicePanel.short"/>
+		<property name="titleKey" value="KeycloakRoleServicePanel.title"/>
+		<property name="descriptionKey" value="KeycloakRoleServicePanel.description"/>
+	</bean>
+
 </beans>

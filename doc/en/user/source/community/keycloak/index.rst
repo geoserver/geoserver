@@ -4,12 +4,12 @@ Authentication with Keycloak
 ============================
 
 This tutorial introduces GeoServer Keycloak support and walks through the process of
-setting up authentication aganist an Keycloak provider. It is recommended that the 
+setting up authentication against an Keycloak provider. It is recommended that the
 :ref:`security_auth_chain` section be read before proceeding.
 
 The GeoServer Keycloak-authn/authz plugin will allow you to use an instance of Keycloak to control access to resources within GeoServer.
 
-Installtation Instructions
+Installation Instructions
 --------------------------
 
 **As the Keycloak Admin:**

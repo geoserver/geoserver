@@ -50,6 +50,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
@@ -203,6 +204,9 @@ public class BufferedImageLegendGraphicOutputFormatTest
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
+        // won't pass on Mac on the GitHub actions, but works in the actual machines of developers
+        Assume.assumeFalse(System.getProperty("macos-github-build") != null);
+
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);

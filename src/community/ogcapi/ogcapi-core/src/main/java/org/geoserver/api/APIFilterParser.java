@@ -19,11 +19,11 @@ public class APIFilterParser {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     public static String CQL_TEXT = "cql-text";
-    public static String CQL_OBJECT = "cql-object";
+    public static String CQL_JSON = "cql-json";
 
     /**
      * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
-     * {@link #CQL_OBJECT}) and defaults the geometry liters in spatial filters to CRS84
+     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
         if (filter == null) {
@@ -35,12 +35,12 @@ public class APIFilterParser {
         // recognized (could have its own extension point too, if we want to allow easy extension
         // with new custom languages)
         if (filterLang != null
-                && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_OBJECT))) {
+                && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_JSON))) {
             throw new InvalidParameterValueException(
-                    "Only supported filter-lang options at the moment is "
+                    "Only supported filter-lang options at the moment are "
                             + CQL_TEXT
                             + " and "
-                            + CQL_OBJECT
+                            + CQL_JSON
                             + " but '"
                             + filterLang
                             + "' was found instead");
@@ -50,7 +50,7 @@ public class APIFilterParser {
             Filter parsedFilter = null;
             if (filterLang == null || filterLang.equals(CQL_TEXT)) {
                 parsedFilter = ECQL.toFilter(filter);
-            } else if (filterLang.equals(CQL_OBJECT)) {
+            } else if (filterLang.equals(CQL_JSON)) {
                 CQLJsonCompiler cqlJsonCompiler =
                         new CQLJsonCompiler(filter, new FilterFactoryImpl());
                 cqlJsonCompiler.compileFilter();

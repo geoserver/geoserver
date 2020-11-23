@@ -28,7 +28,7 @@ public class ClickHouseGeometrylessOnlineTest extends JDBCGeometrylessOnlineTest
     }
 
     protected HashMap createDataStoreFactoryParams() throws Exception {
-        HashMap params = new HashMap(super.createDataStoreFactoryParams());
+        HashMap params = super.createDataStoreFactoryParams();
         params.put(JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));
         return params;
     }

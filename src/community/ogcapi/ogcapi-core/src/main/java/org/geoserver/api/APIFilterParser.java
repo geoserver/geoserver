@@ -34,8 +34,7 @@ public class APIFilterParser {
         // languages are
         // recognized (could have its own extension point too, if we want to allow easy extension
         // with new custom languages)
-        if (filterLang != null
-                && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_JSON))) {
+        if (filterLang != null && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_JSON))) {
             throw new InvalidParameterValueException(
                     "Only supported filter-lang options at the moment are "
                             + CQL_TEXT

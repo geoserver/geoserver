@@ -6,6 +6,7 @@
 package org.geoserver.security.cas;
 
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.geoserver.security.config.RoleSource;
 
 /**
  * Configuration for cas authentication receiving proxy tickets
@@ -15,6 +16,21 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * RoleSource list specific to CAS. To be used in addition to {@link
+     * org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource}
+     *
+     * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
+     */
+    public static enum CasSpecificRoleSource implements RoleSource {
+        CustomAttribute;
+
+        @Override
+        public boolean equals(RoleSource other) {
+            return other != null && other.toString().equals(toString());
+        }
+    };
 
     /** if true, no single sign on possible */
     private boolean sendRenew;
@@ -43,6 +59,12 @@ public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilte
      * <p>example: https://myhost:8443/geoserver
      */
     private String urlInCasLogoutPage;
+
+    /**
+     * Name of the custom attribute originating roles when using {@link
+     * CasSpecificRoleSource#CustomAttribute}
+     */
+    private String customAttributeName;
 
     /** Participate in Single Sign Out. */
     private boolean singleSignOut;
@@ -90,5 +112,13 @@ public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilte
 
     public void setSingleSignOut(boolean singleSignOut) {
         this.singleSignOut = singleSignOut;
+    }
+
+    public String getCustomAttributeName() {
+        return customAttributeName;
+    }
+
+    public void setCustomAttributeName(String customAttributeName) {
+        this.customAttributeName = customAttributeName;
     }
 }

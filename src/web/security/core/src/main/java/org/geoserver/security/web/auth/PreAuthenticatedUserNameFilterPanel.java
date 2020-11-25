@@ -32,7 +32,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
                 T extends PreAuthenticatedUserNameFilterConfig>
         extends AuthenticationFilterPanel<T> {
 
-    DropDownChoice<RoleSource> roleSourceChoice;
+    protected DropDownChoice<RoleSource> roleSourceChoice;
 
     public PreAuthenticatedUserNameFilterPanel(String id, IModel<T> model) {
         super(id, model);
@@ -90,7 +90,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
     static class HeaderPanel extends Panel {
         public HeaderPanel(String id) {
             super(id, new Model());
-            add(new TextField("rolesHeaderAttribute").setRequired(true));
+            add(new TextField("rolesHeaderAttribute").setRequired(true).setRequired(true));
         }
     }
 

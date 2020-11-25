@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -105,7 +106,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         } else {
             Collection<GeoServerRole> roles = null;
             try {
-                roles = getRoles(request, principal);
+                roles = new ArrayList<>(getRoles(request, principal));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

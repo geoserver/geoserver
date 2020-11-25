@@ -97,11 +97,23 @@ The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing t
      - the size of the font to use
    * - ``transparent``
      - if set to true, the background and border won't be painted (false by default)
-   * - ``measurement-system"``
+   * - ``measurement-system``
      - can be set to "metric" to only show metric units, "imperial" to only show imperial units, or "both" to show both of them (default)
 
-
 The **legend** decoration (``type="legend"``) overlays a graphic containing legends for the layers in the map.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Option Name
+     - Meaning
+   * - ``legend_options``
+     - the list of legend_options used as in `GetLegendGraphic <./get_legend_graphic/index.html#controlling-legend-appearance-with-legend-options>`_
+   * - ``opacity``
+     - the legend opacity with a value between 0 and 1
+
+
 
 The **text** decoration (``type="text"``) overlays a parametric, single line text message on top of the map. The
 parameter values can be fed via the the ``env`` request parameter, just like SLD enviroment parameters.
@@ -141,14 +153,14 @@ A layout configuration file might look like this:
         <decoration type="image" affinity="bottom,right" offset="6,6" size="80,31">
             <option name="url" value="pbGS_80x31glow.png"/>
         </decoration>
-
+    
         <decoration type="scaleline" affinity="bottom,left" offset="36,6"/>
-
+    
         <decoration type="legend" affinity="top,left" offset="6,6" size="auto"/>
     </layout>
 
 Used against the states layer from the default GeoServer data, this layout produces an image like the following.
 
 .. figure:: img/decoration.png
-   
+
    The default states layer, drawn with the decoration layout above.

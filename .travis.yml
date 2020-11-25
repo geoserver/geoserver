@@ -28,13 +28,9 @@ before_script:
   - cp downloads/$SMART_JAR $M2_HOME/lib/ext
   - export PATH=$M2_HOME/bin:$PATH
   - mvn --version
-install:
-  - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi
 script:
   - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease --builder smart clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease --builder smart  clean install $COMMUNITY_ARGS; fi
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
-  - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
-  - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae --builder smart -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:single -nsu -N; mvn -f src/community/pom.xml assembly:single -nsu -N; fi
 before_cache:
   - rm -rf $HOME/.m2/repository/org/geotools
   - rm -rf $HOME/.m2/repository/org/geowebcache
@@ -49,15 +45,3 @@ matrix:
       dist: trusty
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS 
       name: Java 8 build
-    - jdk: openjdk11
-      env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
-      name: Java 11 build
-    - jdk: openjdk11
-      env: ACTION=build ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
-      name: QA build on Java 11
-    - jdk: openjdk11
-      env: ACTION=docs
-      name: Documentation build
-    - jdk: openjdk11
-      env: ACTION=package
-      name: Build release packages

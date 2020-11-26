@@ -343,7 +343,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 GetMapRequest request = produceGetMapRequest(layer, template);
                 // keep compatibility for single decoration definition
                 if (singleDecorated && mapsImageHeight == height) {
-                	request.setFormatOptions(Collections.singletonMap("layout", decorationName));
+                    request.setFormatOptions(Collections.singletonMap("layout", decorationName));
                     if (time != null) { // allow text decoration timestamping
                         request.getEnv().put("time", time);
                     }
@@ -421,7 +421,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                         result = mergeImage(result, image);
                     }
                 }
-            } 
+            }
             // track progress and bail out if necessary
             progressListener.progress(95f * (++i) / layers.length / 2);
         }

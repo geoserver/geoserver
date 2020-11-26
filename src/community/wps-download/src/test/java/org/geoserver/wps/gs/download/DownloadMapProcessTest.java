@@ -335,36 +335,39 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
                 ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "withLegend.png"), image, 1500);
     }
-    
+
     @Test
     public void testExecuteSingleDecoratedWithLegendAndHeader() throws Exception {
         File layouts = getDataDirectory().findOrCreateDir("layouts");
-        
+
         URL leftLayout = getClass().getResource("legend_left_decoration.xml");
         FileUtils.copyURLToFile(leftLayout, new File(layouts, "legend_left_decoration.xml"));
-        
+
         URL headerLayout = getClass().getResource("header_decoration.xml");
         FileUtils.copyURLToFile(headerLayout, new File(layouts, "header_decoration.xml"));
-        
+
         URL headerBackground = getClass().getResource("header.jpg");
         FileUtils.copyURLToFile(headerBackground, new File(layouts, "header.jpg"));
-        
+
         String xml =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("mapSingleLayerWithLegendAndHeaderDecoration.xml"),
+                        getClass()
+                                .getResourceAsStream(
+                                        "mapSingleLayerWithLegendAndHeaderDecoration.xml"),
                         "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
                 ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        
-        ImageAssert.assertEquals(new File(SAMPLES + "singleLayerWithLegendAndHeader.png"), image, 1500);
+
+        ImageAssert.assertEquals(
+                new File(SAMPLES + "singleLayerWithLegendAndHeader.png"), image, 1500);
     }
-    
+
     @Test
     public void testExecuteMultiDecoratedWithLegendAndHeader() throws Exception {
         File layouts = getDataDirectory().findOrCreateDir("layouts");
-        
+
         URL leftLayout = getClass().getResource("legend_left_decoration.xml");
         FileUtils.copyURLToFile(leftLayout, new File(layouts, "legend_left_decoration.xml"));
         URL rightLayout = getClass().getResource("legend_right_decoration.xml");
@@ -373,19 +376,22 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         FileUtils.copyURLToFile(headerLayout, new File(layouts, "header_decoration.xml"));
         URL headerBackground = getClass().getResource("header.jpg");
         FileUtils.copyURLToFile(headerBackground, new File(layouts, "header.jpg"));
-        
+
         String xml =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("mapMultiLayerWithLegendAndHeaderDecoration.xml"),
+                        getClass()
+                                .getResourceAsStream(
+                                        "mapMultiLayerWithLegendAndHeaderDecoration.xml"),
                         "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
                 ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        
-        ImageAssert.assertEquals(new File(SAMPLES + "multiLayerWithLegendAndHeader.png"), image, 1500);
+
+        ImageAssert.assertEquals(
+                new File(SAMPLES + "multiLayerWithLegendAndHeader.png"), image, 1500);
     }
-    
+
     @Test
     public void testExecuteMultiDecoratedWithLegend() throws Exception {
         File layouts = getDataDirectory().findOrCreateDir("layouts");
@@ -401,8 +407,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
                 ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        
+
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiLayerWithLegend.png"), image, 1500);
     }
-    
 }

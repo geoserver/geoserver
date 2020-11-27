@@ -1,4 +1,4 @@
-name: Linux with OpenJDK 11 GitHub CI
+name: Linux GitHub CI
 
 on: [pull_request]
 

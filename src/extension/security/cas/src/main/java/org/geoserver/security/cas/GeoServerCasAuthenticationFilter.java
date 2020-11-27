@@ -30,6 +30,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.RoleCalculator;
 import org.jasig.cas.client.configuration.ConfigurationKeys;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
@@ -281,7 +282,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         }
     }
 
-    private List<GeoServerRole> getRolesFromCustomAttribute(HttpServletRequest request) {
+    private List<GeoServerRole> getRolesFromCustomAttribute(HttpServletRequest request)
+            throws IOException {
         Assertion assertion = getCachedAssertion(request);
         if (assertion == null) {
             LOGGER.fine("Could not find the CAS assertion, returning an empty role list");
@@ -302,9 +304,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> list = (List) value;
-            return list.stream()
-                    .map(v -> new GeoServerRole(String.valueOf(v)))
-                    .collect(Collectors.toList());
+            List<GeoServerRole> roles =
+                    list.stream()
+                            .map(v -> new GeoServerRole(String.valueOf(v)))
+                            .collect(Collectors.toList());
+            enrichWithRoleCalculator(roles);
+            return roles;
         } else if (value instanceof String) {
             return Arrays.asList(new GeoServerRole((String) value));
         } else {
@@ -314,6 +319,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                             + ", was expecting a String or a List, but got: "
                             + value);
         }
+    }
+
+    private void enrichWithRoleCalculator(List<GeoServerRole> roles) throws IOException {
+        RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+        calc.addInheritedRoles(roles);
+        calc.addMappedSystemRoles(roles);
     }
 
     private Assertion getCachedAssertion(HttpServletRequest request) {

@@ -7,8 +7,15 @@ env:
   TAKARI_SMART_BUILDER_VERSION: 0.6.1
 
 jobs:
-  openjdk11:
-    runs-on: ubuntu-20.04
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-18.04
+            jdk: 8
+          - os: ubuntu-20.04
+            jdk: 11
     steps:
     - uses: actions/checkout@v2
       with:
@@ -17,7 +24,7 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: ${{ matrix.jdk }}
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4
       with:
@@ -30,7 +37,7 @@ jobs:
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn -B -U -T3 -fae -Dfmt.skip=true -Dall -T2 -Prelease -f src/pom.xml clean install
+      run: mvn -B -U -T3 -fae -Dfmt.skip=true -Prelease -f src/pom.xml clean install
     - name: Build community modules
       run: mvn -nsu -B -U -T4 -fae -Dfmt.skip=true -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
     - name: Package
@@ -64,7 +71,7 @@ jobs:
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn -B -U -T3 -fae -Dfmt.action=check -Dqa -DskipTests=true -Dall -T2 -Prelease -f src/pom.xml clean install
+      run: mvn -B -U -T3 -fae -Dfmt.action=check -Dqa -DskipTests=true -Prelease -f src/pom.xml clean install
     - name: Build community modules
       run: mvn -nsu -B -U -T4 -fae -Dfmt.action=check -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository

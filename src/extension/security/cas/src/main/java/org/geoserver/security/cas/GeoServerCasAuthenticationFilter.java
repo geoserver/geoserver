@@ -8,28 +8,13 @@ package org.geoserver.security.cas;
 
 import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecificRoleSource.CustomAttribute;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.LogoutFilterChain;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.RoleCalculator;
 import org.jasig.cas.client.configuration.ConfigurationKeys;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
@@ -43,6 +28,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * CAS Authentication filter receiving/validating proxy tickets and service tickets.
@@ -281,7 +284,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         }
     }
 
-    private List<GeoServerRole> getRolesFromCustomAttribute(HttpServletRequest request) {
+    private List<GeoServerRole> getRolesFromCustomAttribute(HttpServletRequest request)
+            throws IOException {
         Assertion assertion = getCachedAssertion(request);
         if (assertion == null) {
             LOGGER.fine("Could not find the CAS assertion, returning an empty role list");
@@ -302,9 +306,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> list = (List) value;
-            return list.stream()
-                    .map(v -> new GeoServerRole(String.valueOf(v)))
-                    .collect(Collectors.toList());
+            List<GeoServerRole> roles =
+                    list.stream()
+                            .map(v -> new GeoServerRole(String.valueOf(v)))
+                            .collect(Collectors.toList());
+            enrichWithRoleCalculator(roles);
+            return roles;
         } else if (value instanceof String) {
             return Arrays.asList(new GeoServerRole((String) value));
         } else {
@@ -314,6 +321,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                             + ", was expecting a String or a List, but got: "
                             + value);
         }
+    }
+
+    private void enrichWithRoleCalculator(List<GeoServerRole> roles) throws IOException {
+        RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+        calc.addInheritedRoles(roles);
+        calc.addMappedSystemRoles(roles);
     }
 
     private Assertion getCachedAssertion(HttpServletRequest request) {

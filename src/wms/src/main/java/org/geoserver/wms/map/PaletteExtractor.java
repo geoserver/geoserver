@@ -64,7 +64,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
     private static final int TRANSPARENT_CODE = 255 << 16 | 255 << 8 | 255;
 
-    Set /*<Color>*/ colors;
+    Set<Color> colors;
     boolean translucentSymbolizers;
     boolean externalGraphicsSymbolizers;
     boolean unknownColors;
@@ -77,7 +77,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
      */
     public PaletteExtractor(Color background) {
         super(null);
-        colors = new HashSet();
+        colors = new HashSet<>();
         if (background == null) background = TRANSPARENT;
         colors.add(background);
     }
@@ -99,8 +99,8 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
         int[] cmap = new int[colors.size()];
         int i = 0;
-        for (Iterator it = colors.iterator(); it.hasNext(); ) {
-            Color color = (Color) it.next();
+        for (Iterator<Color> it = colors.iterator(); it.hasNext(); ) {
+            Color color = it.next();
             cmap[i++] =
                     (color.getAlpha() << 24)
                             | (color.getRed() << 16)

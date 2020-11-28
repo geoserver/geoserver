@@ -85,6 +85,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
@@ -251,10 +252,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     @SuppressWarnings("rawtypes")
     @Override
-    public GetMapRequest read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public GetMapRequest read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         GetMapRequest getMap = (GetMapRequest) super.read(request, kvp, rawKvp);
         // set the raw params used to create the request
-        getMap.setRawKvp(rawKvp);
+        getMap.setRawKvp(KvpUtils.toStringKVP(rawKvp));
 
         boolean citeCompliant = wms.getServiceInfo().isCiteCompliant();
 
@@ -416,7 +418,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             if (getMap.getValidateSchema().booleanValue()) {
                 try (StringReader reader = new StringReader(getMap.getSldBody())) {
-                    List errors = validateStyle(reader, getMap);
+                    List<Exception> errors = validateStyle(reader, getMap);
 
                     if (errors.size() != 0) {
                         throw new ServiceException(
@@ -458,7 +460,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             if (input != null) {
                 try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
-                        List errors = validateStyle(input, getMap);
+                        List<Exception> errors = validateStyle(input, getMap);
                         if ((errors != null) && (errors.size() != 0)) {
                             throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
                         }
@@ -506,8 +508,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             if (isParseStyle() && requestedLayerInfos.size() > 0) {
                 List<Style> oldStyles =
                         getMap.getStyles() != null
-                                ? new ArrayList(getMap.getStyles())
-                                : new ArrayList();
+                                ? new ArrayList<>(getMap.getStyles())
+                                : new ArrayList<>();
                 List<Style> newStyles = new ArrayList<Style>();
                 List<Filter> newFilters = filters == null ? null : new ArrayList<>();
                 List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
@@ -884,7 +886,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                                 + featureId);
             }
 
-            Set ids = new HashSet();
+            Set<FeatureId> ids = new HashSet<>();
             for (Iterator i = featureId.iterator(); i.hasNext(); ) {
                 ids.add(filterFactory.featureId((String) i.next()));
             }
@@ -914,7 +916,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     /** validates an style document. */
-    private List validateStyle(Object input, GetMapRequest getMap) {
+    private List<Exception> validateStyle(Object input, GetMapRequest getMap) {
         try {
             String language = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
@@ -949,7 +951,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             final GetMapRequest request,
             final List<?> requestedLayers,
             final StyledLayerDescriptor sld,
-            final List styleNames)
+            final List<String> styleNames)
             throws ServiceException, IOException {
         if (requestedLayers.size() == 0) {
             sld.accept(new ProcessStandaloneSLDVisitor(wms, request));
@@ -1398,7 +1400,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private static DataStore connectRemoteWFS(URL remoteOwsUrl) throws ServiceException {
         try {
             WFSDataStoreFactory factory = new WFSDataStoreFactory();
-            Map params = new HashMap(factory.getImplementationHints());
+            Map<String, Object> params = new HashMap<>();
             params.put(
                     WFSDataStoreFactory.URL.key,
                     remoteOwsUrl + "&request=GetCapabilities&service=WFS");
@@ -1524,7 +1526,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // no raw kvp or request has no crs
         if (getMapRequest.getRawKvp() == null || getMapRequest.getCrs() == null) return null;
-        String wktString = getMapRequest.getRawKvp().get("clip");
+        String wktString = (String) getMapRequest.getRawKvp().get("clip");
         // not found
         if (wktString == null) return null;
         try {

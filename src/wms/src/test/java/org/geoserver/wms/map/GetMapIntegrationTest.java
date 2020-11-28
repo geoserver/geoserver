@@ -401,7 +401,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         WMS wms = new WMS(getGeoServer());
         GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
         // asserts the a layerGroup can be created with null layer and a styleGroup sld
-        HashMap kvp = new HashMap();
+        HashMap<String, Object> kvp = new HashMap<>();
         kvp.put("layers", "BasicStyleGroup");
         kvp.put("styles", "");
 

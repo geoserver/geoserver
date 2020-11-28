@@ -86,7 +86,7 @@ public class FeatureTemplate {
     public static String TIME_FORMAT_PATTERN = "HH:mm:ss";
 
     /** Template cache used to avoid paying the cost of template lookup for each feature */
-    Map templateCache = new HashMap();
+    Map<TemplateKey, Template> templateCache = new HashMap<>();
 
     /**
      * Cached writer used for plain conversion from Feature to String. Improves performance

@@ -512,7 +512,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             start("GetMap");
 
-            Set<String> formats = new LinkedHashSet();
+            Set<String> formats = new LinkedHashSet<>();
 
             // return only mime types, since the cite tests dictate that a format
             // name must match the mime type
@@ -534,7 +534,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
             }
 
-            List<String> sortedFormats = new ArrayList(formats);
+            List<String> sortedFormats = new ArrayList<>(formats);
             Collections.sort(sortedFormats);
             // this is a hack necessary to make cite tests pass: we need an output format
             // that is equal to the mime type as the first one....

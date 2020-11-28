@@ -41,7 +41,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
                 new QName("http://www.geo-solutions.it", "world", "gs"),
                 "world.tiff",
                 "tiff",
-                new HashMap(),
+                new HashMap<>(),
                 MockData.class,
                 catalog);
         testData.addStyle("rainfall", MockData.class, catalog);
@@ -53,7 +53,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
                 new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),
                 "tazdem.tiff",
                 "tiff",
-                new HashMap(),
+                new HashMap<>(),
                 MockData.class,
                 catalog);
 

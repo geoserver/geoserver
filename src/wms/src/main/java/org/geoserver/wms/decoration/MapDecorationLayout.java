@@ -24,6 +24,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.util.logging.Logging;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -36,8 +37,7 @@ import org.jdom2.input.SAXBuilder;
  * @author David Winslow <dwinslow@opengeo.org>
  */
 public class MapDecorationLayout {
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+    private static Logger LOGGER = Logging.getLogger(MapDecorationLayout.class);
 
     /**
      * The Block class annotates a MapDecoration object with positioning and sizing information, and

@@ -117,8 +117,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
 
-        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+        initFeatureType(featureType);
 
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
@@ -134,6 +133,12 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         queryLayers.add(mapLayerInfo);
         getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
+    }
+
+    @SuppressWarnings("unchecked") // EMF model without generics
+    private void initFeatureType(FeatureTypeInfo featureType) throws IOException {
+        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
     }
 
     /** Test request values are inserted in processed template */

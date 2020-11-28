@@ -30,7 +30,7 @@ abstract class AbstractVectorLayerIdentifier
 
     /** Selects the rules active at this zoom level */
     protected List<Rule> getActiveRules(Style style, double scaleDenominator) {
-        List<Rule> result = new ArrayList<Rule>();
+        List<Rule> result = new ArrayList<>();
 
         for (FeatureTypeStyle fts : style.featureTypeStyles()) {
             for (Rule r : fts.rules()) {
@@ -50,6 +50,6 @@ abstract class AbstractVectorLayerIdentifier
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {
         Geometry clipGeom = params.getGetMapRequest().getClip();
         if (clipGeom == null) return featureSource;
-        return new ClippedFeatureSource(featureSource, clipGeom);
+        return new ClippedFeatureSource<>(featureSource, clipGeom);
     }
 }

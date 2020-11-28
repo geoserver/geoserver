@@ -27,7 +27,7 @@ public class FeatureMaximumValueSelectionStrategyImpl
 
     @Override
     public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         final MaxVisitor max = new MaxVisitor(dimension.getAttribute());
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, max);
         if (res.equals(CalcResult.NULL_RESULT)) {

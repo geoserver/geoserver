@@ -230,7 +230,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle(
                 "transparencyFillWidth", "transparencyFillStyleWidth.sld", getClass(), catalog);
 
-        Map properties = new HashMap();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 MOSAIC_HOLES,
@@ -1189,7 +1189,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326&format_options=layout:test-layout-sldtitle;dpi:"
                                 + dpi,
                         "image/png");
-        // RenderedImageBrowser.showChain(image);
+        // RenderedImageBrowser.showChain(image, false, false, "Foobar", true);
         // check the pixels that should be in the legend
         assertPixel(image, 15, 67, Color.RED);
         assertPixel(image, 15, 107, Color.GREEN);

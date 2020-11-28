@@ -260,7 +260,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             protected void onBeforeRender(StreamingRenderer renderer) {
                 // force the renderer into serial painting mode, as we need to check what
                 // was painted to decide which features to include in the results
-                Map hints = renderer.getRendererHints();
+                Map<Object, Object> hints = renderer.getRendererHints();
                 hints.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
                 // disable antialiasing to speed up rendering
                 hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -334,10 +334,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
             if (type instanceof SimpleFeatureType) {
-                result.add(
-                        new ListFeatureCollection(
-                                (SimpleFeatureType) type,
-                                new ArrayList<SimpleFeature>((List) list)));
+                @SuppressWarnings("unchecked")
+                List<SimpleFeature> sf = new ArrayList<SimpleFeature>((List) list);
+                result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
             }
@@ -410,7 +409,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         FeatureLayer result =
                 new FeatureLayer(
-                        new FeatureInfoFeatureSource(featureSource, params.getPropertyNames()),
+                        new FeatureInfoFeatureSource<>(featureSource, params.getPropertyNames()),
                         style);
         result.setQuery(definitionQuery);
 
@@ -703,17 +702,18 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
      * @param <T> FeatureType
      * @param <F> Feature
      */
-    static class FeatureInfoFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    static class FeatureInfoFeatureSource<T extends FeatureType, F extends Feature>
+            extends DecoratingFeatureSource<T, F> {
 
         String[] propertyNames;
 
-        public FeatureInfoFeatureSource(FeatureSource delegate, String[] propertyNames) {
+        public FeatureInfoFeatureSource(FeatureSource<T, F> delegate, String[] propertyNames) {
             super(delegate);
             this.propertyNames = propertyNames;
         }
 
         @Override
-        public FeatureCollection getFeatures(Query query) throws IOException {
+        public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
             Query q = new Query(query);
             // we made the renderer believe we support the screenmap, but we don't want
             // it really be applied, so remove it

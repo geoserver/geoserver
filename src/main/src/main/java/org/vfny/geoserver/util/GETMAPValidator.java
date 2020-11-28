@@ -25,7 +25,6 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.URLs;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 public class GETMAPValidator {
 
@@ -50,7 +49,7 @@ public class GETMAPValidator {
         }
     }
 
-    public static String getErrorMessage(InputStream xml, List<SAXParseException> errors) {
+    public static String getErrorMessage(InputStream xml, List<? extends Exception> errors) {
         return getErrorMessage(new InputStreamReader(xml), errors);
     }
 
@@ -60,7 +59,7 @@ public class GETMAPValidator {
      *
      * <p>This will kick out a VERY LARGE errorMessage.
      */
-    public static String getErrorMessage(Reader xml, List<SAXParseException> errors) {
+    public static String getErrorMessage(Reader xml, List<? extends Exception> errors) {
         return SLDValidator.getErrorMessage(xml, errors);
     }
 

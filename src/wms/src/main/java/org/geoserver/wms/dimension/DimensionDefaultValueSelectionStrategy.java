@@ -21,7 +21,7 @@ public interface DimensionDefaultValueSelectionStrategy {
      * <code>clz</code>, or if a range type, or type <code>Range&lt;clz&gt;</code>
      */
     public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz);
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz);
 
     /**
      * Returns the capabilities representation of the default value. For example, it could be

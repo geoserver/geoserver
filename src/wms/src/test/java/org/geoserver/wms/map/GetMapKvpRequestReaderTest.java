@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -428,7 +427,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     }
 
     public void testSortByLessThanRequired() throws Exception {
-        HashMap<String, Serializable> kvp = new HashMap<>();
+        Map<String, Object> kvp = new HashMap<>();
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS) + "," + getLayerId(MockData.LAKES));
         kvp.put("sortBy", "FID D");
 

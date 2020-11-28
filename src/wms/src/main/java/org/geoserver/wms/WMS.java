@@ -1177,7 +1177,7 @@ public class WMS implements ApplicationContextAware {
         }
 
         // custom dimensions
-        List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
+        List<String> customDomains = new ArrayList<>(dimensions.getCustomDomains());
         for (String domain : new ArrayList<>(customDomains)) {
             List<String> values = request.getCustomDimension(domain);
             if (values != null) {
@@ -1463,7 +1463,9 @@ public class WMS implements ApplicationContextAware {
         // visitor)
         UniqueVisitor visitor = new UniqueVisitor(attribute);
         collection.accepts(visitor, null);
-        TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
+        @SuppressWarnings("unchecked")
+        Set<Comparable> uniques = visitor.getUnique();
+        TreeSet<Object> result = new TreeSet<>(uniques);
         return result;
     }
 
@@ -1529,12 +1531,15 @@ public class WMS implements ApplicationContextAware {
                         ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
                         customDim);
         // custom dimensions have no range support
-        return (T)
-                strategy.getDefaultValue(
-                        resourceInfo,
-                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
-                        customDim,
-                        clz);
+        @SuppressWarnings("unchecked")
+        T result =
+                (T)
+                        strategy.getDefaultValue(
+                                resourceInfo,
+                                ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
+                                customDim,
+                                clz);
+        return result;
     }
 
     public DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(
@@ -1842,6 +1847,7 @@ public class WMS implements ApplicationContextAware {
                         && dimensionInfo.getResolution() == null)) {
             final UniqueVisitor uniqueVisitor = new UniqueVisitor(dimensionInfo.getAttribute());
             fcollection.accepts(uniqueVisitor, null);
+            @SuppressWarnings("unchecked")
             Set<Object> uniqueValues = uniqueVisitor.getUnique();
             for (Object obj : uniqueValues) {
                 result.add(obj);

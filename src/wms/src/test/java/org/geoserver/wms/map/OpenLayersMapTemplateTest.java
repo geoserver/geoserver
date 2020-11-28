@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.data.test.MockData;
@@ -50,18 +51,18 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         mapContent.setMapHeight(256);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        HashMap map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("context", mapContent);
         map.put("request", mapContent.getRequest());
         map.put("maxResolution", Double.valueOf(0.0005)); // just a random number
         map.put("baseUrl", "http://localhost:8080/geoserver/wms");
         map.put("relBaseUrl", "//localhost:8080/geoserver/wms");
-        map.put("parameters", new ArrayList());
+        map.put("parameters", new ArrayList<>());
         map.put("layerName", "layer");
         map.put("units", "degrees");
         map.put("pureCoverage", "false");
         map.put("supportsFiltering", "true");
-        map.put("styles", new ArrayList());
+        map.put("styles", new ArrayList<>());
         map.put("servicePath", "wms");
         map.put("yx", "false");
         template.process(map, new OutputStreamWriter(output));

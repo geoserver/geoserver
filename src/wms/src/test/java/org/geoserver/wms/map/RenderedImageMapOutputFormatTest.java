@@ -61,6 +61,7 @@ import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.CachedGridReaderLayer;
@@ -712,7 +713,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         request.setFormat(getMapFormat());
-        Map formatOptions = new HashMap();
+        Map<String, Object> formatOptions = new HashMap<>();
         // 1 ms timeout
         formatOptions.put("timeout", 1);
         request.setFormatOptions(formatOptions);
@@ -724,7 +725,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         }
 
         // Test partial image exception format
-        Map rawKvp = new HashMap();
+        Map<String, String> rawKvp = new HashMap<>();
         rawKvp.put("EXCEPTIONS", "PARTIALMAP");
         request.setRawKvp(rawKvp);
 
@@ -872,8 +873,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         testData.addStyle(
                 STRAIGHT_VERTICAL_LINE_STYLE, "verticalline.sld", getClass(), getCatalog());
-        Map properties = new HashMap();
-        properties.put(MockData.KEY_STYLE, STRAIGHT_VERTICAL_LINE_STYLE);
+        Map<LayerProperty, Object> properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, STRAIGHT_VERTICAL_LINE_STYLE);
         testData.addVectorLayer(
                 STRAIGHT_VERTICAL_LINE,
                 properties,
@@ -882,8 +883,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 getCatalog());
 
         testData.addStyle(CROSS_DATELINE_STYLE, "crossline.sld", getClass(), getCatalog());
-        properties = new HashMap();
-        properties.put(MockData.KEY_STYLE, CROSS_DATELINE_STYLE);
+        properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, CROSS_DATELINE_STYLE);
         testData.addVectorLayer(
                 CROSS_DATELINE, properties, "CrossLine.properties", getClass(), getCatalog());
     }

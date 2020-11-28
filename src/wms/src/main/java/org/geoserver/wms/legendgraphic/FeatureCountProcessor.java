@@ -11,6 +11,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -295,8 +296,9 @@ class FeatureCountProcessor {
     private GetMapRequest parseAssociatedGetMap(LegendRequest legend, Rule[] rules)
             throws Exception {
         // setup the KVP for the internal, fake GetMap
-        Map<String, Object> kvp = new CaseInsensitiveMap(request.getKvp());
-        Map<String, String> rawKvp = new CaseInsensitiveMap(request.getRawKvp());
+        Map<String, Object> kvp = new CaseInsensitiveMap<>(request.getKvp());
+        Map<String, Object> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
+        request.getRawKvp().forEach((k, v) -> rawKvp.put(k, v));
         // remove width/height, they are part of the GetLegendGraphic request, not GetMap
         kvp.remove("WIDTH");
         kvp.remove("HEIGHT");
@@ -310,8 +312,8 @@ class FeatureCountProcessor {
         kvp.put("STYLES", "");
         rawKvp.put("STYLES", "");
         // ... width and height as part of the count related extension
-        String srcWidth = rawKvp.get("SRCWIDTH");
-        String srcHeight = rawKvp.get("SRCHEIGHT");
+        String srcWidth = (String) rawKvp.get("SRCWIDTH");
+        String srcHeight = (String) rawKvp.get("SRCHEIGHT");
         rawKvp.put(WIDTH, srcWidth);
         rawKvp.put(HEIGHT, srcHeight);
         if (srcWidth != null) {

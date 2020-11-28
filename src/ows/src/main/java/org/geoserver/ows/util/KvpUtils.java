@@ -336,6 +336,40 @@ public class KvpUtils {
         return normalizedKvp;
     }
 
+    /**
+     * Converts a raw KVP with potential String[] values into one with String values, if multiple
+     * string values are actually present an exception will be thrown
+     *
+     * @param kvp
+     * @return
+     */
+    public static KvpMap<String, String> toStringKVP(Map<String, ?> kvp) {
+        KvpMap<String, String> result = new KvpMap<>();
+        for (Map.Entry<String, ?> entry : kvp.entrySet()) {
+            if (entry.getValue() instanceof String || entry.getValue() == null) {
+                result.put(entry.getKey(), (String) entry.getValue());
+            } else {
+                throw new IllegalArgumentException(
+                        "Found key with multiple values, this is unexpected: " + entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Converts a raw KVP based on String values to one with object values. Here to help trade with
+     * parts of the code assuming <code>KvpMap<String, String></code> and <code>
+     * KvpMap<String, Object></code>
+     *
+     * @param kvp
+     * @return
+     */
+    public static KvpMap<String, Object> toObjectKVP(Map<String, String> kvp) {
+        KvpMap<String, Object> result = new KvpMap<>();
+        kvp.forEach((k, v) -> result.put(k, v));
+        return result;
+    }
+
     private static String trim(String value) {
         // trim the string
         if (value != null) {

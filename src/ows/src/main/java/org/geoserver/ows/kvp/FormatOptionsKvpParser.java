@@ -46,11 +46,9 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
     }
 
     public Object parse(String value) throws Exception {
-        List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
         Map<String, Object> formatOptions = new CaseInsensitiveMap<>(new TreeMap<>());
-
         List<String> kvps = KvpUtils.escapedTokens(value, ';');
-
+        List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
         for (String kvp : kvps) {
             List<String> kv = KvpUtils.escapedTokens(kvp, ':', 2);
             String key = kv.get(0);

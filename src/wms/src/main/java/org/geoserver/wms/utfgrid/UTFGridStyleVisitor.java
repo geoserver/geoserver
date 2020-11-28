@@ -71,7 +71,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
     public void visit(Style style) {
         super.visit(style);
         Style copy = (Style) pages.pop();
-        List<FeatureTypeStyle> featureTypeStyles = new ArrayList(copy.featureTypeStyles());
+        List<FeatureTypeStyle> featureTypeStyles = new ArrayList<>(copy.featureTypeStyles());
         for (Iterator<FeatureTypeStyle> it = featureTypeStyles.iterator(); it.hasNext(); ) {
             FeatureTypeStyle fts = it.next();
             if (fts.rules().isEmpty()) {
@@ -128,7 +128,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         super.visit(rule);
         // clean up removed symbolizers
         Rule copy = (Rule) pages.pop();
-        List<Symbolizer> symbolizers = new ArrayList(copy.symbolizers());
+        List<Symbolizer> symbolizers = new ArrayList<>(copy.symbolizers());
         for (Iterator<Symbolizer> it = symbolizers.iterator(); it.hasNext(); ) {
             Symbolizer symbolizer = it.next();
             if (symbolizer == null) {

@@ -152,7 +152,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
             q.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
         }
 
-        FeatureCollection match;
+        FeatureCollection<? extends FeatureType, ? extends Feature> match;
         LOGGER.log(Level.FINE, q.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
@@ -165,7 +165,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         // if we could not include the rules filter into the query, post process in
         // memory
         if (!Filter.INCLUDE.equals(postFilter)) {
-            match = new FilteringFeatureCollection(match, postFilter);
+            match = new FilteringFeatureCollection<>(match, postFilter);
         }
 
         return Collections.singletonList(match);

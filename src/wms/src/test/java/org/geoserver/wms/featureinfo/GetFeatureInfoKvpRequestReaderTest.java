@@ -7,6 +7,7 @@ package org.geoserver.wms.featureinfo;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Map;
 import junit.framework.Test;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -81,7 +82,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
     }
 
     public void testSldDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        Map<String, Object> kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -109,7 +110,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
     }
 
     public void testSldBodyDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        Map<String, Object> kvp = new HashMap<>();
         kvp.put("sld_body", STATES_SLD);
         kvp.put(
                 "layers",

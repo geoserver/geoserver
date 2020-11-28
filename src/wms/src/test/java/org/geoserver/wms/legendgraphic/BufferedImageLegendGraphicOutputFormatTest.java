@@ -1123,7 +1123,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, String> legendOptions = new HashMap<>();
         legendOptions.put("labelMargin", "10");
         req.setLegendOptions(legendOptions);
 
@@ -1175,7 +1175,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
             feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
-            HashMap legendOptions = new HashMap();
+            Map<String, String> legendOptions = new HashMap<>();
             legendOptions.put("dx", "0.5");
             legendOptions.put("dy", "0");
             req.setLegendOptions(legendOptions);

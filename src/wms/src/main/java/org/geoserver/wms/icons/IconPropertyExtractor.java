@@ -125,6 +125,7 @@ public final class IconPropertyExtractor {
                 return defaultValue;
             }
             try {
+                @SuppressWarnings("unchecked")
                 T value = (T) expression.evaluate(feature, defaultValue.getClass());
                 if (value == null || (value instanceof Double && Double.isNaN((Double) value))) {
                     return defaultValue;

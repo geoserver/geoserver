@@ -27,7 +27,7 @@ import org.geotools.util.logging.Logging;
  */
 public class CoverageMaximumValueSelectionStrategyImpl
         extends AbstractDefaultValueSelectionStrategy {
-    private static Logger LOGGER =
+    private static final Logger LOGGER =
             Logging.getLogger(CoverageMaximumValueSelectionStrategyImpl.class);
 
     /** Default constructor. */
@@ -35,7 +35,7 @@ public class CoverageMaximumValueSelectionStrategyImpl
 
     @Override
     public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         Object retval = null;
         try {
             GridCoverage2DReader reader =

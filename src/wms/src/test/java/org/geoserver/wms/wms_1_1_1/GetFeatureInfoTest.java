@@ -144,7 +144,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 "squares.properties",
                 GetFeatureInfoTest.class,
                 catalog);
-        Map propertyMap = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 TASMANIA_BM, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);

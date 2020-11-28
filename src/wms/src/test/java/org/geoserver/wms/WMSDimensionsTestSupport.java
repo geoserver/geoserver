@@ -106,8 +106,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         getGeoServer().save(wms);
 
         // vector time-elevation
-        Map map = new HashMap();
-        map.put(MockData.KEY_STYLE, "TimeElevation");
+        Map<LayerProperty, Object> map = new HashMap<>();
+        map.put(LayerProperty.STYLE, "TimeElevation");
         Catalog catalog = getCatalog();
         testData.addStyle(
                 "TimeElevation", "TimeElevation.sld", WMSDimensionsTestSupport.class, catalog);
@@ -127,7 +127,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 catalog);
 
         // vector time-elevation, stacked (all polys covering the whole planet)
-        map.put(MockData.KEY_STYLE, "TimeElevationStacked");
+        map.put(LayerProperty.STYLE, "TimeElevationStacked");
         testData.addStyle(
                 "TimeElevationStacked",
                 "TimeElevationStacked.sld",
@@ -142,7 +142,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
 
         testData.addStyle(
                 "temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);
-        Map propertyMap = new HashMap();
+        Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
         // a raster layer with times
         testData.addRasterLayer(

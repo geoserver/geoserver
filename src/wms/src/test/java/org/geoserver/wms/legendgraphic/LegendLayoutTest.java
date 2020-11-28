@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.media.jai.PlanarImage;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -30,7 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 
-public class LegendLayoutTest extends BaseLegendTest {
+public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before
     public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder();
@@ -58,7 +59,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             req.setLegendOptions(legendOptions);
 
             // use default values for the rest of parameters
@@ -67,7 +68,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             BufferedImage vImage = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // Change layout
-            legendOptions = new HashMap();
+            legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             req.setLegendOptions(legendOptions);
 
@@ -112,7 +113,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             legendOptions.put("mx", "0");
             legendOptions.put("my", "0");
@@ -163,7 +164,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "vertical");
             legendOptions.put("columnheight", "85");
             legendOptions.put("columns", "1");
@@ -216,7 +217,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             legendOptions.put("rowwidth", "100");
             legendOptions.put("rows", "2");
@@ -260,7 +261,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("layout", "horizontal");
         legendOptions.put("forceLabels", "off");
         req.setLegendOptions(legendOptions);
@@ -306,7 +307,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "on");
         legendOptions.put("fontName", "Bitstream Vera Sans");
         req.setLegendOptions(legendOptions);
@@ -377,7 +378,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "off");
         legendOptions.put("forceLabels", "on");
         req.setLegendOptions(legendOptions);
@@ -439,7 +440,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         // Test layout with grouplayout=VERTICAL
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "off");
         legendOptions.put("forceLabels", "off");
         legendOptions.put("layout", "VERTICAL");

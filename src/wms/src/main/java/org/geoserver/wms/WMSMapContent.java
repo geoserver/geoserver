@@ -303,6 +303,7 @@ public class WMSMapContent extends MapContent {
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;
         } else if (obj instanceof Collection) {
+            @SuppressWarnings("unchecked")
             Collection<String> keywords = (Collection) obj;
             return keywords.toArray(new String[keywords.size()]);
         } else {
@@ -348,7 +349,7 @@ public class WMSMapContent extends MapContent {
     }
 
     public double getScaleDenominator(boolean considerDPI) {
-        java.util.Map hints = new HashMap();
+        Map<String, Object> hints = new HashMap<>();
         if (considerDPI) {
             // compute the DPI
             if (request.getFormatOptions().get("dpi") != null) {

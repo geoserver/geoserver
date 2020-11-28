@@ -24,8 +24,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.memory.MemoryFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.util.Range;
 import org.junit.Before;
 import org.junit.Test;
@@ -236,6 +236,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         FeatureTypeInfo elevationWithStartEnd =
                 getCatalog().getFeatureTypeByName(ELEVATION_WITH_START_END.getLocalPart());
+        @SuppressWarnings("unchecked")
         Range<Double> defaultRange = (Range<Double>) wms.getDefaultElevation(elevationWithStartEnd);
         assertTrue("Default elevation is null", defaultRange != null);
         assertEquals(-100, defaultRange.getMinValue(), 0d);
@@ -258,7 +259,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
     protected void addFeature(int id, Date time, Double elevation) throws IOException {
         FeatureTypeInfo timeWithStartEnd =
                 getCatalog().getFeatureTypeByName(ELEVATION_WITH_START_END.getLocalPart());
-        FeatureStore fs = (FeatureStore) timeWithStartEnd.getFeatureSource(null, null);
+        SimpleFeatureStore fs = (SimpleFeatureStore) timeWithStartEnd.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeWithStartEnd.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);
         StringBuffer content = new StringBuffer();

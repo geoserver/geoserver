@@ -27,8 +27,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.memory.MemoryFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.Range;
 import org.junit.Before;
@@ -375,7 +375,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     protected void addFeature(int id, Date time, Double elevation) throws IOException {
         FeatureTypeInfo timeWithStartEnd =
                 getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-        FeatureStore fs = (FeatureStore) timeWithStartEnd.getFeatureSource(null, null);
+        SimpleFeatureStore fs = (SimpleFeatureStore) timeWithStartEnd.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeWithStartEnd.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);
         StringBuffer content = new StringBuffer();

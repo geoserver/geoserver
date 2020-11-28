@@ -91,9 +91,10 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
 
         // NoData stuff
         if (image instanceof PlanarImage) {
-            Map properties = gc.getProperties();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> properties = gc.getProperties();
             if (properties == null) {
-                properties = new HashMap();
+                properties = new HashMap<>();
             }
             Object property = ((PlanarImage) image).getProperty(NoDataContainer.GC_NODATA);
             if (property != null) {

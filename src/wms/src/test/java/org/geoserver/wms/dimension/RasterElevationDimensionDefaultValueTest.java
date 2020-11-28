@@ -181,6 +181,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         setupCoverageElevationDimension(WATTEMP, defaultValueSetting);
 
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+        @SuppressWarnings("unchecked")
         Range<Double> defaultRange = (Range<Double>) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", defaultRange != null);
         assertEquals(-100, defaultRange.getMinValue(), 0d);

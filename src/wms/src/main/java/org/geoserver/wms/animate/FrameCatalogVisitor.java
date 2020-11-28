@@ -211,7 +211,7 @@ class FrameLoader implements Callable<RenderedImage> {
 
         // looking for composite parameters like env:color or viewparams:param ...
         Map<String, String> rawKvp =
-                new CaseInsensitiveMap(new HashMap<String, String>(theRequest.getRawKvp()));
+                new CaseInsensitiveMap<>(new HashMap<>(theRequest.getRawKvp()));
         if (param.contains(":")) {
             // going to replace composite param values for each frame in the KVP map
             String compositeParamKey = param.split(":")[0].toUpperCase();
@@ -249,11 +249,11 @@ class FrameLoader implements Callable<RenderedImage> {
         request.setRawKvp(rawKvp);
 
         // building the request KVP map using the reflection
-        HashMap<String, String> kvp = new HashMap<String, String>(rawKvp);
+        HashMap<String, Object> kvp = new HashMap<>(rawKvp);
         KvpUtils.parse(kvp);
 
         // finally building the request
-        request = kvpRequestReader.read(new GetMapRequest(), kvp, rawKvp);
+        request = kvpRequestReader.read(new GetMapRequest(), kvp, KvpUtils.toObjectKVP(rawKvp));
 
         // add the param value for text decorations to use
         request.getEnv().put("avalue", value);

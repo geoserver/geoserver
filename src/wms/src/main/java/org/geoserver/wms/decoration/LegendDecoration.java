@@ -30,8 +30,11 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -68,7 +71,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     public void loadOptions(Map<String, String> options) {
-        this.options = new HashMap(options);
+        this.options = new HashMap<>(options);
         String layers = this.options.remove("layers");
         if (layers != null) {
             String[] splittedLayers = layers.split(",");
@@ -339,11 +342,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             final Request dispatcherRequest = Dispatcher.REQUEST.get();
             if (dispatcherRequest != null) {
                 request.setKvp(dispatcherRequest.getKvp());
-                request.setRawKvp(dispatcherRequest.getRawKvp());
+                request.setRawKvp(KvpUtils.toStringKVP(dispatcherRequest.getRawKvp()));
             }
             setLegendInfo(layer, request, size);
 
-            Map legendOptions = new CaseInsensitiveMap(options);
+            Map<String, Object> legendOptions = getLegendOptions();
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());
 
             // add legend_options defined by layout
@@ -356,7 +359,10 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             if (dispatcherRequest != null
                     && dispatcherRequest.getKvp().get("legend_options") != null) {
-                legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));
+                @SuppressWarnings("unchecked")
+                Map<String, Object> requestOptions =
+                        (Map) dispatcherRequest.getKvp().get("legend_options");
+                legendOptions.putAll(requestOptions);
             }
             request.setLegendOptions(legendOptions);
 
@@ -390,5 +396,34 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             legendLayers.add(legend);
         }
         return legendLayers;
+    }
+
+    private Map<String, Object> getLegendOptions() {
+        CaseInsensitiveMap<String, Object> result = new CaseInsensitiveMap<>(new HashMap<>());
+        List parsers = GeoServerExtensions.extensions(KvpParser.class);
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            Object parsed = null;
+
+            for (Iterator p = parsers.iterator(); p.hasNext(); ) {
+                KvpParser parser = (KvpParser) p.next();
+                if (key.equalsIgnoreCase(parser.getKey())) {
+                    try {
+                        parsed = parser.parse(value);
+                        if (parsed != null) {
+                            break;
+                        }
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Failed to parse key " + key, e);
+                    }
+                }
+            }
+            if (parsed == null) {
+                parsed = value;
+            }
+            result.put(key, parsed);
+        }
+        return result;
     }
 }

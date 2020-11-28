@@ -37,6 +37,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -102,7 +103,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
      * @param geoServer needed to know whether to write detailed exception reports or not (as per
      *     {@code GeoServer.getGlobal().isVerbose()})
      */
-    public WMSServiceExceptionHandler(List services, GeoServer geoServer) {
+    public WMSServiceExceptionHandler(List<Service> services, GeoServer geoServer) {
         super(services);
         this.geoServer = geoServer;
     }

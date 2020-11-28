@@ -29,7 +29,7 @@ public abstract class KvpRequestReaderTestSupport extends GeoServerTestSupport {
      *
      * @param kvp Map of String,String.
      */
-    protected Map parseKvp(Map<String, String> raw) throws Exception {
+    protected Map<String, Object> parseKvp(Map<String, Object> raw) throws Exception {
 
         // parse like the dispatcher but make sure we don't change the original map
         Map<String, Object> input = new HashMap<>(raw);
@@ -39,7 +39,7 @@ public abstract class KvpRequestReaderTestSupport extends GeoServerTestSupport {
         return caseInsensitiveKvp(input);
     }
 
-    protected Map<String, Object> caseInsensitiveKvp(Map<String, Object> input) {
+    protected <T> Map<String, Object> caseInsensitiveKvp(Map<String, Object> input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map<String, Object> result = new HashMap<>();
         for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {

@@ -267,7 +267,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         request.setBaseUrl("http://localhost:8080/geoserver");
 
         List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>(layerNames.length);
-        List styles = new ArrayList();
+        List<Style> styles = new ArrayList<>();
 
         for (int i = 0; i < layerNames.length; i++) {
             LayerInfo layerInfo = getCatalog().getLayerByName(layerNames[i].getLocalPart());
@@ -284,7 +284,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         request.setBbox(new Envelope(-180, -90, 180, 90));
         request.setCrs(DefaultGeographicCRS.WGS84);
         request.setSRS("EPSG:4326");
-        request.setRawKvp(new HashMap());
+        request.setRawKvp(new HashMap<>());
         return request;
     }
 

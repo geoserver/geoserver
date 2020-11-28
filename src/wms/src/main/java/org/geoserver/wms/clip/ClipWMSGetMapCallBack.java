@@ -14,6 +14,7 @@ import org.geoserver.wms.GetMapCallback;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.geotools.data.FeatureSource;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.map.FeatureLayer;
@@ -60,8 +61,8 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 // wrap around
                 FeatureLayer fl = (FeatureLayer) layer;
 
-                ClippedFeatureSource clippedFS =
-                        new ClippedFeatureSource(layer.getFeatureSource(), wktGeom);
+                FeatureSource<?, ?> clippedFS =
+                        new ClippedFeatureSource<>(layer.getFeatureSource(), wktGeom);
                 FeatureLayer clippedLayer =
                         new FeatureLayer(clippedFS, fl.getStyle(), fl.getTitle());
                 BeanUtilsBean2.getInstance().copyProperties(clippedLayer, fl);

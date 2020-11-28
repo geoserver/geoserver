@@ -89,7 +89,7 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
         currLayer = null;
         final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
         if (request.getFilter() == null) {
-            request.setFilter(new ArrayList());
+            request.setFilter(new ArrayList<>());
         }
         for (int i = 0; i < featureConstraints.length; i++) {
             // grab the filter

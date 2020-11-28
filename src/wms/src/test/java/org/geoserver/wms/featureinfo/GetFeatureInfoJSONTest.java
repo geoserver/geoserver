@@ -25,6 +25,7 @@ import net.opengis.wfs.WfsFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -426,8 +427,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         Dispatcher.REQUEST.set(request);
         FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fct.getFeature().add(fc);
+        FeatureCollectionType fct = getFeatureCollectionType(fc);
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
@@ -450,6 +450,13 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();
+    }
+
+    @SuppressWarnings("unchecked")
+    private FeatureCollectionType getFeatureCollectionType(FeatureCollection fc) {
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fct.getFeature().add(fc);
+        return fct;
     }
 
     /** Test json output with two layers having both template * */
@@ -506,7 +513,9 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
         for (LayerInfo l : layers) {
             FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
-            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fct.getFeature();
+            feature.add(fti.getFeatureSource(null, null).getFeatures());
         }
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
@@ -590,7 +599,9 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
         for (LayerInfo l : layers) {
             FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
-            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fct.getFeature();
+            feature.add(fti.getFeatureSource(null, null).getFeatures());
         }
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
@@ -672,8 +683,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         Dispatcher.REQUEST.set(request);
         FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fct.getFeature().add(fc);
+        FeatureCollectionType fct = getFeatureCollectionType(fc);
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);

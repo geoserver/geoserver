@@ -27,7 +27,7 @@ public class FeatureMinimumValueSelectionStrategyImpl
 
     @Override
     public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         final MinVisitor min = new MinVisitor(dimension.getAttribute());
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, min);
         if (res.equals(CalcResult.NULL_RESULT)) {

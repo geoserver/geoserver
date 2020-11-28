@@ -107,7 +107,8 @@ public class ColorMapLegendCreator {
 
         private ColorMapEntry previousCMapEntry;
 
-        private final CaseInsensitiveMap additionalOptions = new CaseInsensitiveMap();
+        private final CaseInsensitiveMap<String, Object> additionalOptions =
+                new CaseInsensitiveMap<>();
 
         private Color backgroundColor;
 

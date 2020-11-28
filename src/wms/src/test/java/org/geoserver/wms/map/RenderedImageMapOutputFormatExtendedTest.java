@@ -83,7 +83,7 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        Map properties = new HashMap();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         final Catalog cat = getCatalog();
         testData.addRasterLayer(

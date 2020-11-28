@@ -370,9 +370,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
 
         catalog.firePostModified(
                 catalog.getStyleByName("Bridges"),
-                new ArrayList<String>(),
-                new ArrayList(),
-                new ArrayList());
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
 
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);

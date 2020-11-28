@@ -15,12 +15,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.RenderedImageList;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -29,7 +29,6 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMapService;
-import org.geoserver.wms.map.RenderedImageMap;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
@@ -102,7 +101,7 @@ public class AnimatorTest extends WMSTestSupport {
 
         assertEquals(4, visitor.framesNumber);
 
-        List<RenderedImageMap> frames = visitor.produce(getWMS());
+        RenderedImageList frames = visitor.produce(getWMS());
 
         assertNotNull(frames);
         assertEquals(4, frames.size());

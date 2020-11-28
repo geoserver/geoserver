@@ -56,7 +56,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         // add org.geoserver.catalog.testReader.CustomFormat coverage
         String styleName = "temperature";
         testData.addStyle(styleName, "../temperature.sld", getClass(), getCatalog());
-        Map propertyMap = new HashMap();
+        Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WATTEMP,

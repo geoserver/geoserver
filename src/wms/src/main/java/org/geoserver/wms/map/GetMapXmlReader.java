@@ -62,6 +62,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -731,7 +732,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      */
     public void validateSchemaSLD(File f, GetMapRequest getMapRequest) throws Exception {
         SLDValidator validator = new SLDValidator();
-        List errors = null;
+        List<SAXException> errors = null;
 
         try {
             FileInputStream in = null;
@@ -764,7 +765,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /** This should only be called if the xml starts with GetMap Don't use on a SLD. */
     public void validateSchemaGETMAP(File f, GetMapRequest getMapRequest) throws Exception {
         GETMAPValidator validator = new GETMAPValidator();
-        List errors = null;
+        List<SAXException> errors = null;
 
         try {
             FileInputStream in = null;

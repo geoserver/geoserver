@@ -24,8 +24,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.memory.MemoryFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.type.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -538,7 +538,8 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
             throws IOException {
         FeatureTypeInfo timeElevationCustom =
                 getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
-        FeatureStore fs = (FeatureStore) timeElevationCustom.getFeatureSource(null, null);
+        SimpleFeatureStore fs =
+                (SimpleFeatureStore) timeElevationCustom.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeElevationCustom.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);
         StringBuffer content = new StringBuffer();

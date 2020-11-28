@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
@@ -304,7 +305,11 @@ public class SLDHandler extends StyleHandler {
         try (Reader reader = toReader(input)) {
             final SLDValidator validator = new SLDValidator();
             validator.setEntityResolver(entityResolver);
-            return validator.validateSLD(new InputSource(reader));
+            return validator
+                    .validateSLD(new InputSource(reader))
+                    .stream()
+                    .map(e -> (Exception) e)
+                    .collect(Collectors.toList());
         }
     }
 

@@ -1,7 +1,7 @@
 Automatic Quality Assurance checks
 ----------------------------------
 
-The GeoServer builds on Travis and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
+The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
 and will fail the build in case of rule violation.
 

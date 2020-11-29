@@ -98,7 +98,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
         GWC_OPERATION.set(requestName);
         GWC_ORIGINAL_BASEURL.set(ResponseUtils.baseURL(request.getHttpRequest()));
 
-        Map<String, String> kvp = new HashMap<>();
+        Map<String, Object> kvp = new HashMap<>();
         kvp.put("service", "gwc");
         kvp.put("version", "1.0.0");
         kvp.put("request", "dispatch");

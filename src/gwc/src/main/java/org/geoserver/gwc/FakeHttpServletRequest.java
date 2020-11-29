@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -34,24 +35,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SuppressWarnings({"rawtypes", "deprecation"})
 class FakeHttpServletRequest implements HttpServletRequest {
 
-    private static final Enumeration EMPTY_ENUMERATION =
-            new Enumeration() {
-                @Override
-                public boolean hasMoreElements() {
-                    // TODO Auto-generated method stub
-                    return false;
-                }
-
-                @Override
-                public Object nextElement() {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-            };
-
     private String workspace;
 
-    private Map<String, String> parameterMap;
+    private Map<String, String[]> parameterMap;
 
     private Cookie[] cookies;
 
@@ -63,7 +49,13 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     public FakeHttpServletRequest(
             Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
-        this.parameterMap = parameterMap;
+        this.parameterMap =
+                parameterMap
+                        .entrySet()
+                        .stream()
+                        .collect(
+                                Collectors.toMap(
+                                        e -> e.getKey(), e -> new String[] {e.getValue()}));
         this.cookies = cookies;
         this.workspace = workspace;
         // grab the original request from Spring to forward security related attributes
@@ -97,11 +89,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
         return original.map(r -> r.getHeader(name)).orElse(null);
     }
 
-    public Enumeration getHeaderNames() {
-        return original.map(r -> r.getHeaderNames()).orElse(EMPTY_ENUMERATION);
+    public Enumeration<String> getHeaderNames() {
+        return original.map(r -> r.getHeaderNames()).orElse(Collections.emptyEnumeration());
     }
 
-    public Enumeration getHeaders(String name) {
+    public Enumeration<String> getHeaders(String name) {
         return original.map(r -> r.getHeaders(name)).orElseThrow(() -> new ServletDebugException());
     }
 
@@ -207,7 +199,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
         throw new ServletDebugException();
     }
 
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         throw new ServletDebugException();
     }
 
@@ -279,24 +271,26 @@ class FakeHttpServletRequest implements HttpServletRequest {
         return original.map(r -> r.getLocale()).orElseThrow(() -> new ServletDebugException());
     }
 
-    public Enumeration getLocales() {
+    public Enumeration<Locale> getLocales() {
         throw new ServletDebugException();
     }
 
     public String getParameter(String name) {
-        return parameterMap.get(name);
+        String[] value = parameterMap.get(name);
+        if (value == null || value.length == 0) return null;
+        return value[0];
     }
 
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
         return parameterMap;
     }
 
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(parameterMap.keySet());
     }
 
     public String[] getParameterValues(String name) {
-        return new String[] {parameterMap.get(name)};
+        return parameterMap.get(name);
     }
 
     public String getProtocol() {

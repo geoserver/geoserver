@@ -215,7 +215,7 @@ public class RESTUtils {
         return Files.asResource(inputFile);
     }
 
-    static Set<String> ZIP_MIME_TYPES = new HashSet();
+    static Set<String> ZIP_MIME_TYPES = new HashSet<>();
 
     static {
         ZIP_MIME_TYPES.add("application/zip");

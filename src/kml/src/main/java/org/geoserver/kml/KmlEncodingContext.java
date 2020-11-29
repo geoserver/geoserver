@@ -158,7 +158,7 @@ public class KmlEncodingContext {
         }
     }
 
-    private String computeModeOption(Map<String, String> rawKvp) {
+    private String computeModeOption(Map<String, Object> rawKvp) {
         String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", null);
         return mode;
     }

@@ -426,7 +426,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
 
         // return the curren tile fids, and recurse up to the parent
-        Set<String> fids = new HashSet();
+        Set<String> fids = new HashSet<>();
         fids.addAll(readFeaturesForTile(tile, conn));
         Tile parent = tile.getParent();
         if (parent != null) {

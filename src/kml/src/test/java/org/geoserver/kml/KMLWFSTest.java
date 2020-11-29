@@ -192,9 +192,7 @@ public class KMLWFSTest extends WFSTestSupport {
                         };
                     }
                 };
-        FeatureCollectionType response = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        response.getFeature().add(decorated);
-        FeatureCollectionResponse fcResponse = FeatureCollectionResponse.adapt(response);
+        FeatureCollectionResponse fcResponse = getFeatureCollectionResponse(decorated);
 
         WFSKMLOutputFormat outputFormat = GeoServerExtensions.bean(WFSKMLOutputFormat.class);
         FilterOutputStream fos =
@@ -230,5 +228,13 @@ public class KMLWFSTest extends WFSTestSupport {
         }
 
         assertEquals(0, openIterators.get());
+    }
+
+    @SuppressWarnings("unchecked") // EMF model without generics
+    private FeatureCollectionResponse getFeatureCollectionResponse(FeatureCollection decorated) {
+        FeatureCollectionType response = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        response.getFeature().add(decorated);
+        FeatureCollectionResponse fcResponse = FeatureCollectionResponse.adapt(response);
+        return fcResponse;
     }
 }

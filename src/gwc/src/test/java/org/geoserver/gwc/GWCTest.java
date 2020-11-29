@@ -279,7 +279,7 @@ public class GWCTest {
         expect(appContext.getBeanNamesForType(XMLConfiguration.class))
                 .andReturn(new String[] {"geoWebCacheXMLConfiguration"})
                 .anyTimes();
-        Map<String, XMLConfiguration> xmlConfMap = new HashMap();
+        Map<String, XMLConfiguration> xmlConfMap = new HashMap<>();
         xmlConfMap.put("geoWebCacheXMLConfiguration", xmlConfig);
         expect(appContext.getBeansOfType(XMLConfiguration.class)).andReturn(xmlConfMap).anyTimes();
         expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
@@ -827,7 +827,8 @@ public class GWCTest {
                                                 .stream()
                                                 .map(
                                                         time -> {
-                                                            Map<String, String> map = new HashMap();
+                                                            Map<String, String> map =
+                                                                    new HashMap<>();
                                                             map.put("STYLE", style);
                                                             map.put("TIME", time);
                                                             return map;
@@ -1199,7 +1200,7 @@ public class GWCTest {
         assertEquals(0, target.length());
 
         // Ensure that if another filter is set an error is thrown
-        List filters = new ArrayList(cqlFilters);
+        List<Filter> filters = new ArrayList<>(cqlFilters);
         filters.add(Filter.INCLUDE);
         request.setFilter(filters);
 

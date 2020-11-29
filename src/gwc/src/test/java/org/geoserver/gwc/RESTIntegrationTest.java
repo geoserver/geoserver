@@ -566,9 +566,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                             allOf(
                                     Matchers.<ParameterFilter>hasProperty("key", is("STYLES")),
                                     isA(
-                                            (Class<ParameterFilter>)
-                                                    StyleParameterFilter.class.asSubclass(
-                                                            ParameterFilter.class)))));
+                                            StyleParameterFilter.class.asSubclass(
+                                                    ParameterFilter.class)))));
         }
         {
             final String xml =
@@ -596,9 +595,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                                             Matchers.<ParameterFilter>hasProperty(
                                                     "key", is("STYLES")),
                                             isA(
-                                                    (Class<ParameterFilter>)
-                                                            StyleParameterFilter.class.asSubclass(
-                                                                    ParameterFilter.class))))));
+                                                    StyleParameterFilter.class.asSubclass(
+                                                            ParameterFilter.class))))));
         }
     }
 

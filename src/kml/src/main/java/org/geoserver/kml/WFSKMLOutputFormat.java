@@ -40,7 +40,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
     public WFSKMLOutputFormat(KMLEncoder encoder, GeoServer gs) {
         super(
                 gs,
-                new HashSet(
+                new HashSet<>(
                         Arrays.asList(
                                 new String[] {
                                     "KML",

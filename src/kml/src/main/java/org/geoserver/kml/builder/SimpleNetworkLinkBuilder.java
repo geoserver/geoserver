@@ -49,7 +49,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     void encodeDocumentContents(Document container) {
         WMSMapContent mapContent = context.getMapContent();
         GetMapRequest request = context.getRequest();
-        Map formatOptions = request.getFormatOptions();
+        Map<String, Object> formatOptions = request.getFormatOptions();
         LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
         LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
 

@@ -15,21 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/layers")
-public class DataAccessController extends AbstractAclController {
+public class DataAccessController extends AbstractAclController<DataAccessRule, DataAccessRuleDAO> {
 
     DataAccessController() {
         super(DataAccessRuleDAO.get());
     }
 
     @Override
-    protected void addRuleToMap(Comparable rule, Map map) {
-        DataAccessRule ruleObject = (DataAccessRule) rule;
-        map.put(ruleObject.getKey(), ruleObject.getValue());
+    protected void addRuleToMap(DataAccessRule rule, Map<String, String> map) {
+        map.put(rule.getKey(), rule.getValue());
     }
 
     @Override
-    protected String keyFor(Comparable rule) {
-        return ((DataAccessRule) rule).getKey();
+    protected String keyFor(DataAccessRule rule) {
+        return rule.getKey();
     }
 
     private String[] parseElements(String path) {
@@ -38,7 +37,7 @@ public class DataAccessController extends AbstractAclController {
     }
 
     @Override
-    protected Comparable convertEntryToRule(Entry entry) {
+    protected DataAccessRule convertEntryToRule(Entry entry) {
         String[] parts = parseElements(((String) entry.getKey()));
 
         AccessMode accessMode = AccessMode.getByAlias(parts[2]);

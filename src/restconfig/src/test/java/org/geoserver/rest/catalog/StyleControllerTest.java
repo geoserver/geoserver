@@ -496,6 +496,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         JSONObject styleJson = ((JSONObject) json).getJSONObject("style");
         assertEquals("Ponds", styleJson.get("name"));
         assertEquals("Ponds.sld", styleJson.get("filename"));
+        @SuppressWarnings("unchecked")
         Collection<JSONObject> entryCollection =
                 JSONArray.toCollection(
                         styleJson.getJSONObject("metadata").getJSONArray("entry"),

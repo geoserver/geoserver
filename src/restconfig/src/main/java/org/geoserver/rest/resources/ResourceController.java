@@ -265,14 +265,14 @@ public class ResourceController extends RestBaseController {
                 response.setContentType(mediaType.toString());
 
                 if (request.getMethod().equals("HEAD")) {
-                    result = new ResponseEntity("", responseHeaders, HttpStatus.OK);
+                    result = new ResponseEntity<>("", responseHeaders, HttpStatus.OK);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
                     result =
                             wrapObject(
                                     new ResourceDirectoryInfo(resource, request),
                                     ResourceDirectoryInfo.class);
                 } else {
-                    result = new ResponseEntity(resource.in(), responseHeaders, HttpStatus.OK);
+                    result = new ResponseEntity<>(resource.in(), responseHeaders, HttpStatus.OK);
                 }
                 response.setHeader("Location", href(resource.path()));
                 response.setHeader("Last-Modified", FORMAT_HEADER.format(resource.lastmodified()));

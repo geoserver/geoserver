@@ -7,6 +7,7 @@ package org.geoserver.rest.catalog;
 import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -243,7 +244,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             }
 
             // coverage read params
-            final Map customParameters = new HashMap();
+            final Map<String, Serializable> customParameters = new HashMap<>();
             if (useJaiImageRead != null) {
                 customParameters.put(
                         AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), useJaiImageRead);
@@ -319,7 +320,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             String nativeName,
             String coverageName,
             GridCoverage2DReader reader,
-            final Map customParameters)
+            final Map<String, Serializable> customParameters)
             throws Exception {
         CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
 

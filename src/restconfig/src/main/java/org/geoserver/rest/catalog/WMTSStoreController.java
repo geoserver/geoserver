@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -281,13 +279,10 @@ public class WMTSStoreController extends AbstractCatalogController {
         return new ObjectToMapWrapper<WMTSStoreInfo>(WMTSStoreInfo.class) {
 
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, WMTSStoreInfo store) {
+            protected void wrapInternal(
+                    Map<String, Object> properties, SimpleHash model, WMTSStoreInfo store) {
                 if (properties == null) {
-                    try {
-                        properties = model.toMap();
-                    } catch (TemplateModelException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    }
+                    properties = hashToProperties(model);
                 }
                 List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 

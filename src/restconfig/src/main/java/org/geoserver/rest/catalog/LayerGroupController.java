@@ -9,7 +9,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -308,12 +306,7 @@ public class LayerGroupController extends AbstractCatalogController {
             protected void wrapInternal(
                     Map<String, Object> properties, SimpleHash model, LayerGroupInfo layerGroup) {
                 if (properties == null) {
-                    try {
-                        properties = model.toMap();
-                    } catch (TemplateModelException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        return;
-                    }
+                    properties = hashToProperties(model);
                 }
                 List<Map<String, Map<String, String>>> layerProps = new ArrayList<>();
                 for (PublishedInfo info : layerGroup.getLayers()) {

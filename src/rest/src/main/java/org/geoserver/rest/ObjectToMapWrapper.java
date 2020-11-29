@@ -192,4 +192,13 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @param object The object being serialized.
      */
     protected void wrapInternal(SimpleHash model, Collection<T> object) {}
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> hashToProperties(SimpleHash model) {
+        try {
+            return model.toMap();
+        } catch (TemplateModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

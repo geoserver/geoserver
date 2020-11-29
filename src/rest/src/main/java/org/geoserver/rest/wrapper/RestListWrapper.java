@@ -41,6 +41,7 @@ public class RestListWrapper<T> extends RestWrapperAdapter<T> {
     }
 
     /** Alias for {@link #getObject()} */
+    @SuppressWarnings("unchecked")
     public Collection<T> getCollection() {
         return (Collection<T>) getObject();
     }

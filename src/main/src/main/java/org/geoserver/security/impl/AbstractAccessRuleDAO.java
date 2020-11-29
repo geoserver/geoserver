@@ -37,7 +37,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  * @param <R> The access rule class.
  */
-public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
+public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     private static final Logger LOGGER = Logging.getLogger(AbstractAccessRuleDAO.class);
 
     /** Parsed rules */

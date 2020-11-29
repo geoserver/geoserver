@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/rest")
-public class RestAccessController extends AbstractAclController {
+public class RestAccessController extends AbstractAclController<String, RESTAccessRuleDAO> {
 
     /** rule pattern */
     static final Pattern KEYPATTERN =
@@ -25,18 +25,18 @@ public class RestAccessController extends AbstractAclController {
     }
 
     @Override
-    protected void addRuleToMap(Comparable rule, Map map) {
-        String[] parts = ((String) rule).split("=");
+    protected void addRuleToMap(String rule, Map<String, String> map) {
+        String[] parts = rule.split("=");
         map.put(parts[0], parts[1]);
     }
 
     @Override
-    protected String keyFor(Comparable rule) {
-        return ((String) rule).split("=")[0];
+    protected String keyFor(String rule) {
+        return rule.split("=")[0];
     }
 
     @Override
-    protected Comparable convertEntryToRule(Entry entry) {
+    protected String convertEntryToRule(Entry<String, String> entry) {
         return entry.getKey() + "=" + entry.getValue();
     }
 

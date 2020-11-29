@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -568,9 +567,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             CatalogBuilder builder, CoverageStoreInfo storeInfo, GridCoverage2DReader reader)
             throws Exception {
         // coverage read params
-        final Map customParameters = new HashMap();
-
-        CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
+        CoverageInfo cinfo = builder.buildCoverage(reader, new HashMap<>());
 
         // get the coverage name
         String name = reader.getGridCoverageNames()[0];

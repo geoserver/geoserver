@@ -25,7 +25,7 @@ public class FontListController extends RestBaseController {
     public Map<String, Set<String>> fontsGet() {
         FontCache cache = FontCache.getDefaultInstance();
 
-        Map<String, Set<String>> fonts = new HashedMap();
+        Map<String, Set<String>> fonts = new HashedMap<>();
 
         fonts.put("fonts", new TreeSet<>(cache.getAvailableFonts()));
 

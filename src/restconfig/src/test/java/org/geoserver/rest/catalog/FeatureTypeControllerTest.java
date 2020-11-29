@@ -566,6 +566,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get(dataStoreId);
+            @SuppressWarnings("unchecked")
             List<Name> names = dataStore.getNames();
             assertTrue(names.contains(name));
         }
@@ -596,6 +597,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get(dataStoreId);
+            @SuppressWarnings("unchecked")
             List<Name> names = dataStore.getNames();
             assertTrue(names.contains(name));
         }

@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
         MediaType.TEXT_HTML_VALUE
     }
 )
-public class WCSSettingsController extends ServiceSettingsController {
+public class WCSSettingsController extends ServiceSettingsController<WCSInfo> {
 
     @Autowired
     public WCSSettingsController(GeoServer geoServer) {

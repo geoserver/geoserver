@@ -160,6 +160,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
             "disableDatelineWrappingHeuristic";
 
+    /**
+     * Decorations Only option, which allows to get an empty request map output, but keeps visible
+     * associated decorations
+     */
     public static final String DECORATIONS_ONLY_FORMAT_OPTION = "decorationsOnly";
 
     /** Disable Gutter key */

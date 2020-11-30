@@ -110,9 +110,14 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                         + "periodicity or a list of time values)"
                     )
                     String time,
-            @DescribeParameter(name = "width", min = 1, description = "Map width", minValue = 1)
+            @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
                     int width,
-            @DescribeParameter(name = "height", min = 1, description = "Map height", minValue = 1)
+            @DescribeParameter(
+                        name = "height",
+                        min = 1,
+                        description = "Output height",
+                        minValue = 1
+                    )
                     int height,
             @DescribeParameter(
                         name = "fps",

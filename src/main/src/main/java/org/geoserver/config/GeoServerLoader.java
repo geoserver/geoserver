@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -212,27 +211,15 @@ public abstract class GeoServerLoader {
                 catalog.add(l);
 
                 LOGGER.info("Loaded layer '" + l.getName() + "'");
-                boolean badStyles = false;
-                if (null == l.getDefaultStyle().getStyle()) {
-                    LOGGER.log(
-                            Level.SEVERE, "Layer '" + l.getName() + "' references a missing style");
-                    badStyles = true;
-                    l.setDefaultStyle(catalog.getStyleByName("generic"));
-                }
+
                 for (StyleInfo style : l.getStyles()) {
                     if (null == style) {
                         LOGGER.log(
                                 Level.SEVERE,
                                 "Layer '" + l.getName() + "' references a missing style");
-                        badStyles = true;
                     }
                 }
-                if (badStyles) {
-                    l.getStyles().removeAll(Collections.singleton(null));
-                }
-                if (null == l.getDefaultStyle().getStyle()) {
-                    l.setDefaultStyle(catalog.getStyleByName("generic"));
-                }
+
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Failed to load layer " + lc.resource.name(), e);
             }

@@ -8,16 +8,15 @@ package org.geoserver.web.data.store;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Lists;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -44,11 +43,11 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> DATA_TYPE =
             new AbstractProperty<StoreInfo>("datatype") {
 
-                public IModel getModel(final IModel itemModel) {
-                    return new Model(itemModel) {
+                public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
+                    return new AbstractReadOnlyModel<String>() {
 
                         @Override
-                        public Serializable getObject() {
+                        public String getObject() {
                             StoreInfo si = (StoreInfo) itemModel.getObject();
                             return (String) getPropertyValue(si);
                         }
@@ -146,7 +145,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return super.getComparator(sort);
     }
 
-    public IModel newModel(StoreInfo object) {
+    public IModel<StoreInfo> newModel(StoreInfo object) {
         return new StoreInfoDetachableModel((StoreInfo) object);
     }
 
@@ -154,7 +153,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
      * A StoreInfo detachable model that holds the store id to retrieve it on demand from the
      * catalog
      */
-    static class StoreInfoDetachableModel extends LoadableDetachableModel {
+    static class StoreInfoDetachableModel extends LoadableDetachableModel<StoreInfo> {
 
         private static final long serialVersionUID = -6829878983583733186L;
 
@@ -166,10 +165,9 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         }
 
         @Override
-        protected Object load() {
+        protected StoreInfo load() {
             Catalog catalog = GeoServerApplication.get().getCatalog();
-            StoreInfo storeInfo = catalog.getStore(id, StoreInfo.class);
-            return storeInfo;
+            return catalog.getStore(id, StoreInfo.class);
         }
     }
 

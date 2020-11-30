@@ -6,7 +6,6 @@
 package org.geoserver.web.services;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -80,11 +79,11 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     public BaseServiceAdminPage(PageParameters pageParams) {
         String wsName = pageParams.get("workspace").toString();
-        init(new ServiceModel(getServiceClass(), wsName));
+        init(new ServiceModel<>(getServiceClass(), wsName));
     }
 
     public BaseServiceAdminPage(T service) {
-        init(new ServiceModel(service));
+        init(new ServiceModel<>(service));
     }
 
     void init(final IModel<T> infoModel) {
@@ -93,7 +92,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         dialog = new GeoServerDialog("dialog");
         add(dialog);
 
-        Form form = new Form("form", new CompoundPropertyModel(infoModel));
+        Form<T> form = new Form<>("form", new CompoundPropertyModel<>(infoModel));
         add(form);
 
         if (service.getWorkspace() == null) {
@@ -112,7 +111,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                         new StringResourceModel("service.enabled", this)
                                 .setParameters(getServiceName())));
         form.add(new TextField("maintainer"));
-        TextField onlineResource = new TextField("onlineResource");
+        TextField<String> onlineResource = new TextField<>("onlineResource");
 
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
@@ -130,7 +129,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(
                 new KeywordsEditor(
                         "keywords",
-                        LiveCollectionModel.list(new PropertyModel(infoModel, "keywords"))));
+                        LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
         form.add(new TextField("fees"));
         form.add(new TextField("accessConstraints"));
 
@@ -298,6 +297,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
 
         @Override
+        @SuppressWarnings("unchecked") // casts to T
         protected T load() {
             if (id != null) {
                 return (T) getGeoServer().getService(id, getServiceClass());
@@ -324,7 +324,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
     }
 
-    class ServiceFilteredWorkspacesModel extends LoadableDetachableModel {
+    class ServiceFilteredWorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
 
         WorkspacesModel wsModel;
 
@@ -333,8 +333,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
 
         @Override
-        protected Object load() {
-            Collection<WorkspaceInfo> workspaces = (Collection<WorkspaceInfo>) wsModel.getObject();
+        protected List<WorkspaceInfo> load() {
+            List<WorkspaceInfo> workspaces = wsModel.getObject();
 
             GeoServer gs = getGeoServer();
             for (Iterator<WorkspaceInfo> it = workspaces.iterator(); it.hasNext(); ) {

@@ -66,7 +66,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     protected boolean isNew;
 
-    protected TabbedPanel tabbedPanel;
+    protected TabbedPanel<ITab> tabbedPanel;
 
     /**
      * {@link PublishedEditTabPanel} contributions may need to edit something different than the
@@ -205,7 +205,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         // element
         // will validate and write down into their
         tabbedPanel =
-                new TabbedPanel("tabs", tabs) {
+                new TabbedPanel<ITab>("tabs", tabs) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

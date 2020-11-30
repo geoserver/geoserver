@@ -94,7 +94,7 @@ public class FileDataViewTest {
 
     @Test
     public void testFilter() throws Exception {
-        fileProvider.setFileFilter(new Model(new ExtensionFileFilter(".txt")));
+        fileProvider.setFileFilter(new Model<>(new ExtensionFileFilter(".txt")));
         tester.startPage(tester.getLastRenderedPage());
         tester.assertLabel("form:panel:fileTable:fileContent:files:3:nameLink:name", "one.txt");
         assertEquals(

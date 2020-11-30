@@ -66,6 +66,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "bandtext", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component text =
                                     new TextField<>(
                                             "bandtext",
@@ -77,6 +78,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "nulltext", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component text =
                                     new DecimalListTextField(
                                             "nulltext",
@@ -87,7 +89,10 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         if ("unit".equals(property.getName())) {
                             Fragment f =
                                     new Fragment(id, "text", CoverageBandsConfigurationPanel.this);
-                            Component text = buildUnitField("text", property.getModel(itemModel));
+                            @SuppressWarnings("unchecked")
+                            Component text =
+                                    buildUnitField(
+                                            "text", (IModel<String>) property.getModel(itemModel));
                             f.add(text);
                             return f;
                         }
@@ -95,6 +100,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "minRange", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component min =
                                     new DecimalTextField(
                                             "minRange",
@@ -106,6 +112,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "maxRange", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component max =
                                     new DecimalTextField(
                                             "maxRange",
@@ -165,7 +172,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         add(reload);
     }
 
-    protected Component buildUnitField(String id, IModel model) {
+    protected Component buildUnitField(String id, IModel<String> model) {
         return new AutoCompleteTextField<String>(id, model) {
             @Override
             protected Iterator<String> getChoices(String input) {

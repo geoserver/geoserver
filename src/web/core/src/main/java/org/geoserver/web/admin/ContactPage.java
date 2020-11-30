@@ -17,14 +17,14 @@ import org.geoserver.web.GeoserverAjaxSubmitLink;
 
 public class ContactPage extends ServerAdminPage {
 
-    private final IModel geoServerModel;
-    private final IModel contactModel;
+    private final IModel<GeoServer> geoServerModel;
+    private final IModel<ContactInfo> contactModel;
 
     public ContactPage() {
         geoServerModel = getGeoServerModel();
         contactModel = getContactInfoModel();
 
-        Form form = new Form("form", new CompoundPropertyModel(contactModel));
+        Form<ContactInfo> form = new Form<>("form", new CompoundPropertyModel<>(contactModel));
         add(form);
 
         form.add(new ContactPanel("contact", contactModel));
@@ -55,7 +55,7 @@ public class ContactPage extends ServerAdminPage {
         }
     }
 
-    private GeoserverAjaxSubmitLink applyLink(Form form) {
+    private GeoserverAjaxSubmitLink applyLink(Form<?> form) {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override

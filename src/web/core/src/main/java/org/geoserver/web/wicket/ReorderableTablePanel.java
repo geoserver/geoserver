@@ -101,6 +101,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                             return;
                         }
                         T movedItem = transfer.getData();
+                        @SuppressWarnings("unchecked")
                         T targetItem = (T) location.getComponent().getDefaultModel().getObject();
                         if (movedItem.equals(targetItem)) {
                             return;
@@ -121,11 +122,11 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     protected void buildRowListView(
             GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
-        IModel propertyList =
-                new LoadableDetachableModel() {
+        IModel<List<Property<T>>> propertyList =
+                new LoadableDetachableModel<List<Property<T>>>() {
 
                     @Override
-                    protected Object load() {
+                    protected List<Property<T>> load() {
                         return dataProvider.getVisibleProperties();
                     }
                 };

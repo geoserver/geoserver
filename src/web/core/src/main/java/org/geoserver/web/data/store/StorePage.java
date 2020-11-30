@@ -52,7 +52,7 @@ public class StorePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink("addNew", NewDataPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewDataPage.class));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

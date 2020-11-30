@@ -61,7 +61,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
     ModalWindow reloadWarningDialog;
 
-    ListView attributes;
+    ListView<AttributeTypeInfo> attributes;
 
     private Fragment attributePanel;
 
@@ -86,7 +86,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
         // just use the direct attributes, this is not editable atm
         attributes =
-                new ListView("attributes", new AttributeListModel()) {
+                new ListView<AttributeTypeInfo>("attributes", new AttributeListModel()) {
                     @Override
                     protected void populateItem(ListItem item) {
 

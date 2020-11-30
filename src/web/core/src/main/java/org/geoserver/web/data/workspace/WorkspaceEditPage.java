@@ -90,7 +90,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     AccessDataRulePanel accessDataPanel;
     WsEditInfoPanel basicInfoPanel;
     GeoServerDialog dialog;
-    TabbedPanel tabbedPanel;
+    TabbedPanel<ITab> tabbedPanel;
 
     /** Uses a "name" parameter to locate the workspace */
     public WorkspaceEditPage(PageParameters parameters) {
@@ -173,7 +173,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
 
         tabbedPanel =
-                new TabbedPanel("tabs", tabs) {
+                new TabbedPanel<ITab>("tabs", tabs) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -695,9 +695,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {
                 Service service = new Service();
                 service.adminPage = page;
-                service.enabled =
-                        getGeoServer().getService(wsModel.getObject(), page.getServiceClass())
-                                != null;
+                service.enabled = isEnabled(wsModel, page);
 
                 // if service is disabled, create a placeholder model to hold a newly created one,
                 // otherwise create a live model to the existing service
@@ -711,6 +709,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             }
 
             return services;
+        }
+
+        @SuppressWarnings("unchecked")
+        private boolean isEnabled(IModel<WorkspaceInfo> wsModel, ServiceMenuPageInfo page) {
+            return getGeoServer().getService(wsModel.getObject(), page.getServiceClass()) != null;
         }
     }
 }

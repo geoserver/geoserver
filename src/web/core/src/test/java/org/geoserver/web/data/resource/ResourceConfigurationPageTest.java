@@ -326,7 +326,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 (ListView)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:theList:1:content:parameters");
-        AtomicReference ref = new AtomicReference(null);
+        AtomicReference<Object> ref = new AtomicReference<>(null);
         parametersList.visitChildren(
                 ParamPanel.class,
                 (c, v) -> {

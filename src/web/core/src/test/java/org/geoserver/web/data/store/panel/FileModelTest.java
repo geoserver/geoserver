@@ -69,9 +69,9 @@ public class FileModelTest {
 
     @Test
     public void testURL() throws IOException {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("url", new URL("file:data/cite/Buildings.properties"));
-        MapModel mapModel = new MapModel(map, "url");
+        MapModel<String> mapModel = new MapModel<>(map, "url");
         FileModel model = new FileModel(mapModel, root);
         String path = (String) model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);

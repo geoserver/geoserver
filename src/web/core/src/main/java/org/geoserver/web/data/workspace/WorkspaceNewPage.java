@@ -50,7 +50,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     TextField<String> nsUriTextField;
     AccessDataRulePanel accessdataPanel;
     WsNewInfoPanel infoPanel;
-    TabbedPanel tabbedPanel;
+    TabbedPanel<ITab> tabbedPanel;
 
     CompoundPropertyModel<WorkspaceInfo> model;
 
@@ -98,7 +98,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         }
 
         tabbedPanel =
-                new TabbedPanel("tabs", tabs) {
+                new TabbedPanel<ITab>("tabs", tabs) {
 
                     private static final long serialVersionUID = 1L;
 

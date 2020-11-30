@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 
 /** A DataStore parameter panel that presents a dropdown choice */
-public class DropDownChoiceParamPanel extends Panel implements ParamPanel {
+public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serializable> {
 
     private static final long serialVersionUID = 1L;
 

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serializable;
+import java.util.Map;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.web.GeoServerApplication;
@@ -14,23 +16,30 @@ import org.geoserver.web.util.MapModel;
  * Model to wrap and unwrap a {@link NamespaceInfo} to and from a String for the Datastore's
  * "namespace" parameter
  */
-public class NamespaceParamModel extends MapModel {
-    public NamespaceParamModel(IModel model, String expression) {
-        super(model, expression);
+public class NamespaceParamModel implements IModel<NamespaceInfo> {
+
+    MapModel<Serializable> delegate;
+
+    public NamespaceParamModel(IModel<Map<String, Serializable>> model, String expression) {
+        this.delegate = new MapModel<>(model, expression);
     }
 
     @Override
-    public Object getObject() {
-        String nsUri = (String) super.getObject();
+    public NamespaceInfo getObject() {
+        String nsUri = (String) delegate.getObject();
         NamespaceInfo namespaceInfo =
                 GeoServerApplication.get().getCatalog().getNamespaceByURI(nsUri);
         return namespaceInfo;
     }
 
     @Override
-    public void setObject(Object object) {
-        NamespaceInfo namespaceInfo = (NamespaceInfo) object;
+    public void setObject(NamespaceInfo namespaceInfo) {
         String nsUri = namespaceInfo.getURI();
-        super.setObject(nsUri);
+        delegate.setObject(nsUri);
+    }
+
+    @Override
+    public void detach() {
+        delegate.detach();
     }
 }

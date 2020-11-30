@@ -100,7 +100,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         return null;
     }
 
-    private Component storeNameLink(String id, final IModel itemModel) {
+    private Component storeNameLink(String id, final IModel<StoreInfo> itemModel) {
         String wsName = (String) WORKSPACE.getModel(itemModel).getObject();
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
@@ -146,7 +146,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         }
     }
 
-    private Component workspaceLink(String id, IModel itemModel) {
+    private Component workspaceLink(String id, IModel<StoreInfo> itemModel) {
         IModel nameModel = WORKSPACE.getModel(itemModel);
         return new SimpleBookmarkableLink(
                 id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
@@ -160,8 +160,8 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         ParamResourceModel confirmRemove =
                 new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
 
-        SimpleAjaxLink linkPanel =
-                new ConfirmationAjaxLink(id, null, resRemove, confirmRemove) {
+        SimpleAjaxLink<Object> linkPanel =
+                new ConfirmationAjaxLink<Object>(id, null, resRemove, confirmRemove) {
                     public void onClick(AjaxRequestTarget target) {
                         getCatalog().remove((StoreInfo) itemModel.getObject());
                         target.add(StorePanel.this);

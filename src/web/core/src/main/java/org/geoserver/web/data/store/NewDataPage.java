@@ -72,8 +72,8 @@ public class NewDataPage extends GeoServerSecuredPage {
         Collections.sort(sortedDsNames);
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
-        final ListView dataStoreLinks =
-                new ListView("vectorResources", sortedDsNames) {
+        final ListView<String> dataStoreLinks =
+                new ListView<String>("vectorResources", sortedDsNames) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final String dataStoreFactoryName = item.getDefaultModelObjectAsString();
@@ -95,7 +95,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                         item.add(new Label("resourceDescription", description));
                         Image icon = new Image("storeIcon", icons.getStoreIcon(factory.getClass()));
                         // TODO: icons could provide a description too to be used in alt=...
-                        icon.add(new AttributeModifier("alt", new Model("")));
+                        icon.add(new AttributeModifier("alt", new Model<>("")));
                         item.add(icon);
                     }
                 };
@@ -104,8 +104,8 @@ public class NewDataPage extends GeoServerSecuredPage {
         sortedCoverageNames.addAll(getAvailableCoverageStores().keySet());
         Collections.sort(sortedCoverageNames);
 
-        final ListView coverageLinks =
-                new ListView("rasterResources", sortedCoverageNames) {
+        final ListView<String> coverageLinks =
+                new ListView<String>("rasterResources", sortedCoverageNames) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final String coverageFactoryName = item.getDefaultModelObjectAsString();
@@ -127,15 +127,15 @@ public class NewDataPage extends GeoServerSecuredPage {
                         item.add(new Label("resourceDescription", description));
                         Image icon = new Image("storeIcon", icons.getStoreIcon(format.getClass()));
                         // TODO: icons could provide a description too to be used in alt=...
-                        icon.add(new AttributeModifier("alt", new Model("")));
+                        icon.add(new AttributeModifier("alt", new Model<>("")));
                         item.add(icon);
                     }
                 };
 
         final List<OtherStoreDescription> otherStores = getOtherStores();
 
-        final ListView otherStoresLinks =
-                new ListView("otherStores", otherStores) {
+        final ListView<OtherStoreDescription> otherStoresLinks =
+                new ListView<OtherStoreDescription>("otherStores", otherStores) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final OtherStoreDescription store =
@@ -163,7 +163,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                                                 NewDataPage.this)));
                         Image icon = new Image("storeIcon", store.icon);
                         // TODO: icons could provide a description too to be used in alt=...
-                        icon.add(new AttributeModifier("alt", new Model("")));
+                        icon.add(new AttributeModifier("alt", new Model<>("")));
                         item.add(icon);
                     }
                 };

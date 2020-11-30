@@ -19,7 +19,7 @@ public class RootLayerConfig extends PublishedConfigurationPanel<PublishedInfo> 
         super(id, model);
         IModel<Boolean> rootLayerModel =
                 new MetadataMapModel<Boolean>(
-                        new PropertyModel(model, "metadata"),
+                        new PropertyModel<>(model, "metadata"),
                         PublishedInfo.ROOT_IN_CAPABILITIES,
                         Boolean.class);
 

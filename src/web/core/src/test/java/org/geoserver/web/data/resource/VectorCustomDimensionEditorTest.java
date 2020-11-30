@@ -50,9 +50,9 @@ public class VectorCustomDimensionEditorTest extends GeoServerWicketTestSupport 
         Form form = new Form("form");
         form.add(editor);
         form = tester.startComponentInPage(form, Markup.of(markup));
+        @SuppressWarnings("unchecked")
         TextField<String> dimNameInput =
-                (TextField<String>)
-                        tester.getComponentFromLastRenderedPage("form:dimEditor:customDimName");
+                (TextField) tester.getComponentFromLastRenderedPage("form:dimEditor:customDimName");
         assertEquals("name", dimNameInput.getModelObject());
     }
 }

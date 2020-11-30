@@ -5,6 +5,7 @@
 package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -41,6 +42,12 @@ public class CatalogProxiesTest extends GeoServerSystemTestSupport {
             print(dom, os);
         }
         getGeoServer().reload();
+    }
+
+    @Test
+    public void testDanglingReferenceOnModificationProxy() {
+        LayerInfo li = getCatalog().getLayerByName(getLayerId(SystemTestData.BUILDINGS));
+        assertNull(li.getDefaultStyle());
     }
 
     @Test

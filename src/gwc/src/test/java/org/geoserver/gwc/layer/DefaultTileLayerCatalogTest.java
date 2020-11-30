@@ -206,7 +206,8 @@ public class DefaultTileLayerCatalogTest {
                 "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>originalname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>",
                 "UTF-8");
 
-        waitForFlag(hasBeenCreated, 200);
+        int timeout = 1000;
+        waitForFlag(hasBeenCreated, timeout);
         GeoServerTileLayerInfo info = catalog.getLayerById("id1");
         assertEquals("originalname", info.getName());
         assertNotNull(catalog.getLayerByName("originalname"));
@@ -220,7 +221,7 @@ public class DefaultTileLayerCatalogTest {
                 "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>newname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>",
                 "UTF-8");
 
-        waitForFlag(hasBeenModified, 200);
+        waitForFlag(hasBeenModified, timeout);
 
         info = catalog.getLayerById("id1");
         assertEquals("newname", info.getName());
@@ -229,7 +230,7 @@ public class DefaultTileLayerCatalogTest {
 
         file.delete();
 
-        waitForFlag(hasBeenDeleted, 200);
+        waitForFlag(hasBeenDeleted, timeout);
 
         assertNull(catalog.getLayerById("id1"));
         assertNull(catalog.getLayerByName("newname"));

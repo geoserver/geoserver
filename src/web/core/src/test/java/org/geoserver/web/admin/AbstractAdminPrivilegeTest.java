@@ -190,6 +190,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         // the actual web request is finished, so we need to fake another one
         AdminRequest.start(new Object());
 
+        @SuppressWarnings("unchecked")
         DropDownChoice<WorkspaceInfo> wsChoice =
                 (DropDownChoice<WorkspaceInfo>)
                         tester.getComponentFromLastRenderedPage(
@@ -244,13 +245,14 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         Catalog cat = getCatalog();
 
-        DataView view =
+        @SuppressWarnings("unchecked")
+        DataView<Object> view =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item> it = view.getItems(); it.hasNext(); ) {
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) {
             String name =
                     it.next()
                             .get("itemProperties:0:component:link:label")

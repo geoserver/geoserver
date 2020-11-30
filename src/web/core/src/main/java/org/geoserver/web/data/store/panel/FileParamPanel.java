@@ -18,7 +18,7 @@ import org.geoserver.web.wicket.browser.FileInput;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class FileParamPanel extends Panel implements ParamPanel {
+public class FileParamPanel extends Panel implements ParamPanel<String> {
     private static final long serialVersionUID = 2630421795437249103L;
     private final FileInput fileInput;
 

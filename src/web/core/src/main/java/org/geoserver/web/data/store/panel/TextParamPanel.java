@@ -18,7 +18,7 @@ import org.apache.wicket.validation.IValidator;
  *
  * @author Gabriel Roldan
  */
-public class TextParamPanel<T> extends Panel implements ParamPanel {
+public class TextParamPanel<T> extends Panel implements ParamPanel<T> {
 
     private static final long serialVersionUID = 5498443514886175158L;
 

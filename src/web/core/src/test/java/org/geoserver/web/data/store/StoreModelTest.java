@@ -77,6 +77,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
         }
     }
 
+    @SuppressWarnings("unchecked")
     <T extends IModel> T serializeDeserialize(T model) throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ObjectOutputStream objout = new ObjectOutputStream(bout);

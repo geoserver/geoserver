@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serializable;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -12,8 +13,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -35,12 +36,12 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
         cat.add(ds);
 
-        FeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
+        SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -52,7 +53,7 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setStore(ds);
 
-        FeatureStore fs = (FeatureStore) store.getFeatureSource("Forests");
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("Forests");
         fs.addFeatures(fs1.getFeatures());
         addFeature(
                 fs,
@@ -68,7 +69,7 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
         cat.add(ft);
     }
 
-    void addFeature(FeatureStore store, String wkt, Object... atts) throws Exception {
+    void addFeature(SimpleFeatureStore store, String wkt, Object... atts) throws Exception {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) store.getSchema());
         b.add(new WKTReader().read(wkt));
         for (Object att : atts) {

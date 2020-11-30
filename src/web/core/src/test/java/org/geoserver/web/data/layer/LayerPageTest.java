@@ -46,7 +46,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
 
         testData.addVectorLayer(BUILDINGS, getCatalog());
 
-        Map<LayerProperty, Object> props = new HashMap();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, BUILDINGS.getLocalPart());
         testData.addVectorLayer(GS_BUILDINGS, props, getCatalog());
     }

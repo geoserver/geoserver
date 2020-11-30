@@ -145,7 +145,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      */
     private List getComponentStack(final Component component) {
         // Build the search stack
-        final List searchStack = new ArrayList();
+        final List<Class<?>> searchStack = new ArrayList<>();
         searchStack.add(component.getClass());
 
         if (!(component instanceof Page)) {

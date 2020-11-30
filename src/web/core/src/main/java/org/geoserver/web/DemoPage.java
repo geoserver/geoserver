@@ -18,11 +18,11 @@ public class DemoPage extends GeoServerBasePage {
     public DemoPage() {
         List<DemoLinkInfo> links = getGeoServerApplication().getBeansOfType(DemoLinkInfo.class);
         add(
-                new ListView("demoList", links) {
-                    public void populateItem(ListItem item) {
-                        final DemoLinkInfo info = (DemoLinkInfo) item.getModelObject();
+                new ListView<DemoLinkInfo>("demoList", links) {
+                    public void populateItem(ListItem<DemoLinkInfo> item) {
+                        final DemoLinkInfo info = item.getModelObject();
                         item.add(
-                                new BookmarkablePageLink("theLink", info.getComponentClass())
+                                new BookmarkablePageLink<>("theLink", info.getComponentClass())
                                         .add(
                                                 new Label(
                                                         "theTitle",

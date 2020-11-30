@@ -16,7 +16,7 @@ import org.apache.wicket.model.IModel;
 
 /** A label + locale dropdown form panel */
 @SuppressWarnings("serial")
-public class CharsetPanel extends Panel implements ParamPanel {
+public class CharsetPanel extends Panel implements ParamPanel<String> {
 
     private DropDownChoice<String> choice;
 

@@ -28,7 +28,7 @@ public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
     protected List<StoreInfo> load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-        List stores = catalog.getStoresByWorkspace(ws, StoreInfo.class);
+        List<StoreInfo> stores = catalog.getStoresByWorkspace(ws, StoreInfo.class);
         Collections.sort(stores, new StoreNameComparator());
         return stores;
     }

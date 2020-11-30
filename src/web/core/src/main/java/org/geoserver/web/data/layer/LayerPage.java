@@ -113,7 +113,9 @@ public class LayerPage extends GeoServerSecuredPage {
 
     private Component titleLink(String id, IModel<LayerInfo> itemModel) {
 
+        @SuppressWarnings("unchecked")
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(itemModel);
+        @SuppressWarnings("unchecked")
         IModel<String> layerTitleModel = (IModel<String>) TITLE.getModel(itemModel);
         String layerTitle = layerTitleModel.getObject();
         String layerName = layerNameModel.getObject();

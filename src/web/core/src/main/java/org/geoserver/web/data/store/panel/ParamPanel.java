@@ -7,7 +7,7 @@ package org.geoserver.web.data.store.panel;
 
 import org.apache.wicket.markup.html.form.FormComponent;
 
-public interface ParamPanel {
+public interface ParamPanel<T> {
     /** Returns the wrapped form component, if there is a single one, or null otherwise */
-    public abstract FormComponent getFormComponent();
+    public abstract FormComponent<T> getFormComponent();
 }

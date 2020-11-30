@@ -133,7 +133,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             previousInput = null;
         }
 
-        SortParam previousSort = loadPreviousSort();
+        SortParam<Object> previousSort = loadPreviousSort();
 
         if (previousSort != null && keepFilter) dataProvider.setSort(previousSort);
         else if (!keepFilter) {
@@ -271,11 +271,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             final GeoServerDataProvider<T> dataProvider, Item<T> item, final IModel<T> itemModel) {
         // make sure we don't serialize the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
-        IModel propertyList =
-                new LoadableDetachableModel() {
+        IModel<List<Property<T>>> propertyList =
+                new LoadableDetachableModel<List<Property<T>>>() {
 
                     @Override
-                    protected Object load() {
+                    protected List<Property<T>> load() {
                         return dataProvider.getVisibleProperties();
                     }
                 };
@@ -842,7 +842,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         if (filters == null) return null;
         else if (filters.get(dataProvider.getClass().getName(), SortParam.class) == null)
             return null;
-        return filters.get(dataProvider.getClass().getName(), SortParam.class);
+        @SuppressWarnings("unchecked")
+        SortParam<Object> result = filters.get(dataProvider.getClass().getName(), SortParam.class);
+        return result;
     }
 
     private void clearFilterFromSession() {

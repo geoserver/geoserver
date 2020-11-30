@@ -57,14 +57,15 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                 new PropertyModel<MetadataMap>(model, "resource.metadata");
 
         // time
-        IModel time = new MetadataMapModel(metadata, ResourceInfo.TIME, DimensionInfo.class);
+        IModel<DimensionInfo> time =
+                new MetadataMapModel(metadata, ResourceInfo.TIME, DimensionInfo.class);
         if (time.getObject() == null) {
             time.setObject(new DimensionInfoImpl());
         }
         add(new DimensionEditor("time", time, resource, Date.class, true, true));
 
         // elevation
-        IModel elevation =
+        IModel<DimensionInfo> elevation =
                 new MetadataMapModel(metadata, ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevation.getObject() == null) {
             elevation.setObject(new DimensionInfoImpl());
@@ -167,7 +168,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         return info.isEnabled();
     }
 
-    class RasterDimensionModel extends MetadataMapModel {
+    class RasterDimensionModel<T> extends MetadataMapModel<T> {
         private static final long serialVersionUID = 4734439907138483817L;
 
         boolean hasRange;
@@ -175,21 +176,23 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         boolean hasResolution;
 
         public RasterDimensionModel(
-                IModel<?> model,
+                IModel<MetadataMap> model,
                 String expression,
-                Class<?> target,
+                Class<T> target,
                 boolean hasRange,
                 boolean hasResolution) {
             super(model, expression, target);
         }
 
-        public Object getObject() {
-            return ((MetadataMap) model.getObject())
-                    .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
+        @SuppressWarnings("unchecked")
+        public T getObject() {
+            return (T)
+                    (model.getObject())
+                            .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
         }
 
-        public void setObject(Object object) {
-            ((MetadataMap) model.getObject())
+        public void setObject(T object) {
+            (model.getObject())
                     .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);
         }
     }

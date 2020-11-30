@@ -19,8 +19,8 @@ public class ConfirmationAjaxLinkTestPage extends WebPage {
                 new ConfirmationAjaxLink<String>(
                         "confirmationLink",
                         new Model<String>("model"),
-                        new Model("label"),
-                        new Model("'confirmation'")) {
+                        new Model<>("label"),
+                        new Model<>("'confirmation'")) {
 
                     @Override
                     protected void onClick(AjaxRequestTarget target) {

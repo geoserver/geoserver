@@ -60,7 +60,7 @@ public class DeveloperToolbar extends Panel {
         final AjaxCheckBox wicketPaths =
                 new AjaxCheckBox(
                         "wicketPaths",
-                        new PropertyModel(gsApp, "debugSettings.outputComponentPath")) {
+                        new PropertyModel<>(gsApp, "debugSettings.outputComponentPath")) {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {}
@@ -71,7 +71,7 @@ public class DeveloperToolbar extends Panel {
         // controls whether wicket ids are being generated
         wicketIds =
                 new AjaxCheckBox(
-                        "wicketIds", new PropertyModel(gsApp, "markupSettings.stripWicketTags")) {
+                        "wicketIds", new PropertyModel<>(gsApp, "markupSettings.stripWicketTags")) {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
@@ -86,7 +86,7 @@ public class DeveloperToolbar extends Panel {
         add(
                 new AjaxCheckBox(
                         "ajaxDebug",
-                        new PropertyModel(gsApp, "debugSettings.ajaxDebugModeEnabled")) {
+                        new PropertyModel<>(gsApp, "debugSettings.ajaxDebugModeEnabled")) {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
@@ -95,14 +95,14 @@ public class DeveloperToolbar extends Panel {
                 });
     }
 
-    static class GeoServerApplicationModel extends LoadableDetachableModel {
+    static class GeoServerApplicationModel extends LoadableDetachableModel<GeoServerApplication> {
 
         GeoServerApplicationModel() {
             super(GeoServerApplication.get());
         }
 
         @Override
-        protected Object load() {
+        protected GeoServerApplication load() {
             return GeoServerApplication.get();
         }
     }

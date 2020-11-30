@@ -107,11 +107,11 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
         setResponsePage(layerChooserPage);
     }
 
-    final class WMTSCapabilitiesURLValidator implements IValidator {
+    final class WMTSCapabilitiesURLValidator implements IValidator<String> {
 
         @Override
-        public void validate(IValidatable validatable) {
-            String url = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String url = validatable.getValue();
             try {
                 HTTPClient client = new SimpleHttpClient();
                 usernamePanel.getFormComponent().processInput();

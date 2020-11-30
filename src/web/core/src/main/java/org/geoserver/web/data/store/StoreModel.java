@@ -35,6 +35,7 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
     };
 
     @Override
+    @SuppressWarnings("unchecked")
     protected T load() {
         if (workspace == null) {
             return null;

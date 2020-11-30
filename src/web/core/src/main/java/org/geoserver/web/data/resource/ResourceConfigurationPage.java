@@ -106,7 +106,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     private void setupResource(ResourceInfo resource) {
         updateResourceInLayerModel(resource);
-        myResourceModel = new CompoundPropertyModel<ResourceInfo>(new ResourceModel(resource));
+        myResourceModel = new CompoundPropertyModel<>(new ResourceModel(resource));
     }
 
     private List<ResourceConfigurationPanelInfo> filterResourcePanels(

@@ -104,7 +104,7 @@ public class FreemarkerTemplateSupport {
      * @param templateName The template name
      * @param referenceClass The reference class for classpath template loading
      * @param model The model to be applied
-     * @param write The writer receiving the template output
+     * @param writer The writer receiving the template output
      */
     public void processTemplate(
             ResourceInfo resource,

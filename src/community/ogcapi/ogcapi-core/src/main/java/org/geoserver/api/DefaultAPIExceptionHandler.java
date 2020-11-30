@@ -86,9 +86,8 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
         Map<String, String> error = new LinkedHashMap<>();
         error.put("code", code);
         error.put("description", description);
-        try {
+        try (ServletOutputStream os = response.getOutputStream()) {
             ObjectMapper mapper = new ObjectMapper();
-            ServletOutputStream os = response.getOutputStream();
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {

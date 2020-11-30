@@ -410,6 +410,11 @@
      <artifactId>gt-cql</artifactId>
      <version>${gt.version}</version>
    </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-cql-json</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
     <dependency>
      <groupId>org.geotools</groupId>
      <artifactId>gt-csv</artifactId>

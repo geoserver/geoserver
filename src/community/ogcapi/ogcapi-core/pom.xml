@@ -77,6 +77,10 @@
             <artifactId>freemarker</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-cql-json</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-ows</artifactId>
             <version>${project.version}</version>

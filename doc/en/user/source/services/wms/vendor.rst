@@ -154,7 +154,7 @@ The supported format options are:
 * ``kmlvisible`` (values = ``true``, ``false``): Indicates whether layers selected will default to enabled or not. Default behavior is enabled. This parameter primarily affects Google Earth rendering.
 * ``advancedProjectionHandling`` (values = ``true``, ``false``): Enable \ Disable advanced projection handling, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect.
 * ``mapWrapping`` (values = ``true``, ``false``): Enable \ Disable continuous map wrapping, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect. Continuous map wrapping will also be disabled if ``advancedProjectionHandling`` is disabled.
-* ``decorationsOnly`` (values = ``true``, ``false``): Disabled by default. When value is true, it allows to get a transparent sized image for the request on which maps are not rendered, but it keeps the decorations applied (if present). This parameter is internally used for WPS gs:DownloadMap when applying multiple legends decorations in the process.
+* ``decorationsOnly`` (values = ``true``, ``false``): Disabled by default. When value is true, it allows to get a transparent sized image for the request on which maps are not rendered, but it keeps the decorations applied (if present).
 
 maxFeatures and startIndex
 --------------------------

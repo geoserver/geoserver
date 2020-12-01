@@ -1,0 +1,6 @@
+<layout>
+  <decoration type="legend" affinity="top,right" offset="6,6" size="auto" >
+               <option name="legend_options" value="bgColor:0xD6D6D6;" />
+		<option name="opacity" value="0.75" />
+	</decoration>
+</layout>

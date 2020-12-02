@@ -40,6 +40,9 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -66,6 +69,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.xsd.Parser;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +78,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -1219,9 +1224,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs="
                         + urlEncode("id=x2");
         Document dom = getAsDOM(request);
-        assertXpathExists("//wps:ProcessAccepted", dom);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String fullStatusLocation = getFullStatusLocation(dom);
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
 
         // we move the clock forward, but we asked no status, nothing should change
@@ -2043,11 +2046,15 @@ public class ExecuteTest extends WPSTestSupport {
     }
 
     private String getStatusLocation(Document dom) throws XpathException {
-        assertXpathExists("//wps:ProcessAccepted", dom);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String fullStatusLocation = getFullStatusLocation(dom);
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
         return statusLocation;
+    }
+
+    private String getFullStatusLocation(Document dom) throws XpathException {
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        return xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
     }
 
     private ListFeatureCollection collectionOfThings() {
@@ -2184,5 +2191,57 @@ public class ExecuteTest extends WPSTestSupport {
         ri.setDisabledServices(new ArrayList<>());
         getCatalog().save(ri);
         getCatalog().save(linfo);
+    }
+
+    @Test
+    public void testBacklinksProxyHeaders() throws Exception {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo gsInfo = gs.getGlobal();
+        gsInfo.setUseHeadersProxyURL(true);
+        SettingsInfo settings = gsInfo.getSettings();
+        settings.setProxyBaseUrl("${X-Forwarded-Proto}://${X-Forwarded-Host}/geoserver");
+        gs.save(gsInfo);
+
+        // submit asynch request with proxy headers
+        String wpsRequest =
+                "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&storeExecuteResponse=true&DataInputs="
+                        + urlEncode("id=proxyHeaders")
+                        + "&ResponseDocument="
+                        + urlEncode("result=@asReference=true");
+        MockHttpServletRequest hreq = createRequest(wpsRequest);
+        hreq.setMethod("GET");
+        hreq.setContent(new byte[] {});
+        hreq.addHeader("X-Forwarded-Proto", "https");
+        hreq.addHeader("X-Forwarded-Host", "mycompany.com");
+
+        MockHttpServletResponse response = dispatch(hreq, null);
+        InputStream responseContent =
+                new ByteArrayInputStream(response.getContentAsString().getBytes());
+        Document dom = dom(responseContent, true);
+        // print(dom);
+        String fullStatusLocation = getFullStatusLocation(dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        assertThat(fullStatusLocation, CoreMatchers.startsWith("https://mycompany.com/geoserver"));
+
+        // pretend we are are container and clean up the HTTP Headers
+        hreq.removeHeader("X-Forwarded-Proto");
+        hreq.removeHeader("X-Forwarded-Host");
+
+        // now schedule the exit and wait for it to exit
+        MonkeyProcess.exit("proxyHeaders", collectionOfThings(), true);
+        dom = waitForProcessEnd(statusLocation, 60);
+        // print(dom);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
+
+        // The document has been encoded as the final stage of the async execution, in a background
+        // thread. Check it is still using the right proxy variables
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        assertThat(fullStatusLocation, CoreMatchers.startsWith("https://mycompany.com/geoserver"));
+        String reference =
+                xpath.evaluate(
+                        "//wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href",
+                        dom);
+        assertThat(reference, CoreMatchers.startsWith("https://mycompany.com/geoserver"));
     }
 }

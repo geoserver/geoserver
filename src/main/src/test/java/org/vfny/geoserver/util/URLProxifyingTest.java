@@ -8,6 +8,8 @@ package org.vfny.geoserver.util;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -15,6 +17,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
@@ -58,12 +61,18 @@ public class URLProxifyingTest {
                 .andReturn(
                         new HttpServletRequestWrapper(new MockHttpServletRequest()) {
                             public String getHeader(String name) {
-                                return headers.get(name.toLowerCase());
+                                return headers.get(name);
+                            }
+
+                            @Override
+                            public Enumeration<String> getHeaderNames() {
+                                return Collections.enumeration(headers.keySet());
                             }
                         })
                 .anyTimes();
         replay(request);
         Dispatcher.REQUEST.set(request);
+        new HTTPHeadersCollector().init(request);
 
         GeoServer geoServer = createNiceMock(GeoServer.class);
         expect(geoServer.getGlobal())

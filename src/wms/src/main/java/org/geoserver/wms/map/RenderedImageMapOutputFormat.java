@@ -156,6 +156,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
             "disableDatelineWrappingHeuristic";
 
+    /**
+     * Decorations Only option, which allows to get an empty request map output, but keeps visible
+     * associated decorations
+     */
+    public static final String DECORATIONS_ONLY_FORMAT_OPTION = "decorationsOnly";
+
     /** Disable Gutter key */
     public static final String DISABLE_GUTTER_KEY = "wms.raster.disableGutter";
 
@@ -277,6 +283,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // extra antialias setting
         final GetMapRequest request = mapContent.getRequest();
+
+        // check if vendoroption decorationsonly is true, so we will generate an empty map with only
+        // decorations applied
+        String decorationsOnly =
+                (String) request.getFormatOptions().get(DECORATIONS_ONLY_FORMAT_OPTION);
+        boolean emptyMap = false;
+        if (decorationsOnly != null && decorationsOnly.toLowerCase().equals("true")) {
+            emptyMap = true;
+        }
+
         String antialias = (String) request.getFormatOptions().get("antialias");
         if (antialias != null) antialias = antialias.toUpperCase();
 
@@ -584,11 +600,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         timeout.start();
         try {
             // finally render the image;
-            renderer.paint(
-                    graphic,
-                    paintArea,
-                    mapContent.getRenderingArea(),
-                    mapContent.getRenderingTransform());
+            if (!emptyMap) {
+                renderer.paint(
+                        graphic,
+                        paintArea,
+                        mapContent.getRenderingArea(),
+                        mapContent.getRenderingTransform());
+            } else {
+                LOGGER.fine("we only want to get the layout, if it's not null");
+            }
 
             // apply watermarking
             if (layout != null) {

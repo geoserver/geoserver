@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.decoration;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -49,6 +50,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     private List<String> layers;
     private boolean useSldTitle;
 
+    private Map<String, String> legendOptionsMap;
+    private float opacityOption = 1.0f;
+
     public LegendDecoration(WMS wms) {
         this.wms = wms;
         this.layers = new ArrayList<String>();
@@ -70,6 +74,21 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         String sldTitle = this.options.remove("sldTitle");
         if ("true".equalsIgnoreCase(sldTitle) || "on".equalsIgnoreCase(sldTitle)) {
             useSldTitle = true;
+        }
+
+        String legendOptions = this.options.remove("legend_options");
+        if (legendOptions != null && !legendOptions.isEmpty()) {
+            legendOptionsMap = new HashMap<String, String>();
+            String[] splittedLegendOptions = legendOptions.split(";");
+            for (String lop : splittedLegendOptions) {
+                String[] kvp = lop.split(":");
+                legendOptionsMap.put(kvp[0], kvp[1]);
+            }
+        }
+
+        String opacity = this.options.remove("opacity");
+        if (opacity != null && !opacity.isEmpty()) {
+            opacityOption = Float.parseFloat(opacity);
         }
     }
 
@@ -286,6 +305,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         public GetLegendGraphicRequest request;
     }
 
+    public List<LayerLegend> getLayerLegends(Graphics2D g2d, WMSMapContent mapContext) {
+        return this.getLayerLegend(g2d, mapContext, null);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private List<LayerLegend> getLayerLegend(
             Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
         List<LayerLegend> legendLayers = new ArrayList<>();
@@ -317,6 +341,15 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             Map legendOptions = new CaseInsensitiveMap(options);
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());
+
+            // add legend_options defined by layout
+            if (legendOptionsMap != null) {
+                legendOptions.putAll(legendOptionsMap);
+            }
+            // set opacity defined by layout
+            float opacity = opacityOption;
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+
             if (dispatcherRequest != null
                     && dispatcherRequest.getKvp().get("legend_options") != null) {
                 legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));

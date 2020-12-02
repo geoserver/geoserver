@@ -14,7 +14,7 @@ The ``angle`` parameter rotates the output map clockwise around its center.
 The syntax is::
 
    angle=<x>
-   
+
 where ``<x>`` is the number of degrees to rotate by.
 
 Map rotation is supported in all raster formats, PDF, and SVG when using the Batik producer (which is the default).
@@ -27,9 +27,9 @@ The ``buffer`` parameter specifies the number of additional border pixels that a
 The syntax is::
 
    buffer=<bufferwidth>
-   
+
 where ``<bufferwidth>`` is the width of the buffer in pixels.
-   
+
 In the :ref:`wms_getmap` operation, 
 buffering includes features that lie outside the request bounding box, but whose styling is thick enough to be visible inside the map area.  
 
@@ -50,6 +50,7 @@ In this event, the following defaults are used:
 * 0 pixels for :ref:`wms_getmap` requests
 * 5 pixels for :ref:`wms_getfeatureinfo` requests (a different min value can be set via the ``org.geoserver.wms.featureinfo.minBuffer`` system variable, e.g., add ``-Dorg.geoserver.wms.featureinfo.minBuffer=10`` to make the min buffer be 10 pixels)
   
+
 If these are not sufficiently large, the explicit parameter can be used.
 
 cql_filter
@@ -67,7 +68,7 @@ The syntax is::
 An example of a simple CQL filter is::
 
    cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
-   
+
 
 sortBy
 ------
@@ -88,7 +89,7 @@ In particular:
   | Thus, to sort a set of event points so that the most recent event is painted on top, and assuming the attribute is called "date" in the vector layer, the specification will be ``&sortBy=date`` or ``&sortBy=date A`` (ascending direction being the default one).
 * | For **layer groups**, the sort specification is going to be copied over all internal layers, so the spec has to be valid for all of them, or an error will be reported. 
   | An empty spec can be used for layer groups in this case, for example, ``layers=theGroup,theLayer&sortBy=(),(date A)``
- 
+
 
 env
 ---
@@ -97,7 +98,7 @@ The ``env`` parameter defines the set of substitution values that can be used in
 The syntax is::
 
   env=param1:value1;param2:value2;...
-  
+
 See :ref:`sld_variable_substitution` for more information.
 
 featureid
@@ -122,7 +123,7 @@ If more than one layer is specified in the ``layers`` parameter then a separate 
 An example of an OGC filter encoded in a GET request is::
 
    filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
-   
+
 .. _format_options:
 
 format_options
@@ -130,9 +131,9 @@ format_options
 
 The ``format_options`` is a container for parameters that are format-specific. 
 The syntax is::
-  
+
     format_options=param1:value1;param2:value2;...
-    
+
 The supported format options are:
 
 * ``antialias`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
@@ -153,6 +154,7 @@ The supported format options are:
 * ``kmlvisible`` (values = ``true``, ``false``): Indicates whether layers selected will default to enabled or not. Default behavior is enabled. This parameter primarily affects Google Earth rendering.
 * ``advancedProjectionHandling`` (values = ``true``, ``false``): Enable \ Disable advanced projection handling, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect.
 * ``mapWrapping`` (values = ``true``, ``false``): Enable \ Disable continuous map wrapping, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect. Continuous map wrapping will also be disabled if ``advancedProjectionHandling`` is disabled.
+* ``decorationsOnly`` (values = ``true``, ``false``): Disabled by default. When value is true, it allows to get a transparent sized image for the request on which maps are not rendered, but it keeps the decorations applied (if present).
 
 maxFeatures and startIndex
 --------------------------
@@ -199,7 +201,7 @@ It is then possible to specify the ``palette`` parameter of the form::
 
 where ``<image>`` is the filename of the palette image (without the extension).  To force a web-safe palette, use the syntax ``palette=safe``.  
 For more information see the tutorial on :ref:`tutorials_palettedimages`
-  
+
 propertyName
 ------------
 
@@ -208,11 +210,11 @@ The syntax is the same as in the WFS ``GetFeature`` operation.
 For a request for a single layer the syntax is::
 
    propertyName=name1,...,nameN
-   
+
 For multiple layers the syntax is::
 
    propertyName=(nameLayer11,...,nameLayer1N)...(name1LayerN,...,nameNLayerN)
-  
+
 The nature of the properties depends on the layer type:
 	
 * For vector layers the names specify the feature attributes.
@@ -242,7 +244,7 @@ The ``tilesorigin`` parameter is also required for meta-tiling.
 The syntax is::
 
    tilesorigin=x,y
-   
+
 where ``x`` and ``y`` are the coordinates of the lower left corner (the "origin") of the tile grid system. 
 
 OpenLayers example
@@ -263,7 +265,7 @@ The following code shows how to specify the meta-tiling parameters:
         ...
     };
     map = new OpenLayers.Map('map', options);
-
+    
     tiled = new OpenLayers.Layer.WMS(
         "Layer name", "http://localhost:8080/geoserver/wms",
         {
@@ -289,7 +291,8 @@ The two possible values are:
                        imposes simplified formulas for the sake of interoperability
   * ``Accurate``: use the full expressions for computing the scale denominator against geographic
                    data, taking into account the ellipsoidal shape of Earth
-                   
+                 
+
 The two methods tend to return values rather close to each other near the equator, but they
 do diverge to larger differences as the latitude approaches the poles.
 
@@ -328,7 +331,7 @@ An example request:
 .. note::  
   Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.
 
-  
+
 rootLayer
 ---------
 
@@ -358,7 +361,7 @@ An example with XML POST:
       version="1.1.1" service="WMS" rootLayer="false">
    </ogc:GetCapabilities>
 
-   
+
 clip
 ------
 

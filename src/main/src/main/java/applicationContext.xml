@@ -232,12 +232,18 @@
     <constructor-arg ref="catalog"/>
   </bean>
   
-  <!-- the proxyfing URL mangler -->
+  <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">
     <constructor-arg index="0" ref="geoServer"/>
   </bean>
-  
-  <!-- URL mangler for workspace/layers accessed through the /ows?service=... service end points -->
+  <bean id="proxyfierHeaderCollector" class="org.geoserver.ows.HTTPHeadersCollector"/>
+  <bean id="proxyfierHeaderTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
+      <constructor-arg index="0" value="org.geoserver.ows.HTTPHeadersCollector"/>
+      <constructor-arg index="1" value="HEADERS"/>
+  </bean>
+
+
+    <!-- URL mangler for workspace/layers accessed through the /ows?service=... service end points -->
   <bean id="owsDispatcherLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
     <constructor-arg value="ows"/>
   </bean>

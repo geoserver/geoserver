@@ -13,11 +13,20 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
+import org.geoserver.security.oauth2.DiscoveryClient;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.HelpLink;
+import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
  * Configuration panel for {@link GeoServerOAuthAuthenticationFilter}.
@@ -32,5 +41,52 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("principalKeyHelp", this).setDialog(dialog));
         add(new TextField<String>("principalKey"));
+    }
+
+    @Override
+    protected Component getTopPanel(String panelId) {
+        return new DiscoveryPanel(panelId);
+    }
+
+    private class DiscoveryPanel extends Panel {
+
+        String discoveryURL;
+
+        public DiscoveryPanel(String panelId) {
+            super(panelId);
+
+            TextField<String> url =
+                    new TextField<>("discoveryURL", new PropertyModel<>(this, "discoveryURL"));
+            add(url);
+            add(
+                    new AjaxButton("discover") {
+
+                        @Override
+                        protected void onError(AjaxRequestTarget target, Form<?> form) {
+                            onSubmit(target, form);
+                        }
+
+                        @Override
+                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            url.processInput();
+                            discover(url.getInput(), target);
+                        }
+                    });
+            add(new HelpLink("discoveryURLKeyHelp", this).setDialog(dialog));
+        }
+
+        private void discover(String discoveryURL, AjaxRequestTarget target) {
+            OpenIdConnectFilterConfig model =
+                    (OpenIdConnectFilterConfig)
+                            OpenIdConnectAuthProviderPanel.this.getForm().getModelObject();
+            try {
+                new DiscoveryClient(discoveryURL).autofill(model);
+                target.add(OpenIdConnectAuthProviderPanel.this);
+                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+            } catch (Exception e) {
+                error(new ParamResourceModel("discoveryError", this, e.getMessage()).getString());
+                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+            }
+        }
     }
 }

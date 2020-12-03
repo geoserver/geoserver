@@ -5,8 +5,10 @@
 package org.geoserver.web.security.oauth2;
 
 import java.util.logging.Logger;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.oauth2.GeoServerOAuth2FilterConfig;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
@@ -38,6 +40,7 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
         this.dialog = (GeoServerDialog) get("dialog");
         this.model = model;
 
+        add(getTopPanel("topPanel"));
         add(new HelpLink("enableRedirectAuthenticationEntryPointHelp", this).setDialog(dialog));
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
         add(new HelpLink("accessTokenUriHelp", this).setDialog(dialog));
@@ -62,5 +65,19 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
         add(new TextField<String>("scopes"));
         add(new TextField<String>("cliendId"));
         add(new TextField<String>("clientSecret"));
+    }
+
+    /**
+     * Allows subclasses to add a panel at the top of the parameter list, in addition to normal
+     * Wicket extension mechanism, which places them at the bottom instead. The default
+     * implementation just hides the top panel.
+     *
+     * @return
+     * @param panelId
+     */
+    protected Component getTopPanel(String panelId) {
+        EmptyPanel topPanel = new EmptyPanel(panelId);
+        topPanel.setVisible(false);
+        return topPanel;
     }
 }

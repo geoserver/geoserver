@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
@@ -37,9 +38,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -72,6 +76,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.dao.DuplicateKeyException;
 
@@ -323,6 +328,43 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         return resultSet;
     }
 
+    /**
+     * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
+     */
+    protected List<String> getLayerGroupNames(String workspaceName) {
+        List<String> resultSet = new ArrayList<String>();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        CatalogFacade facade = getCatalog().getFacade();
+        SortBy sort = ff.sort("name", SortOrder.ASCENDING);
+        try (CloseableIterator<LayerGroupInfo> it =
+                workspaceName != null
+                        ? facade.list(
+                                LayerGroupInfo.class,
+                                Predicates.equal("workspace.name", workspaceName),
+                                null,
+                                null,
+                                sort)
+                        : facade.list(
+                                LayerGroupInfo.class,
+                                Predicates.isNull("workspace"),
+                                null,
+                                null,
+                                sort)) {
+            while (it.hasNext()) {
+                resultSet.add(it.next().getName());
+            }
+        }
+
+        return resultSet;
+    }
+
+    List<String> getLayersAndLayerGroups(String workspace) {
+        List<String> layers = getLayerNames(workspace);
+        List<String> layerGroups = getLayerGroupNames(workspace);
+        layers.addAll(layerGroups);
+        return layers;
+    }
+
     /** Returns a sorted list of workspace names */
     protected List<String> getServiceNames() {
         SortedSet<String> resultSet = new TreeSet<String>();
@@ -495,7 +537,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             layerChoice.setChoices(
-                                    getLayerNames(workspaceChoice.getConvertedInput()));
+                                    getLayersAndLayerGroups(workspaceChoice.getConvertedInput()));
                             form.getModelObject().rule.setLayer(null);
                             layerChoice.modelChanged();
                             target.add(layerChoice);
@@ -508,7 +550,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             new DropDownChoice<>(
                                     "layer",
                                     ruleFormModel.bind("rule.layer"),
-                                    getLayerNames(ruleFormModel.getObject().rule.getWorkspace())));
+                                    getLayersAndLayerGroups(
+                                            ruleFormModel.getObject().rule.getWorkspace())));
             layerChoice.setOutputMarkupId(true);
             layerChoice.setNullValid(true);
             layerChoice.add(
@@ -525,10 +568,14 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
                             ruleFormModel.getObject().layerDetails.attributes.clear();
                             if (layerChoice.getConvertedInput() != null) {
-                                LayerInfo li =
+                                PublishedInfo info =
                                         getCatalog()
-                                                .getLayerByName(layerChoice.getConvertedInput());
-                                switch (li.getType()) {
+                                                .get(
+                                                        PublishedInfo.class,
+                                                        Predicates.equal(
+                                                                "name",
+                                                                layerChoice.getConvertedInput()));
+                                switch (info.getType()) {
                                     case VECTOR:
                                     case REMOTE:
                                         ruleFormModel.getObject().layerDetails.layerType =
@@ -538,16 +585,19 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     case WMS:
                                     case WMTS:
                                         ruleFormModel.getObject().layerDetails.layerType =
-                                                LayerType.VECTOR;
+                                                LayerType.RASTER;
                                         break;
                                     case GROUP:
                                         ruleFormModel.getObject().layerDetails.layerType =
                                                 LayerType.LAYERGROUP;
                                         break;
                                 }
-
-                                if (li.getResource() instanceof FeatureTypeInfo) {
-                                    FeatureTypeInfo fti = (FeatureTypeInfo) li.getResource();
+                                ResourceInfo resource =
+                                        info instanceof LayerInfo
+                                                ? ((LayerInfo) info).getResource()
+                                                : null;
+                                if (resource instanceof FeatureTypeInfo) {
+                                    FeatureTypeInfo fti = (FeatureTypeInfo) resource;
                                     try {
                                         for (AttributeTypeInfo ati : fti.attributes()) {
                                             ruleFormModel
@@ -691,12 +741,33 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     });
 
             DropDownChoice<LayerType> layerType =
-                    new DropDownChoice<>(
+                    new DropDownChoice(
                             "layerType",
                             ruleFormModel.bind("layerDetails.layerType"),
                             Arrays.asList(LayerType.values()),
                             new LayerTypeRenderer());
-            layerType.setEnabled(false);
+            boolean isNullType = ruleFormModel.getObject().layerDetails.layerType == null;
+            layerType.setEnabled(isNullType);
+            layerType.add(
+                    new AjaxFormComponentUpdatingBehavior("onchange") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                            boolean enableFiltersAndStyles = true;
+                            if (layerType.getValue().equals(LayerType.LAYERGROUP.name()))
+                                enableFiltersAndStyles = false;
+
+                            Component readFilter = container.get("cqlFilterRead");
+                            readFilter.setEnabled(enableFiltersAndStyles);
+                            Component writeFilter = container.get("cqlFilterWrite");
+                            writeFilter.setEnabled(enableFiltersAndStyles);
+                            Component defaultStyles = container.get("defaultStyle");
+                            defaultStyles.setEnabled(enableFiltersAndStyles);
+                            defaultStyles.setEnabled(enableFiltersAndStyles);
+                            Component allowedStyles = container.get("allowedStyles");
+                            ajaxRequestTarget.add(
+                                    readFilter, writeFilter, defaultStyles, allowedStyles);
+                        }
+                    });
             container.add(layerType);
 
             DropDownChoice<String> defaultStyle =
@@ -735,17 +806,27 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     };
             container.add(allowedStyles);
             allowedStyles.add(new DefaultTheme());
-
+            boolean isLayerGroup =
+                    !isNullType
+                            ? ruleFormModel
+                                    .getObject()
+                                    .layerDetails
+                                    .layerType
+                                    .equals(LayerType.LAYERGROUP)
+                            : false;
             TextArea<String> cqlFilterRead =
                     new TextArea<>(
                             "cqlFilterRead", ruleFormModel.bind("layerDetails.cqlFilterRead"));
+            cqlFilterRead.setOutputMarkupId(true);
+            cqlFilterRead.setEnabled(!isLayerGroup);
             container.add(cqlFilterRead);
 
             TextArea<String> cqlFilterWrite =
                     new TextArea<>(
                             "cqlFilterWrite", ruleFormModel.bind("layerDetails.cqlFilterWrite"));
+            cqlFilterWrite.setOutputMarkupId(true);
+            cqlFilterWrite.setEnabled(!isLayerGroup);
             container.add(cqlFilterWrite);
-
             TextArea<String> allowedArea =
                     new TextArea<>("allowedArea", ruleFormModel.bind("layerDetails.allowedArea"));
             container.add(allowedArea);

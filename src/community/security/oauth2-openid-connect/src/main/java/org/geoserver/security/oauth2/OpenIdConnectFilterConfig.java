@@ -13,6 +13,7 @@ package org.geoserver.security.oauth2;
 public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     String principalKey = "email";
+    String jwkUri;
 
     public OpenIdConnectFilterConfig() {
         this.redirectUri = "http://localhost:8080/geoserver";
@@ -30,5 +31,13 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     public void setPrincipalKey(String principalKey) {
         this.principalKey = principalKey;
+    }
+
+    public String getJwkUri() {
+        return jwkUri;
+    }
+
+    public void setJwkUri(String jwkUri) {
+        this.jwkUri = jwkUri;
     }
 }

@@ -67,7 +67,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
+                                return new WMSLayerConfig(id, new Model<>(layer));
                             }
                         });
         tester.startPage(page);
@@ -93,7 +93,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
+                                return new WMSLayerConfig(id, new Model<>(layer));
                             }
                         });
         Component layerConfig = page.get("form:panel:styles:defaultStyle");
@@ -132,7 +132,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
+                                return new WMSLayerConfig(id, new Model<>(layer));
                             }
                         });
         tester.startPage(page);
@@ -377,10 +377,12 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
 
         // NOW assert if drop down are showing the defaults as selected on GUI
+        @SuppressWarnings("unchecked")
         DropDownChoice<String> remotStyles =
                 (DropDownChoice<String>)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:remotestyles:remoteStylesDropDown");
+        @SuppressWarnings("unchecked")
         DropDownChoice<String> remoteformats =
                 (DropDownChoice<String>)
                         tester.getComponentFromLastRenderedPage(
@@ -389,10 +391,12 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertFalse(remoteformats.getChoicesModel().getObject().isEmpty());
         assertFalse(remotStyles.getChoicesModel().getObject().isEmpty());
 
+        @SuppressWarnings("unchecked")
         Palette<String> remoteFormatsPalette =
                 (Palette<String>)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:remoteformats:remoteFormatsPalette");
+        @SuppressWarnings("unchecked")
         Palette<String> extraRemoteStyles =
                 (Palette<String>)
                         tester.getComponentFromLastRenderedPage(

@@ -100,7 +100,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 });
 
         // build a palette with no reordering allowed, since order doesn't affect anything
-        LiveCollectionModel stylesModel =
+        LiveCollectionModel<StyleInfo, Set<StyleInfo>> stylesModel =
                 LiveCollectionModel.set(new PropertyModel<Set<StyleInfo>>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
                 new Palette<StyleInfo>(
@@ -129,7 +129,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         TextField<Integer> renderingBuffer =
                 new TextField<Integer>(
                         "renderingBuffer",
-                        new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER),
+                        new MapModel<>(
+                                new PropertyModel<>(layerModel, "metadata"), LayerInfo.BUFFER),
                         Integer.class);
         renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
@@ -229,16 +230,16 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         styleContainer.add(remotStyles);
 
-        LiveCollectionModel stylesModel =
+        LiveCollectionModel<String, Set<String>> stylesModel =
                 LiveCollectionModel.set(
                         new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteStyles"));
         Palette<String> extraRemoteStyles =
-                new Palette<String>(
+                new Palette<>(
                         "extraRemoteStyles",
                         stylesModel,
-                        new CollectionModel<String>(
+                        new CollectionModel<>(
                                 getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
-                        new SimpleChoiceRenderer<String>(),
+                        new SimpleChoiceRenderer<>(),
                         10,
                         true);
 
@@ -254,7 +255,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         remoteForamtsContainer.add(remoteForamts);
         // add format pallete
 
-        LiveCollectionModel remoteFormatsModel =
+        LiveCollectionModel<String, Set<String>> remoteFormatsModel =
                 LiveCollectionModel.set(
                         new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteFormats"));
 
@@ -275,16 +276,12 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
         // scale denominators
         TextField<Double> minScale =
-                new TextField(
-                        "minScale",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
-                        Double.class);
+                new TextField<>(
+                        "minScale", new PropertyModel<>(wmsLayerInfo, "minScale"), Double.class);
         scaleDenominatorContainer.add(minScale);
         TextField<Double> maxScale =
-                new TextField(
-                        "maxScale",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
-                        Double.class);
+                new TextField<>(
+                        "maxScale", new PropertyModel<>(wmsLayerInfo, "maxScale"), Double.class);
         scaleDenominatorContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
@@ -295,7 +292,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     // validator to make sure min scale smaller than max scale and vice-versa
-    private class ScalesValidator implements IValidator {
+    private class ScalesValidator implements IValidator<Double> {
 
         /** serialVersionUID */
         private static final long serialVersionUID = 1349568700386246273L;

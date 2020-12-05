@@ -139,6 +139,7 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
         FormTester form = tester.newFormTester("styleForm", false);
 
         // Update the workspace (select "sf" from the dropdown)
+        @SuppressWarnings("unchecked")
         DropDownChoice<WorkspaceInfo> typeDropDown =
                 (DropDownChoice<WorkspaceInfo>)
                         tester.getComponentFromLastRenderedPage(

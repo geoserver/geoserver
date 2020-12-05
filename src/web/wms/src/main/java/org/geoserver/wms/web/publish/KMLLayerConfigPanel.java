@@ -39,17 +39,17 @@ public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
         add(
                 new DropDownChoice<String>(
                         "kml.regionateAttribute",
-                        new MapModel(metadata, "kml.regionateAttribute"),
-                        new AttributeNamesModel(new PropertyModel(model, "resource"))));
+                        new MapModel<>(metadata, "kml.regionateAttribute"),
+                        new AttributeNamesModel(new PropertyModel<>(model, "resource"))));
         add(
                 new DropDownChoice<String>(
                         "kml.regionateStrategy",
-                        new MapModel(metadata, "kml.regionateStrategy"),
+                        new MapModel<>(metadata, "kml.regionateStrategy"),
                         KML_STRATEGIES));
         TextField<Integer> maxFeatures =
                 new TextField<Integer>(
                         "kml.regionateFeatureLimit",
-                        new MapModel(metadata, "kml.regionateFeatureLimit"),
+                        new MapModel<>(metadata, "kml.regionateFeatureLimit"),
                         Integer.class);
         maxFeatures.add(RangeValidator.minimum(1));
         add(maxFeatures);

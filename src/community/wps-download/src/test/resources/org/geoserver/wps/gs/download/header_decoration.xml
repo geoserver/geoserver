@@ -1,0 +1,5 @@
+<layout>
+  <decoration type="image" affinity="top,center" offset="0,0" size="256,50">
+      <option name="url" value="header.jpg" />
+  </decoration>
+</layout>

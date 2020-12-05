@@ -585,7 +585,7 @@ public class APIDispatcher extends AbstractController {
                 .map(
                         a -> {
                             try {
-                                return (String) a.getClass().getMethod("name").invoke(a);
+                                return (String) a.annotationType().getMethod("name").invoke(a);
                             } catch (Exception e) {
                                 LOGGER.log(
                                         Level.WARNING,

@@ -287,8 +287,15 @@ needed, and can be filled with two made up values (the validation just checks th
 but they will be used only in the "authorisation flow", but not when doing OGC requests
 where the client is supposed to have autonomously retrieved a valid bearer token).
 
+The configuration GUI supports OpenID Discovery documents.  If the server supports them
+it's sufficient to provide the path to the document, or to the authentication service root,
+and the GUI will auto-fill itself based on the document contents:
+
+   .. figure:: images/discovery.png
+      :align: center
+
 .. warning:: The oauth2-openid-connect does not implement the full protocol and has been tested
-   against a single server, more development and testing is needed before it can be consumed by
+   against a couple of servers only, more development and testing is needed before it can be consumed by
    a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_
    to improve the module are welcomed.
 

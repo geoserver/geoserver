@@ -21,6 +21,7 @@ import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -144,7 +145,8 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             } else {
                 // need to composite the collections
                 SimpleFeatureType schema = collections.get(0).getSchema();
-                result = new CompositeFeatureCollection(collections, schema);
+                result =
+                        DataUtilities.simple(new CompositeFeatureCollection<>(collections, schema));
                 // cannot use a simple retyper here, all features need a unique feature id
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(schema);

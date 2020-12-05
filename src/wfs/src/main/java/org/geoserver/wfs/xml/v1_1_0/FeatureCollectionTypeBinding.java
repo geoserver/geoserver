@@ -12,6 +12,7 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.feature.CompositeFeatureCollection;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -213,7 +214,7 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
         FeatureCollection result = null;
         if (featureCollection.getFeature().size() > 1) {
             // wrap in a single
-            result = new CompositeFeatureCollection(featureCollection.getFeature());
+            result = new CompositeFeatureCollection<>(featureCollection.getFeature());
         } else {
             // just return the single
             result = (FeatureCollection) featureCollection.getFeature().iterator().next();
@@ -221,24 +222,19 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
 
         if (isSimpleFeatureCollection(result)
                 && encoder.getConfiguration().hasProperty(GMLConfiguration.OPTIMIZED_ENCODING)) {
-            return new GML3FeatureCollectionEncoderDelegate(
-                    (SimpleFeatureCollection) result, encoder);
+            if (result instanceof CompositeFeatureCollection) {
+                return new GML3FeatureCollectionEncoderDelegate(
+                        ((CompositeFeatureCollection) result).simple(), encoder);
+            }
+            return new GML3FeatureCollectionEncoderDelegate(DataUtilities.simple(result), encoder);
         } else {
             return result;
         }
     }
 
     private boolean isSimpleFeatureCollection(FeatureCollection result) {
-        // CompositeFeatureCollection is a simple one, but that's a lie, it might
-        // contain complex sub-collections
         if (result instanceof CompositeFeatureCollection) {
-            CompositeFeatureCollection composite = (CompositeFeatureCollection) result;
-            for (FeatureCollection collection : composite.getCollections()) {
-                if (!(collection instanceof SimpleFeatureCollection)) {
-                    return false;
-                }
-            }
-            return true;
+            return ((CompositeFeatureCollection) result).isSimple();
         } else {
             return result instanceof SimpleFeatureCollection;
         }

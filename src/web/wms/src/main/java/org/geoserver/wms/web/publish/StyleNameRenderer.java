@@ -10,13 +10,13 @@ import org.geoserver.catalog.StyleInfo;
 
 /** Style name rendered, displays the style, uses the id as the select id */
 @SuppressWarnings("serial")
-public class StyleNameRenderer extends ChoiceRenderer {
+public class StyleNameRenderer extends ChoiceRenderer<StyleInfo> {
 
-    public Object getDisplayValue(Object object) {
+    public Object getDisplayValue(StyleInfo object) {
         return ((StyleInfo) object).prefixedName();
     }
 
-    public String getIdValue(Object object, int index) {
+    public String getIdValue(StyleInfo object, int index) {
         return ((StyleInfo) object).getId();
     }
 }

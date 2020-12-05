@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.wicket.Component;
@@ -105,7 +106,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new TextField<String>("rootLayerTitle"));
         form.add(new TextArea<String>("rootLayerAbstract"));
 
-        PropertyModel metadataModel = new PropertyModel(info, "metadata");
+        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel(info, "metadata");
         MapModel rootLayerEnabled =
                 defaultedModel(
                         metadataModel,
@@ -426,7 +427,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         }
 
                         GeoServerFileChooser chooser =
-                                new GeoServerFileChooser(modal.getContentId(), new Model(file)) {
+                                new GeoServerFileChooser(modal.getContentId(), new Model<>(file)) {
                                     protected void fileClicked(
                                             File file, AjaxRequestTarget target) {
                                         // clear the raw input of the field won't show the new model
@@ -447,8 +448,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return link;
     }
 
-    MapModel defaultedModel(IModel baseModel, String key, Object defaultValue) {
-        MapModel model = new MapModel(baseModel, key);
+    <T> MapModel<T> defaultedModel(IModel<Map<String, ?>> baseModel, String key, T defaultValue) {
+        MapModel<T> model = new MapModel<>(baseModel, key);
         if (model.getObject() == null) model.setObject(defaultValue);
         return model;
     }

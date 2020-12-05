@@ -23,7 +23,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
 
-public class MimeTypesFormComponent extends FormComponentPanel {
+public class MimeTypesFormComponent extends FormComponentPanel<String> {
 
     /** the palette */
     protected Palette<String> palette;
@@ -38,10 +38,11 @@ public class MimeTypesFormComponent extends FormComponentPanel {
             IModel<List<String>> model,
             IModel<Collection<String>> choicesModel,
             final boolean isMimeTypeCheckingEnabled) {
-        super(id, new Model<String>());
+        super(id, new Model<>());
 
         add(
-                new AjaxCheckBox("mimeTypeCheckingEnabled", new Model(isMimeTypeCheckingEnabled)) {
+                new AjaxCheckBox(
+                        "mimeTypeCheckingEnabled", new Model<>(isMimeTypeCheckingEnabled)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         // palette.setEnabled(getModelObject());
@@ -56,7 +57,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
                                 "palette",
                                 model,
                                 choicesModel,
-                                new SimpleChoiceRenderer(),
+                                new SimpleChoiceRenderer<>(),
                                 10,
                                 false) {
                             private static final long serialVersionUID = 1L;
@@ -138,8 +139,8 @@ public class MimeTypesFormComponent extends FormComponentPanel {
         return palette;
     }
 
-    public IModel<List<String>> getPaletteModel() {
-        return (IModel<List<String>>) palette.getDefaultModel();
+    public IModel<Collection<String>> getPaletteModel() {
+        return palette.getModel();
     }
 
     @Override

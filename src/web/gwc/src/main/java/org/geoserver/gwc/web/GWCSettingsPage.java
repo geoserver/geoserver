@@ -109,7 +109,9 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             @Override
             protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
                 try {
-                    save((Form<GWCConfig>) form, false);
+                    @SuppressWarnings("unchecked")
+                    Form<GWCConfig> cast = (Form<GWCConfig>) form;
+                    save(cast, false);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
                     target.add(form);

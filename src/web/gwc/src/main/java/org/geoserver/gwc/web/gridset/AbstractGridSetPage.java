@@ -281,8 +281,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel tileHeight(IModel<GridSetInfo> model) {
-        TextParamPanel panel =
-                new TextParamPanel(
+        TextParamPanel<Integer> panel =
+                new TextParamPanel<>(
                         "tileHeight",
                         new PropertyModel<Integer>(model, "tileHeight"),
                         new StringResourceModel("AbstractGridSetPage.tileHeight"),
@@ -292,8 +292,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel tileWidth(IModel<GridSetInfo> model) {
-        TextParamPanel panel =
-                new TextParamPanel(
+        TextParamPanel<Integer> panel =
+                new TextParamPanel<>(
                         "tileWidth",
                         new PropertyModel<Integer>(model, "tileWidth"),
                         new StringResourceModel("AbstractGridSetPage.tileWidth"),
@@ -433,8 +433,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel name(IModel<GridSetInfo> model) {
-        TextParamPanel namePanel =
-                new TextParamPanel(
+        TextParamPanel<String> namePanel =
+                new TextParamPanel<>(
                         "name",
                         new PropertyModel<String>(model, "name"),
                         new StringResourceModel("AbstractGridSetPage.name"),

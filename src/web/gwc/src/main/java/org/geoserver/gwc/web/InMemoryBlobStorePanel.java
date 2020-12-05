@@ -205,15 +205,15 @@ public class InMemoryBlobStorePanel extends Panel {
 
         // Container for the statistics
         final Label totalCountLabel =
-                new Label("totalCount", new MapModel(values, KEY_TOTAL_COUNT));
-        final Label hitCountLabel = new Label("hitCount", new MapModel(values, KEY_HIT_COUNT));
-        final Label missCountLabel = new Label("missCount", new MapModel(values, KEY_MISS_COUNT));
-        final Label missRateLabel = new Label("missRate", new MapModel(values, KEY_MISS_RATE));
-        final Label hitRateLabel = new Label("hitRate", new MapModel(values, KEY_HIT_RATE));
-        final Label evictedLabel = new Label("evicted", new MapModel(values, KEY_EVICTED));
+                new Label("totalCount", new MapModel<>(values, KEY_TOTAL_COUNT));
+        final Label hitCountLabel = new Label("hitCount", new MapModel<>(values, KEY_HIT_COUNT));
+        final Label missCountLabel = new Label("missCount", new MapModel<>(values, KEY_MISS_COUNT));
+        final Label missRateLabel = new Label("missRate", new MapModel<>(values, KEY_MISS_RATE));
+        final Label hitRateLabel = new Label("hitRate", new MapModel<>(values, KEY_HIT_RATE));
+        final Label evictedLabel = new Label("evicted", new MapModel<>(values, KEY_EVICTED));
         final Label currentMemoryLabel =
-                new Label("currentMemory", new MapModel(values, KEY_CURRENT_MEM));
-        final Label cacheSizeLabel = new Label("cacheSize", new MapModel(values, KEY_SIZE));
+                new Label("currentMemory", new MapModel<>(values, KEY_CURRENT_MEM));
+        final Label cacheSizeLabel = new Label("cacheSize", new MapModel<>(values, KEY_SIZE));
 
         statsContainer.add(totalCountLabel);
         statsContainer.add(hitCountLabel);
@@ -381,7 +381,7 @@ public class InMemoryBlobStorePanel extends Panel {
                             gwcConfigModel, "cacheConfigurations");
 
             // Get CacheConfiguration model
-            MapModel cacheConfiguration = new MapModel(cacheConfigurations, key);
+            MapModel cacheConfiguration = new MapModel<>(cacheConfigurations, key);
 
             // Cache configuration parameters
             IModel<Long> hardMemoryLimit =

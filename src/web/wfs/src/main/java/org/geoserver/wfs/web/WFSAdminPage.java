@@ -172,19 +172,19 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     static class GMLPanel extends Panel {
 
-        public GMLPanel(String id, IModel gmlModel, String... mimeTypes) {
-            super(id, new CompoundPropertyModel(gmlModel));
+        public GMLPanel(String id, IModel<GMLInfo> gmlModel, String... mimeTypes) {
+            super(id, new CompoundPropertyModel<>(gmlModel));
 
             // srsNameStyle
             List<GMLInfo.SrsNameStyle> choices = Arrays.asList(SrsNameStyle.values());
-            DropDownChoice srsNameStyle =
-                    new DropDownChoice("srsNameStyle", choices, new EnumChoiceRenderer());
+            DropDownChoice<GMLInfo.SrsNameStyle> srsNameStyle =
+                    new DropDownChoice<>("srsNameStyle", choices, new EnumChoiceRenderer<>());
             add(srsNameStyle);
 
             add(new CheckBox("overrideGMLAttributes"));
 
             // GML MIME type overriding section
-            GMLInfo gmlInfo = (GMLInfo) gmlModel.getObject();
+            GMLInfo gmlInfo = gmlModel.getObject();
             boolean mimesTypesProvided = mimeTypes.length != 0;
             boolean activated = gmlInfo.getMimeTypeToForce().isPresent();
             // add MIME type drop down choice

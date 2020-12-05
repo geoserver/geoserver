@@ -43,7 +43,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
 
     T schema;
 
-    public CompositeFeatureCollection(List<FeatureCollection<T, F>> collections) {
+    public CompositeFeatureCollection(List<? extends FeatureCollection<T, F>> collections) {
         this.collections = collections;
     }
 

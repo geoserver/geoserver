@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2003-2008, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.feature;
 
@@ -32,15 +20,9 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.util.ProgressListener;
 
 /**
- * This class is a bridge between a FeatureCollection<SimpleFeatureType,SimpleFeature> and the
- * SimpleFeatureCollection interface.
- *
- * <p>This class is package visbile and can only be created by DataUtilities.simple(
- * featureCollection ); it is under lock and key so that we can safely do an instance of check and
- * not get multiple wrappers piling up.
- *
- * @author Jody
- * @since 2.7
+ * Bridges between FeatureCollection and SimpleFeatureCollection. Ported over from GeoTools to
+ * handle CompositeFeatureCollection, which might not have a uniform feature type due to composition
+ * TODO: WFS should really handle another way mixed feature type results...
  */
 class SimpleFeatureCollectionBridge implements SimpleFeatureCollection {
 

@@ -23,7 +23,7 @@ public class HTTPHeadersCollector extends AbstractDispatcherCallback {
     public Request init(Request request) {
         HttpServletRequest hr = request.getHttpRequest();
         Enumeration<String> names = hr.getHeaderNames();
-        Map<String, String> headers = new CaseInsensitiveMap(new HashMap<>());
+        Map<String, String> headers = new CaseInsensitiveMap<>(new HashMap<>());
         while (names.hasMoreElements()) {
             String header = names.nextElement();
             String value = hr.getHeader(header);

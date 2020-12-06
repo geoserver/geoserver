@@ -94,7 +94,7 @@ public class InspireConverterFactory implements ConverterFactory {
                             new UniqueResourceIdentifier(code, namespace, metadataURL);
                     identifiers.add(id);
                 }
-                return (T) identifiers;
+                return target.cast(identifiers);
             } else if (source instanceof UniqueResourceIdentifiers && String.class.equals(target)) {
                 UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) source;
                 if (ids.size() > 0) {
@@ -114,9 +114,9 @@ public class InspireConverterFactory implements ConverterFactory {
                         sb.append(";");
                     }
                     sb.setLength(sb.length() - 1);
-                    return (T) sb.toString();
+                    return target.cast(sb.toString());
                 } else {
-                    return (T) "";
+                    return target.cast("");
                 }
             }
 

@@ -135,7 +135,9 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             }
 
             // go through all the features and aggregate the bounding boxes
-            for (Feature f : (List<Feature>) OwsUtils.get(element, "feature")) {
+            @SuppressWarnings("unchecked")
+            List<Feature> feature = (List<Feature>) OwsUtils.get(element, "feature");
+            for (Feature f : feature) {
                 BoundingBox fbbox = f.getBounds();
                 if (fbbox == null) {
                     continue;

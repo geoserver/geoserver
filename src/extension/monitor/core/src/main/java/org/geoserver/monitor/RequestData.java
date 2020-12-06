@@ -464,7 +464,7 @@ public class RequestData implements Serializable {
         clone.setOperation(operation);
         clone.setSubOperation(subOperation);
         clone.setOwsVersion(owsVersion);
-        clone.setResources(new ArrayList(resources));
+        clone.setResources(new ArrayList<>(resources));
         clone.setResponseLength(responseLength);
         clone.setResponseContentType(responseContentType);
         clone.setErrorMessage(errorMessage);

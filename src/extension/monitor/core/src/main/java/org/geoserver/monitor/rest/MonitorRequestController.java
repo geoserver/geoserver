@@ -227,7 +227,7 @@ public class MonitorRequestController extends RestBaseController {
             String left = split[0];
             Object right = split[2];
             if (right.toString().contains(",")) {
-                List list = new ArrayList();
+                List<Object> list = new ArrayList<>();
                 for (String t : right.toString().split(",")) {
                     list.add(parseProperty(left, t));
                 }

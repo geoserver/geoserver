@@ -34,7 +34,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
     ExecutorService tasks;
 
     public PipeliningTaskQueue() {
-        pipelines = new ConcurrentHashMap();
+        pipelines = new ConcurrentHashMap<>();
         tasks = Executors.newCachedThreadPool();
     }
 
@@ -64,7 +64,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
             synchronized (this) {
                 pipeline = pipelines.get(key);
                 if (pipeline == null) {
-                    pipeline = new ConcurrentLinkedQueue();
+                    pipeline = new ConcurrentLinkedQueue<>();
                     Queue<Pipelineable<K>> other = pipelines.putIfAbsent(key, pipeline);
                     if (other != null) pipeline = other;
                 }

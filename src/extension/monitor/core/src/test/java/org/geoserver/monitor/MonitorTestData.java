@@ -33,7 +33,7 @@ public class MonitorTestData {
 
     public MonitorTestData(MonitorDAO dao, boolean extended) {
         this.dao = dao;
-        this.data = new ArrayList();
+        this.data = new ArrayList<>();
         this.extended = extended;
     }
 
@@ -205,7 +205,7 @@ public class MonitorTestData {
 
     public static void assertCovered(List<RequestData> datas, int... id) {
         assertEquals(id.length, datas.size());
-        HashSet<Long> ids = new HashSet();
+        HashSet<Long> ids = new HashSet<>();
         for (RequestData data : datas) {
             ids.add(data.getId());
         }

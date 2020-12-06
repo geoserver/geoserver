@@ -67,7 +67,7 @@ public abstract class MonitorDAOTestSupport {
 
     @Test
     public void testGetRequestsVisitor() throws Exception {
-        final List<RequestData> datas = new ArrayList();
+        final List<RequestData> datas = new ArrayList<>();
         dao.getRequests(
                 new Query().filter("path", "/seven", Comparison.EQ),
                 new RequestDataVisitor() {

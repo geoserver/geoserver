@@ -170,6 +170,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSDescribeFeatureType() throws Exception {
         DescribeFeatureTypeType dft = WfsFactory.eINSTANCE.createDescribeFeatureTypeType();
         dft.getTypeName().add(new QName("http://acme.org", "foo", "acme"));
@@ -183,6 +184,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSGetFeature() throws Exception {
         GetFeatureType gf = WfsFactory.eINSTANCE.createGetFeatureType();
         org.opengis.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
@@ -211,6 +213,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSLockFeature() throws Exception {
         LockFeatureType lf = WfsFactory.eINSTANCE.createLockFeatureType();
 
@@ -225,6 +228,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSTransaction() throws Exception {
         TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
         org.opengis.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
@@ -253,6 +257,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWFSTransactionInsert() throws Exception {
         TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
         InsertElementType ie = WfsFactory.eINSTANCE.createInsertElementType();
@@ -357,6 +362,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS10DescribeCoverage() throws Exception {
         DescribeCoverageType dc = Wcs10Factory.eINSTANCE.createDescribeCoverageType();
         dc.getCoverage().add("acme:foo");
@@ -368,6 +374,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS10GetCoverage() throws Exception {
         GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
         net.opengis.wcs10.SpatialSubsetType spatialSubset =
@@ -395,6 +402,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS11DescribeCoverage() throws Exception {
         net.opengis.wcs11.DescribeCoverageType dc =
                 Wcs11Factory.eINSTANCE.createDescribeCoverageType();
@@ -407,6 +415,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS11GetCoverage() throws Exception {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
 
@@ -461,6 +470,7 @@ public class MonitorCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS10GetCoverageDifferentCrs() throws Exception {
         // xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
         // xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73

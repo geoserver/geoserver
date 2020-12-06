@@ -69,7 +69,7 @@ abstract class FileItemCache<T> {
 
     /** Manually updates the contents of the cache */
     public void put(T item, Resource file) {
-        CacheItem ci = new CacheItem<T>(item, file);
+        CacheItem<T> ci = new CacheItem<T>(item, file);
         String key = getFileKey(file);
         cache.put(key, ci);
     }

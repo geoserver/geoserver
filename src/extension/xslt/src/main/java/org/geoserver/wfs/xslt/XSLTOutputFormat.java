@@ -45,7 +45,6 @@ import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -134,6 +133,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String getAttachmentFileName(Object value, Operation operation) {
         try {
             FeatureCollectionResponse featureCollections = (FeatureCollectionResponse) value;
@@ -141,7 +141,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
 
             // concatenate all feature types requested
             StringBuilder sb = new StringBuilder();
-            for (FeatureCollection<FeatureType, Feature> fc : featureCollections.getFeatures()) {
+            for (FeatureCollection fc : featureCollections.getFeatures()) {
                 sb.append(fc.getSchema().getName().getLocalPart());
                 sb.append("_");
             }
@@ -337,9 +337,10 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Set<FeatureType> getFeatureTypes(FeatureCollectionResponse collections) {
         Set<FeatureType> result = new HashSet<FeatureType>();
-        for (FeatureCollection<FeatureType, Feature> fc : collections.getFeatures()) {
+        for (FeatureCollection fc : collections.getFeatures()) {
             result.add(fc.getSchema());
         }
 

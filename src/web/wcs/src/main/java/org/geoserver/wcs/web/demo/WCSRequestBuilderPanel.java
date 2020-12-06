@@ -104,7 +104,7 @@ public class WCSRequestBuilderPanel extends Panel {
     public WCSRequestBuilderPanel(String id, GetCoverageRequest getCoverage) {
         super(id);
         setOutputMarkupId(true);
-        setDefaultModel(new Model(getCoverage));
+        setDefaultModel(new Model<>(getCoverage));
         this.getCoverage = getCoverage;
 
         // the feedback panel, for validation errors
@@ -187,7 +187,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(details);
 
         // the envelope chooser
-        envelope = new EnvelopePanel("envelope", new PropertyModel(getCoverage, "bounds"));
+        envelope = new EnvelopePanel("envelope", new PropertyModel<>(getCoverage, "bounds"));
         envelope.setCRSFieldVisible(true);
         envelope.setCrsRequired(true);
         details.add(envelope);
@@ -202,12 +202,12 @@ public class WCSRequestBuilderPanel extends Panel {
         formats =
                 new DropDownChoice<String>(
                         "format",
-                        new PropertyModel(getCoverage, "outputFormat"),
+                        new PropertyModel<>(getCoverage, "outputFormat"),
                         responseFactory.getOutputFormats());
         details.add(formats);
 
         // the target CRS
-        targetCRS = new CRSPanel("targetCRS", new PropertyModel(getCoverage, "targetCRS"));
+        targetCRS = new CRSPanel("targetCRS", new PropertyModel<>(getCoverage, "targetCRS"));
         details.add(targetCRS);
 
         // the target grid to world (for WCS 1.1 ones)
@@ -232,7 +232,7 @@ public class WCSRequestBuilderPanel extends Panel {
                                         URLType.SERVICE);
                         request.setRequestUrl(url);
                         request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model(request));
+                        return new DemoRequestResponse(new Model<>(request));
                     }
                 });
 
@@ -247,7 +247,8 @@ public class WCSRequestBuilderPanel extends Panel {
                         final String coverageName =
                                 WCSRequestBuilderPanel.this.getCoverage.coverage;
                         if (coverageName != null) {
-                            responseWindow.setDefaultModel(new Model(getDescribeXML(coverageName)));
+                            responseWindow.setDefaultModel(
+                                    new Model<>(getDescribeXML(coverageName)));
                             responseWindow.show(target);
                         }
                     }
@@ -301,14 +302,14 @@ public class WCSRequestBuilderPanel extends Panel {
         targetLayoutChooser =
                 new DropDownChoice<TargetLayout>(
                         "targetLayout",
-                        new Model(TargetLayout.Automatic),
+                        new Model<>(TargetLayout.Automatic),
                         Arrays.asList(TargetLayout.values()),
                         new TargetLayoutRenderer());
         targetlayoutContainer.add(targetLayoutChooser);
 
         g2w =
                 new AffineTransformPanel(
-                        "targetGridToWorld", new PropertyModel(getCoverage, "targetGridToWorld"));
+                        "targetGridToWorld", new PropertyModel<>(getCoverage, "targetGridToWorld"));
         targetlayoutContainer.add(g2w);
         g2w.setVisible(false);
         g2w.setOutputMarkupId(true);
@@ -347,11 +348,11 @@ public class WCSRequestBuilderPanel extends Panel {
         sourceGridContainer = new WebMarkupContainer("sourceGridContainer");
         details.add(sourceGridContainer);
 
-        manualGrid = new CheckBox("manualGrid", new Model(Boolean.FALSE));
+        manualGrid = new CheckBox("manualGrid", new Model<>(Boolean.FALSE));
         sourceGridContainer.add(manualGrid);
 
         sourceGridRange =
-                new GridPanel("sourceGrid", new PropertyModel(getCoverage, "sourceGridRange"));
+                new GridPanel("sourceGrid", new PropertyModel<>(getCoverage, "sourceGridRange"));
         sourceGridContainer.add(sourceGridRange);
         sourceGridRange.setVisible(false);
         sourceGridRange.setOutputMarkupId(true);
@@ -454,16 +455,16 @@ public class WCSRequestBuilderPanel extends Panel {
         }
     }
 
-    class TargetLayoutRenderer extends ChoiceRenderer {
+    class TargetLayoutRenderer extends ChoiceRenderer<TargetLayout> {
 
-        public Object getDisplayValue(Object object) {
-            final String name = ((TargetLayout) object).name();
+        public Object getDisplayValue(TargetLayout object) {
+            final String name = object.name();
             return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null)
                     .getString();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((TargetLayout) object).name();
+        public String getIdValue(TargetLayout object, int index) {
+            return object.name();
         }
     }
 }

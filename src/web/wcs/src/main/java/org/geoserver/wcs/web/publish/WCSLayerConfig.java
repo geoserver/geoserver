@@ -126,7 +126,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "interpolationMethods")),
                         new WCSInterpolationModel(),
-                        new SimpleChoiceRenderer(),
+                        new SimpleChoiceRenderer<>(),
                         7,
                         false) {
                     private static final long serialVersionUID = 6815545819673802290L;
@@ -163,7 +163,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "supportedFormats")),
                         new WCSFormatsModel(),
-                        new SimpleChoiceRenderer(),
+                        new SimpleChoiceRenderer<>(),
                         10,
                         false) {
                     private static final long serialVersionUID = -2463012775305597908L;

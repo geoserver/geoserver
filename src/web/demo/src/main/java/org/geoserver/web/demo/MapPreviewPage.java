@@ -87,12 +87,12 @@ public class MapPreviewPage extends GeoServerBasePage {
                             return new Label(id, property.getModel(itemModel));
                         } else if (property == COMMON) {
                             Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
-                            ListView lv =
-                                    new ListView("commonFormat", commonFormatLinks(layer)) {
+                            ListView<ExternalLink> lv =
+                                    new ListView<ExternalLink>(
+                                            "commonFormat", commonFormatLinks(layer)) {
                                         @Override
-                                        public void populateItem(ListItem item) {
-                                            final ExternalLink link =
-                                                    (ExternalLink) item.getModelObject();
+                                        public void populateItem(ListItem<ExternalLink> item) {
+                                            final ExternalLink link = item.getModelObject();
                                             item.add(link);
                                         }
                                     };

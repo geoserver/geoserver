@@ -1999,6 +1999,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
     }
 
+    @SuppressWarnings("unchecked")
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name feature) throws IOException {
         DataAccess<FeatureType, Feature> mfDataAccess =
                 AppSchemaDataAccessRegistry.getDataAccess(feature);

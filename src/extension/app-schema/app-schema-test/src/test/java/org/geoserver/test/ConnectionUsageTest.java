@@ -212,14 +212,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         assertNotNull(typeInfo);
 
         FeatureSource fs = typeInfo.getFeatureSource(new NullProgressListener(), null);
-        if (fs instanceof DecoratingFeatureSource) {
-            mappingFs =
-                    ((DecoratingFeatureSource<FeatureType, Feature>) fs)
-                            .unwrap(MappingFeatureSource.class);
-        } else {
-            assertTrue(fs instanceof MappingFeatureSource);
-            mappingFs = (MappingFeatureSource) fs;
-        }
+        initMappingFS(fs);
 
         FeatureSource sourceFs = mappingFs.getMapping().getSource();
 
@@ -245,6 +238,18 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
 
         // register connection listener
         sourceDataStore.getConnectionLifecycleListeners().add(connListener);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initMappingFS(FeatureSource fs) {
+        if (fs instanceof DecoratingFeatureSource) {
+            mappingFs =
+                    ((DecoratingFeatureSource<FeatureType, Feature>) fs)
+                            .unwrap(MappingFeatureSource.class);
+        } else {
+            assertTrue(fs instanceof MappingFeatureSource);
+            mappingFs = (MappingFeatureSource) fs;
+        }
     }
 
     private void testNestedIterators(FeatureIterator iterator) throws IOException {

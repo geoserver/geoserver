@@ -117,6 +117,7 @@ public class ComplexToSimpleOutputHandler {
                             .getUserData()
                             .get(Types.DECLARED_NAMESPACES_MAP);
             if (object instanceof Map) return Collections.emptyList();
+            @SuppressWarnings("unchecked")
             Map<String, String> nsMap = (Map<String, String>) object;
             return nsMap.entrySet()
                     .stream()

@@ -152,6 +152,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertEquals(8, nestedFeaturesCount);
     }
 
+    @SuppressWarnings("unchecked")
     private MappingFeatureSource unwrap(FeatureSource fs) {
         MappingFeatureSource mfFs;
         if (fs instanceof DecoratingFeatureSource) {

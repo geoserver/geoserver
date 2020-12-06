@@ -62,7 +62,7 @@ public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection
             Map<String, String> rulesMap,
             FeatureCollection<FeatureType, Feature> featureCollection,
             NamespaceSupport namespaceSupport) {
-        this.rulesMap = new HashMap(requireNonNull(rulesMap));
+        this.rulesMap = new HashMap<>(requireNonNull(rulesMap));
         this.delegate = requireNonNull(featureCollection);
         this.namespaceSupport = requireNonNull(namespaceSupport);
         this.featureType = requireNonNull(buildConvertedType());

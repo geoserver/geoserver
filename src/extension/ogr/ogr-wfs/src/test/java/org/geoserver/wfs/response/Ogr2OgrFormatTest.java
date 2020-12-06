@@ -47,6 +47,7 @@ import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+@SuppressWarnings("unchecked") // WFS EMF model having no generics
 public class Ogr2OgrFormatTest {
 
     DataStore dataStore;

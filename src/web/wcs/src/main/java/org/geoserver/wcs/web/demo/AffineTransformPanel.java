@@ -35,10 +35,10 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
     }
 
     public AffineTransformPanel(String id, AffineTransform e) {
-        this(id, new Model(e));
+        this(id, new Model<>(e));
     }
 
-    public AffineTransformPanel(String id, IModel model) {
+    public AffineTransformPanel(String id, IModel<AffineTransform> model) {
         super(id, model);
 
         initComponents();
@@ -58,12 +58,12 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         shearYContainer = new WebMarkupContainer("shearYContainer");
         add(shearYContainer);
 
-        add(new TextField("scaleX", new PropertyModel(this, "scaleX")));
-        shearXContainer.add(new TextField("shearX", new PropertyModel(this, "shearX")));
-        originXContainer.add(new TextField("originX", new PropertyModel(this, "originX")));
-        add(new TextField("scaleY", new PropertyModel(this, "scaleY")));
-        shearYContainer.add(new TextField("shearY", new PropertyModel(this, "shearY")));
-        originYContainer.add(new TextField("originY", new PropertyModel(this, "originY")));
+        add(new TextField<>("scaleX", new PropertyModel<>(this, "scaleX")));
+        shearXContainer.add(new TextField<>("shearX", new PropertyModel<>(this, "shearX")));
+        originXContainer.add(new TextField<>("originX", new PropertyModel<>(this, "originX")));
+        add(new TextField<>("scaleY", new PropertyModel<>(this, "scaleY")));
+        shearYContainer.add(new TextField<>("shearY", new PropertyModel<>(this, "shearY")));
+        originYContainer.add(new TextField<>("originY", new PropertyModel<>(this, "originY")));
     }
 
     @Override

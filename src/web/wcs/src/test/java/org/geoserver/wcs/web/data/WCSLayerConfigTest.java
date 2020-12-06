@@ -28,7 +28,7 @@ public class WCSLayerConfigTest extends GeoServerWicketCoverageTestSupport {
                                 CoverageInfo info =
                                         getCatalog().getResources(CoverageInfo.class).get(0);
                                 LayerInfo layer = getCatalog().getLayerByName(info.getName());
-                                return new WCSLayerConfig(id, new Model(layer));
+                                return new WCSLayerConfig(id, new Model<>(layer));
                             }
                         });
 

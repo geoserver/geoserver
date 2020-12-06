@@ -18,11 +18,12 @@ import org.geotools.util.Converters;
  */
 public class LiteralPPIO extends ProcessParameterIO {
 
-    public LiteralPPIO(Class type) {
+    public LiteralPPIO(Class<?> type) {
         super(type, type);
     }
 
     /** Decodes the parameter (as a string) to its internal object implementation. */
+    @SuppressWarnings("unchecked")
     public Object decode(String value) throws Exception {
         return Converters.convert(value, getType());
     }

@@ -185,6 +185,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testAllParameters() throws Exception {
         String xml = buildInputXml(FIELD_NAME, "*a*", 1, 2, "DESC");
         String jsonString = string(post(root(), xml));
@@ -253,6 +254,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testAscOrder() throws Exception {
         String xml = buildInputXml(FIELD_NAME, null, null, null, "ASC");
         String jsonString = string(post(root(), xml));
@@ -264,6 +266,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDescOrder() throws Exception {
         String xml = buildInputXml(FIELD_NAME, null, null, null, "DESC");
         String jsonString = string(post(root(), xml));

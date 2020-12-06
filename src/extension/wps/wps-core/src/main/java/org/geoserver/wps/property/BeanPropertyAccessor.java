@@ -19,6 +19,7 @@ public class BeanPropertyAccessor implements PropertyAccessor {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T get(Object object, String xpath, Class<T> target) throws IllegalArgumentException {
         Object value;
         try {

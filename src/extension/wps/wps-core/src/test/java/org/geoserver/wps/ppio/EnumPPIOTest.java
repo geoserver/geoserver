@@ -31,14 +31,14 @@ public class EnumPPIOTest {
 
     @Test
     public void testFind() {
-        Parameter p = new Parameter("test", TestEnum.class, "Test", "This is a test");
+        Parameter<TestEnum> p = new Parameter<>("test", TestEnum.class, "Test", "This is a test");
         ProcessParameterIO ppio = ProcessParameterIO.find(p, null, null);
         assertTrue(ppio instanceof EnumPPIO);
     }
 
     @Test
     public void testFindAll() {
-        Parameter p = new Parameter("test", TestEnum.class, "Test", "This is a test");
+        Parameter<TestEnum> p = new Parameter<>("test", TestEnum.class, "Test", "This is a test");
         List<ProcessParameterIO> ppio = ProcessParameterIO.findAll(p, null);
 
         assertEquals(1, ppio.size());

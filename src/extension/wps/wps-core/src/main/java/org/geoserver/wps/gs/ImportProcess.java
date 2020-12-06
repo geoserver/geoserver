@@ -7,6 +7,7 @@ package org.geoserver.wps.gs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -444,7 +445,7 @@ public class ImportProcess implements GeoServerProcess {
                 }
 
                 // coverage read params
-                final Map customParameters = new HashMap();
+                final Map<String, Serializable> customParameters = new HashMap<>();
                 /*
                  * String useJAIImageReadParam = "USE_JAI_IMAGEREAD"; if (useJAIImageReadParam != null) {
                  * customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam)); }

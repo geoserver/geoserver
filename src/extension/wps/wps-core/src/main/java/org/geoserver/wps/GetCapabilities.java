@@ -50,6 +50,7 @@ public class GetCapabilities {
         this.context = context;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     public WPSCapabilitiesType run(GetCapabilitiesType request) throws WPSException {
         // do the version negotiation dance
         List<String> provided = Collections.singletonList("1.0.0");

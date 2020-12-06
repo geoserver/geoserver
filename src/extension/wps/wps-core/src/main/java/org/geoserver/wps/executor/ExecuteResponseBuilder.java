@@ -99,6 +99,7 @@ public class ExecuteResponseBuilder {
         return build(new NullProgressListener());
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     public ExecuteResponseType build(ProgressListener listener) {
         ExecuteRequest helper = new ExecuteRequest(request);
 
@@ -255,6 +256,7 @@ public class ExecuteResponseBuilder {
         return response;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     OutputDataType encodeOutput(
             String key,
             Parameter<?> outputParam,

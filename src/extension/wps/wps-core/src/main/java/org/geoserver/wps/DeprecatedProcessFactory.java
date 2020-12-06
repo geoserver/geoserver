@@ -134,6 +134,7 @@ public class DeprecatedProcessFactory
                 name,
                 new Action<Map<String, Parameter<?>>>() {
                     @Override
+                    @SuppressWarnings("unchecked")
                     public Map<String, Parameter<?>> perform(
                             ProcessFactory f, Name oldName, Name newName, Object... args) {
                         return f.getResultInfo(newName, (Map<String, Object>) args[0]);
@@ -190,7 +191,7 @@ public class DeprecatedProcessFactory
         if (map == null) {
             synchronized (DeprecatedProcessFactory.class) {
                 if (map == null) {
-                    map = new LinkedHashMap();
+                    map = new LinkedHashMap<>();
 
                     // JTS namespace
                     registerProcessMapping(

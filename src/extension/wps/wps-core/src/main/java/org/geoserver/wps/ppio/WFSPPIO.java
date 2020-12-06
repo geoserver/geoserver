@@ -197,6 +197,7 @@ public class WFSPPIO extends XMLPPIO {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public void encode(Object object, ContentHandler handler) throws Exception {
         FeatureCollection features = (FeatureCollection) object;
         SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();

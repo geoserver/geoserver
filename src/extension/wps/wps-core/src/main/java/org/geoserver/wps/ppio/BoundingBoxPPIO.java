@@ -44,6 +44,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         }
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics...
     private Object toTargetType(BoundingBoxType bbox) throws Exception {
         CoordinateReferenceSystem crs = null;
         if (bbox.getCrs() != null) {

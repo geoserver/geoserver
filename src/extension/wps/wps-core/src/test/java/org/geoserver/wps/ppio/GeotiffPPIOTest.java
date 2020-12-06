@@ -53,9 +53,10 @@ public class GeotiffPPIOTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private GridCoverage2D getCoverage() throws IOException {
         coverage = reader.read(null);
-        Map properties = new HashMap<>(coverage.getProperties());
+        Map<String, Object> properties = new HashMap<>(coverage.getProperties());
         properties.put(
                 AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, geotiff.getCanonicalPath());
         return new GridCoverageFactory()

@@ -92,7 +92,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
                         "message",
                         isAdmin ? new Model() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
-            form.get("message").add(new AttributeAppender("class", new Model("info-link"), " "));
+            form.get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }
 
         setOutputMarkupId(true);

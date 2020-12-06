@@ -96,7 +96,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         }
         config.setFilterChain(new GeoServerSecurityFilterChain(clones));
 
-        form = new Form("form", new CompoundPropertyModel<SecurityManagerConfig>(config));
+        form = new Form<>("form", new CompoundPropertyModel<>(config));
         add(form);
 
         try {
@@ -150,6 +150,8 @@ public class AuthenticationPage extends AbstractSecurityPage {
                         "bfWhitelistedNetmasks",
                         new PropertyModel<List<String>>(
                                 this, "config.bruteForcePrevention.whitelistedMasks")) {
+
+                    @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         return (IConverter<C>) new CommaSeparatedListConverter();
@@ -217,7 +219,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                         form.getModel(), "filterChain")));
         form.add(new HelpLink("filterChainHelp").setDialog(dialog));
 
-        form.add(new AuthenticationChainPanel("providerChain", form));
+        form.add(new AuthenticationChainPanel("providerChain"));
         form.add(new HelpLink("providerChainHelp").setDialog(dialog));
 
         form.add(
@@ -250,16 +252,16 @@ public class AuthenticationPage extends AbstractSecurityPage {
         form.replace(new SecurityFilterChainsPanel("authChains", config));
     }
 
-    class AuthenticationChainPanel extends FormComponentPanel {
+    class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
-        public AuthenticationChainPanel(String id, Form form) {
-            super(id, new Model());
+        public AuthenticationChainPanel(String id) {
+            super(id, new Model<>());
 
             add(new AuthenticationChainPalette("authProviderNames"));
         }
     }
 
-    class AuthFilterChainPanel extends FormComponentPanel {
+    class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
 
         DropDownChoice<HTTPMethod> httpMethodChoice;
         TextField<String> urlPathField, chainTestResultField;
@@ -267,7 +269,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         HTTPMethod httpMethod = HTTPMethod.GET;
 
         public AuthFilterChainPanel(String id, IModel<GeoServerSecurityFilterChain> model) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             this.setOutputMarkupId(true);
 
@@ -392,11 +394,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getParameterNames() {
+                                public Enumeration<String> getParameterNames() {
                                     return null;
                                 }
 
-                                public Map getParameterMap() {
+                                public Map<String, String[]> getParameterMap() {
                                     return null;
                                 }
 
@@ -404,7 +406,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getLocales() {
+                                public Enumeration<Locale> getLocales() {
                                     return null;
                                 }
 
@@ -478,7 +480,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getAttributeNames() {
+                                public Enumeration<String> getAttributeNames() {
                                     return null;
                                 }
 
@@ -591,11 +593,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return 0;
                                 }
 
-                                public Enumeration getHeaders(String name) {
+                                public Enumeration<String> getHeaders(String name) {
                                     return null;
                                 }
 
-                                public Enumeration getHeaderNames() {
+                                public Enumeration<String> getHeaderNames() {
                                     return null;
                                 }
 

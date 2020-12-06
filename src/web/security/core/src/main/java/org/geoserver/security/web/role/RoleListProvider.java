@@ -63,8 +63,8 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         }
 
         @Override
-        public IModel getModel(IModel itemModel) {
-            return new Model((String) getPropertyValue((GeoServerRole) itemModel.getObject()));
+        public IModel getModel(IModel<GeoServerRole> itemModel) {
+            return new Model<>((String) getPropertyValue(itemModel.getObject()));
         }
 
         @Override
@@ -98,9 +98,8 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
                 }
 
                 @Override
-                public IModel getModel(IModel itemModel) {
-                    return new Model(
-                            (Boolean) getPropertyValue((GeoServerRole) itemModel.getObject()));
+                public IModel getModel(IModel<GeoServerRole> itemModel) {
+                    return new Model<>((Boolean) getPropertyValue(itemModel.getObject()));
                 }
 
                 @Override

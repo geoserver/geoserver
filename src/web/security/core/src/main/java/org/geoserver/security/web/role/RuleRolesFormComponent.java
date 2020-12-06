@@ -33,7 +33,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
 
         boolean anyRolesEnabled = ANY_ROLE.equals(roleNamesModel.getObject());
         add(
-                new AjaxCheckBox("anyRole", new Model(anyRolesEnabled)) {
+                new AjaxCheckBox("anyRole", new Model<>(anyRolesEnabled)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         palette.setEnabled(!getModelObject());

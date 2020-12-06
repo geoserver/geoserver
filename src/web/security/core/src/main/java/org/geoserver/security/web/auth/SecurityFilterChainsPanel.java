@@ -144,8 +144,12 @@ public class SecurityFilterChainsPanel extends Panel {
         }
 
         Component createEditLink(
-                String id, final IModel model, final Property<RequestFilterChain> property) {
-            return new SimpleAjaxLink(id, property.getModel(model)) {
+                String id,
+                final IModel<RequestFilterChain> model,
+                final Property<RequestFilterChain> property) {
+            @SuppressWarnings("unchecked")
+            IModel<String> cast = (IModel<String>) property.getModel(model);
+            return new SimpleAjaxLink<String>(id, cast) {
 
                 String chainName = (String) property.getModel(model).getObject();
 
@@ -215,7 +219,7 @@ public class SecurityFilterChainsPanel extends Panel {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {}
                     };
-            blankLink.getImage().add(new AttributeModifier("alt", new Model("")));
+            blankLink.getImage().add(new AttributeModifier("alt", new Model<>("")));
             add(blankLink);
             return blankLink;
         }

@@ -29,7 +29,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
 
     MasterPasswordInfoPage() {
 
-        Form form = new Form("form", new CompoundPropertyModel(this));
+        Form form = new Form<>("form", new CompoundPropertyModel<>(this));
         add(form);
         form.add(new TextField<String>("fileName"));
 

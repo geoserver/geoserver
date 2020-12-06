@@ -19,7 +19,7 @@ import org.geoserver.security.web.SecurityNamedServiceProvider;
 public class RoleServiceProvider extends SecurityNamedServiceProvider<SecurityRoleServiceConfig> {
 
     public static final Property<SecurityRoleServiceConfig> ADMIN_ROLE =
-            new BeanProperty("adminRoleName", "adminRoleName");
+            new BeanProperty<>("adminRoleName", "adminRoleName");
 
     @Override
     protected List<SecurityRoleServiceConfig> getItems() {
@@ -36,7 +36,7 @@ public class RoleServiceProvider extends SecurityNamedServiceProvider<SecurityRo
 
     @Override
     protected List<Property<SecurityRoleServiceConfig>> getProperties() {
-        List props = new ArrayList(super.getProperties());
+        List<Property<SecurityRoleServiceConfig>> props = new ArrayList<>(super.getProperties());
         props.add(ADMIN_ROLE);
         return props;
     }

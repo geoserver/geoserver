@@ -24,10 +24,12 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     List<T> roots;
     List<IModel<String>> problems;
 
+    @SafeVarargs
     public AbstractConfirmRemovalPanel(String id, T... roots) {
         this(id, null, Arrays.asList(roots));
     }
 
+    @SafeVarargs
     public AbstractConfirmRemovalPanel(String id, Model<?> model, T... roots) {
         this(id, model, Arrays.asList(roots));
     }

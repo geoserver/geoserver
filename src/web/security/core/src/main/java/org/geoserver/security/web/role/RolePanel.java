@@ -97,7 +97,7 @@ public class RolePanel extends Panel {
         if (!canCreateStore) {
             h.add(
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
-                            .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                            .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
             h.add(new Label("message", new Model()));
         }

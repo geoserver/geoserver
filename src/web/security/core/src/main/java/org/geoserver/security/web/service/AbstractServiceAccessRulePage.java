@@ -5,7 +5,6 @@
  */
 package org.geoserver.security.web.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
     public AbstractServiceAccessRulePage(final ServiceAccessRule rule) {
 
         // build the form
-        Form form = new Form<Serializable>("form", new CompoundPropertyModel(rule));
+        Form<ServiceAccessRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
         form.add(new EmptyRolesValidator());
 
@@ -80,7 +79,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
                         onFormSubmit((ServiceAccessRule) getForm().getModelObject());
                     }
                 });
-        form.add(new BookmarkablePageLink("cancel", ServiceAccessRulePage.class));
+        form.add(new BookmarkablePageLink<>("cancel", ServiceAccessRulePage.class));
     }
 
     /** Implements the actual save action */

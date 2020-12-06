@@ -7,7 +7,7 @@ package org.geoserver.security.web.role;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
@@ -18,10 +18,10 @@ public class RuleRolesModel extends RolesModel {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected Collection<GeoServerRole> load() {
+    protected List<GeoServerRole> load() {
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
         try {
-            return new ArrayList(secMgr.getRolesForAccessControl());
+            return new ArrayList<>(secMgr.getRolesForAccessControl());
         } catch (IOException e) {
             throw new WicketRuntimeException(e);
         }

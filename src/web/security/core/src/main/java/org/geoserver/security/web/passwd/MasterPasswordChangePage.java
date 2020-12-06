@@ -24,7 +24,7 @@ public class MasterPasswordChangePage extends AbstractSecurityPage {
     public MasterPasswordChangePage() {
         MasterPasswordConfigModel configModel = new MasterPasswordConfigModel();
 
-        Form form = new Form("form", new CompoundPropertyModel(configModel));
+        Form form = new Form<>("form", new CompoundPropertyModel<>(configModel));
         add(form);
 
         form.add(new Label("providerName"));
@@ -44,11 +44,11 @@ public class MasterPasswordChangePage extends AbstractSecurityPage {
         // ability to scramble it... not much we can do because wicket works with strings...
         // potentially look into a way to store as char or byte array so string never gets
         // created
-        form.add(new PasswordTextField("currentPassword", new Model()));
+        form.add(new PasswordTextField("currentPassword", new Model<>()));
         form.add(
-                new PasswordTextField("newPassword", new Model())
+                new PasswordTextField("newPassword", new Model<>())
                         .setEnabled(!providerConfig.isReadOnly()));
-        form.add(new PasswordTextField("newPasswordConfirm", new Model()));
+        form.add(new PasswordTextField("newPasswordConfirm", new Model<>()));
 
         form.add(
                 new SubmitLink("save", form) {

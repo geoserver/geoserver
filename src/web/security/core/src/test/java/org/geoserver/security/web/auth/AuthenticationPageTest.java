@@ -35,6 +35,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.startPage(page = new AuthenticationPage());
         tester.assertComponent("form:providerChain:authProviderNames:recorder", Recorder.class);
 
+        @SuppressWarnings("unchecked")
         List<String> selected =
                 (List<String>)
                         (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();

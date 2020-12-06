@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +22,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 
-public class PaletteFormComponent<T> extends FormComponentPanel {
+public class PaletteFormComponent<T extends Serializable> extends FormComponentPanel<T> {
 
     /** the palette */
     protected Palette<T> palette;
@@ -32,9 +33,9 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
     public PaletteFormComponent(
             String id,
             IModel<List<T>> model,
-            IModel<Collection<T>> choicesModel,
+            IModel<List<T>> choicesModel,
             ChoiceRenderer<T> renderer) {
-        super(id, new Model());
+        super(id, new Model<>());
 
         add(
                 palette =
@@ -100,8 +101,8 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
         return palette;
     }
 
-    public IModel<List<T>> getPaletteModel() {
-        return (IModel<List<T>>) palette.getDefaultModel();
+    public IModel<Collection<T>> getPaletteModel() {
+        return palette.getModel();
     }
 
     @Override

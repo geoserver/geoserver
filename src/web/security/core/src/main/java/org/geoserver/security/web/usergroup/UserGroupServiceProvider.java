@@ -20,10 +20,10 @@ public class UserGroupServiceProvider
         extends SecurityNamedServiceProvider<SecurityUserGroupServiceConfig> {
 
     public static final Property<SecurityUserGroupServiceConfig> PWD_ENCODER =
-            new ResourceBeanProperty("passwordEncoderName", "passwordEncoderName");
+            new ResourceBeanProperty<>("passwordEncoderName", "passwordEncoderName");
 
     public static final Property<SecurityUserGroupServiceConfig> PWD_POLICY =
-            new ResourceBeanProperty("passwordPolicyName", "passwordPolicyName");
+            new ResourceBeanProperty<>("passwordPolicyName", "passwordPolicyName");
 
     @Override
     protected List<SecurityUserGroupServiceConfig> getItems() {
@@ -41,7 +41,8 @@ public class UserGroupServiceProvider
 
     @Override
     protected List<Property<SecurityUserGroupServiceConfig>> getProperties() {
-        List props = new ArrayList(super.getProperties());
+        List<Property<SecurityUserGroupServiceConfig>> props =
+                new ArrayList<>(super.getProperties());
         props.add(PWD_ENCODER);
         props.add(PWD_POLICY);
         return props;

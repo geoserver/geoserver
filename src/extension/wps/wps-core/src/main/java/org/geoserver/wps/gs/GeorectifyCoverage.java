@@ -320,8 +320,9 @@ public class GeorectifyCoverage implements GeoServerProcess {
         }
     }
 
+    @SuppressWarnings("unchecked")
     GridCoverage2D addLocationProperty(GridCoverage2D coverage, File warpedFile) {
-        Map properties = new HashMap();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(GridCoverage2DReader.FILE_SOURCE_PROPERTY, warpedFile.getAbsolutePath());
         properties.putAll(coverage.getProperties());
 

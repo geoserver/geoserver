@@ -77,6 +77,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -1473,7 +1474,7 @@ public class ExecuteTest extends WPSTestSupport {
                     }
 
                     @Override
-                    protected Iterator openIterator() {
+                    protected Iterator<SimpleFeature> openIterator() {
                         while (returnFlag.get() == false) {
                             try {
                                 Thread.sleep(20);
@@ -2082,7 +2083,7 @@ public class ExecuteTest extends WPSTestSupport {
                     }
 
                     @Override
-                    protected Iterator openIterator() {
+                    protected Iterator<SimpleFeature> openIterator() {
                         throw new RuntimeException("Toasted!");
                     }
                 };
@@ -2135,7 +2136,7 @@ public class ExecuteTest extends WPSTestSupport {
         ZipEntry entry = null;
 
         final String[] extensions = new String[] {".shp", ".shx", ".dbf", ".prj", ".cst"};
-        Set names = new HashSet();
+        Set<String> names = new HashSet<>();
         for (String name : typeNames) {
             for (String extension : extensions) {
                 names.add(name + extension);

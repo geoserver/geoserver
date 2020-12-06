@@ -130,6 +130,7 @@ public class ExecuteRequest {
             }
 
             // get the validators
+            @SuppressWarnings("unchecked")
             Collection<Validator> validators =
                     (Collection<Validator>) p.metadata.get(ProcessLimitsFilter.VALIDATORS_KEY);
             // we handle multiplicity validation here, before the parsing even starts
@@ -232,7 +233,7 @@ public class ExecuteRequest {
     }
 
     /** Ensures the requested output are valid */
-    public void validateOutputs(Map inputs) {
+    public void validateOutputs(Map<String, Object> inputs) {
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(getProcessName(), inputs);
 
         List<OutputDefinitionType> requestedOutputs = getRequestedOutputs();

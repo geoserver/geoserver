@@ -49,7 +49,9 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    @SuppressWarnings("unchecked") // EMF model without generics
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         ExecuteType execute = (ExecuteType) super.read(request, kvp, rawKvp);
         Wps10Factory factory = Wps10Factory.eINSTANCE;
 
@@ -228,6 +230,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return ref;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     private ComplexDataType parseComplex(InputType it, Wps10Factory factory, IOParam param) {
         ComplexDataType complex = factory.createComplexDataType();
         complex.getData().add(param.value);
@@ -274,6 +277,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return literal;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     ResponseFormType parseResponseDocument(
             Map<String, Parameter<?>> outputs, String responseDefinition) {
         Wps10Factory factory = Wps10Factory.eINSTANCE;

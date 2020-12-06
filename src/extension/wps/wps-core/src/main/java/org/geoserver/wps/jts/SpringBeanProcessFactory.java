@@ -65,12 +65,16 @@ public class SpringBeanProcessFactory
 
                     public <T> Iterator<T> iterator(Class<T> category) {
                         if (ProcessFactory.class.isAssignableFrom(category)) {
-                            return (Iterator<T>)
-                                    Collections.singletonList(SpringBeanProcessFactory.this)
-                                            .iterator();
+                            return getFactoryIterator();
                         } else {
                             return null;
                         }
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    private <T> Iterator<T> getFactoryIterator() {
+                        return (Iterator<T>)
+                                Collections.singletonList(SpringBeanProcessFactory.this).iterator();
                     }
                 };
 
@@ -107,7 +111,7 @@ public class SpringBeanProcessFactory
 
     @Override
     protected DescribeProcess getProcessDescription(Name name) {
-        Class c = classMap.get(name.getLocalPart());
+        Class<?> c = classMap.get(name.getLocalPart());
         if (c == null) {
             return null;
         } else {

@@ -8,6 +8,7 @@ package org.geoserver.wps.gs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.AppenderSkeleton;
@@ -21,7 +22,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
@@ -42,12 +43,12 @@ public class UniqueProcessTest extends WPSTestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/h2");
         cat.add(ds);
 
-        FeatureSource fs3 = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
+        SimpleFeatureSource fs3 = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();

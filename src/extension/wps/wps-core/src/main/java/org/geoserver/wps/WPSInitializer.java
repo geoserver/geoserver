@@ -165,7 +165,7 @@ public class WPSInitializer implements GeoServerInitializer {
     }
 
     static void lookupNewProcessGroups(WPSInfo info, GeoServer geoServer) {
-        List<ProcessGroupInfo> newGroups = new ArrayList();
+        List<ProcessGroupInfo> newGroups = new ArrayList<>();
 
         for (ProcessGroupInfo available : lookupProcessGroups()) {
             boolean found = false;

@@ -23,6 +23,7 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
     /** Parses a single range from a string */
     public static Range<Double> parseRange(String sRange) {
         try {
+            @SuppressWarnings("unchecked")
             Range<Double> result = CONVERTER.convert(sRange, Range.class);
             if (result == null) {
                 throw new IllegalArgumentException("Bad range definition '" + sRange + "'");

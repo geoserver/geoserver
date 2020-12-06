@@ -51,7 +51,7 @@ public class WPSInitializerTest {
     public void testNoSave() throws Exception {
         GeoServer gs = createMock(GeoServer.class);
 
-        List<ConfigurationListener> listeners = new ArrayList();
+        List<ConfigurationListener> listeners = new ArrayList<>();
         gs.addListener(capture(listeners));
         expectLastCall().atLeastOnce();
 
@@ -81,12 +81,12 @@ public class WPSInitializerTest {
 
         GeoServer gs = createMock(GeoServer.class);
 
-        List<ConfigurationListener> listeners = new ArrayList();
+        List<ConfigurationListener> listeners = new ArrayList<>();
         gs.addListener(capture(listeners));
         expectLastCall().atLeastOnce();
 
         // empty list should cause save
-        List<ProcessGroupInfo> procGroups = new ArrayList();
+        List<ProcessGroupInfo> procGroups = new ArrayList<>();
 
         WPSInfo wps = createNiceMock(WPSInfo.class);
         expect(wps.getProcessGroups()).andReturn(procGroups).anyTimes();

@@ -175,7 +175,7 @@ public abstract class ProcessParameterIO {
         for (ProcessParameterIO ppio : l) {
             if (ppio.getIdentifer() != null
                     && ppio.getIdentifer().equals(p.key)
-                    && ppio.getType().isAssignableFrom(p.type)) {
+                    && typeCompatible(p, ppio)) {
                 matches.add(ppio);
             }
         }
@@ -183,13 +183,18 @@ public abstract class ProcessParameterIO {
         // if no matches, look for just those which match by type
         if (matches.isEmpty()) {
             for (ProcessParameterIO ppio : l) {
-                if (ppio.getType().isAssignableFrom(p.type)) {
+                if (typeCompatible(p, ppio)) {
                     matches.add(ppio);
                 }
             }
         }
 
         return matches;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean typeCompatible(Parameter<?> p, ProcessParameterIO ppio) {
+        return ppio.getType().isAssignableFrom(p.type);
     }
 
     /*
@@ -232,19 +237,19 @@ public abstract class ProcessParameterIO {
     }
 
     /** java class of parameter when reading and writing i/o. */
-    protected final Class externalType;
+    protected final Class<?> externalType;
 
     /** java class of parameter when running internal process. */
-    protected final Class internalType;
+    protected final Class<?> internalType;
 
     /** identifier for the parameter */
     protected String identifer;
 
-    protected ProcessParameterIO(Class externalType, Class internalType) {
+    protected ProcessParameterIO(Class externalType, Class<?> internalType) {
         this(externalType, internalType, null);
     }
 
-    protected ProcessParameterIO(Class externalType, Class internalType, String identifier) {
+    protected ProcessParameterIO(Class externalType, Class<?> internalType, String identifier) {
         this.externalType = externalType;
         this.internalType = internalType;
         this.identifer = identifier;
@@ -255,7 +260,7 @@ public abstract class ProcessParameterIO {
      *
      * <p>The external type is used when reading and writing the parameter from an external source.
      */
-    public final Class getExternalType() {
+    public final Class<?> getExternalType() {
         return externalType;
     }
 
@@ -264,7 +269,7 @@ public abstract class ProcessParameterIO {
      *
      * <p>The internal type is used when going to and from the internal process engine.
      */
-    public final Class getType() {
+    public final Class<?> getType() {
         return internalType;
     }
 

@@ -110,6 +110,7 @@ public class DescribeProcess {
         return pds;
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void processDescription(CodeType id, ProcessDescriptionsType pds) {
         Name name = Ows11Util.name(id);
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(name, true);
@@ -138,6 +139,7 @@ public class DescribeProcess {
         processOutputs(outputs, pf, name);
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void dataInputs(DataInputsType inputs, ProcessFactory pf, Name name) {
         Collection<String> outputMimeParameters =
                 AbstractRawData.getOutputMimeParameters(name, pf).values();
@@ -274,6 +276,7 @@ public class DescribeProcess {
         }
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     private void addAllowedValues(LiteralInputType literal, Object[] values) {
         AllowedValuesType allowed = owsf.createAllowedValuesType();
         for (Object value : values) {
@@ -284,6 +287,7 @@ public class DescribeProcess {
         literal.setAllowedValues(allowed);
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     private void addAllowedValues(LiteralInputType literal, Object min, Object max) {
         if (min == null && max == null) {
             literal.setAnyValue(owsf.createAnyValueType());
@@ -326,6 +330,7 @@ public class DescribeProcess {
         return supportedCRS;
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void processOutputs(ProcessOutputsType outputs, ProcessFactory pf, Name name) {
         Map<String, Parameter<?>> outs = pf.getResultInfo(name, null);
         for (Parameter p : outs.values()) {

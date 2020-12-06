@@ -99,9 +99,9 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
             List<Comparator<ExecutionStatus>> comparators = new ArrayList<>();
             for (SortBy sort : sorts) {
                 if (sort == SortBy.NATURAL_ORDER) {
-                    comparators.add(new BeanComparator("creationTime"));
+                    comparators.add(new BeanComparator<>("creationTime"));
                 } else if (sort == SortBy.REVERSE_ORDER) {
-                    comparators.add(Collections.reverseOrder(new BeanComparator("creationTime")));
+                    comparators.add(Collections.reverseOrder(new BeanComparator<>("creationTime")));
                 } else {
                     String property = sort.getPropertyName().getPropertyName();
                     // map property to ExecutionStatus values
@@ -112,7 +112,7 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                     } else if ("task".equalsIgnoreCase(property)) {
                         property = "task";
                     }
-                    Comparator<ExecutionStatus> comparator = new BeanComparator(property);
+                    Comparator<ExecutionStatus> comparator = new BeanComparator<>(property);
                     if (sort.getSortOrder() == SortOrder.DESCENDING) {
                         comparator = Collections.reverseOrder(comparator);
                     }

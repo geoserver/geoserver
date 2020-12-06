@@ -14,6 +14,7 @@ public class WPSFactoryExtension extends ServiceFactoryExtension<WPSInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T create(Class<T> clazz) {
         return (T) new WPSInfoImpl();
     }

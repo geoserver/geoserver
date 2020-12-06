@@ -30,7 +30,7 @@ public class Validators {
         for (Validator v : validators) {
             Class<? extends Validator> validatorClass = v.getClass();
             boolean skip = false;
-            for (Class filteredClass : filteredClasses) {
+            for (Class<?> filteredClass : filteredClasses) {
                 if (filteredClass.isAssignableFrom(validatorClass)) {
                     skip = true;
                     break;

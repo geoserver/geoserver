@@ -22,7 +22,7 @@ public class JDBCRoleServicePanel extends RoleServicePanel<JDBCRoleServiceConfig
     public JDBCRoleServicePanel(String id, IModel<JDBCRoleServiceConfig> model) {
         super(id, model);
 
-        add(new JDBCConnectionPanel("cx", model));
+        add(new JDBCConnectionPanel<>("cx", model));
         add(new CheckBox("creatingTables"));
         add(new TextField("propertyFileNameDDL"));
         add(new TextField("propertyFileNameDML"));

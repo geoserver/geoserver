@@ -58,10 +58,10 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
                             private static final long serialVersionUID = 1L;
 
                             public Component buildComponent(String id) {
-                                return current = new JDBCConnectionPanel(id, new Model(config));
+                                return current = new JDBCConnectionPanel<>(id, new Model<>(config));
                             };
                         },
-                        new CompoundPropertyModel(config)));
+                        new CompoundPropertyModel<>(config)));
     }
 
     @Test

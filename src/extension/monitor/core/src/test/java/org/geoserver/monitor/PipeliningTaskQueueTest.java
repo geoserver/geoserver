@@ -8,6 +8,7 @@ package org.geoserver.monitor;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,7 +32,7 @@ public class PipeliningTaskQueueTest {
 
     @Before
     public void setUp() throws Exception {
-        taskQueue = new PipeliningTaskQueue();
+        taskQueue = new PipeliningTaskQueue<>();
         taskQueue.start();
     }
 
@@ -45,22 +46,23 @@ public class PipeliningTaskQueueTest {
 
         ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<Worker>();
         int groups = 5;
-        ArrayList<Worker>[] workers = new ArrayList[groups];
-        for (int i = 0; i < workers.length; i++) {
-            workers[i] = new ArrayList();
+        List<List<Worker>> workers = new ArrayList<>();
+        for (int i = 0; i < groups; i++) {
+            List<Worker> list = new ArrayList<>();
             for (int j = 0; j < groups; j++) {
-                workers[i].add(new Worker(i, j, completed));
+                list.add(new Worker(i, j, completed));
             }
+            workers.add(list);
         }
 
         for (int i = 0; i < groups; i++) {
-            for (int j = 0; j < workers.length; j++) {
-                Worker w = workers[j].get(i);
+            for (int j = 0; j < groups; j++) {
+                Worker w = workers.get(j).get(i);
                 taskQueue.execute(w.group, w);
             }
         }
 
-        while (completed.size() < groups * workers.length) {
+        while (completed.size() < groups * groups) {
             Thread.sleep(1000);
         }
 

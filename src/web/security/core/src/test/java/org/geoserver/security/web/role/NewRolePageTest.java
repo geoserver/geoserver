@@ -57,7 +57,9 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         form.setValue("name", "ROLE_TEST");
 
         int index = -1;
-        for (String name : ((DropDownChoice<String>) page.get("form:parent")).getChoices()) {
+        @SuppressWarnings("unchecked")
+        DropDownChoice<String> ddc = (DropDownChoice<String>) page.get("form:parent");
+        for (String name : ddc.getChoices()) {
             index++;
             if ("ROLE_AUTHENTICATED".equals(name)) break;
         }

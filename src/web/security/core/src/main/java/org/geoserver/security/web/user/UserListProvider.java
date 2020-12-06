@@ -85,7 +85,7 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
 
                 @Override
                 public IModel getModel(IModel itemModel) {
-                    return new Model(
+                    return new Model<>(
                             (Boolean) getPropertyValue((GeoServerUser) itemModel.getObject()));
                 }
 

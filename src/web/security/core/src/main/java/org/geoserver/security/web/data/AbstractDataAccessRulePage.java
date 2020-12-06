@@ -104,7 +104,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
     public AbstractDataAccessRulePage(final DataAccessRule rule) {
         // build the form
-        Form form = new Form<DataAccessRule>("form", new CompoundPropertyModel(rule));
+        Form<DataAccessRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
         form.add(new EmptyRolesValidator());
 
@@ -157,7 +157,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
         form.add(
                 rolesFormComponent =
-                        new RuleRolesFormComponent("roles", new PropertyModel(rule, "roles"))
+                        new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles"))
                                 .setHasAnyRole(
                                         rule.getRoles()
                                                 .contains(GeoServerRole.ANY_ROLE.getAuthority())));

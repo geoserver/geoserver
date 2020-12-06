@@ -29,7 +29,7 @@ public abstract class SecurityNamedServiceProvider<T extends SecurityNamedServic
 
     /** name of the config */
     public static final Property<SecurityNamedServiceConfig> NAME =
-            new BeanProperty<SecurityNamedServiceConfig>("name", "name");
+            new BeanProperty<>("name", "name");
 
     /** type/implementation of the config */
     public static final Property<SecurityNamedServiceConfig> TYPE =
@@ -44,10 +44,11 @@ public abstract class SecurityNamedServiceProvider<T extends SecurityNamedServic
             };
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<Property<T>> getProperties() {
-        List result = new ArrayList();
-        result.add(NAME);
-        result.add(TYPE);
+        List<Property<T>> result = new ArrayList<>();
+        result.add((Property<T>) NAME);
+        result.add((Property<T>) TYPE);
         return result;
     }
 

@@ -160,7 +160,9 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                                                 "strongEncryption",
                                                 new SecuritySettingsPage(),
                                                 null))
-                                .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                                .add(
+                                        new AttributeAppender(
+                                                "class", new Model<>("info-link"), " ")));
             } else {
                 add(
                         new Label(
@@ -171,7 +173,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                                                 null))
                                 .add(
                                         new AttributeAppender(
-                                                "class", new Model("warning-link"), " ")));
+                                                "class", new Model<>("warning-link"), " ")));
             }
 
             // check for password encoding in the default user group service

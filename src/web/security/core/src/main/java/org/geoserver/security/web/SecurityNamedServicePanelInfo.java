@@ -21,7 +21,7 @@ public class SecurityNamedServicePanelInfo<
         extends ComponentInfo<T> implements ExtensionPriority {
 
     String shortTitleKey;
-    Class serviceClass;
+    Class<?> serviceClass;
     Class<C> serviceConfigClass;
     int priority = 10;
 
@@ -33,11 +33,11 @@ public class SecurityNamedServicePanelInfo<
         this.shortTitleKey = shortTitleKey;
     }
 
-    public Class getServiceClass() {
+    public Class<?> getServiceClass() {
         return serviceClass;
     }
 
-    public void setServiceClass(Class serviceClass) {
+    public void setServiceClass(Class<?> serviceClass) {
         this.serviceClass = serviceClass;
     }
 

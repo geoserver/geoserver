@@ -30,7 +30,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     public RolePaletteFormComponent(
             String id,
             IModel<List<GeoServerRole>> model,
-            IModel<Collection<GeoServerRole>> choicesModel) {
+            IModel<List<GeoServerRole>> choicesModel) {
         super(id, model, choicesModel, new ChoiceRenderer<GeoServerRole>("authority", "authority"));
 
         //        rolePalette = new Palette<GeoServerRole>(
@@ -94,7 +94,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     }
 
     public List<GeoServerRole> getSelectedRoles() {
-        return new ArrayList(palette.getModelCollection());
+        return new ArrayList<>(palette.getModelCollection());
     }
 
     @Override

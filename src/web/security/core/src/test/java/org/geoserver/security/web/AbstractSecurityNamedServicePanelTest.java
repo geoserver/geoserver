@@ -98,6 +98,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     protected DataView<SecurityNamedServiceConfig> getDataView() {
         return (DataView<SecurityNamedServiceConfig>)
                 basePage.get(basePanelId + ":table:listContainer:items");
@@ -151,6 +152,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
             setFormComponentValue(selectAllPathComponent, "true");
             tester.executeAjaxEvent(selectAllPath, "click");
         } else {
+            @SuppressWarnings("unchecked")
             DataView<SecurityNamedServiceConfig> dataview =
                     (DataView<SecurityNamedServiceConfig>)
                             testPage.get(basePanelId + ":table:listContainer:items");

@@ -6,7 +6,6 @@
 package org.geoserver.security.web.group;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,7 +14,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.AbstractSecurityException;
@@ -36,7 +35,7 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
         boolean hasUserGroupStore = hasUserGroupStore(userGroupServiceName);
         boolean hasRoleStore = hasRoleStore(getSecurityManager().getActiveRoleService().getName());
 
-        Form form = new Form("form", new CompoundPropertyModel(group));
+        Form<GeoServerUserGroup> form = new Form<>("form", new CompoundPropertyModel<>(group));
         add(form);
 
         form.add(new TextField<String>("groupname").setEnabled(hasUserGroupStore));
@@ -45,7 +44,7 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
         List<GeoServerRole> roles;
         try {
             roles =
-                    new ArrayList(
+                    new ArrayList<>(
                             getSecurityManager()
                                     .getActiveRoleService()
                                     .getRolesForGroup(group.getGroupname()));
@@ -53,9 +52,7 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
             throw new RuntimeException(e);
         }
 
-        form.add(
-                rolePalette =
-                        new RolePaletteFormComponent("roles", new Model((Serializable) roles)));
+        form.add(rolePalette = new RolePaletteFormComponent("roles", new ListModel<>(roles)));
         rolePalette.setEnabled(hasRoleStore);
 
         form.add(

@@ -40,15 +40,15 @@ public class AuthFilterChainPalette extends Palette<String> {
                 id,
                 model,
                 choicesModel,
-                new ChoiceRenderer() {
+                new ChoiceRenderer<String>() {
                     @Override
-                    public String getIdValue(Object object, int index) {
+                    public String getIdValue(String object, int index) {
                         return (String) getDisplayValue(object);
                     }
 
                     @Override
-                    public Object getDisplayValue(Object object) {
-                        return object.toString();
+                    public Object getDisplayValue(String object) {
+                        return object;
                     }
                 },
                 10,
@@ -90,8 +90,8 @@ public class AuthFilterChainPalette extends Palette<String> {
     }
 
     @Override
-    protected Recorder newRecorderComponent() {
-        Recorder recorder = super.newRecorderComponent();
+    protected Recorder<String> newRecorderComponent() {
+        Recorder<String> recorder = super.newRecorderComponent();
         recorder.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
                     private static final long serialVersionUID = 1L;

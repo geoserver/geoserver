@@ -24,7 +24,7 @@ public class RoleServiceConfigListModel
     @Override
     protected List<SecurityRoleServiceConfig> load() {
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
-        List<SecurityRoleServiceConfig> configs = new ArrayList();
+        List<SecurityRoleServiceConfig> configs = new ArrayList<>();
         try {
             for (String roleServiceName : secMgr.listRoleServices()) {
                 SecurityRoleServiceConfig config = secMgr.loadRoleServiceConfig(roleServiceName);

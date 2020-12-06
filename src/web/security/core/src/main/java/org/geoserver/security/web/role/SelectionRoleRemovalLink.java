@@ -135,7 +135,7 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
             valService.checkRoleIsUsed(role);
         } catch (IOException e) {
             if (e.getCause() instanceof AbstractSecurityException) {
-                return new Model(e.getCause().getMessage());
+                return new Model<>(e.getCause().getMessage());
             } else {
                 throw new RuntimeException(e);
             }

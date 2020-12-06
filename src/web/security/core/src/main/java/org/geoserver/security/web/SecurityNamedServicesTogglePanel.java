@@ -53,7 +53,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                                                     .add(
                                                             new AttributeModifier(
                                                                     "class",
-                                                                    new Model("collapsed")));
+                                                                    new Model<>("collapsed")));
                                         } else {
                                             // toggle on
                                             item.addOrReplace(
@@ -62,7 +62,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                                                     .add(
                                                             new AttributeModifier(
                                                                     "class",
-                                                                    new Model("expanded")));
+                                                                    new Model<>("expanded")));
                                         }
                                         target.add(item);
                                     }
@@ -72,7 +72,9 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                         boolean first = item.getIndex() == 0;
                         toggle.add(
                                 new AttributeAppender(
-                                        "class", new Model(first ? "expanded" : "collapsed"), " "));
+                                        "class",
+                                        new Model<>(first ? "expanded" : "collapsed"),
+                                        " "));
                         item.add(toggle);
 
                         item.add(
@@ -94,6 +96,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
             add(
                     new Link("edit") {
                         @Override
+                        @SuppressWarnings("unchecked")
                         public void onClick() {
                             SecurityNamedServiceEditPage editPage =
                                     new SecurityNamedServiceEditPage(model);

@@ -82,7 +82,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             getProperties() {
                         List<Property<InputLimit>> result = new ArrayList<>();
                         result.add(new BeanProperty<InputLimit>("name", "name"));
-                        result.add(new PropertyPlaceholder("type"));
+                        result.add(new PropertyPlaceholder<>("type"));
                         result.add(new BeanProperty<InputLimit>("editor", "validator"));
                         return result;
                     }
@@ -118,16 +118,16 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             WPSInputValidator validator = limit.getValidator();
                             if (validator instanceof MaxSizeValidator) {
                                 Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                                PropertyModel maxSizeModel =
-                                        new PropertyModel(itemModel, "validator.maxSizeMB");
+                                PropertyModel<Integer> maxSizeModel =
+                                        new PropertyModel<>(itemModel, "validator.maxSizeMB");
                                 TextField<Integer> text =
                                         new TextField<Integer>("text", maxSizeModel, Integer.class);
                                 f.add(text);
                                 return f;
                             } else if (validator instanceof MultiplicityValidator) {
                                 Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                                PropertyModel maxMultiplicityModel =
-                                        new PropertyModel(itemModel, "validator.maxInstances");
+                                PropertyModel<Integer> maxMultiplicityModel =
+                                        new PropertyModel<>(itemModel, "validator.maxInstances");
                                 TextField<Integer> text =
                                         new TextField<Integer>(
                                                 "text", maxMultiplicityModel, Integer.class);
@@ -136,9 +136,10 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             } else if (validator instanceof NumberRangeValidator) {
                                 Fragment f =
                                         new Fragment(id, "rangeEditor", ProcessLimitsPage.this);
-                                PropertyModel rangeModel =
-                                        new PropertyModel(itemModel, "validator.range");
-                                RangePanel rangeEditor = new RangePanel("range", rangeModel);
+                                RangePanel rangeEditor =
+                                        new RangePanel(
+                                                "range",
+                                                new PropertyModel<>(itemModel, "validator.range"));
                                 f.add(rangeEditor);
                                 return f;
                             }

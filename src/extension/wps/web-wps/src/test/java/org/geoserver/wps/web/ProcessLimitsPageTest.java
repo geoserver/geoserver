@@ -90,7 +90,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         il = (InputLimit) item.getDefaultModelObject();
         assertEquals("levels", il.getName());
         assertEquals(
-                new NumberRange(Double.class, -8000d, 8000d),
+                new NumberRange<>(Double.class, -8000d, 8000d),
                 item.get("itemProperties:2:component:range").getDefaultModelObject());
         // multiplicity validator
         item =

@@ -39,8 +39,9 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         ft.setValue(
                 "selectionTable:listContainer:items:1:itemProperties:0:component:enabled", "false");
         ft.submit("apply");
+        @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel<ProcessGroupInfo>)
+                (GeoServerTablePanel)
                         tester.getComponentFromLastRenderedPage("form:processFilterTable");
         ProcessFactoryInfoProvider dp =
                 (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
@@ -58,8 +59,9 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         tester.assertRenderedPage(WPSAccessRulePage.class);
 
         tester.assertComponent("form:processFilterTable", GeoServerTablePanel.class);
+        @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel<ProcessGroupInfo>)
+                (GeoServerTablePanel)
                         tester.getComponentFromLastRenderedPage("form:processFilterTable");
         ProcessFactoryInfoProvider dp =
                 (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();

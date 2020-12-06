@@ -169,8 +169,8 @@ public class FilteredProcessesProvider
                         return new PropertyModel(itemModel, "roles");
                     }
                 });
-        props.add(new PropertyPlaceholder("edit"));
-        props.add(new BeanProperty("validated", "validated"));
+        props.add(new PropertyPlaceholder<>("edit"));
+        props.add(new BeanProperty<>("validated", "validated"));
         return props;
     }
 

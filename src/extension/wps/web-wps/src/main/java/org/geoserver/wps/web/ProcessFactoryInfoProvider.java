@@ -153,7 +153,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                         return new PropertyModel(itemModel, "roles");
                     }
                 });
-        props.add(new PropertyPlaceholder("edit"));
+        props.add(new PropertyPlaceholder<>("edit"));
 
         return props;
     }

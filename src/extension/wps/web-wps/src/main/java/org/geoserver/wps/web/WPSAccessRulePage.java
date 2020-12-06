@@ -31,6 +31,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerRoleService;
@@ -63,7 +64,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
 
     public WPSAccessRulePage() {
         wpsInfo = getGeoServer().getService(WPSInfo.class);
-        Form form = new Form("form", new CompoundPropertyModel(wpsInfo));
+        Form form = new Form<>("form", new CompoundPropertyModel<>(wpsInfo));
 
         processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
         ProcessFactoryInfoProvider provider =
@@ -100,10 +101,9 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                         if (property.getName().equals("enabled")) {
                             Fragment fragment =
                                     new Fragment(id, "enabledFragment", WPSAccessRulePage.this);
-                            CheckBox enabled =
-                                    new CheckBox(
-                                            "enabled",
-                                            (IModel<Boolean>) property.getModel(itemModel));
+                            @SuppressWarnings("unchecked")
+                            IModel<Boolean> pm = (IModel<Boolean>) property.getModel(itemModel);
+                            CheckBox enabled = new CheckBox("enabled", pm);
                             enabled.setOutputMarkupId(true);
                             fragment.add(enabled);
                             return fragment;
@@ -116,15 +116,15 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                         } else if (property.getName().equals("roles")) {
                             Fragment fragment =
                                     new Fragment(id, "rolesFragment", WPSAccessRulePage.this);
+                            @SuppressWarnings("unchecked")
+                            IModel<String> pm = (IModel<String>) property.getModel(itemModel);
                             TextArea<String> roles =
-                                    new TextArea<String>(
-                                            "roles",
-                                            (IModel<String>) property.getModel(itemModel)) {
-                                        public <C extends Object>
-                                                org.apache.wicket.util.convert.IConverter<C>
-                                                        getConverter(java.lang.Class<C> type) {
+                                    new TextArea<String>("roles", pm) {
+                                        @SuppressWarnings("unchecked")
+                                        public <C extends Object> IConverter<C> getConverter(
+                                                java.lang.Class<C> type) {
                                             return new RolesConverter(availableRoles);
-                                        };
+                                        }
                                     };
                             StringBuilder selectedRoles = new StringBuilder();
                             IAutoCompleteRenderer<String> roleRenderer =
@@ -177,7 +177,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                     }
                 });
         catalogModeChoice =
-                new RadioChoice(
+                new RadioChoice<>(
                         "processAccessMode",
                         new PropertyModel<CatalogMode>(wpsInfo, "catalogMode"),
                         CATALOG_MODES,
@@ -235,14 +235,14 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         return result;
     }
 
-    class CatalogModeRenderer extends ChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
-        public Object getDisplayValue(Object object) {
-            return new ParamResourceModel(((CatalogMode) object).name(), getPage()).getObject();
+        public Object getDisplayValue(CatalogMode object) {
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((CatalogMode) object).name();
+        public String getIdValue(CatalogMode object, int index) {
+            return object.name();
         }
     }
 }

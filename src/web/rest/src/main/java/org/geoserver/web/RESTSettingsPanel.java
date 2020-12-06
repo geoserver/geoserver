@@ -31,16 +31,16 @@ public class RESTSettingsPanel extends SettingsPluginPanel {
 
         // TextField associated to the root directory to map
         TextField rootField =
-                new TextField(
+                new TextField<>(
                         "rootdir",
-                        new MetadataMapModel(metadata, RESTUtils.ROOT_KEY, String.class));
+                        new MetadataMapModel<>(metadata, RESTUtils.ROOT_KEY, String.class));
         add(rootField);
 
         // CheckBox associated to the root directory to map
         CheckBox quietCheckBox =
                 new CheckBox(
                         "quiet",
-                        new MetadataMapModel(
+                        new MetadataMapModel<>(
                                 metadata, RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class));
         add(quietCheckBox);
     }

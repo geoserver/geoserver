@@ -41,7 +41,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
 
                             public Component buildComponent(String id) {
                                 return new UniqueResourceIdentifiersEditor(
-                                        id, new Model(identifiers));
+                                        id, new Model<>(identifiers));
                             }
                         }));
     }

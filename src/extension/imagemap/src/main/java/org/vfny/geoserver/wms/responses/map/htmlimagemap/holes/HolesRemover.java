@@ -6,6 +6,7 @@
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.vecmath.GVector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -66,9 +67,10 @@ public class HolesRemover {
     private LineString holeVerts = null;
     private GeometryFactory gFac = null;
 
-    private IndexableCyclicalLinkedList polygonVertices = new IndexableCyclicalLinkedList();
-    private CyclicalList convexVertices = new CyclicalList();
-    private CyclicalList reflexVertices = new CyclicalList();
+    private IndexableCyclicalLinkedList<Vertex> polygonVertices =
+            new IndexableCyclicalLinkedList<>();
+    private CyclicalList<Vertex> convexVertices = new CyclicalList<>();
+    private CyclicalList<Vertex> reflexVertices = new CyclicalList<>();
 
     // minimum area to consider a hole;
     // holes with a lesser area will be skipped
@@ -123,7 +125,7 @@ public class HolesRemover {
             polygonVertices.addLast(new Vertex(shapeVerts.getCoordinateN(i), i));
 
         // generate the cyclical list of vertices in the hole
-        CyclicalList holePolygon = new CyclicalList();
+        CyclicalList<Vertex> holePolygon = new CyclicalList<>();
         for (int i = 0; i < holeVerts.getNumPoints(); i++)
             holePolygon.add(new Vertex(holeVerts.getCoordinateN(i), i + polygonVertices.size()));
 
@@ -139,7 +141,7 @@ public class HolesRemover {
         // construct a list of all line segments where at least one vertex
         // is to the right of the rightmost hole vertex with one vertex
         // above the hole vertex and one below
-        ArrayList segmentsToTest = new ArrayList();
+        List<LineSegment> segmentsToTest = new ArrayList<>();
         for (int i = 0; i < polygonVertices.size(); i++) {
             Vertex a = (Vertex) polygonVertices.get(i);
             Vertex b = (Vertex) polygonVertices.get(i + 1);
@@ -188,7 +190,7 @@ public class HolesRemover {
         // construct triangle MIP
         Triangle mip = new Triangle(rightMostHoleVertex, new Vertex(I, 1), P);
         // see if any of the reflex vertices lie inside of the MIP triangle
-        ArrayList interiorReflexVertices = new ArrayList();
+        List<Vertex> interiorReflexVertices = new ArrayList<>();
         for (int count = 0; count < reflexVertices.size(); count++) {
             Vertex v = (Vertex) reflexVertices.get(count);
             if (mip.ContainsPoint(v)) interiorReflexVertices.add(v);

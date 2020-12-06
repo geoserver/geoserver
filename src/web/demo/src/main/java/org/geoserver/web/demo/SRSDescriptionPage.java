@@ -260,8 +260,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                                 new Model<String>(finalWkt));
                     }
                 });
-        TabbedPanel wktTabs =
-                new TabbedPanel("wktTabs", tabs) {
+        TabbedPanel<ITab> wktTabs =
+                new TabbedPanel<ITab>("wktTabs", tabs) {
                     protected String getTabContainerCssClass() {
                         return "tab-row tab-row-compact";
                     }

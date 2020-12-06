@@ -69,7 +69,8 @@ public class ReprojectPage extends GeoServerBasePage {
 
         // the source CRS
         CRSPanel sourcePanel =
-                new CRSPanel("sourceCRS", new SRSToCRSModel(new PropertyModel(this, "sourceCRS"))) {
+                new CRSPanel(
+                        "sourceCRS", new SRSToCRSModel(new PropertyModel<>(this, "sourceCRS"))) {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         sourceCRS = srs;
                         updateTransformation(target);
@@ -80,7 +81,8 @@ public class ReprojectPage extends GeoServerBasePage {
 
         // the target CRS
         CRSPanel targetPanel =
-                new CRSPanel("targetCRS", new SRSToCRSModel(new PropertyModel(this, "targetCRS"))) {
+                new CRSPanel(
+                        "targetCRS", new SRSToCRSModel(new PropertyModel<>(this, "targetCRS"))) {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         targetCRS = srs;
                         updateTransformation(target);

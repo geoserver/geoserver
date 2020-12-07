@@ -95,7 +95,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
                         null);
 
         // sort and return
-        List<String> result = new ArrayList(values);
+        List<String> result = new ArrayList<>(values);
         Collections.sort(result);
         return new CloseableIteratorAdapter<String>(result.iterator());
     }

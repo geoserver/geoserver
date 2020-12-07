@@ -42,6 +42,7 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -95,7 +96,9 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testReadAllRecords() throws IOException {
-        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
+        @SuppressWarnings("unchecked")
+        FeatureCollection<FeatureType, Feature> records =
+                store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
 

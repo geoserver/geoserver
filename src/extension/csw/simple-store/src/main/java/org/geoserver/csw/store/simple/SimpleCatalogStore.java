@@ -68,7 +68,8 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         if (q.getStartIndex() != null) {
             startIndex = q.getStartIndex();
         }
-        FeatureCollection records = new RecordsFeatureCollection(root, startIndex);
+        FeatureCollection<FeatureType, Feature> records =
+                new RecordsFeatureCollection(root, startIndex);
 
         // filtering
         if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
@@ -98,7 +99,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
 
         // reducing attributes
         if (q.getProperties() != null && q.getProperties().size() > 0) {
-            records = new RetypingFeatureCollection(records, q.getProperties());
+            records = new RetypingFeatureCollection<>(records, q.getProperties());
         }
 
         return records;

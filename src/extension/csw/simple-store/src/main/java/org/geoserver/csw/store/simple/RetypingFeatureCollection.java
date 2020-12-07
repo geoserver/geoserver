@@ -21,36 +21,38 @@ import org.opengis.filter.sort.SortBy;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class RetypingFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
+public class RetypingFeatureCollection<T extends FeatureType, F extends Feature>
+        extends AbstractFeatureCollection<T, F> {
 
-    FeatureCollection delegate;
+    FeatureCollection<T, F> delegate;
     List<PropertyName> properties;
 
-    public RetypingFeatureCollection(FeatureCollection delegate, List<PropertyName> properties) {
+    public RetypingFeatureCollection(
+            FeatureCollection<T, F> delegate, List<PropertyName> properties) {
         super(delegate.getSchema());
         this.delegate = delegate;
         this.properties = properties;
     }
 
     @Override
-    public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        FeatureCollection subCollection = delegate.subCollection(filter);
-        return new RetypingFeatureCollection(subCollection, properties);
+    public FeatureCollection<T, F> subCollection(Filter filter) {
+        FeatureCollection<T, F> subCollection = delegate.subCollection(filter);
+        return new RetypingFeatureCollection<>(subCollection, properties);
     }
 
     @Override
-    public FeatureCollection<FeatureType, Feature> sort(SortBy order) {
-        FeatureCollection sorted = delegate.sort(order);
-        return new RetypingFeatureCollection(sorted, properties);
+    public FeatureCollection<T, F> sort(SortBy order) {
+        FeatureCollection<T, F> sorted = delegate.sort(order);
+        return new RetypingFeatureCollection<>(sorted, properties);
     }
 
     @Override
-    protected Iterator<Feature> openIterator() {
-        return new RetypingIterator(delegate.features(), schema, properties);
+    protected Iterator<F> openIterator() {
+        return new RetypingIterator<>(delegate.features(), schema, properties);
     }
 
     @Override
-    protected void closeIterator(Iterator<Feature> close) {
+    protected void closeIterator(Iterator<F> close) {
         if (close instanceof RetypingIterator) {
             ((RetypingIterator) close).close();
         }

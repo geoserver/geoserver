@@ -457,7 +457,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     @SuppressWarnings("unchecked")
     private void applyDecorations(GetMapRequest request, String decoration, String time) {
-        Map<String, String> aMap = new HashMap<String, String>();
+        Map<String, Object> aMap = new HashMap<>();
         aMap.put("layout", decoration);
         aMap.put(RenderedImageMapOutputFormat.DECORATIONS_ONLY_FORMAT_OPTION, "true");
         request.setFormatOptions(aMap);

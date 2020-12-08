@@ -24,11 +24,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -52,7 +54,6 @@ import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.PostScriptTransform;
-import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -410,7 +411,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(H2DataStoreFactory.DBTYPE.key, "h2");
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
 
@@ -468,7 +469,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         // assertEquals(ImportTask.State.READY, context.getTasks().get(1).getState());
 
         // cannot ensure ordering of items
-        HashSet resources = new HashSet();
+        Set<String> resources = new HashSet<>();
         resources.add(task1.getLayer().getResource().getName());
         resources.add(task2.getLayer().getResource().getName());
         assertTrue(resources.contains("bugsites"));
@@ -661,7 +662,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         DataStoreInfo ds = createH2DataStore("gs", "cookbook");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(H2DataStoreFactory.DBTYPE.key, "h2");
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
 
@@ -839,8 +840,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new AttributesToPointGeometryTransform("LAT", "LON"));
+        task.addTransform(new AttributesToPointGeometryTransform("LAT", "LON"));
         assertEquals(ImportTask.State.NO_CRS, task.getState());
 
         LayerInfo layer = task.getLayer();
@@ -899,8 +899,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertTrue("Unexpected bounding box", emptyBounds.equals(resource.getNativeBoundingBox()));
         // transform chain to limit characters
         // otherwise we get a sql exception thrown
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new DescriptionLimitingTransform());
+        task.addTransform(new DescriptionLimitingTransform());
         importer.run(context);
         Exception error = task.getError();
         if (error != null) {
@@ -1241,8 +1240,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         ImportTask task = context.getTasks().get(0);
         assertEquals(ImportTask.State.READY, task.getState());
         assertEquals("archsites", task.getLayer().getResource().getName());
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new PostScriptTransform("test.sh", Collections.emptyList()));
+        task.addTransform(new PostScriptTransform("test.sh", Collections.emptyList()));
         importer.run(context);
 
         // check the import run normally

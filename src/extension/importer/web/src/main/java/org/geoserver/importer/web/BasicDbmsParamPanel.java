@@ -55,17 +55,17 @@ class BasicDbParamPanel extends Panel {
         this.schema = schema;
         this.username = username;
 
-        add(new TextField("host", new PropertyModel(this, "host")).setRequired(true));
-        add(new TextField("port", new PropertyModel(this, "port")).setRequired(true));
-        add(new TextField("username", new PropertyModel(this, "username")).setRequired(true));
+        add(new TextField<>("host", new PropertyModel<>(this, "host")).setRequired(true));
+        add(new TextField<>("port", new PropertyModel<>(this, "port")).setRequired(true));
+        add(new TextField<>("username", new PropertyModel<>(this, "username")).setRequired(true));
         add(
-                new PasswordTextField("password", new PropertyModel(this, "password"))
+                new PasswordTextField("password", new PropertyModel<>(this, "password"))
                         .setResetPassword(false)
                         .setRequired(false));
         add(
-                new TextField("database", new PropertyModel(this, "database"))
+                new TextField<>("database", new PropertyModel<>(this, "database"))
                         .setRequired(databaseRequired));
-        add(new TextField("schema", new PropertyModel(this, "schema")));
+        add(new TextField<>("schema", new PropertyModel<>(this, "schema")));
 
         connPoolLink = toggleConnectionPoolLink();
         add(connPoolLink);

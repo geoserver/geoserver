@@ -145,7 +145,7 @@ public class MosaicIndex {
                 new DirectoryDataStore(
                         mosaic.getFile(),
                         new ShapefileDataStoreFactory.ShpFileStoreFactory(
-                                shpFactory, new HashMap()));
+                                shpFactory, new HashMap<>()));
 
         try {
             dir.createSchema(typeBuilder.buildFeatureType());

@@ -98,7 +98,7 @@ public class ImportDataController extends ImportBaseController {
         ImportData file = lookupFile(fileName, dir);
 
         if (dir.getFiles().remove(file)) {
-            return new ResponseEntity("", new HttpHeaders(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
         } else {
             throw new RestException(
                     "Unable to remove file: " + file.getName(), HttpStatus.BAD_REQUEST);

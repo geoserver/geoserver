@@ -101,7 +101,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
     private static final GribFileExtensionsProvider GRIB_PROVIDER =
             new GribFileExtensionsProvider();
 
-    static Map<String, SupplementalFileExtensionsProvider> PROVIDERS = new HashMap();
+    static Map<String, SupplementalFileExtensionsProvider> PROVIDERS = new HashMap<>();
 
     {
         // Providers being setup on the available tests

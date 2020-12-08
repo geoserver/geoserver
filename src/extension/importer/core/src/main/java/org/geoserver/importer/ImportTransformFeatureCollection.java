@@ -26,7 +26,8 @@ import org.opengis.feature.type.FeatureType;
  * <p>This class is simply wraps the FeatureIterator with two iterators wrappers that provide the
  * above functionality.
  */
-class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
+class ImportTransformFeatureCollection<T extends FeatureType, F extends Feature>
+        extends DecoratingFeatureCollection<T, F> {
 
     ProgressMonitor monitor;
 
@@ -41,7 +42,7 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
     DataStore dataStoreDestination;
 
     public ImportTransformFeatureCollection(
-            FeatureCollection fc,
+            FeatureCollection<T, F> fc,
             FeatureDataConverter featureDataConverter,
             FeatureType resultingFT,
             VectorTransformChain vectorTransformChain,
@@ -57,10 +58,9 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
     }
 
     @Override
-    public FeatureIterator features() {
-        FeatureIterator fi = super.features();
-        return new TransformingFeatureIterator(
-                new CancelableFeatureIterator(fi, monitor),
+    public FeatureIterator<F> features() {
+        return new TransformingFeatureIterator<>(
+                new CancelableFeatureIterator<>(super.features(), monitor),
                 resultingFT,
                 featureDataConverter,
                 vectorTransformChain,
@@ -73,7 +73,8 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
      *
      * <p>The emulates the behavior of the Importer's low-level feature transformation.
      */
-    private class TransformingFeatureIterator extends DecoratingFeatureIterator {
+    private class TransformingFeatureIterator<F extends Feature>
+            extends DecoratingFeatureIterator<F> {
 
         SimpleFeatureBuilder featureBuilder;
 
@@ -88,7 +89,7 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
         int cnt = 0;
 
         public TransformingFeatureIterator(
-                FeatureIterator fi,
+                FeatureIterator<F> fi,
                 FeatureType resultingFT,
                 FeatureDataConverter featureDataConverter,
                 VectorTransformChain vectorTransformChain,
@@ -103,10 +104,10 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
         }
 
         @Override
-        public Feature next() throws NoSuchElementException {
+        public F next() throws NoSuchElementException {
             // the xform could produce null features - we eat them
             while (super.hasNext()) {
-                Feature result = attemptNext();
+                F result = attemptNext();
                 if (result != null) {
                     return result;
                 }
@@ -115,7 +116,7 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
         }
 
         /* for details, see the low-level api version in the Importer */
-        private Feature attemptNext() {
+        private F attemptNext() {
             SimpleFeature input = (SimpleFeature) super.next();
             SimpleFeature result = featureBuilder.buildFeature(null);
             featureDataConverter.convert(input, result);
@@ -133,7 +134,10 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
             }
             task.setNumberProcessed(++cnt);
 
-            return result;
+            // The above only works with simple features, even if the rest pretends to be generic
+            @SuppressWarnings("unchecked")
+            F f = (F) result;
+            return f;
         }
     }
 
@@ -141,10 +145,11 @@ class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
      * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will
      * say there are no more elementss (hasNext() will be false)
      */
-    private class CancelableFeatureIterator extends DecoratingFeatureIterator {
+    private class CancelableFeatureIterator<F extends Feature>
+            extends DecoratingFeatureIterator<F> {
         ProgressMonitor monitor;
 
-        public CancelableFeatureIterator(FeatureIterator fi, ProgressMonitor monitor) {
+        public CancelableFeatureIterator(FeatureIterator<F> fi, ProgressMonitor monitor) {
             super(fi);
             this.monitor = monitor;
         }

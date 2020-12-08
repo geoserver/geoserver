@@ -119,7 +119,7 @@ public class Database extends ImportData {
     }
 
     private Object readResolve() {
-        tables = tables != null ? tables : new ArrayList();
+        tables = tables != null ? tables : new ArrayList<>();
         return this;
     }
 }

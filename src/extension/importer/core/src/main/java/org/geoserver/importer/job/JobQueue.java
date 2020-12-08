@@ -43,7 +43,7 @@ public class JobQueue {
                     0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()) {
                 protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
-                        return new Task((Job) callable);
+                        return new Task<T>((Job<T>) callable);
                     }
                     return super.newTaskFor(callable);
                 };

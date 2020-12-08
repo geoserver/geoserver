@@ -214,7 +214,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         ds.setName(dsName);
         ds.setType("H2");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName);
         params.put("dbtype", "h2");
         ds.getConnectionParameters().putAll(params);

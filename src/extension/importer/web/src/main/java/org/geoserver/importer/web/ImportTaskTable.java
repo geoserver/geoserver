@@ -89,7 +89,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     @Override
     protected Component getComponentForProperty(
-            String id, final IModel itemModel, Property property) {
+            String id, final IModel<ImportTask> itemModel, Property<ImportTask> property) {
         if (property == ImportTaskProvider.NAME) {
             return new LayerLinkPanel(id, itemModel);
         }
@@ -351,7 +351,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             form.add(
                     new CRSPanel(
                             "crs",
-                            new SRSToCRSModel(new PropertyModel(model, "layer.resource.sRS"))) {
+                            new SRSToCRSModel(new PropertyModel<>(model, "layer.resource.sRS"))) {
                         @Override
                         protected CoordinateReferenceSystem fromSRS(String srs) {
                             try {
@@ -439,7 +439,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             add(
                     new DropDownChoice<PreviewLink>(
                                     "links",
-                                    new Model(links.get(0)),
+                                    new Model<>(links.get(0)),
                                     links,
                                     new ChoiceRenderer<PreviewLink>() {
                                         @Override
@@ -464,7 +464,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                             .add(
                                     new AttributeModifier(
                                             "onclick",
-                                            new Model(
+                                            new Model<>(
                                                     "go(document.getElementById('"
                                                             + get("links").getMarkupId()
                                                             + "'));"))));
@@ -521,7 +521,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         public ExceptionPanel(String id, final Exception ex) {
             super(id);
             add(new Label("message", ex.getLocalizedMessage()));
-            add(new TextArea("stackTrace", new Model(handleStackTrace(ex))));
+            add(new TextArea<>("stackTrace", new Model<>(handleStackTrace(ex))));
             add(
                     new AjaxLink("copy") {
                         @Override

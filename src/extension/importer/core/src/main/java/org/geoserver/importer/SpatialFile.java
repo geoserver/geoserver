@@ -88,7 +88,7 @@ public class SpatialFile extends FileData {
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
         // round up all the files with the same name
-        suppFiles = new ArrayList();
+        suppFiles = new ArrayList<>();
         prjFile = null;
         styleFile = null;
 

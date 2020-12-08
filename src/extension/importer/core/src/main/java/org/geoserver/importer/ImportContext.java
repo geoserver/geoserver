@@ -191,9 +191,9 @@ public class ImportContext implements Serializable {
         TransformChain chain = task.getTransform();
         for (ImportTransform tx : defaultTransforms) {
             if (chain instanceof RasterTransformChain && tx instanceof RasterTransform) {
-                chain.add(tx);
+                ((RasterTransformChain) chain).add((RasterTransform) tx);
             } else if (chain instanceof VectorTransformChain && tx instanceof VectorTransform) {
-                chain.add(tx);
+                ((VectorTransformChain) chain).add((VectorTransform) tx);
             }
         }
     }

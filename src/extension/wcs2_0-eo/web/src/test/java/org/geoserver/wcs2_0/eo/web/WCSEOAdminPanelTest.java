@@ -33,7 +33,7 @@ public class WCSEOAdminPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WCSEOAdminPanel(id, new Model(wcs));
+                                return new WCSEOAdminPanel(id, new Model<>(wcs));
                             }
                         }));
     }

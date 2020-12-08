@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.wfs.response.dxf.util.JulianDate;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -144,13 +145,14 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /** Performs the actual writing. Override it in the actual implementation class. */
-    public abstract void write(List featureList, String version) throws IOException;
+    public abstract void write(List<SimpleFeatureCollection> featureList, String version)
+            throws IOException;
 
     /** Extracts and cache the global ReferenceEnvelope for the given feature list. */
-    protected ReferencedEnvelope getEnvelope(List featureList) {
+    protected ReferencedEnvelope getEnvelope(List<SimpleFeatureCollection> featureList) {
         if (e == null) {
             for (int i = 0; i < featureList.size(); i++) {
-                FeatureCollection collection = (FeatureCollection) featureList.get(i);
+                FeatureCollection collection = featureList.get(i);
                 if (e == null) {
                     e = collection.getBounds();
                 } else {

@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -38,8 +39,8 @@ public class DXFPPIO extends CDataPPIO {
         dxfWriter.setOption("colors", colors);
         dxfWriter.setOption("writeattributes", true);
 
-        List<Object> lft = new LinkedList<Object>();
-        lft.add(value);
+        List<SimpleFeatureCollection> lft = new LinkedList<>();
+        lft.add((SimpleFeatureCollection) value);
         dxfWriter.write(lft, "14");
         w.flush();
     }

@@ -38,8 +38,9 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         this.transforms = transforms;
     }
 
+    @SafeVarargs
     public TransformChain(T... transforms) {
-        this.transforms = new ArrayList(Arrays.asList(transforms));
+        this.transforms = new ArrayList<>(Arrays.asList(transforms));
     }
 
     public List<T> getTransforms() {
@@ -54,7 +55,8 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         return transforms.remove(tx);
     }
 
-    public <X extends T> X get(Class<X> type) {
+    @SuppressWarnings("unchecked")
+    public <X> X get(Class<X> type) {
         for (T tx : transforms) {
             if (type.equals(tx.getClass())) {
                 return (X) tx;
@@ -63,7 +65,8 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         return null;
     }
 
-    public <X extends T> List<X> getAll(Class<X> type) {
+    @SuppressWarnings("unchecked")
+    public <X> List<X> getAll(Class<X> type) {
         List<X> list = new ArrayList<X>();
         for (T tx : transforms) {
             if (type.isAssignableFrom(tx.getClass())) {
@@ -73,7 +76,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         return list;
     }
 
-    public <X extends T> void removeAll(Class<X> type) {
+    public void removeAll(Class<?> type) {
         for (Iterator<T> it = transforms.iterator(); it.hasNext(); ) {
             if (type.isAssignableFrom(it.next().getClass())) {
                 it.remove();
@@ -105,7 +108,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
 
     protected Object readResolve() {
         if (transforms == null) {
-            transforms = new ArrayList();
+            transforms = new ArrayList<>();
         }
         return this;
     }
@@ -119,6 +122,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> List<T> filter(List<? extends ImportTransform> transforms, Class<T> type) {
         List<T> filtered = new ArrayList<T>();
         for (ImportTransform tx : transforms) {

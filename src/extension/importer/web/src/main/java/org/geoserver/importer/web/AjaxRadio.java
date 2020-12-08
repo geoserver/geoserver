@@ -38,7 +38,7 @@ public abstract class AjaxRadio<T> extends Radio<T> {
     }
 
     private RadioGroup<T> getEnclosingRadioGroup() {
-
+        @SuppressWarnings("unchecked")
         RadioGroup<T> group = (RadioGroup<T>) findParent(RadioGroup.class);
         if (group == null) {
             throw new WicketRuntimeException(

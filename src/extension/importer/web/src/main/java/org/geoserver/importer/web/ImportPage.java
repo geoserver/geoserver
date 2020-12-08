@@ -108,7 +108,7 @@ public class ImportPage extends GeoServerSecuredPage {
                                         }
 
                                         return new TextAreaPanel(
-                                                id, new Model(new String(bout.toByteArray())));
+                                                id, new Model<>(new String(bout.toByteArray())));
                                     }
 
                                     @Override
@@ -397,8 +397,8 @@ public class ImportPage extends GeoServerSecuredPage {
         public String getObject() {
             StringResourceModel m =
                     running.get()
-                            ? new StringResourceModel("cancel", new Model("Cancel"))
-                            : new StringResourceModel("done", new Model("Done"));
+                            ? new StringResourceModel("cancel", new Model<>("Cancel"))
+                            : new StringResourceModel("done", new Model<>("Done"));
             return m.getString();
         }
 
@@ -411,10 +411,10 @@ public class ImportPage extends GeoServerSecuredPage {
 
     static class TextAreaPanel extends Panel {
 
-        public TextAreaPanel(String id, IModel textAreaModel) {
+        public TextAreaPanel(String id, IModel<String> textAreaModel) {
             super(id);
 
-            add(new TextArea("textArea", textAreaModel));
+            add(new TextArea<>("textArea", textAreaModel));
         }
     }
 
@@ -430,7 +430,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
         @Override
         public List<ImportTask> getObject() {
-            List<ImportTask> tasks = new ArrayList();
+            List<ImportTask> tasks = new ArrayList<>();
             for (ImportTask task : taskModel.getObject()) {
                 tasks.add(task);
             }

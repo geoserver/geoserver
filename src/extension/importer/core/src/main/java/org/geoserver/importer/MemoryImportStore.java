@@ -139,7 +139,7 @@ public class MemoryImportStore implements ImportStore {
 
     abstract static class ImportCollector implements ImportVisitor {
 
-        List<ImportContext> collected = new ArrayList();
+        List<ImportContext> collected = new ArrayList<>();
 
         @Override
         public final void visit(ImportContext context) {

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.ImportTransform;
+import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
@@ -52,13 +53,14 @@ public class ImportTransformController extends ImportBaseController {
     public ResponseEntity postTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
-            @RequestBody ImportTransform importTransform,
+            @RequestBody ImportTransform tx,
             UriComponentsBuilder builder)
             throws IOException {
 
-        ImportTransform tx = importTransform;
         ImportTask task = task(importId, taskId);
-        task.getTransform().add(tx);
+        @SuppressWarnings("unchecked")
+        TransformChain<ImportTransform> transforms = (TransformChain) task.getTransform();
+        transforms.add(tx);
         importer.changed(task);
 
         HttpHeaders headers = new HttpHeaders();
@@ -67,7 +69,7 @@ public class ImportTransformController extends ImportBaseController {
                         .buildAndExpand(
                                 importId.toString(),
                                 taskId.toString(),
-                                task.getTransform().getTransforms().size() - 1)
+                                transforms.getTransforms().size() - 1)
                         .toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
@@ -108,7 +110,9 @@ public class ImportTransformController extends ImportBaseController {
 
         ImportTask task = task(importId, taskId);
         ImportTransform orig = transform(task, transformId, false);
-        OwsUtils.copy(importTransform, orig, (Class) orig.getClass());
+        @SuppressWarnings("unchecked")
+        Class<ImportTransform> txc = (Class) orig.getClass();
+        OwsUtils.copy(importTransform, orig, txc);
         importer.changed(task);
 
         return (writer, builder, converter) -> {
@@ -127,7 +131,9 @@ public class ImportTransformController extends ImportBaseController {
 
         ImportTask task = task(importId, taskId);
         ImportTransform tx = transform(task, transformId, true);
-        boolean result = task.getTransform().remove(tx);
+        @SuppressWarnings("unchecked")
+        TransformChain<ImportTransform> transforms = (TransformChain) task.getTransform();
+        boolean result = transforms.remove(tx);
 
         if (result) {
             importer.changed(task);

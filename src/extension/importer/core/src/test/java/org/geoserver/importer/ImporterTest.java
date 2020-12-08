@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CatalogBuilder;
@@ -72,7 +73,7 @@ public class ImporterTest extends ImporterTestSupport {
         assertEquals(2, context.getTasks().size());
 
         // cannot ensure order of tasks due to hashing
-        HashSet files = new HashSet();
+        Set<ImportData> files = new HashSet<>();
         files.add(context.getTasks().get(0).getData());
         files.add(context.getTasks().get(1).getData());
         assertTrue(files.containsAll(d.getFiles()));

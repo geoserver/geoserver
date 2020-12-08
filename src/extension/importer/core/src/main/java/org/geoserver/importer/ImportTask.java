@@ -19,6 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.SchemaException;
@@ -85,7 +86,7 @@ public class ImportTask implements Serializable {
     Exception error;
 
     /** transform to apply to this import item */
-    TransformChain transform;
+    TransformChain<? extends ImportTransform> transform;
 
     /** messages logged during proessing */
     List<LogRecord> messages = new ArrayList<LogRecord>();
@@ -175,11 +176,21 @@ public class ImportTask implements Serializable {
         this.error = error;
     }
 
-    public TransformChain getTransform() {
+    public TransformChain<? extends ImportTransform> getTransform() {
         return transform;
     }
 
-    public void setTransform(TransformChain transform) {
+    @SuppressWarnings("unchecked")
+    public void addTransform(ImportTransform tx) {
+        ((TransformChain) this.transform).add(tx);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeTransform(ImportTransform tx) {
+        ((TransformChain) this.transform).remove(tx);
+    }
+
+    public void setTransform(TransformChain<? extends ImportTransform> transform) {
         this.transform = transform;
     }
 

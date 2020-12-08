@@ -26,7 +26,7 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
     protected String field;
 
     /** type to remap to */
-    protected Class type;
+    protected Class<?> type;
 
     public AttributeRemapTransform(String field, Class type) {
         this.field = field;

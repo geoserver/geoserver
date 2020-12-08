@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
@@ -194,7 +195,7 @@ public class ImportControllerTest extends ImporterTestSupport {
     public void testGetImportDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(H2DataStoreFactory.DBTYPE.key, "h2");
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
         importer.createContext(new Database(params));

@@ -98,11 +98,11 @@ public class ImportController extends ImportBaseController {
         } else {
             // For ImportContext, the expand parameter is handled at the converter level. Here, we
             // are listing contexts, and use a different (more succinct) default
-            return (writer, builder, converter) ->
-                    converter.contexts(
-                            builder,
-                            (Iterator<ImportContext>) lookupContext,
-                            converter.expand(expand, 0));
+            return (writer, builder, converter) -> {
+                @SuppressWarnings("unchecked")
+                Iterator<ImportContext> lc = (Iterator) lookupContext;
+                converter.contexts(builder, lc, converter.expand(expand, 0));
+            };
         }
     }
 

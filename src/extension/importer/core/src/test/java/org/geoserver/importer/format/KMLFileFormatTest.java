@@ -214,6 +214,7 @@ public class KMLFileFormatTest extends TestCase {
         assertEquals("Unexpected number of feature types", 1, featureTypes.size());
         SimpleFeatureType featureType = featureTypes.get(0);
         Map<Object, Object> userData = featureType.getUserData();
+        @SuppressWarnings("unchecked")
         List<String> schemaNames = (List<String>) userData.get("schemanames");
         assertEquals(1, schemaNames.size());
         assertEquals("Did not find expected schema name metadata", "myschema", schemaNames.get(0));

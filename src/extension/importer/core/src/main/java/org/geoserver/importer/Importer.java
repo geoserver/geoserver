@@ -304,8 +304,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             return contextStore.iterator("updated");
         } catch (UnsupportedOperationException e) {
             // fallback
-            TreeSet sorted =
-                    new TreeSet<ImportContext>(
+            TreeSet<ImportContext> sorted =
+                    new TreeSet<>(
                             new Comparator<ImportContext>() {
                                 @Override
                                 public int compare(ImportContext o1, ImportContext o2) {
@@ -1045,10 +1045,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         protected abstract T callInternal(ProgressMonitor monitor) throws Exception;
     }
 
+    @SuppressWarnings("unchecked")
     public Task<ImportContext> getTask(Long job) {
         return (Task<ImportContext>) asynchronousJobs.getTask(job);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Task<ImportContext>> getTasks() {
         return (List) asynchronousJobs.getTasks();
     }
@@ -1451,6 +1453,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
     }
 
+    @SuppressWarnings("unchecked") // vague about feature types
     private Throwable copyFromFeatureSource(
             ImportData data,
             ImportTask task,
@@ -1471,21 +1474,19 @@ public class Importer implements DisposableBean, ApplicationListener {
             LOGGER.fine("begining import - highlevel api");
 
             FeatureSource fs = format.getFeatureSource(data, task);
-            FeatureCollection fc = fs.getFeatures();
 
             FeatureStore featureStore =
                     (FeatureStore) dataStoreDestination.getFeatureSource(uniquifiedFeatureTypeName);
             featureStore.setTransaction(transaction);
 
-            fc =
-                    new ImportTransformFeatureCollection(
-                            fc,
+            FeatureCollection fc =
+                    new ImportTransformFeatureCollection<>(
+                            fs.getFeatures(),
                             featureDataConverter,
                             featureStore.getSchema(),
                             tx,
                             task,
                             dataStoreDestination);
-
             featureStore.addFeatures(fc);
 
         } catch (Throwable e) {

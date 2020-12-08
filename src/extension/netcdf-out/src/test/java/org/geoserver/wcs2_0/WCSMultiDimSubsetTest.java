@@ -49,7 +49,9 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         try {
             Field field = GetCoverage.class.getDeclaredField("mdFormats");
             field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
+            @SuppressWarnings("unchecked")
+            Set<String> values = (Set<String>) field.get(null);
+            values.add(WCSResponseInterceptor.MIME_TYPE);
         } catch (NoSuchFieldException e) {
         } catch (SecurityException e) {
         } catch (IllegalArgumentException e) {

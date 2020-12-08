@@ -396,6 +396,11 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     }
                 });
 
+        setConvertedInputGenerics(convertedInput);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setConvertedInputGenerics(NetCDFSettingsContainer convertedInput) {
         setConvertedInput((T) convertedInput);
     }
 

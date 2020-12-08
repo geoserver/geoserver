@@ -46,7 +46,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WCSEOLayerConfig(id, new Model(layer));
+                                return new WCSEOLayerConfig(id, new Model<>(layer));
                             }
                         }));
 
@@ -65,7 +65,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WCSEOLayerConfig(id, new Model(layer));
+                                return new WCSEOLayerConfig(id, new Model<>(layer));
                             }
                         }));
 

@@ -121,6 +121,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure the Compression Component value is correct
         tester.assertComponent(
                 "form:panel:netcdfeditor:container:compressionLevel", TextField.class);
+        @SuppressWarnings("unchecked")
         TextField<Integer> compressionLevel =
                 (TextField<Integer>)
                         tester.getComponentFromLastRenderedPage(
@@ -130,6 +131,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure the DataPacking Component value is correct
         tester.assertComponent(
                 "form:panel:netcdfeditor:container:dataPacking", DropDownChoice.class);
+        @SuppressWarnings("unchecked")
         DropDownChoice<DataPacking> dataPacking =
                 (DropDownChoice<DataPacking>)
                         tester.getComponentFromLastRenderedPage(

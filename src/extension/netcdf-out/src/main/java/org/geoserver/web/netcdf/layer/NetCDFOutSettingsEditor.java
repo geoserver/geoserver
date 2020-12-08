@@ -67,11 +67,12 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         super(id, netcdfModel);
         // Add panel for Standard name definition
         standardName =
-                new TextField<String>("standardName", new PropertyModel(netcdfModel, "layerName"));
+                new TextField<String>(
+                        "standardName", new PropertyModel<>(netcdfModel, "layerName"));
         // Add panel for UOM definition
         uom =
                 new AutoCompleteTextField<String>(
-                        "uom", new PropertyModel(netcdfModel, "layerUOM")) {
+                        "uom", new PropertyModel<>(netcdfModel, "layerUOM")) {
 
                     @Override
                     protected Iterator<String> getChoices(String input) {

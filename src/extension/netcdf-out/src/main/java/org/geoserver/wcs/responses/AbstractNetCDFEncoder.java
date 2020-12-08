@@ -704,6 +704,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // Get all the values for that dimension, looking for the one
                 // which matches the coverage's one
                 // TODO: Improve this search. Make it more smart/performant
+                @SuppressWarnings("unchecked")
                 final Set<Object> values = (Set<Object>) manager.getDimensionValues().getValues();
                 final Iterator<Object> it = values.iterator();
                 while (it.hasNext()) {

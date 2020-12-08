@@ -26,6 +26,8 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -73,13 +75,12 @@ public class GetRecordById {
                 numberOfRecordsMatched += counts[i];
             }
 
-            FeatureCollection records = null;
+            FeatureCollection<FeatureType, Feature> records = null;
 
             // time to run the queries if we are not in hits mode
-
-            List<FeatureCollection> results = new ArrayList<FeatureCollection>();
+            List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
             for (int i = 0; i < queries.size(); i++) {
-                FeatureCollection collection =
+                FeatureCollection<FeatureType, Feature> collection =
                         store.getRecords(
                                 queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
                 if (collection != null && collection.size() > 0) {
@@ -90,7 +91,7 @@ public class GetRecordById {
             if (results.size() == 1) {
                 records = results.get(0);
             } else if (results.size() > 1) {
-                records = new CompositeFeatureCollection(results);
+                records = new CompositeFeatureCollection<>(results);
             }
 
             ElementSetType elementSet = getElementSetName(request);

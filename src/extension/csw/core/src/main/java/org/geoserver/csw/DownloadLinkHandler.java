@@ -252,7 +252,7 @@ public class DownloadLinkHandler {
                         baseURL.replace("${nameSpace}", coverageInfo.getNamespace().getName())
                                 .replace("${layerName}", coverageInfo.getName());
 
-                return new CloseableLinksIterator(baseLink, fileResourceInfo.getFiles(null));
+                return new CloseableLinksIterator<>(baseLink, fileResourceInfo.getFiles(null));
             } else {
                 throw new RuntimeException(
                         "Donwload links handler need to provide "

@@ -50,7 +50,9 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
 
         @Override
         public void encode(Object o) throws IllegalArgumentException {
-            try (CloseableIterator<String> response = (CloseableIterator<String>) o) {
+
+            try (@SuppressWarnings("unchecked")
+                    CloseableIterator<String> response = (CloseableIterator<String>) o) {
 
                 AttributesImpl attributes = new AttributesImpl();
                 addAttribute(attributes, "xmlns:csw", CSW.NAMESPACE);

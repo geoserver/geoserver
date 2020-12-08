@@ -79,7 +79,7 @@ public class DescribeRecord {
                 return getFeatureDescriptors(store.getRecordDescriptors());
             } else {
                 List<AttributeDescriptor> result = new ArrayList<AttributeDescriptor>();
-                Set<String> requested = new HashSet();
+                Set<String> requested = new HashSet<>();
                 for (QName name : request.getTypeName()) {
                     requested.add(name.getLocalPart());
                 }

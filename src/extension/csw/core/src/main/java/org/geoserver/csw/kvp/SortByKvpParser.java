@@ -45,6 +45,7 @@ public class SortByKvpParser extends FlatKvpParser {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Object parse(List values) throws Exception {
         return (SortBy[]) values.toArray(new SortBy[values.size()]);
     }

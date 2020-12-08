@@ -475,12 +475,14 @@ public class PipelineBuilder {
             if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
                 return result;
             }
-            List polys = org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
+            @SuppressWarnings("unchecked")
+            List<Polygon> polys =
+                    org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
             if (polys.size() == 0) {
                 return null;
             }
             if (polys.size() == 1) {
-                return (Polygon) polys.get(0);
+                return polys.get(0);
             }
             // this could, theoretically, produce invalid MULTIPOLYGONS since polygons cannot share
             // edges. Taking
@@ -488,39 +490,39 @@ public class PipelineBuilder {
             // systems will not correctly
             // deal with a GeometryCollection with multiple polygons in them.
             // The best strategy is to just create a (potentially) invalid multipolygon.
-            return new MultiPolygon(
-                    (Polygon[]) polys.toArray(new Polygon[polys.size()]), result.getFactory());
+            return new MultiPolygon(polys.toArray(new Polygon[polys.size()]), result.getFactory());
         }
 
         private Geometry onlyLines(Geometry result) {
             if ((result instanceof LineString) || (result instanceof MultiLineString)) {
                 return result;
             }
-            List lines = org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
+            @SuppressWarnings("unchecked")
+            List<LineString> lines =
+                    org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
             if (lines.size() == 0) {
                 return null;
             }
             if (lines.size() == 1) {
-                return (LineString) lines.get(0);
+                return lines.get(0);
             }
             return new MultiLineString(
-                    (LineString[]) lines.toArray(new LineString[lines.size()]),
-                    result.getFactory());
+                    lines.toArray(new LineString[lines.size()]), result.getFactory());
         }
 
         private Geometry onlyPoints(Geometry result) {
             if ((result instanceof Point) || (result instanceof MultiPoint)) {
                 return result;
             }
-            List pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
+            @SuppressWarnings("unchecked")
+            List<Point> pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
             if (pts.size() == 0) {
                 return null;
             }
             if (pts.size() == 1) {
-                return (Point) pts.get(0);
+                return pts.get(0);
             }
-            return new MultiPoint(
-                    (Point[]) pts.toArray(new Point[pts.size()]), result.getFactory());
+            return new MultiPoint(pts.toArray(new Point[pts.size()]), result.getFactory());
         }
     }
 }

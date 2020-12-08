@@ -125,7 +125,7 @@ public class RasterizerController extends BaseSLDServiceController {
                             .getHeaderValue());
         }
         if (layerName == null) {
-            return wrapList(new ArrayList(), ArrayList.class);
+            return wrapList(new ArrayList<>(), ArrayList.class);
         }
 
         int colormapType = DEFAULT_TYPE;
@@ -196,7 +196,7 @@ public class RasterizerController extends BaseSLDServiceController {
             }
         }
 
-        return wrapList(new ArrayList(), ArrayList.class);
+        return wrapList(new ArrayList<>(), ArrayList.class);
     }
 
     @ResponseStatus(

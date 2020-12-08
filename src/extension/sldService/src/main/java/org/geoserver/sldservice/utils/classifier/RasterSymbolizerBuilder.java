@@ -439,7 +439,7 @@ public class RasterSymbolizerBuilder {
         if (standardDeviations == null) {
             double min = iw.getMinimums()[0];
             double max = iw.getMaximums()[0];
-            return new NumberRange(Double.class, min, max);
+            return new NumberRange<>(Double.class, min, max);
         } else {
             // Create the parameterBlock
             ParameterBlock pb = new ParameterBlock();
@@ -465,7 +465,7 @@ public class RasterSymbolizerBuilder {
                 double max = extrema[1];
                 // return a range centered in the mean with the desired number of standard
                 // deviations, but make sure it does not exceed the data minimim and maximums
-                return new NumberRange(
+                return new NumberRange<>(
                         Double.class,
                         Math.max(mean - stddev * standardDeviations, min),
                         Math.min(mean + stddev * standardDeviations, max));

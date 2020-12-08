@@ -287,7 +287,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     @Override
     public Set<String> getAvailableParameters() {
-        return new HashSet(
+        return new HashSet<>(
                 Arrays.asList("webServiceUrl", "searchUser", "connectTimeout", "readTimeout"));
     }
 

@@ -14,6 +14,7 @@ import static org.geoserver.security.xml.XMLConstants.NS_UR;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -33,6 +34,7 @@ public abstract class XMLXpath {
      *
      * @author christian
      */
+    @SuppressWarnings("unchecked") // Java 8 and Java 11 interfaces differ
     public class NamespaceContextImpl implements NamespaceContext {
         private Map<String, String> prefix_ns_Map = new HashMap<String, String>();
         private Map<String, String> ns_prefix_Map = new HashMap<String, String>();

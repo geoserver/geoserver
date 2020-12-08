@@ -27,11 +27,11 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
 
     private Service csw;
 
-    private Map<String, String> params;
+    private Map<String, Object> params;
 
     protected void setUp() throws Exception {
         geoServerImpl = new GeoServerImpl();
-        List<String> operations = new ArrayList<String>();
+        List<String> operations = new ArrayList<>();
         csw =
                 new Service(
                         "csw",
@@ -39,7 +39,7 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
                         new Version("2.0.2"),
                         operations);
 
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
     }
 
     protected void tearDown() throws Exception {
@@ -47,11 +47,11 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
         params = null;
     }
 
-    private GetRepositoryItemType getRequest(Map<String, String> rawKvp) throws Exception {
+    private GetRepositoryItemType getRequest(Map<String, Object> rawKvp) throws Exception {
         return getRequest(rawKvp, new HashMap<String, Object>(rawKvp));
     }
 
-    private GetRepositoryItemType getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
+    private GetRepositoryItemType getRequest(Map<String, Object> rawKvp, Map<String, Object> kvp)
             throws Exception {
 
         GetRepositoryItemKvpRequestReader reader = new GetRepositoryItemKvpRequestReader(csw);

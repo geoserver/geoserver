@@ -47,14 +47,7 @@ public class ZipOutputFormat extends Response {
             throw new ServiceException("No value to be written has been provided");
         }
         try {
-            List<File> files = null;
-            if (value instanceof List) {
-                files = (List<File>) value;
-            } else if (value instanceof File) {
-                files = Collections.singletonList((File) value);
-            } else {
-                throw new IllegalArgumentException(value.getClass() + " type isn't supported yet");
-            }
+            List<File> files = getFiles(value);
 
             // Copying files to the temp folder
             for (File file : files) {
@@ -77,8 +70,22 @@ public class ZipOutputFormat extends Response {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private List<File> getFiles(Object value) {
+        List<File> files = null;
+        if (value instanceof List) {
+            files = (List<File>) value;
+        } else if (value instanceof File) {
+            files = Collections.singletonList((File) value);
+        } else {
+            throw new IllegalArgumentException(value.getClass() + " type isn't supported yet");
+        }
+        return files;
+    }
+
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        @SuppressWarnings("unchecked")
         File file = ((List<File>) value).get(0);
         // Use the first file as reference. That should be the main file name
         String filename = FilenameUtils.getBaseName(file.getAbsolutePath());

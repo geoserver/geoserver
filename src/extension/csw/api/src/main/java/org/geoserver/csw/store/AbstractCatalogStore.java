@@ -27,6 +27,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
@@ -101,8 +102,8 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public FeatureCollection getRecords(Query q, Transaction t, RecordDescriptor rdOutput)
-            throws IOException {
+    public FeatureCollection<FeatureType, Feature> getRecords(
+            Query q, Transaction t, RecordDescriptor rdOutput) throws IOException {
         RecordDescriptor rd;
         Name typeName = null;
         if (q.getTypeName() == null) {
@@ -121,7 +122,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         return getRecordsInternal(rd, rdOutput, q, t);
     }
 
-    public abstract FeatureCollection getRecordsInternal(
+    public abstract FeatureCollection<FeatureType, Feature> getRecordsInternal(
             RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
             throws IOException;
 

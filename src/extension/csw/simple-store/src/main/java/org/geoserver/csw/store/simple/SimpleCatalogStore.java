@@ -55,12 +55,13 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         }
     }
 
-    public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
+    public FeatureCollection<FeatureType, Feature> getRecords(Query q, Transaction t)
+            throws IOException {
         return getRecords(q, t, null);
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(
+    public FeatureCollection<FeatureType, Feature> getRecordsInternal(
             RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t)
             throws IOException {
 

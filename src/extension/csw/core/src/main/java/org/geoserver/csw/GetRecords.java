@@ -32,6 +32,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
 import org.geotools.util.factory.Hints;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -135,7 +137,7 @@ public class GetRecords {
                 // time to run the queries if we are not in hits mode
                 if (resultType == ResultType.RESULTS) {
                     if (resultType != ResultType.HITS) {
-                        List<FeatureCollection> results = new ArrayList<FeatureCollection>();
+                        List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
                         for (int i = 0; i < queries.size() && maxRecords > 0; i++) {
                             WrappedQuery q = queries.get(i);
                             int remaining = counts[i] - offset;
@@ -164,7 +166,7 @@ public class GetRecords {
                         if (results.size() == 1) {
                             records = results.get(0);
                         } else if (results.size() > 1) {
-                            records = new CompositeFeatureCollection(results);
+                            records = new CompositeFeatureCollection<>(results);
                         }
                     }
                 }

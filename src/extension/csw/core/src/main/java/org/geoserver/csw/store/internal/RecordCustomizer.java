@@ -74,6 +74,7 @@ public class RecordCustomizer extends FeatureCustomizer {
         }
 
         List<Property> propertyList = new ArrayList<Property>();
+        @SuppressWarnings("unchecked")
         List<Property> oldValues = (List<Property>) feature.getValue();
         Iterator<Property> oldValuesIterator = oldValues.iterator();
         boolean insertReferences = false;

@@ -26,6 +26,8 @@ import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
@@ -79,10 +81,9 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
         if (watcher != null && watcher.isModified()) {
             try {
-                addMapping(
-                        typeName,
-                        CatalogStoreMapping.parse(
-                                new HashMap<String, String>((Map) watcher.getProperties())));
+                @SuppressWarnings("unchecked")
+                Map<String, String> properties = (Map) watcher.getProperties();
+                addMapping(typeName, CatalogStoreMapping.parse(new HashMap<>(properties)));
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, e.toString());
             }
@@ -91,7 +92,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(
+    public FeatureCollection<FeatureType, Feature> getRecordsInternal(
             RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
             throws IOException {
 
@@ -188,10 +189,9 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                             f.out());
                 }
 
-                addMapping(
-                        typeName,
-                        CatalogStoreMapping.parse(
-                                new HashMap<String, String>((Map) watcher.getProperties())));
+                @SuppressWarnings("unchecked")
+                Map<String, String> properties = (Map) watcher.getProperties();
+                addMapping(typeName, CatalogStoreMapping.parse(new HashMap<>(properties)));
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);

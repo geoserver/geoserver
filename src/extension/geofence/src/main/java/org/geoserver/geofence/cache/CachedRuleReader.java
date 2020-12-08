@@ -73,8 +73,8 @@ public class CachedRuleReader implements RuleReaderService {
         authCache = getCacheBuilder().build(new AuthLoader());
     }
 
-    protected CacheBuilder getCacheBuilder() {
-        CacheBuilder builder =
+    protected CacheBuilder<Object, Object> getCacheBuilder() {
+        CacheBuilder<Object, Object> builder =
                 CacheBuilder.newBuilder()
                         .maximumSize(cacheConfiguration.getSize())
                         .refreshAfterWrite(

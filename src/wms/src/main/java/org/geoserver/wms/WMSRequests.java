@@ -659,7 +659,7 @@ public class WMSRequests {
         }
 
         @Override
-        protected List<?> parseLayers(
+        protected List<Object> parseLayers(
                 List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
             try {
                 return super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);

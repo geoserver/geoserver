@@ -14,7 +14,6 @@ import static org.geoserver.security.xml.XMLConstants.NS_UR;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;

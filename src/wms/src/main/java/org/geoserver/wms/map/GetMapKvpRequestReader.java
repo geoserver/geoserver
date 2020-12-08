@@ -1298,7 +1298,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
      * registered {@link LayerInfo} or a remoteOWS one, or {@link LayerGroupInfo} objects for a
      * requested layer name that refers to a layer group.
      */
-    protected List<?> parseLayers(
+    protected List<Object> parseLayers(
             final List<String> requestedLayerNames,
             final URL remoteOwsUrl,
             final String remoteOwsType)

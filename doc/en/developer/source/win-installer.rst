@@ -12,9 +12,9 @@ However you can create your own installer (using a Windows machine).
 
 #. Install the `NSIS Access Control plugin <http://nsis.sourceforge.net/AccessControl_plug-in>`_.  The simplest way to do this is to download the zip, extract the .DLL files (:file:`AccessControl.dll`) and copy it to the NSIS plugins directory (usually :file:`C:\\Program Files\\NSIS\\Plugins\\x86-ansi`).
 
-#. Unzip the binary GeoServer package::
+#. Download and unzip the source GeoServer package::
 
-        unzip geoserver-[VERSION]-bin.zip
+        unzip geoserver-[VERSION].zip
 
 #. Copy the files :file:`LICENSE.txt`, :file:`src/release/GPL.txt` and the following files from :file:`src/release/installer/win` from Geoserver git repository to the root of the unpacked archive (the same directory level as the :file:`start.jar`)::
 

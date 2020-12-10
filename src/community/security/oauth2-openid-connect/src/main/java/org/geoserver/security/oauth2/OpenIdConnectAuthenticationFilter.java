@@ -26,5 +26,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             ((OpenIdConnectTokenServices) tokenServices)
                     .setConfiguration((OpenIdConnectFilterConfig) config);
         }
+        // reconfigure the configuration, allow building a useful rest template
+        if (oauth2SecurityConfiguration instanceof OpenIdConnectSecurityConfiguration
+                && config instanceof OpenIdConnectFilterConfig) {
+            ((OpenIdConnectSecurityConfiguration) oauth2SecurityConfiguration)
+                    .setConfiguration((OpenIdConnectFilterConfig) config);
+        }
     }
 }

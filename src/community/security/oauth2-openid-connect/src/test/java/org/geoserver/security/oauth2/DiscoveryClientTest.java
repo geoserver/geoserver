@@ -53,7 +53,7 @@ public class DiscoveryClientTest {
 
         assertEquals(
                 "https://server.example.com/connect/userinfo", config.getCheckTokenEndpointUrl());
-        assertEquals("https://server.example.com/jwks.json", config.getJwkUri());
+        assertEquals("https://server.example.com/jwks.json", config.getJwkURI());
         assertEquals(
                 "https://server.example.com/connect/authorize", config.getUserAuthorizationUri());
         assertEquals("https://server.example.com/connect/token", config.getAccessTokenUri());

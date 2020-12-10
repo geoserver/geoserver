@@ -75,6 +75,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -336,23 +337,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
         CatalogFacade facade = getCatalog().getFacade();
         SortBy sort = ff.sort("name", SortOrder.ASCENDING);
+        Filter wsFilter;
+        if (workspaceName != null) wsFilter = Predicates.equal("workspace.name", workspaceName);
+        else wsFilter = Predicates.isNull("workspace");
         try (CloseableIterator<LayerGroupInfo> it =
-                workspaceName != null
-                        ? facade.list(
-                                LayerGroupInfo.class,
-                                Predicates.equal("workspace.name", workspaceName),
-                                null,
-                                null,
-                                sort)
-                        : facade.list(
-                                LayerGroupInfo.class,
-                                Predicates.isNull("workspace"),
-                                null,
-                                null,
-                                sort)) {
-            while (it.hasNext()) {
-                resultSet.add(it.next().getName());
-            }
+                facade.list(LayerGroupInfo.class, wsFilter, null, null, sort)) {
+            it.forEachRemaining(lg -> resultSet.add(lg.getName()));
         }
 
         return resultSet;
@@ -741,7 +731,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     });
 
             DropDownChoice<LayerType> layerType =
-                    new DropDownChoice(
+                    new DropDownChoice<>(
                             "layerType",
                             ruleFormModel.bind("layerDetails.layerType"),
                             Arrays.asList(LayerType.values()),
@@ -752,16 +742,15 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     new AjaxFormComponentUpdatingBehavior("onchange") {
                         @Override
                         protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                            boolean enableFiltersAndStyles = true;
-                            if (layerType.getValue().equals(LayerType.LAYERGROUP.name()))
-                                enableFiltersAndStyles = false;
-
+                            boolean enableFiltersAndStyles =
+                                    layerType.getValue().equals(LayerType.LAYERGROUP.name())
+                                            ? false
+                                            : true;
                             Component readFilter = container.get("cqlFilterRead");
                             readFilter.setEnabled(enableFiltersAndStyles);
                             Component writeFilter = container.get("cqlFilterWrite");
                             writeFilter.setEnabled(enableFiltersAndStyles);
                             Component defaultStyles = container.get("defaultStyle");
-                            defaultStyles.setEnabled(enableFiltersAndStyles);
                             defaultStyles.setEnabled(enableFiltersAndStyles);
                             Component allowedStyles = container.get("allowedStyles");
                             ajaxRequestTarget.add(
@@ -861,7 +850,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                         IModel<LayerAttribute> itemModel,
                                         Property<LayerAttribute> property) {
                                     if (LayerAttributeModel.ACCESS.equals(property)) {
-                                        return new DropDownChoiceWrapperPanel<AccessType>(
+                                        return new DropDownChoiceWrapperPanel<>(
                                                 id,
                                                 (IModel<AccessType>) property.getModel(itemModel),
                                                 Arrays.asList(AccessType.values()),

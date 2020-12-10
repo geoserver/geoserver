@@ -45,7 +45,7 @@ Layer groups are also supported. If no workspace has been specified, the layer d
 
 The read and write filters text areas as well as the style palette in the layer details tab are disabled when the layer group is being configured.
 
-If an allowed area WKT is specified it will be applied to the contained layers.
+If an allowed area WKT is specified it will be applied to all contained layers.
 
 When a layer contained in a layer group is directly accessed in the context of a WMS request, the following rules apply:
 
@@ -54,3 +54,9 @@ When a layer contained in a layer group is directly accessed in the context of a
 * If the layer group has mode **OPAQUE**, the layer will not be visible.
 
 * If the layer group has another mode, different from **SINGLE** and **OPAQUE**, the layer group access rule will be applied.
+
+When a layer belongs to more then one layer group, the less restrictive rule is applied. If the containing layer groups have all a **LIMIT** grant type:
+
+* If at least one layer group has no allowed area defined, then no geometry filter is appliedn to the contained layer.
+
+* If all the containing layer group have an allowed area defined, then the spatial filter will apply a geometry that is the result of the union of all the allowed areas.

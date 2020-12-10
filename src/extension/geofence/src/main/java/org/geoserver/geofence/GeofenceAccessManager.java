@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geoserver.catalog.Catalog;
@@ -399,18 +398,20 @@ public class GeofenceAccessManager
     private Pair<Geometry, AccessInfo> handleContainers(
             List<LayerGroupInfo> groups, Authentication user) {
         Geometry allowedArea = null;
-        AccessInfo lessRestrictiveRule = null;
+        MutablePair<Geometry, AccessInfo> lessRestrictiveRule = new MutablePair<>(null, null);
         for (LayerGroupInfo lgi : groups) {
             WorkspaceInfo ws = lgi.getWorkspace();
             String workspace = ws != null ? ws.getName() : null;
             String layer = lgi.getName();
             RuleFilter filter = buildRuleFilter(workspace, layer, user);
             AccessInfo accessInfo = rules.getAccessInfo(filter);
-            lessRestrictiveRule = getLessRestrictiveRule(lessRestrictiveRule, accessInfo);
             allowedArea =
                     getReprojectArea(accessInfo, lgi.getBounds().getCoordinateReferenceSystem());
+            lessRestrictiveRule =
+                    getLessRestrictiveRule(
+                            lessRestrictiveRule, new MutablePair<>(allowedArea, accessInfo));
         }
-        return new ImmutablePair<>(allowedArea, lessRestrictiveRule);
+        return lessRestrictiveRule;
     }
 
     // get the AccessInfo from the layer's containers returning a tuple with
@@ -431,35 +432,80 @@ public class GeofenceAccessManager
             if (mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER)) {
                 // opaque mode deny access for the layer
                 AccessInfo newInfo = AccessInfo.DENY_ALL;
-                result.setValue(getLessRestrictiveRule(result.getRight(), newInfo));
+                result =
+                        getLessRestrictiveRule(
+                                result, new MutablePair<Geometry, AccessInfo>(null, newInfo));
             } else if (!mode.equals(LayerGroupInfo.Mode.SINGLE)) {
                 // not opaque and not single mode, the container rule
                 // should override the layer rule
                 String workspace = gs.getWorkspace();
                 String layer = gs.getName();
                 RuleFilter filter = buildRuleFilter(workspace, layer, user);
-                AccessInfo newInfo = rules.getAccessInfo(filter);
-                newInfo = getLessRestrictiveRule(result.getRight(), newInfo);
-                result.setRight(newInfo);
-                if (newInfo.getAreaWkt() != null) {
-                    LayerGroupInfo gi = catalog.getLayerGroupByName(layer);
-                    CoordinateReferenceSystem crs = gi.getBounds().getCoordinateReferenceSystem();
-                    Geometry allowedArea = getReprojectArea(newInfo, crs);
-                    result.setLeft(allowedArea);
-                }
+                AccessInfo newAccess = rules.getAccessInfo(filter);
+                Geometry allowedArea = getAllowedAreaAsGeomLayerGroup(newAccess, layer);
+                MutablePair<Geometry, AccessInfo> newInfo =
+                        new MutablePair<>(allowedArea, newAccess);
+                result = getLessRestrictiveRule(result, newInfo);
             }
         }
         return result;
     }
 
+    private Geometry getAllowedAreaAsGeomLayerGroup(AccessInfo layerGroupInfo, String layerGroup) {
+        String allowedAreaWKT = layerGroupInfo.getAreaWkt();
+        if (allowedAreaWKT != null) {
+            LayerGroupInfo gi = catalog.getLayerGroupByName(layerGroup);
+            CoordinateReferenceSystem crs = gi.getBounds().getCoordinateReferenceSystem();
+            return getReprojectArea(layerGroupInfo, crs);
+        }
+
+        return null;
+    }
+
     // compares two access info and return the less restrictive one
-    private AccessInfo getLessRestrictiveRule(AccessInfo current, AccessInfo newInfo) {
-        if (newInfo == null) return current;
-        else if (current == null) return newInfo;
-        else if (current.getGrant().equals(GrantType.DENY)) return newInfo;
-        else if (current.getGrant().equals(GrantType.LIMIT)
-                && newInfo.getGrant().equals(GrantType.ALLOW)) return newInfo;
-        else return current;
+    private MutablePair<Geometry, AccessInfo> getLessRestrictiveRule(
+            MutablePair<Geometry, AccessInfo> current, MutablePair<Geometry, AccessInfo> newInfo) {
+        AccessInfo currentAccess = current.getRight();
+        AccessInfo newAccess = newInfo.getRight();
+        MutablePair<Geometry, AccessInfo> result = current;
+        if (currentAccess == null) {
+            result = newInfo;
+
+        } else if (newAccess != null) {
+
+            if (currentAccess.getGrant().equals(GrantType.DENY)) {
+                result = newInfo;
+
+            } else if (currentAccess.getGrant().equals(GrantType.LIMIT)
+                    && newAccess.getGrant().equals(GrantType.ALLOW)) {
+                result = newInfo;
+
+            } else if (currentAccess.getGrant().equals(newAccess.getGrant())) {
+                result = getLessRestrictiveAllowedArea(current, newInfo);
+            }
+        }
+        return result;
+    }
+
+    // compares two accessRules applied to a LayerGroup and will return the less restrictive.
+    // if one of them has null allowedArea it will be priviledged. If both have the areas are
+    // merged.
+    private MutablePair<Geometry, AccessInfo> getLessRestrictiveAllowedArea(
+            MutablePair<Geometry, AccessInfo> current,
+            MutablePair<Geometry, AccessInfo> newAccess) {
+        Geometry currentAllowedArea = current.getLeft();
+        Geometry newAllowedArea = newAccess.getLeft();
+        MutablePair<Geometry, AccessInfo> result;
+        if (currentAllowedArea == null) {
+            result = current;
+        } else if (newAllowedArea == null) {
+            result = newAccess;
+        } else {
+            Geometry mergedAllowedArea = currentAllowedArea.union(newAllowedArea);
+            current.setLeft(mergedAllowedArea);
+            result = current;
+        }
+        return result;
     }
 
     private void setRuleFilterUserOrRole(Authentication user, RuleFilter ruleFilter) {
@@ -557,7 +603,6 @@ public class GeofenceAccessManager
 
         } else if (info instanceof WMTSLayerInfo) {
             accessLimits = new WMTSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea));
-
         } else {
             throw new IllegalArgumentException("Don't know how to handle resource " + info);
         }

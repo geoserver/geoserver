@@ -10,8 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
@@ -49,7 +48,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         Long ruleId2 = null;
         LayerGroupInfo group = null;
         try {
-            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1);
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
             ruleId2 =
                     addRule(
                             GrantType.LIMIT,
@@ -59,12 +58,13 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
                             null,
                             null,
                             "lakes_and_places",
-                            0);
+                            0,
+                            ruleService);
             String areWKT =
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
-            addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326);
+            addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE);
+            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -78,9 +78,9 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
             BufferedImage expectedImage = ImageIO.read(expectedResponse);
             ImageAssert.assertEquals(image, expectedImage, 500);
         } finally {
-            deletesAllRules(ruleId1, ruleId2);
+            deleteRules(ruleService, ruleId1, ruleId2);
             logout();
-            removeLakesPlacesLayerGroup(group);
+            removeLayerGroup(group);
         }
     }
 
@@ -90,7 +90,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         Long ruleId1 = null;
         Long ruleId2 = null;
         try {
-            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1);
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
             ruleId2 =
                     addRule(
                             GrantType.DENY,
@@ -100,7 +100,8 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
                             null,
                             null,
                             CONTAINER_GROUP,
-                            0);
+                            0,
+                            ruleService);
             // check the group works without workspace qualification
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -112,7 +113,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
             MockHttpServletResponse resp = getAsServletResponse(url);
             assertTrue(resp.getContentAsString().contains("Could not find layer containerGroup"));
         } finally {
-            deletesAllRules(ruleId1, ruleId2);
+            deleteRules(ruleService, ruleId1, ruleId2);
             logout();
         }
     }
@@ -122,7 +123,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         // test that direct access to layer in layerGroup is not allowed if container is opaque
         Long ruleId = null;
         try {
-            ruleId = addRule(GrantType.ALLOW, null, null, null, null, null, null, 0);
+            ruleId = addRule(GrantType.ALLOW, null, null, null, null, null, null, 0, ruleService);
             // check the group works without workspace qualification
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             setupOpaqueGroup(getCatalog());
@@ -140,7 +141,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
                                 .contains("Could not find layer " + pi.prefixedName()));
             }
         } finally {
-            deletesAllRules(ruleId);
+            deleteRules(ruleService, ruleId);
             logout();
         }
     }
@@ -153,7 +154,7 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         Long ruleId2 = null;
         LayerGroupInfo group = null;
         try {
-            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1);
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
             ruleId2 =
                     addRule(
                             GrantType.LIMIT,
@@ -163,12 +164,13 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
                             null,
                             null,
                             "lakes_and_places",
-                            0);
+                            0,
+                            ruleService);
             String areWKT =
                     "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
-            addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326);
+            addRuleLimits(ruleId2, CatalogMode.HIDE, areWKT, 4326, ruleService);
             // check the group works without workspace qualification;
-            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED);
+            group = addLakesPlacesLayerGroup(LayerGroupInfo.Mode.NAMED, "lakes_and_places");
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
             String url =
@@ -181,13 +183,13 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
             BufferedImage expectedImage = ImageIO.read(expectedResponse);
             ImageAssert.assertEquals(image, expectedImage, 500);
         } finally {
-            deletesAllRules(ruleId1, ruleId2);
+            deleteRules(ruleService, ruleId1, ruleId2);
             logout();
-            removeLakesPlacesLayerGroup(group);
+            removeLayerGroup(group);
         }
     }
 
-    private long addRule(
+    static long addRule(
             GrantType access,
             String username,
             String roleName,
@@ -195,7 +197,8 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
             String request,
             String workspace,
             String layer,
-            long priority) {
+            long priority,
+            RuleAdminService ruleService) {
 
         Rule rule = new Rule();
         rule.setAccess(access);
@@ -209,7 +212,12 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         return ruleService.insert(rule);
     }
 
-    private void addRuleLimits(long ruleId, CatalogMode mode, String allowedArea, Integer srid)
+    static void addRuleLimits(
+            long ruleId,
+            CatalogMode mode,
+            String allowedArea,
+            Integer srid,
+            RuleAdminService ruleService)
             throws org.locationtech.jts.io.ParseException {
         RuleLimits limits = new RuleLimits();
         limits.setCatalogMode(mode);
@@ -219,24 +227,27 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         ruleService.setLimits(ruleId, limits);
     }
 
-    private void deletesAllRules(Long... ids) {
+    static void deleteRules(RuleAdminService ruleService, Long... ids) {
         for (Long id : ids) {
             if (id != null) ruleService.delete(id);
         }
     }
 
-    private LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode) throws Exception {
+    private LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name)
+            throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-        LayerGroupInfo group = createLakesPlacesLayerGroup(getCatalog(), mode, null);
+        LayerGroupInfo group = createLakesPlacesLayerGroup(getCatalog(), name, mode, null);
         logout();
         return group;
     }
 
-    private void removeLakesPlacesLayerGroup(LayerGroupInfo group) throws Exception {
-        if (group != null) {
-            login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-            getCatalog().remove(group);
-            logout();
+    private void removeLayerGroup(LayerGroupInfo... groups) {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        for (LayerGroupInfo group : groups) {
+            if (group != null) {
+                getCatalog().remove(group);
+            }
         }
+        logout();
     }
 }

@@ -19,6 +19,7 @@ public class DiscoveryClient {
     private static final String AUTHORIZATION_ENDPOINT_ATTR_NAME = "authorization_endpoint";
     private static final String TOKEN_ENDPOINT_ATTR_NAME = "token_endpoint";
     private static final String USERINFO_ENDPOINT_ATTR_NAME = "userinfo_endpoint";
+    private static final String END_SESSION_ENDPONT = "end_session_endpoint";
     private static final String JWK_SET_URI_ATTR_NAME = "jwks_uri";
     private static final String SCOPES_SUPPORTED = "scopes_supported";
 
@@ -51,7 +52,9 @@ public class DiscoveryClient {
         Optional.ofNullable(response.get(USERINFO_ENDPOINT_ATTR_NAME))
                 .ifPresent(uri -> conf.setCheckTokenEndpointUrl((String) uri));
         Optional.ofNullable(response.get(JWK_SET_URI_ATTR_NAME))
-                .ifPresent(uri -> conf.setJwkUri((String) uri));
+                .ifPresent(uri -> conf.setJwkURI((String) uri));
+        Optional.ofNullable(response.get(END_SESSION_ENDPONT))
+                .ifPresent(uri -> conf.setLogoutUri((String) uri));
         Optional.ofNullable(response.get(SCOPES_SUPPORTED))
                 .ifPresent(
                         s -> {

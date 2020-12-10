@@ -41,6 +41,9 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("principalKeyHelp", this).setDialog(dialog));
         add(new TextField<String>("principalKey"));
+
+        add(new HelpLink("jwkURIHelp", this).setDialog(dialog));
+        add(new TextField<String>("jwkURI"));
     }
 
     @Override

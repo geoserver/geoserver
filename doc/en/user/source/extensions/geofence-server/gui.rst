@@ -57,6 +57,6 @@ When a layer contained in a layer group is directly accessed in the context of a
 
 When a layer belongs to more then one layer group, the less restrictive rule is applied. If the containing layer groups have all a **LIMIT** grant type:
 
-* If at least one layer group has no allowed area defined, then no geometry filter is appliedn to the contained layer.
+* If at least one layer group has no allowed area defined, then no geometry filter is applied to the contained layer.
 
 * If all the containing layer group have an allowed area defined, then the spatial filter will apply a geometry that is the result of the union of all the allowed areas.

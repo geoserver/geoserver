@@ -743,9 +743,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
                             boolean enableFiltersAndStyles =
-                                    layerType.getValue().equals(LayerType.LAYERGROUP.name())
-                                            ? false
-                                            : true;
+                                    !layerType.getValue().equals(LayerType.LAYERGROUP.name());
                             Component readFilter = container.get("cqlFilterRead");
                             readFilter.setEnabled(enableFiltersAndStyles);
                             Component writeFilter = container.get("cqlFilterWrite");

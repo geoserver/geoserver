@@ -22,15 +22,12 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.spatial.Intersects;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,6 +38,12 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
     private GeofenceAccessManager accessManager;
     private RuleAdminService ruleService;
+
+    private static final String AREA_WKT =
+            "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))";
+
+    private static final String AREA_WKT_2 =
+            "MULTIPOLYGON(((0.0011204391479413545 -0.0006405065746780663,0.0015764146804730927 -0.0006405065746780663,0.0015764146804730927 -0.0014612625330857614,0.0011204391479413545 -0.0014612625330857614,0.0011204391479413545 -0.0006405065746780663)))";
 
     @Before
     public void setUp() {
@@ -90,7 +93,6 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             LayerGroupInfo.Mode.NAMED,
                             null,
                             Arrays.asList(places, forests));
-            // rule to grant access in general to everyone
             // limit rule for anonymousUser on LayerGroup group1
             idRule =
                     addRule(
@@ -118,9 +120,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             ruleService);
 
             // add allowed Area only to the first layer group
-            String areWKT =
-                    "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))";
-            addRuleLimits(idRule, CatalogMode.HIDE, areWKT, 4326, ruleService);
+            addRuleLimits(idRule, CatalogMode.HIDE, AREA_WKT, 4326, ruleService);
 
             // mock a WMS request to check contained layers direct access
             Request req = new Request();
@@ -184,6 +184,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             "group1",
                             2,
                             ruleService);
+            // add allowed Area
+            addRuleLimits(idRule, CatalogMode.HIDE, AREA_WKT, 4326, ruleService);
 
             // limit rule for anonymousUser on LayerGroup group2
             idRule2 =
@@ -199,48 +201,35 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             ruleService);
 
             // add allowed Area to layer groups rules
-            String areWKT =
-                    "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))";
-            addRuleLimits(idRule, CatalogMode.HIDE, areWKT, 4326, ruleService);
-            String areaWKT2 =
-                    "MULTIPOLYGON(((0.0011204391479413545 -0.0006405065746780663,0.0015764146804730927 -0.0006405065746780663,0.0015764146804730927 -0.0014612625330857614,0.0011204391479413545 -0.0014612625330857614,0.0011204391479413545 -0.0006405065746780663)))";
-            addRuleLimits(idRule2, CatalogMode.HIDE, areaWKT2, 4326, ruleService);
-
+            addRuleLimits(idRule2, CatalogMode.HIDE, AREA_WKT_2, 4326, ruleService);
             // mock a WMS request to check contained layers direct access
             Request req = new Request();
             req.setService("WMS");
             req.setRequest("GetMap");
             Dispatcher.REQUEST.set(req);
             logout();
-
             login("anonymousUser", "", new String[] {"ROLE_ANONYMOUS"});
 
             VectorAccessLimits vl =
                     (VectorAccessLimits) accessManager.getAccessLimits(user, bridges);
 
             // Merge the allowed areas
-            Geometry allowedArea1 = new WKTReader().read(areWKT);
-            Geometry allowedArea2 = new WKTReader().read(areaWKT2);
+            Geometry allowedArea1 = new WKTReader().read(AREA_WKT);
+            Geometry allowedArea2 = new WKTReader().read(AREA_WKT_2);
             MultiPolygon totalArea = (MultiPolygon) allowedArea1.union(allowedArea2);
-
-            FilterVisitor visitor =
-                    new DefaultFilterVisitor() {
-                        @Override
-                        public Object visit(Intersects filter, Object extraData) {
-                            try {
-                                MultiPolygon filterArea =
-                                        (MultiPolygon)
-                                                new WKTReader()
-                                                        .read(filter.getExpression2().toString());
-
-                                assertTrue(totalArea.equalsExact(filterArea, 10.0E-15));
-                            } catch (ParseException e) {
-                            }
-                            return super.visit(filter, extraData);
-                        }
-                    };
-            vl.getReadFilter().accept(visitor, null);
-            vl.getWriteFilter().accept(visitor, null);
+            Intersects intersects = (Intersects) vl.getReadFilter();
+            MultiPolygon readFilterArea =
+                    intersects.getExpression2().evaluate(null, MultiPolygon.class);
+            Intersects intersects2 = (Intersects) vl.getWriteFilter();
+            MultiPolygon writeFilterArea =
+                    intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+            totalArea.normalize();
+            // normalize geometries to avoids assertion failures for
+            // a different internal order of the polygons
+            readFilterArea.normalize();
+            writeFilterArea.normalize();
+            assertTrue(totalArea.equalsExact(readFilterArea, 10.0E-15));
+            assertTrue(totalArea.equalsExact(writeFilterArea, 10.0E-15));
             logout();
         } finally {
             removeLayerGroup(group1, group2);
@@ -304,12 +293,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
                             ruleService);
 
             // add allowed Area to layer groups rules
-            String areWKT =
-                    "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))";
-            addRuleLimits(idRule, CatalogMode.HIDE, areWKT, 4326, ruleService);
-            String areaWKT2 =
-                    "MULTIPOLYGON(((0.0011204391479413545 -0.0006405065746780663,0.0015764146804730927 -0.0006405065746780663,0.0015764146804730927 -0.0014612625330857614,0.0011204391479413545 -0.0014612625330857614,0.0011204391479413545 -0.0006405065746780663)))";
-            addRuleLimits(idRule2, CatalogMode.HIDE, areaWKT2, 4326, ruleService);
+            addRuleLimits(idRule, CatalogMode.HIDE, AREA_WKT, 4326, ruleService);
+            addRuleLimits(idRule2, CatalogMode.HIDE, AREA_WKT_2, 4326, ruleService);
 
             // mock a WMS request to check contained layers direct access
             Request req = new Request();

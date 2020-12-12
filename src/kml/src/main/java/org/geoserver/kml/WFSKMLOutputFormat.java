@@ -86,7 +86,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         // build the contents
         for (SimpleFeatureCollection collection : collections) {
             // create the folder
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
+            SimpleFeatureCollection fc = collection;
             Folder folder = document.createAndAddFolder();
             folder.setName(fc.getSchema().getTypeName());
 

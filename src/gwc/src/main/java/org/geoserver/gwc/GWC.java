@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -1661,7 +1660,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                     throw new IllegalStateException(
                             "Didn't find service descriptor 'wms-1_1_1-ServiceDescriptor'");
                 }
-                operation = new Operation("GetMap", service, (Method) null, parameters);
+                operation = new Operation("GetMap", service, null, parameters);
             }
 
             final List<Response> extensions = GeoServerExtensions.extensions(Response.class);

@@ -359,8 +359,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         String wkt =
                 "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\",6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],UNIT[\"Grad\",0.01570796326794897]]";
         CoordinateReferenceSystem lCrs = CRS.parseWKT(wkt);
-        ((FeatureTypeInfo) l.getResource()).setSRS(null);
-        ((FeatureTypeInfo) l.getResource()).setNativeCRS(lCrs);
+        l.getResource().setSRS(null);
+        l.getResource().setNativeCRS(lCrs);
         assertNull(CRS.lookupEpsgCode(lCrs, false));
 
         // Use the real thing now

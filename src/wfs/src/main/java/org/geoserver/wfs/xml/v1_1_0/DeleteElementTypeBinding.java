@@ -106,7 +106,7 @@ public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {
         DeleteElementType deleteElement = wfsfactory.createDeleteElementType();
 
         // &lt;xsd:element maxOccurs="1" minOccurs="1" ref="ogc:Filter"&gt;
-        deleteElement.setFilter((Filter) node.getChildValue(Filter.class));
+        deleteElement.setFilter(node.getChildValue(Filter.class));
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;
         if (node.hasAttribute("handle")) {

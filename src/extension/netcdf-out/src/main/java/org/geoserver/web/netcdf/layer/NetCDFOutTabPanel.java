@@ -30,7 +30,7 @@ public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
         // Selection of the CoverageInfo model
         IModel<CoverageInfo> cmodel = null;
         if (resourceModel.getObject() instanceof CoverageInfo) {
-            CoverageInfo cinfo = (CoverageInfo) resourceModel.getObject();
+            CoverageInfo cinfo = resourceModel.getObject();
             cmodel = new Model<CoverageInfo>(cinfo);
         }
 

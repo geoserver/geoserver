@@ -115,7 +115,7 @@ public class SpringBeanProcessFactory
         if (c == null) {
             return null;
         } else {
-            return (DescribeProcess) c.getAnnotation(DescribeProcess.class);
+            return c.getAnnotation(DescribeProcess.class);
         }
     }
 

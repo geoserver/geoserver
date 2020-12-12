@@ -474,7 +474,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                 catalog,
                                 store,
                                 (Class<CatalogInfo>) interfaceOf(store),
-                                (LayerInfo) null,
+                                null,
                                 nameSuffix,
                                 sw,
                                 true,

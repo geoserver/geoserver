@@ -84,8 +84,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd =
                 (GetDomainType)
-                        reader.read(
-                                null, getResourceAsReader("GetDomainParameter.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetDomainParameter.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("GetRecords.resultType", gd.getParameterName());
@@ -101,7 +100,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd =
                 (GetDomainType)
-                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("dc:title", gd.getPropertyName());

@@ -23,8 +23,7 @@ public class PasswordPolicyProvider extends SecurityNamedServiceProvider<Passwor
         List<PasswordPolicyConfig> result = new ArrayList<PasswordPolicyConfig>();
         try {
             for (String name : getSecurityManager().listPasswordValidators()) {
-                result.add(
-                        (PasswordPolicyConfig) getSecurityManager().loadPasswordPolicyConfig(name));
+                result.add(getSecurityManager().loadPasswordPolicyConfig(name));
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);

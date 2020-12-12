@@ -520,7 +520,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private OutputType parseOutputElement(final Map kvp) throws Exception {
+    private OutputType parseOutputElement(final Map<String, Object> kvp) throws Exception {
         final OutputType output = Wcs10Factory.eINSTANCE.createOutputType();
         final CodeType crsType = Gml4wcsFactory.eINSTANCE.createCodeType();
         final CodeType formatType = Gml4wcsFactory.eINSTANCE.createCodeType();

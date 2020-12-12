@@ -69,7 +69,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
 
         public String convertToString(Object value, Locale locale) {
             Set<ConverterFactory> rconverters =
-                    (Set<ConverterFactory>) Converters.getConverterFactories(target, String.class);
+                    Converters.getConverterFactories(target, String.class);
             for (ConverterFactory cf : rconverters) {
                 try {
                     Converter converter = cf.createConverter(value.getClass(), String.class, null);

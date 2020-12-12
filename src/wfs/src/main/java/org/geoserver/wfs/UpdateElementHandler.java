@@ -207,8 +207,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         long updated = response.getTotalUpdated().longValue();
 
-        SimpleFeatureStore store =
-                DataUtilities.simple((FeatureStore) featureStores.get(elementName));
+        SimpleFeatureStore store = DataUtilities.simple(featureStores.get(elementName));
 
         if (store == null) {
             throw new WFSException(

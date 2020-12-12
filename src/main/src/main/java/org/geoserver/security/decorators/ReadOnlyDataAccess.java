@@ -44,7 +44,7 @@ public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature>
         if (fs == null) return null;
 
         @SuppressWarnings("unchecked")
-        FeatureSource<T, F> cast = (FeatureSource<T, F>) SecuredObjects.secure(fs, policy);
+        FeatureSource<T, F> cast = SecuredObjects.secure(fs, policy);
         return cast;
     }
 

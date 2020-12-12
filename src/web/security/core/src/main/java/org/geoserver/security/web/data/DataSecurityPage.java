@@ -136,7 +136,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
     class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
         public Object getDisplayValue(CatalogMode object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(CatalogMode object, int index) {

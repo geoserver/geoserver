@@ -100,7 +100,7 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
         // check coverages are legit
         List<String> badCoverageIds = new ArrayList<String>();
 
-        for (String datasetId : (List<String>) dcs.getEoId()) {
+        for (String datasetId : dcs.getEoId()) {
             CoverageInfo layer = resourceCodec.getDatasetCoverage(datasetId);
             if (layer == null) {
                 badCoverageIds.add(datasetId);

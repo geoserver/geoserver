@@ -59,16 +59,13 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         ProcessInfo pi = getProcess(rasterGroup.getFilteredProcesses(), "Contour");
 
         // start the pages
-        WPSAccessRulePage accessRulePage =
-                (WPSAccessRulePage) tester.startPage(new WPSAccessRulePage());
+        WPSAccessRulePage accessRulePage = tester.startPage(new WPSAccessRulePage());
         ProcessSelectionPage selectionPage =
-                (ProcessSelectionPage)
-                        tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
+                tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
         FilteredProcess filteredProcess = new FilteredProcess(pi.getName(), "");
         filteredProcess.setValidators(pi.getValidators());
         ProcessLimitsPage limitsPage =
-                (ProcessLimitsPage)
-                        tester.startPage(new ProcessLimitsPage(selectionPage, filteredProcess));
+                tester.startPage(new ProcessLimitsPage(selectionPage, filteredProcess));
 
         // print(limitsPage, true, true);
 

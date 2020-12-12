@@ -241,8 +241,8 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                     TransformException {
 
         // reprojected geometries
-        CoordinateReferenceSystem sourceCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4283);
-        CoordinateReferenceSystem targetCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4326);
+        CoordinateReferenceSystem sourceCRS = CRS.decode(EPSG_4283);
+        CoordinateReferenceSystem targetCRS = CRS.decode(EPSG_4326);
         MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
         GeometryFactory factory = new GeometryFactory();
         Polygon srcPolygon =

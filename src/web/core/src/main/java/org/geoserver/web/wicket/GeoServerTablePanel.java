@@ -250,7 +250,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
             @Override
             protected void populateItem(ListItem<Property<T>> item) {
-                Property<T> property = (Property<T>) item.getModelObject();
+                Property<T> property = item.getModelObject();
 
                 // build a sortable link if the property is sortable, a label otherwise
                 IModel<String> titleModel = getPropertyTitle(property);

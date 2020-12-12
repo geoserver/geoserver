@@ -194,7 +194,7 @@ public class LockFeature {
                             Query query =
                                     new Query(
                                             meta.getName(),
-                                            (Filter) fidFilter,
+                                            fidFilter,
                                             Query.DEFAULT_MAX,
                                             Query.ALL_NAMES,
                                             lock.getHandle());

@@ -299,7 +299,7 @@ public class FeatureTemplate {
 
         // lookup the cache first
         TemplateKey key = new TemplateKey(featureType, template);
-        t = (Template) templateCache.get(key);
+        t = templateCache.get(key);
         if (t != null) return t;
 
         // otherwise, build a loader and do the lookup

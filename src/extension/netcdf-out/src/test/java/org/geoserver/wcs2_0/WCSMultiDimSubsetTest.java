@@ -111,8 +111,8 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
                     applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
 
             assertEquals(
-                    (Object) sourceCoverage.getCoordinateReferenceSystem(),
-                    (Object) targetCoverage.getCoordinateReferenceSystem());
+                    sourceCoverage.getCoordinateReferenceSystem(),
+                    targetCoverage.getCoordinateReferenceSystem());
 
             assertTrue(targetCoverage instanceof GranuleStack);
             GridCoverage2D firstResult = ((GranuleStack) targetCoverage).getGranules().get(0);

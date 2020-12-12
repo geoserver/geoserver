@@ -498,7 +498,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             try {
                 channel = new FileInputStream(source).getChannel();
             } catch (Exception e) {
-                channel = null;
+                // continue
             }
         }
         return channel;

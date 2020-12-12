@@ -103,7 +103,7 @@ public class LockTypeBinding extends AbstractComplexBinding {
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"/&gt;
         if (node.hasChild(Filter.class)) {
-            lock.setFilter((Filter) node.getChildValue(Filter.class));
+            lock.setFilter(node.getChildValue(Filter.class));
         }
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;

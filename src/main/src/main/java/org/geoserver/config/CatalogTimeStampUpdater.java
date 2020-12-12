@@ -49,7 +49,7 @@ public class CatalogTimeStampUpdater implements CatalogListener {
                 || event.getSource() instanceof PublishedInfo
                 || event.getSource() instanceof StoreInfo
                 || event.getSource() instanceof WorkspaceInfo) {
-            CatalogInfo info = (CatalogInfo) event.getSource();
+            CatalogInfo info = event.getSource();
             info.setDateCreated(new Date());
         }
         LOGGER.finest(event.toString() + " :handlePreAddEvent");
@@ -70,7 +70,7 @@ public class CatalogTimeStampUpdater implements CatalogListener {
                 || event.getSource() instanceof StoreInfo
                 || event.getSource() instanceof WorkspaceInfo) {
 
-            CatalogInfo info = (CatalogInfo) event.getSource();
+            CatalogInfo info = event.getSource();
             Date dateModified = new Date();
             info.setDateModified(dateModified);
         }

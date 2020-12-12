@@ -454,8 +454,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                                 null,
                                 bands)
                         .createValue());
-        return (GeneralParameterValue[])
-                parameters.toArray(new GeneralParameterValue[parameters.size()]);
+        return parameters.toArray(new GeneralParameterValue[parameters.size()]);
     }
 
     /**

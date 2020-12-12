@@ -130,7 +130,7 @@ public class GetMapTest {
     @Test
     public void testEnviroment() {
         final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        EnvFunction.setLocalValues(Collections.singletonMap("myParam", (Object) 23));
+        EnvFunction.setLocalValues(Collections.singletonMap("myParam", 23));
 
         final DummyRasterMapProducer producer =
                 new DummyRasterMapProducer() {

@@ -265,7 +265,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                             String id,
                             IModel<SQLViewAttribute> itemModel,
                             Property<SQLViewAttribute> property) {
-                        SQLViewAttribute att = (SQLViewAttribute) itemModel.getObject();
+                        SQLViewAttribute att = itemModel.getObject();
                         boolean isGeometry =
                                 att.getType() != null
                                         && Geometry.class.isAssignableFrom(att.getType());

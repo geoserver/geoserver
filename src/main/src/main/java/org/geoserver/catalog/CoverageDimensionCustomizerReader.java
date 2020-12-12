@@ -491,8 +491,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             this.wrappedSampleDimensions = sampleDimensions;
             wrappedPropertySource =
                     new PropertySourceImpl(
-                            properties,
-                            coverage instanceof PropertySource ? (PropertySource) coverage : null);
+                            properties, coverage instanceof PropertySource ? coverage : null);
         }
 
         @Override
@@ -700,7 +699,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     configuredRange,
                     configuredUnit,
                     configuredNoDataValues,
-                    (Category[]) customCategories.toArray(new Category[customCategories.size()]),
+                    customCategories.toArray(new Category[customCategories.size()]),
                     sampleDim);
         }
 

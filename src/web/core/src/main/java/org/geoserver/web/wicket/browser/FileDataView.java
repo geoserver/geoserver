@@ -62,7 +62,7 @@ public abstract class FileDataView extends Panel {
                 private static final double GBYTE = MBYTE * 1024;
 
                 public String convertToString(File value, Locale locale) {
-                    File file = (File) value;
+                    File file = value;
 
                     if (!file.isFile()) return "";
 
@@ -115,7 +115,7 @@ public abstract class FileDataView extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        linkNameClicked((File) item.getModelObject(), target);
+                                        linkNameClicked(item.getModelObject(), target);
                                     }
                                 };
                         link.add(

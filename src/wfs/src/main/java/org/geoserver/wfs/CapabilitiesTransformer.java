@@ -208,7 +208,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             oflist.remove(first);
             oflist.add(0, first);
         }
-        return (String[]) oflist.toArray(new String[oflist.size()]);
+        return oflist.toArray(new String[oflist.size()]);
     }
 
     protected void updateSequence(AttributesImpl attributes) {

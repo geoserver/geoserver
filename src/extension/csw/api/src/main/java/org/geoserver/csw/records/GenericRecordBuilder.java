@@ -205,7 +205,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                                 1,
                                 1,
                                 true,
-                                (Object) null);
+                                null);
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
                     Object item = value.size() == 1 ? value.get(0) : value.get(i);
                     if (item != null) {
@@ -323,7 +323,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param values the value(s) to be inserted
      */
     public void addElement(String name, Object... values) {
-        addElement(name, Arrays.asList((Object[]) values), null, new int[0]);
+        addElement(name, Arrays.asList(values), null, new int[0]);
     }
 
     /**
@@ -333,7 +333,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param values the value(s) to be inserted
      */
     public void addElement(String name, int[] splitIndex, Object... values) {
-        addElement(name, Arrays.asList((Object[]) values), null, splitIndex);
+        addElement(name, Arrays.asList(values), null, splitIndex);
     }
 
     /**
@@ -379,11 +379,10 @@ public class GenericRecordBuilder implements RecordBuilder {
         if (recordDescriptor.getBoundingBoxPropertyName() != null) {
             Map<Object, Object> userData =
                     Collections.singletonMap(
-                            (Object) ORIGINAL_BBOXES,
-                            (Object) new ArrayList<ReferencedEnvelope>(boxes));
+                            ORIGINAL_BBOXES, new ArrayList<ReferencedEnvelope>(boxes));
             addElement(
                     recordDescriptor.getBoundingBoxPropertyName(),
-                    Collections.singletonList((Object) geom),
+                    Collections.singletonList(geom),
                     userData,
                     new int[0]);
         }

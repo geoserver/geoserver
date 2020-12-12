@@ -37,9 +37,9 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         GeoServer geoServer = getGeoServer();
-        List<XStreamServiceLoader<ServiceInfo>> loaders =
-                Arrays.asList(new ServiceLoader(getResourceLoader()));
-        geoServer.addListener(new ServicePersister(loaders, geoServer));
+        geoServer.addListener(
+                new ServicePersister(
+                        Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
     }
 
     @Override

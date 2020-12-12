@@ -1106,8 +1106,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
-        return putAsServletResponse(
-                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+        return putAsServletResponse(path, body != null ? body.getBytes() : null, contentType);
     }
 
     protected MockHttpServletResponse putAsServletResponse(
@@ -1123,8 +1122,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected MockHttpServletResponse patchAsServletResponse(
             String path, String body, String contentType) throws Exception {
-        return patchAsServletResponse(
-                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+        return patchAsServletResponse(path, body != null ? body.getBytes() : null, contentType);
     }
 
     protected MockHttpServletResponse patchAsServletResponse(
@@ -1652,9 +1650,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         List<Filter> filterList = getFilters();
         MockFilterChain chain;
         if (filterList != null) {
-            chain =
-                    new MockFilterChain(
-                            servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+            chain = new MockFilterChain(servlet, filterList.toArray(new Filter[filterList.size()]));
         } else {
             chain = new MockFilterChain(servlet);
         }

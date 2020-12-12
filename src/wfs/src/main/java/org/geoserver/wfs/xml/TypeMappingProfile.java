@@ -71,7 +71,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
         }
 
         if (assignable.size() == 1) {
-            return (AttributeType) assignable.get(0);
+            return assignable.get(0);
         } else {
             // sort
             Comparator<AttributeType> comparator =
@@ -95,7 +95,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
             Collections.sort(assignable, comparator);
 
             if (!assignable.get(0).equals(assignable.get(1))) {
-                return (AttributeType) assignable.get(0);
+                return assignable.get(0);
             }
         }
 
@@ -133,7 +133,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
         }
 
         if (assignable.size() == 1) {
-            return (Name) ((Map.Entry) assignable.get(0)).getKey();
+            return (Name) assignable.get(0).getKey();
         } else {
             // sort
             Comparator<Map.Entry> comparator =
@@ -159,8 +159,8 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
 
             Collections.sort(assignable, comparator);
 
-            Map.Entry e1 = (Map.Entry) assignable.get(0);
-            Map.Entry e2 = (Map.Entry) assignable.get(1);
+            Map.Entry e1 = assignable.get(0);
+            Map.Entry e2 = assignable.get(1);
             AttributeType a1 = (AttributeType) e1.getValue();
             AttributeType a2 = (AttributeType) e2.getValue();
 

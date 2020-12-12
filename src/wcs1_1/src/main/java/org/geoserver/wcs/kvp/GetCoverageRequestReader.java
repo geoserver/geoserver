@@ -96,8 +96,8 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
             gridCS = gridCRS.getGridCS();
         }
         gridCRS.setGridCS(gridCS);
-        gridCRS.setGridOrigin((Double[]) kvp.get("GridOrigin"));
-        gridCRS.setGridOffsets((Double[]) kvp.get("GridOffsets"));
+        gridCRS.setGridOrigin(kvp.get("GridOrigin"));
+        gridCRS.setGridOffsets(kvp.get("GridOffsets"));
 
         return output;
     }

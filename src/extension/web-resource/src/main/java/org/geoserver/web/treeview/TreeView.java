@@ -512,7 +512,7 @@ public class TreeView<T> extends Panel {
 
         @SuppressWarnings("unchecked")
         public TreeNodeView getChildView(String id) {
-            return (TreeNodeView) ((RepeatingView) get("children")).get(id);
+            return (TreeNodeView) get("children").get(id);
         }
     }
 

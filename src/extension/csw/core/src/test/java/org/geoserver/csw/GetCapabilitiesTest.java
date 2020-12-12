@@ -97,7 +97,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetCapabilitiesType caps =
                 (GetCapabilitiesType)
-                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), null);
         assertReturnedCapabilitiesComplete(caps);
     }
 
@@ -113,7 +113,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                             "2.0.2",
                             new CSWConfiguration(),
                             EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-            reader.read(null, new StringReader(capRequest), (Map) null);
+            reader.read(null, new StringReader(capRequest), null);
             fail("the parsing should have failed, the document is invalid");
         } catch (ServiceException e) {
             // it is a validation exception right?

@@ -111,7 +111,7 @@ class SVGWriter extends OutputStreamWriter {
     }
 
     public void setGeometryType(Class gtype) {
-        featureWriter = (SVGFeatureWriter) writers.get(gtype);
+        featureWriter = writers.get(gtype);
 
         if (featureWriter == null) {
             // check for abstract Geometry type
@@ -602,7 +602,7 @@ class SVGWriter extends OutputStreamWriter {
             delegate = null;
 
             if (g != null) {
-                delegate = (SVGFeatureWriter) writers.get(g.getClass());
+                delegate = writers.get(g.getClass());
             }
 
             if (delegate == null) {
@@ -635,7 +635,7 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         protected void writeGeometry(Geometry geom) throws IOException {
-            writePathContent(((LineString) geom).getCoordinates());
+            writePathContent(geom.getCoordinates());
         }
     }
 

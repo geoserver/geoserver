@@ -213,7 +213,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
                 Object property = p.next();
                 String propertyName;
                 if (property instanceof String) propertyName = (String) property;
-                else propertyName = (String) ((PropertyName) property).getPropertyName();
+                else propertyName = ((PropertyName) property).getPropertyName();
 
                 query.getPropertyName().add(propertyName);
             }
@@ -228,12 +228,12 @@ public class QueryTypeBinding extends AbstractComplexBinding {
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"&gt;
         if (node.hasChild(Filter.class)) {
-            query.setFilter((Filter) node.getChildValue(Filter.class));
+            query.setFilter(node.getChildValue(Filter.class));
         }
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:SortBy"&gt;
         if (node.hasChild(SortBy[].class)) {
-            SortBy[] sortBy = (SortBy[]) node.getChildValue(SortBy[].class);
+            SortBy[] sortBy = node.getChildValue(SortBy[].class);
 
             for (int i = 0; i < sortBy.length; i++) query.getSortBy().add(sortBy[i]);
         }

@@ -69,7 +69,7 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     private void updateFields() {
-        Point p = (Point) getModelObject();
+        Point p = getModelObject();
         if (p != null) {
             this.x = p.getX();
             this.y = p.getY();

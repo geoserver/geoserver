@@ -220,8 +220,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
         ctxConsumer.accept(
                 (ctx) -> {
                     SpringSecurityLdapTemplate authTemplate =
-                            (SpringSecurityLdapTemplate)
-                                    LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
+                            LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
 
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
@@ -291,8 +290,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
         ctxConsumer.accept(
                 (ctx) -> {
                     SpringSecurityLdapTemplate authTemplate =
-                            (SpringSecurityLdapTemplate)
-                                    LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
+                            LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);

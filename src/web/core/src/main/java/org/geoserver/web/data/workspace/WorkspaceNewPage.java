@@ -154,7 +154,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     private void handleOnSubmit() {
         Catalog catalog = getCatalog();
         // get the workspace information from the form
-        WorkspaceInfo workspace = (WorkspaceInfo) model.getObject();
+        WorkspaceInfo workspace = model.getObject();
         NamespaceInfo namespace = catalog.getFactory().createNamespace();
         namespace.setPrefix(workspace.getName());
         namespace.setURI(nsUriTextField.getDefaultModelObjectAsString());
@@ -227,7 +227,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
      */
     private void cleanAndReport(Exception exception) {
         Catalog catalog = getCatalog();
-        WorkspaceInfo workspace = (WorkspaceInfo) model.getObject();
+        WorkspaceInfo workspace = model.getObject();
         // let's see if both the workspace and associated namespace exists
         WorkspaceInfo foundWorkspace = catalog.getWorkspaceByName(workspace.getName());
         if (foundWorkspace != null) {

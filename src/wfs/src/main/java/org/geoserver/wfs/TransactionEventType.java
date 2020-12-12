@@ -52,7 +52,7 @@ public class TransactionEventType extends CodeList<TransactionEventType> {
 
     public TransactionEventType[] family() {
         synchronized (VALUES) {
-            return (TransactionEventType[]) VALUES.toArray(new TransactionEventType[VALUES.size()]);
+            return VALUES.toArray(new TransactionEventType[VALUES.size()]);
         }
     }
 }

@@ -119,7 +119,7 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
         Catalog catalog2 = getCatalog();
         ResourcePool resourcePool = catalog2.getResourcePool();
-        WebMapTileServer webMapTileServer = resourcePool.getWebMapTileServer((WMTSStoreInfo) this);
+        WebMapTileServer webMapTileServer = resourcePool.getWebMapTileServer(this);
         return webMapTileServer;
     }
 

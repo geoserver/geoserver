@@ -81,7 +81,7 @@ public class ConfirmRemovalPanel extends Panel {
         List<CatalogInfo> cascaded = visitor.getObjects(CatalogInfo.class, DELETE);
         // remove the resources, they are cascaded, but won't be show in the UI
         for (Iterator<CatalogInfo> it = cascaded.iterator(); it.hasNext(); ) {
-            CatalogInfo catalogInfo = (CatalogInfo) it.next();
+            CatalogInfo catalogInfo = it.next();
             if (catalogInfo instanceof ResourceInfo) it.remove();
         }
         removed.setVisible(cascaded.size() > 0);
@@ -159,7 +159,7 @@ public class ConfirmRemovalPanel extends Panel {
 
     String name(Object object) {
         try {
-            return (String) BeanUtils.getProperty(object, "name");
+            return BeanUtils.getProperty(object, "name");
         } catch (Exception e) {
             throw new RuntimeException(
                     "A catalog object that does not have "
@@ -175,7 +175,7 @@ public class ConfirmRemovalPanel extends Panel {
 
                     @Override
                     protected void populateItem(ListItem<CatalogInfo> item) {
-                        CatalogInfo object = (CatalogInfo) item.getModelObject();
+                        CatalogInfo object = item.getModelObject();
                         StringResourceModel reason = notRemoved.get(object);
                         item.add(new Label("name", name(object)));
                         item.add(new Label("reason", reason));

@@ -112,7 +112,7 @@ public class EditableUserDAO implements UserDetailsService {
      */
     public UserDetails loadUserByUsername(String username) {
         update();
-        return (UserDetails) myDetailStorage.get(username);
+        return myDetailStorage.get(username);
     }
 
     /**

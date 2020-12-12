@@ -69,7 +69,7 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         if (!it.hasNext()) {
             throw new IllegalStateException("No PNG ImageWriter found");
         } else {
-            writer = (ImageWriter) it.next();
+            writer = it.next();
         }
 
         // /////////////////////////////////////////////////////////////////

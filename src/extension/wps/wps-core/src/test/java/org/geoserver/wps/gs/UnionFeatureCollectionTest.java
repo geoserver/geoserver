@@ -85,7 +85,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureIterator iterator = output.features();
 
         for (int h = 0; h < unionCollection.getNumGeometries(); h++) {
-            Geometry expected = (Geometry) unionCollection.getGeometryN(h);
+            Geometry expected = unionCollection.getGeometryN(h);
             SimpleFeature sf = iterator.next();
             assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
         }

@@ -54,7 +54,7 @@ public class NestedKvpParser extends KvpParser {
             List<Object> parsed = new ArrayList<>(tokens.size());
 
             for (int j = 0; j < tokens.size(); j++) {
-                String token = (String) tokens.get(j);
+                String token = tokens.get(j);
                 parsed.add(parseToken(token));
             }
 

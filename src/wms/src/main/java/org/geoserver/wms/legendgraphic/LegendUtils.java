@@ -12,7 +12,6 @@ import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -727,8 +726,7 @@ public class LegendUtils {
                                 + 2 * dx
                                 + 0.5);
         final BufferedImage finalImage =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, transparent);
+                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
         final Graphics2D finalGraphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, finalImage, hintsMap);
 
@@ -749,7 +747,7 @@ public class LegendUtils {
         }
 
         finalGraphics.dispose();
-        return (BufferedImage) finalImage;
+        return finalImage;
     }
 
     /**

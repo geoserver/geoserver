@@ -103,7 +103,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         public void testUserFilterAndFormat() throws Exception {
             getService().setAllowAnonymousAccess(true);
             // filter to extract user data
-            ((LDAPSecurityServiceConfig) config).setUserFilter("(telephonenumber=1)");
+            config.setUserFilter("(telephonenumber=1)");
             // username to bind to
             ((LDAPSecurityServiceConfig) config)
                     .setUserFormat("uid={0},ou=People,dc=example,dc=com");
@@ -122,7 +122,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         public void testUserFilterPlacemarks() throws Exception {
             getService().setAllowAnonymousAccess(true);
             // filter to extract user data
-            ((LDAPSecurityServiceConfig) config).setUserFilter("(givenName={1})");
+            config.setUserFilter("(givenName={1})");
             // username to bind to
             ((LDAPSecurityServiceConfig) config)
                     .setUserFormat("uid={0},ou=People,dc=example,dc=com");
@@ -133,7 +133,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertEquals(3, result.getAuthorities().size());
 
             // filter to extract user data
-            ((LDAPSecurityServiceConfig) config).setUserFilter("(cn={0})");
+            config.setUserFilter("(cn={0})");
             // username to bind to
             ((LDAPSecurityServiceConfig) config)
                     .setUserFormat("uid={0},ou=People,dc=example,dc=com");

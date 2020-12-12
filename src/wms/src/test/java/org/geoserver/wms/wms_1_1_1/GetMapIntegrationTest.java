@@ -1819,17 +1819,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         DataStoreInfo storeInfo = cb.buildDataStore("MockWFSDataStore");
         ((DataStoreInfoImpl) storeInfo).setId("1");
-        ((DataStoreInfoImpl) storeInfo).setType("Web Feature Server (NG)");
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put(WFSDataStoreFactory.URL.key, url);
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put("usedefaultsrs", Boolean.FALSE);
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
-        ((DataStoreInfoImpl) storeInfo).getConnectionParameters().put("TESTING", Boolean.TRUE);
+        storeInfo.setType("Web Feature Server (NG)");
+        storeInfo.getConnectionParameters().put(WFSDataStoreFactory.URL.key, url);
+        storeInfo.getConnectionParameters().put("usedefaultsrs", Boolean.FALSE);
+        storeInfo.getConnectionParameters().put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
+        storeInfo.getConnectionParameters().put("TESTING", Boolean.TRUE);
         getCatalog().add(storeInfo);
 
         // MOCKING Feature Type with native CRS EPSG:26713
@@ -1838,7 +1832,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 xp.load(
                         getClass().getResourceAsStream("/geoserver/wfs-ng/featuretype.xml"),
                         FeatureTypeInfoImpl.class);
-        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        ftInfo.setStore(storeInfo);
         ((FeatureTypeInfoImpl) ftInfo).setMetadata(new MetadataMap());
         ftInfo.setSRS("EPSG:26713");
         ftInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,urn:ogc:def:crs:EPSG::3857");

@@ -100,7 +100,7 @@ public abstract class AbstractMapResponse extends Response {
     public boolean canHandle(final Operation operation) {
         GetMapRequest request;
         Object[] parameters = operation.getParameters();
-        request = (GetMapRequest) OwsUtils.parameter(parameters, GetMapRequest.class);
+        request = OwsUtils.parameter(parameters, GetMapRequest.class);
         if (request == null) {
             return false;
         }

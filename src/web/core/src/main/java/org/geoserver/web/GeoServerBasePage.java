@@ -183,7 +183,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
                             image.add(
                                     AttributeModifier.replace(
                                             "alt",
@@ -282,7 +282,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
                             image.add(
                                     AttributeModifier.replace(
                                             "alt",
@@ -307,10 +307,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // home page link
         add(
                 new BookmarkablePageLink<>("home", GeoServerHomePage.class)
-                        .add(
-                                new Label(
-                                        "label",
-                                        new StringResourceModel("home", (Component) null, null))));
+                        .add(new Label("label", new StringResourceModel("home", null, null))));
 
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
@@ -339,7 +336,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                 new Label(
                                         "category.header",
                                         new StringResourceModel(
-                                                category.getNameKey(), (Component) null, null)));
+                                                category.getNameKey(), null, null)));
                         item.add(
                                 new ListView<MenuPageInfo<GeoServerBasePage>>(
                                         "category.links", links.get(category)) {
@@ -368,15 +365,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                                         "title",
                                                         new StringResourceModel(
                                                                 info.getDescriptionKey(),
-                                                                (Component) null,
+                                                                null,
                                                                 null)));
                                         link.add(
                                                 new Label(
                                                         "link.label",
                                                         new StringResourceModel(
-                                                                info.getTitleKey(),
-                                                                (Component) null,
-                                                                null)));
+                                                                info.getTitleKey(), null, null)));
                                         Image image;
                                         if (info.getIcon() != null) {
                                             image =
@@ -415,12 +410,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                 AttributeModifier.replace(
                                         "title",
                                         new StringResourceModel(
-                                                info.getDescriptionKey(), (Component) null, null)));
+                                                info.getDescriptionKey(), null, null)));
                         link.add(
                                 new Label(
                                         "link.label",
-                                        new StringResourceModel(
-                                                info.getTitleKey(), (Component) null, null)));
+                                        new StringResourceModel(info.getTitleKey(), null, null)));
                         item.add(link);
                     }
                 });

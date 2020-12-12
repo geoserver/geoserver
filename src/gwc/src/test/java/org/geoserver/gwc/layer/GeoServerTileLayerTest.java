@@ -47,7 +47,6 @@ import java.util.Set;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.RenderedOp;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
@@ -56,7 +55,6 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
@@ -105,7 +103,6 @@ import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
-import org.geowebcache.storage.TileObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -163,7 +160,7 @@ public class GeoServerTileLayerTest {
         storeInfo.setEnabled(true);
         storeInfo.setWorkspace(workspaceInfo);
 
-        resource = new FeatureTypeInfoImpl((Catalog) null);
+        resource = new FeatureTypeInfoImpl(null);
         resource.setStore(storeInfo);
         resource.setId("mock-resource-info");
         resource.setName("MockLayerInfoName");
@@ -177,7 +174,7 @@ public class GeoServerTileLayerTest {
         resource.setNativeBoundingBox(
                 new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
         resource.setSRS("EPSG:4326");
-        resource.setKeywords((List) Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
+        resource.setKeywords(Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
 
         // add metadata links
         MetadataLinkInfoImpl metadataLinkInfo = new MetadataLinkInfoImpl();
@@ -227,7 +224,7 @@ public class GeoServerTileLayerTest {
         layerGroup.setName("MockLayerGroup");
         layerGroup.setTitle("Group title");
         layerGroup.setAbstract("Group abstract");
-        layerGroup.setLayers(Collections.singletonList((PublishedInfo) layerInfo));
+        layerGroup.setLayers(Collections.singletonList(layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
 
@@ -545,8 +542,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
-                .thenReturn(mockResult);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         Resource result = layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
         assertSame(mockResult, result);
@@ -569,9 +565,9 @@ public class GeoServerTileLayerTest {
         assertEquals("50", capturedParams.get("X"));
         assertEquals("50", capturedParams.get("Y"));
 
-        verify(mockGWC, times(1)).dispatchOwsRequest((Map) any(), (Cookie[]) any());
+        verify(mockGWC, times(1)).dispatchOwsRequest(any(), any());
 
-        when(mockGWC.dispatchOwsRequest((Map) any(), (Cookie[]) any()))
+        when(mockGWC.dispatchOwsRequest(any(), any()))
                 .thenThrow(new RuntimeException("mock exception"));
         try {
             layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
@@ -640,8 +636,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
-                .thenReturn(mockResult);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
         RenderedImageMap fakeDispatchedMap =
@@ -649,11 +644,10 @@ public class GeoServerTileLayerTest {
 
         RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
         MimeType mimeType = MimeType.createFromFormat("image/png");
-        when(mockGWC.getResponseEncoder(eq(mimeType), (RenderedImageMap) any()))
-                .thenReturn(fakeResponseEncoder);
+        when(mockGWC.getResponseEncoder(eq(mimeType), any())).thenReturn(fakeResponseEncoder);
 
         StorageBroker storageBroker = mock(StorageBroker.class);
-        when(storageBroker.get((TileObject) any())).thenReturn(false);
+        when(storageBroker.get(any())).thenReturn(false);
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
 
@@ -679,7 +673,7 @@ public class GeoServerTileLayerTest {
         assertEquals(CacheResult.MISS, returned.getCacheResult());
         assertEquals(200, returned.getStatus());
 
-        verify(storageBroker, atLeastOnce()).get((TileObject) any());
+        verify(storageBroker, atLeastOnce()).get(any());
         verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
     }
 

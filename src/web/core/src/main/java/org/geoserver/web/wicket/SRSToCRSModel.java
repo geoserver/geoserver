@@ -26,7 +26,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
     }
 
     public CoordinateReferenceSystem getObject() {
-        String srs = (String) srsModel.getObject();
+        String srs = srsModel.getObject();
         if (srs == null || "UNKNOWN".equals(srs)) return null;
         try {
             return CRS.decode(srs);
@@ -36,7 +36,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
     }
 
     public void setObject(CoordinateReferenceSystem object) {
-        CoordinateReferenceSystem crs = (CoordinateReferenceSystem) object;
+        CoordinateReferenceSystem crs = object;
         try {
             Integer epsgCode = CRS.lookupEpsgCode(crs, false);
             String srs = epsgCode != null ? "EPSG:" + epsgCode : null;

@@ -91,7 +91,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                             f.add(new Label("label", new StatusModel(itemModel)));
                             return f;
                         } else if (property == WMSLayerProvider.ACTION) {
-                            final LayerResource resource = (LayerResource) itemModel.getObject();
+                            final LayerResource resource = itemModel.getObject();
                             final LayerStatus status = resource.getStatus();
                             if (status == LayerStatus.PUBLISHED
                                     || status == LayerStatus.NEWLY_PUBLISHED
@@ -289,7 +289,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         public String getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             return new ParamResourceModel(
                             "WMSLayerImporterPage.status." + resource.getStatus(),
                             WMSLayerImporterPage.this,
@@ -316,7 +316,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         public PackageResourceReference getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             if (resource.getStatus() == LayerStatus.ERROR) {
                 return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/error.png");

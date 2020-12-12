@@ -315,7 +315,7 @@ public class MapPreviewPage extends GeoServerBasePage {
 
         @Override
         protected byte[] getImageData(Attributes attributes) {
-            PreviewLayer layer = (PreviewLayer) itemModel.getObject();
+            PreviewLayer layer = itemModel.getObject();
             try {
                 return IOUtils.toByteArray(
                         layer.getIcon().getResource().getResourceStream().getInputStream());

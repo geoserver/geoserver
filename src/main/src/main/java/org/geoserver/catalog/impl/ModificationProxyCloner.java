@@ -97,7 +97,7 @@ class ModificationProxyCloner {
                 || source instanceof Double
                 || source instanceof BigInteger
                 || source instanceof BigDecimal) {
-            return (T) source;
+            return source;
         }
 
         // to avoid reflective access warnings

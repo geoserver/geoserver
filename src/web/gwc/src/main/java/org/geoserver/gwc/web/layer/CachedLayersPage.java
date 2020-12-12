@@ -104,7 +104,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                     (IModel<Quota>) property.getModel(itemModel);
                             return quotaLink(id, quotaUsageModel);
                         } else if (property == ENABLED) {
-                            TileLayer layerInfo = (TileLayer) itemModel.getObject();
+                            TileLayer layerInfo = itemModel.getObject();
                             boolean enabled = layerInfo.isEnabled();
                             PackageResourceReference icon;
                             if (enabled) {
@@ -431,7 +431,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         @Override
         protected byte[] getImageData(Attributes attributes) {
-            TileLayer layer = (TileLayer) itemModel.getObject();
+            TileLayer layer = itemModel.getObject();
             PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
             try {
                 return IOUtils.toByteArray(

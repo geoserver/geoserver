@@ -291,12 +291,9 @@ public class EncodeHTMLImageMap extends WebMap {
                 LOGGER.info("Definition Query: " + definitionQuery.toString());
                 if (!definitionQuery.equals(Query.ALL)) {
                     if (q.equals(Query.ALL)) {
-                        q = (Query) definitionQuery;
+                        q = definitionQuery;
                     } else {
-                        q =
-                                (Query)
-                                        DataUtilities.mixQueries(
-                                                definitionQuery, q, "HTMLImageMapEncoder");
+                        q = DataUtilities.mixQueries(definitionQuery, q, "HTMLImageMapEncoder");
                     }
                 }
 

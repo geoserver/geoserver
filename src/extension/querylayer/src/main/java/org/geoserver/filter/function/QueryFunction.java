@@ -107,7 +107,7 @@ public class QueryFunction extends FunctionImpl {
             }
             Filter filter;
             try {
-                filter = (Filter) ECQL.toFilter(cql);
+                filter = ECQL.toFilter(cql);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         "The third argument of the query "

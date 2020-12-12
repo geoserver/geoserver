@@ -378,7 +378,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             layersById.put(newValue.getId(), newValue.clone());
         } catch (Exception e) {
             if (e instanceof ExecutionException) {
-                throwIfUnchecked(((ExecutionException) e).getCause());
+                throwIfUnchecked(e.getCause());
             }
             throwIfUnchecked(e);
         }

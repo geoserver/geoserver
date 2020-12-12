@@ -226,7 +226,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             }
         }
 
-        return (String[]) result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
     }
 
     public void setCatalogMode(CatalogMode catalogMode) {

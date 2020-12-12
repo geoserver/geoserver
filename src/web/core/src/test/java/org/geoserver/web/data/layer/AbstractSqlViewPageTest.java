@@ -19,7 +19,6 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
 
@@ -46,7 +45,7 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs1.getSchema());
+        tb.init(fs1.getSchema());
         // tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
@@ -70,7 +69,7 @@ public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {
     }
 
     void addFeature(SimpleFeatureStore store, String wkt, Object... atts) throws Exception {
-        SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) store.getSchema());
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder(store.getSchema());
         b.add(new WKTReader().read(wkt));
         for (Object att : atts) {
             b.add(att);

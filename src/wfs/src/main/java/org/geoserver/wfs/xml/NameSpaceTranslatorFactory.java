@@ -108,7 +108,7 @@ public class NameSpaceTranslatorFactory {
      * @return the translator, or null if it was not found
      */
     public NameSpaceTranslator getNameSpaceTranslator(String prefix) {
-        return (NameSpaceTranslator) namespaceTranslatorInstances.get(prefix);
+        return namespaceTranslatorInstances.get(prefix);
     }
 
     /**

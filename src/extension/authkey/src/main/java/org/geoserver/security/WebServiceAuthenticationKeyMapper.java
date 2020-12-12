@@ -257,14 +257,14 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
         if (mapperParams != null) {
             if (mapperParams.containsKey("webServiceUrl")) {
-                setWebServiceUrl((String) mapperParams.get("webServiceUrl"));
+                setWebServiceUrl(mapperParams.get("webServiceUrl"));
             }
             if (mapperParams.containsKey("searchUser")) {
-                setSearchUser((String) mapperParams.get("searchUser"));
+                setSearchUser(mapperParams.get("searchUser"));
             }
             if (mapperParams.containsKey("connectTimeout")) {
                 try {
-                    connectTimeout = Integer.parseInt((String) mapperParams.get("connectTimeout"));
+                    connectTimeout = Integer.parseInt(mapperParams.get("connectTimeout"));
                 } catch (NumberFormatException e) {
                     LOGGER.log(
                             Level.SEVERE,
@@ -274,7 +274,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
             }
             if (mapperParams.containsKey("readTimeout")) {
                 try {
-                    readTimeout = Integer.parseInt((String) mapperParams.get("readTimeout"));
+                    readTimeout = Integer.parseInt(mapperParams.get("readTimeout"));
                 } catch (NumberFormatException e) {
                     LOGGER.log(
                             Level.SEVERE,

@@ -171,8 +171,6 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = datasource.getConnection();
-            if (con.getAutoCommit() == true) con.setAutoCommit(false);
             con = getConnection();
             for (String stmt : getOrderedNamesForCreate()) {
                 ps = getDDLStatement(stmt, con);

@@ -107,7 +107,7 @@ public class KMLFileFormatTest extends TestCase {
         FeatureReader<SimpleFeatureType, SimpleFeature> reader =
                 kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
         assertTrue("No features found", reader.hasNext());
-        SimpleFeature feature = (SimpleFeature) reader.next();
+        SimpleFeature feature = reader.next();
         assertNotNull("Expecting feature", feature);
         assertEquals("Invalid ext attr foo", "bar", feature.getAttribute("foo"));
         assertEquals("Invalid ext attr quux", "morx", feature.getAttribute("quux"));

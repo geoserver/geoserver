@@ -99,13 +99,12 @@ public class FileProvider extends SortableDataProvider<File, String> {
 
     List<File> getFilteredFiles() {
         // grab the current directory
-        File d = (File) directory.getObject();
+        File d = directory.getObject();
         if (d.isFile()) d = d.getParentFile();
 
         // return a filtered view of the contents
         File[] files;
-        if (fileFilter != null)
-            files = d.listFiles(new HiddenFileFilter((FileFilter) fileFilter.getObject()));
+        if (fileFilter != null) files = d.listFiles(new HiddenFileFilter(fileFilter.getObject()));
         else files = d.listFiles(new HiddenFileFilter());
 
         if (files != null) return Arrays.asList(files);

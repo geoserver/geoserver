@@ -144,7 +144,7 @@ public class MockCatalogBuilder {
         expect(catalog.getNamespaceByPrefix(name)).andReturn(ns).anyTimes();
         expect(catalog.getNamespaceByURI(uri)).andReturn(ns).anyTimes();
 
-        ws.accept((CatalogVisitor) anyObject());
+        ws.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -155,7 +155,7 @@ public class MockCatalogBuilder {
                         })
                 .anyTimes();
 
-        ns.accept((CatalogVisitor) anyObject());
+        ns.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -212,7 +212,7 @@ public class MockCatalogBuilder {
         expect(catalog.getDataStoreByName(ws.getName(), name)).andReturn(ds).anyTimes();
         expect(catalog.getDataStoreByName(ws, name)).andReturn(ds).anyTimes();
 
-        ds.accept((CatalogVisitor) anyObject());
+        ds.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -266,7 +266,7 @@ public class MockCatalogBuilder {
         expect(catalog.getCoverageStoreByName(ws.getName(), name)).andReturn(cs).anyTimes();
         expect(catalog.getCoverageStoreByName(ws, name)).andReturn(cs).anyTimes();
 
-        cs.accept((CatalogVisitor) anyObject());
+        cs.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -398,7 +398,7 @@ public class MockCatalogBuilder {
 
         expect(catalog.getFeatureTypeByDataStore(ds, name)).andReturn(ft).anyTimes();
 
-        ft.accept((CatalogVisitor) anyObject());
+        ft.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -501,7 +501,7 @@ public class MockCatalogBuilder {
         expect(catalog.getCoveragesByStore(cs)).andReturn(coverageList).anyTimes();
         expect(catalog.getCoverageByCoverageStore(cs, name)).andReturn(c).anyTimes();
 
-        c.accept((CatalogVisitor) anyObject());
+        c.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -619,7 +619,7 @@ public class MockCatalogBuilder {
         expect(catalog.getLayerByName(new NameImpl(ns.getPrefix(), name))).andReturn(l).anyTimes();
         expect(catalog.getLayerByName(new NameImpl(ns.getURI(), name))).andReturn(l).anyTimes();
         expect(catalog.getLayers(r)).andReturn(Arrays.asList(l)).anyTimes();
-        l.accept((CatalogVisitor) anyObject());
+        l.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -669,7 +669,7 @@ public class MockCatalogBuilder {
         expect(catalog.getStyle(sId)).andReturn(s).anyTimes();
         expect(catalog.getStyleByName(name)).andReturn(s).anyTimes();
 
-        s.accept((CatalogVisitor) anyObject());
+        s.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {
@@ -731,7 +731,7 @@ public class MockCatalogBuilder {
         expect(lg.getRootLayer()).andReturn(null).anyTimes();
         expect(lg.getRootLayerStyle()).andReturn(null).anyTimes();
 
-        lg.accept((CatalogVisitor) anyObject());
+        lg.accept(anyObject());
         expectLastCall()
                 .andAnswer(
                         new VisitAnswer() {

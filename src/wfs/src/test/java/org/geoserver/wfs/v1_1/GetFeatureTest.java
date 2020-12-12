@@ -837,7 +837,7 @@ public class GetFeatureTest extends WFSTestSupport {
                                     assertEquals(
                                             "wfs:FeatureCollection",
                                             doc.getDocumentElement().getNodeName());
-                                    return (Void) null;
+                                    return null;
                                 });
                 futures.add(future);
             }

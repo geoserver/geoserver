@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -62,7 +61,7 @@ public class PaletteManager {
         }
 
         // check for cached one, making sure it's not stale
-        final PaletteCacheEntry entry = (PaletteCacheEntry) paletteCache.get(name);
+        final PaletteCacheEntry entry = paletteCache.get(name);
         if (entry != null) {
             if (entry.isStale()) {
                 paletteCache.remove(name);
@@ -113,9 +112,7 @@ public class PaletteManager {
                     if (it.hasNext()) {
                         final ImageReader reader = (ImageReader) it.next();
                         reader.setInput(iis);
-                        final ColorModel cm =
-                                ((ImageTypeSpecifier) reader.getImageTypes(0).next())
-                                        .getColorModel();
+                        final ColorModel cm = reader.getImageTypes(0).next().getColorModel();
                         if (cm instanceof IndexColorModel) {
                             final IndexColorModel icm = (IndexColorModel) cm;
                             paletteCache.put(name, new PaletteCacheEntry(resource, icm));
@@ -136,7 +133,7 @@ public class PaletteManager {
     public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
         // check for cached one, making sure it's not stale
         IndexColorModelKey key = new IndexColorModelKey(icm);
-        InverseColorMapOp op = (InverseColorMapOp) opCache.get(key);
+        InverseColorMapOp op = opCache.get(key);
         if (op != null) {
             return op;
         } else {

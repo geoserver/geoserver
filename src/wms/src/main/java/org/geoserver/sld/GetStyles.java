@@ -74,7 +74,7 @@ public class GetStyles {
             }
 
             StyledLayerDescriptor sld = factory.createStyledLayerDescriptor();
-            sld.setStyledLayers((StyledLayer[]) layers.toArray(new StyledLayer[layers.size()]));
+            sld.setStyledLayers(layers.toArray(new StyledLayer[layers.size()]));
 
             return sld;
         } catch (IOException e) {

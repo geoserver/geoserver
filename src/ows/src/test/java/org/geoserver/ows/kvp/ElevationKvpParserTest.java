@@ -25,7 +25,7 @@ public class ElevationKvpParserTest extends TestCase {
         List<Double> elements = new ArrayList<>((Collection<Double>) parser.parse("1/100/1"));
         assertTrue(elements.get(0) instanceof Double);
         assertTrue(elements.size() == 100);
-        assertEquals(1.0, ((Double) elements.get(0)));
+        assertEquals(1.0, elements.get(0));
     }
 
     @SuppressWarnings("unchecked")

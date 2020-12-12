@@ -234,7 +234,7 @@ public class LayerGroupEntryPanel extends Panel {
     }
 
     Component defaultStyleCheckbox(String id, IModel<LayerGroupEntry> itemModel) {
-        final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
+        final LayerGroupEntry entry = itemModel.getObject();
         Fragment f = new Fragment(id, "defaultStyle", this);
         CheckBox ds = new CheckBox("checkbox", new Model<Boolean>(entry.isDefaultStyle()));
         ds.add(
@@ -289,8 +289,7 @@ public class LayerGroupEntryPanel extends Panel {
                                             StyleInfo style, AjaxRequestTarget target) {
                                         popupWindow.close(target);
 
-                                        LayerGroupEntry entry =
-                                                (LayerGroupEntry) itemModel.getObject();
+                                        LayerGroupEntry entry = itemModel.getObject();
                                         entry.setStyle(style);
 
                                         // redraw

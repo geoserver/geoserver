@@ -282,7 +282,7 @@ public class WMSRequests {
             // no layer specified, use layers+styles specified by request
             for (int i = 0; i < req.getLayers().size(); i++) {
                 MapLayerInfo mapLayer = req.getLayers().get(i);
-                Style s = (Style) req.getStyles().get(0);
+                Style s = req.getStyles().get(0);
 
                 layers.append(mapLayer.getName()).append(",");
                 styles.append(s.getName()).append(",");
@@ -316,14 +316,13 @@ public class WMSRequests {
             if (req.getRawKvp().get("filter") != null) {
                 // split out the filter we need
                 List filters =
-                        KvpUtils.readFlat(
-                                (String) req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
+                        KvpUtils.readFlat(req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
                 params.put("filter", (String) filters.get(index));
             } else if (req.getRawKvp().get("cql_filter") != null) {
                 // split out the filter we need
                 List filters =
                         KvpUtils.readFlat(
-                                (String) req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
+                                req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
                 params.put("cql_filter", (String) filters.get(index));
             } else if (req.getRawKvp().get("featureid") != null) {
                 // semantics of feature id slightly different, replicate entire value

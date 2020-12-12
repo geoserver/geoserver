@@ -241,16 +241,11 @@ public class RequestUtils {
                     paramList.add(readOverview);
                 }
 
-                readParams =
-                        (GeneralParameterValue[])
-                                paramList.toArray(new GeneralParameterValue[paramList.size()]);
+                readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
             }
-            coverage = (GridCoverage2D) reader.read(readParams);
+            coverage = reader.read(readParams);
         } else {
-            coverage =
-                    (GridCoverage2D)
-                            reader.read(
-                                    new GeneralParameterValue[] {readGGParam, readInterpolation});
+            coverage = reader.read(new GeneralParameterValue[] {readGGParam, readInterpolation});
         }
 
         return coverage;
@@ -327,8 +322,7 @@ public class RequestUtils {
                 new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage
-        return (GridCoverage2D)
-                reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+        return reader.read(CoverageUtils.getParameters(readParams, parameters, true));
     }
 
     /**
@@ -347,7 +341,7 @@ public class RequestUtils {
     public static GridCoverage2DReader getCoverageReader(CoverageInfo ci)
             throws IOException, Exception {
         // get a reader for this coverage
-        final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
+        final CoverageStoreInfo store = ci.getStore();
         final GridCoverageReader reader_ =
                 ci.getGridCoverageReader(new DefaultProgressListener(), GeoTools.getDefaultHints());
         if (reader_ == null) {

@@ -98,7 +98,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         parseParameters();
         List<String> allValues = myParameterMap.get(name);
         if (allValues != null && allValues.size() > 0) {
-            return (String[]) allValues.toArray(new String[0]);
+            return allValues.toArray(new String[0]);
         } else return null;
     }
 

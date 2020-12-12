@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -86,7 +85,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
     }

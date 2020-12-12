@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -175,7 +174,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                                         null));
                     }
                 });
-        reloadWarningDialog.setTitle(new StringResourceModel("warning", (Component) null, null));
+        reloadWarningDialog.setTitle(new StringResourceModel("warning", null, null));
         reloadWarningDialog.setInitialHeight(100);
         reloadWarningDialog.setInitialHeight(200);
 

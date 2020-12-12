@@ -71,7 +71,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
 
         // get the workspace we have just configured in the GUI
         WorkspacesModel wm = new WorkspacesModel();
-        List<WorkspaceInfo> wl = (List<WorkspaceInfo>) wm.getObject();
+        List<WorkspaceInfo> wl = wm.getObject();
         WorkspaceInfo ws = wl.get(2);
 
         // check it's the same

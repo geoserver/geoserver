@@ -277,9 +277,9 @@ public class MapDecorationLayout {
 
     private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile)
             throws Exception {
-        for (Element e : (List<Element>) confFile.getRootElement().getChildren("decoration")) {
+        for (Element e : confFile.getRootElement().getChildren("decoration")) {
             Map<String, String> m = new HashMap<String, String>();
-            for (Element option : (List<Element>) e.getChildren("option")) {
+            for (Element option : e.getChildren("option")) {
                 String value = option.getAttributeValue("value");
                 if (value == null) {
                     // pick from body, useful if the content is large

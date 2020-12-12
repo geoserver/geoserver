@@ -161,10 +161,10 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         }
 
         // <xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter">
-        Filter filter = (Filter) node.getChildValue(Filter.class);
+        Filter filter = node.getChildValue(Filter.class);
 
         if (filter == null) {
-            filter = (Filter) Filter.INCLUDE;
+            filter = Filter.INCLUDE;
         }
 
         queryType.setFilter(filter);

@@ -10,7 +10,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -731,8 +730,7 @@ public class LegendMerger {
         // buffer the width a bit
         totalWidth += 2;
         final BufferedImage finalLegend =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, options.isTransparent());
+                ImageUtils.createImage(totalWidth, totalHeight, null, options.isTransparent());
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
         Graphics2D finalGraphics =
                 ImageUtils.prepareTransparency(
@@ -794,8 +792,7 @@ public class LegendMerger {
         // buffer the width a bit
         totalWidth += 2;
         final BufferedImage finalLegend =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, options.isTransparent());
+                ImageUtils.createImage(totalWidth, totalHeight, null, options.isTransparent());
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
         Graphics2D finalGraphics =
                 ImageUtils.prepareTransparency(
@@ -853,8 +850,7 @@ public class LegendMerger {
         int wid = img.getWidth() + label.getWidth() + labelXOffset;
         int height = Math.max(img.getHeight(), label.getHeight());
         // create a new buffer and draw two image into the new image
-        BufferedImage newImage =
-                ImageUtils.createImage(wid, height, (IndexColorModel) null, transparent);
+        BufferedImage newImage = ImageUtils.createImage(wid, height, null, transparent);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
         Graphics2D g2 =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);
@@ -898,8 +894,7 @@ public class LegendMerger {
         int height = img.getHeight() + label.getHeight() + offset;
         int wid = Math.max(img.getWidth(), label.getWidth()) + offset;
         // create a new buffer and draw two image into the new image
-        BufferedImage newImage =
-                ImageUtils.createImage(wid, height, (IndexColorModel) null, transparent);
+        BufferedImage newImage = ImageUtils.createImage(wid, height, null, transparent);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
         Graphics2D g2 =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);

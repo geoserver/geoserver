@@ -73,7 +73,7 @@ public final class CoverageStoreUtils {
 
         while (it.hasNext()) {
             val = (ParameterValue) it.next();
-            descr = (ParameterDescriptor) val.getDescriptor();
+            descr = val.getDescriptor();
 
             if (key.equalsIgnoreCase(descr.getName().toString())) {
                 return val;
@@ -174,7 +174,7 @@ public final class CoverageStoreUtils {
 
             while (it.hasNext()) {
                 val = (ParameterValue) it.next();
-                descr = (ParameterDescriptor) val.getDescriptor();
+                descr = val.getDescriptor();
 
                 key = descr.getName().toString();
                 value = null;

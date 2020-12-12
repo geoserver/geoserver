@@ -135,7 +135,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     }
 
     public void removeFeatureListener(FeatureListener listener) {
-        FeatureListener wrapper = (FeatureListener) listeners.get(listener);
+        FeatureListener wrapper = listeners.get(listener);
         if (wrapper != null) {
             wrapped.removeFeatureListener(wrapper);
             listeners.remove(listener);
@@ -169,7 +169,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         if (query.getTypeName() == null) {
             query = new Query(query);
-            ((Query) query).setTypeName(typeMap.getName());
+            query.setTypeName(typeMap.getName());
         } else if (!typeMap.getName().equals(query.getTypeName())) {
             throw new IOException(
                     "Cannot query this feature source with "

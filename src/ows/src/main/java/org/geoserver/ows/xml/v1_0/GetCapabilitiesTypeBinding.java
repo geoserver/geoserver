@@ -100,11 +100,9 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
             getCapabilities = owsfactory.createGetCapabilitiesType();
         }
 
-        getCapabilities.setAcceptVersions(
-                (AcceptVersionsType) node.getChildValue(AcceptVersionsType.class));
-        getCapabilities.setSections((SectionsType) node.getChildValue(SectionsType.class));
-        getCapabilities.setAcceptFormats(
-                (AcceptFormatsType) node.getChildValue(AcceptFormatsType.class));
+        getCapabilities.setAcceptVersions(node.getChildValue(AcceptVersionsType.class));
+        getCapabilities.setSections(node.getChildValue(SectionsType.class));
+        getCapabilities.setAcceptFormats(node.getChildValue(AcceptFormatsType.class));
         getCapabilities.setUpdateSequence((String) node.getAttributeValue("updateSequence"));
 
         return getCapabilities;

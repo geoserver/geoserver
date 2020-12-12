@@ -376,7 +376,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     /** Returns the {@link PublishedInfo} contained in this page */
     public T getPublishedInfo() {
-        return (T) myModel.getObject();
+        return myModel.getObject();
     }
 
     /** By default brings back the user to LayerPage, subclasses can override this behavior */
@@ -433,15 +433,14 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                         @Override
                         protected void populateItem(
                                 ListItem<PublishedConfigurationPanelInfo<T>> item) {
-                            PublishedConfigurationPanelInfo<T> panelInfo =
-                                    (PublishedConfigurationPanelInfo<T>) item.getModelObject();
+                            PublishedConfigurationPanelInfo<T> panelInfo = item.getModelObject();
                             try {
                                 PublishedConfigurationPanel<T> panel =
                                         panelInfo
                                                 .getComponentClass()
                                                 .getConstructor(String.class, IModel.class)
                                                 .newInstance("content", myModel);
-                                item.add((Component) panel);
+                                item.add(panel);
                             } catch (Exception e) {
                                 throw new WicketRuntimeException(
                                         "Failed to add pluggable layer configuration panels", e);

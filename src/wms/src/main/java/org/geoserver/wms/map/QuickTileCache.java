@@ -320,7 +320,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /** Gathers a tile from the cache, if available */
     public synchronized RenderedImage getTile(MetaTileKey key, GetMapRequest request) {
-        CacheElement ce = (CacheElement) tileCache.get(key);
+        CacheElement ce = tileCache.get(key);
 
         if (ce == null) {
             return null;

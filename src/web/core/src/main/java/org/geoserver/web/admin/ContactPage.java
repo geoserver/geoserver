@@ -46,9 +46,9 @@ public class ContactPage extends ServerAdminPage {
     }
 
     public void save(boolean doReturn) {
-        GeoServer gs = (GeoServer) geoServerModel.getObject();
+        GeoServer gs = geoServerModel.getObject();
         GeoServerInfo global = gs.getGlobal();
-        global.getSettings().setContact((ContactInfo) contactModel.getObject());
+        global.getSettings().setContact(contactModel.getObject());
         gs.save(global);
         if (doReturn) {
             doReturn();

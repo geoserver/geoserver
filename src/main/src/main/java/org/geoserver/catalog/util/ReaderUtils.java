@@ -136,9 +136,8 @@ public class ReaderUtils {
      */
     public static Element[] getChildElements(Element root, String name, boolean mandatory)
             throws Exception {
-        List<Element> elements = new ArrayList<>();
+        final List<Element> elements = new ArrayList<Element>();
         Node child = root.getFirstChild();
-
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
                 if (name.equals(child.getNodeName())) {
@@ -154,7 +153,7 @@ public class ReaderUtils {
                     root.getNodeName() + " does not contains a child element named " + name);
         }
 
-        return (Element[]) elements.toArray(new Element[0]);
+        return elements.toArray(new Element[0]);
     }
 
     /**

@@ -265,7 +265,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
 
         // Loop through requested tables to add element types
         for (int i = 0; i < infos.length; i++) {
-            FeatureTypeInfo ftInfo = (FeatureTypeInfo) infos[i];
+            FeatureTypeInfo ftInfo = infos[i];
 
             if (!validTypes.contains(ftInfo)) {
                 // TODO: ressurect this

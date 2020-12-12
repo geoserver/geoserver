@@ -51,7 +51,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         Expression.NIL,
@@ -109,7 +109,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         Expression.NIL,
@@ -167,7 +167,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         ffact.literal(45.0),

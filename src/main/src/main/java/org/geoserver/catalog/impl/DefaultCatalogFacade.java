@@ -105,8 +105,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             Name newName = RESOURCE_NAME_MAPPER.apply(proxiedValue);
             if (!oldName.equals(newName)) {
                 @SuppressWarnings("unchecked")
-                Map<Name, LayerInfo> nameMap =
-                        (Map) getMapForValue(nameMultiMap, LayerInfoImpl.class);
+                Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
                 LayerInfo value = nameMap.remove(oldName);
                 // handle case of feature type without a corresponding layer
                 if (value != null) {
@@ -1093,23 +1092,23 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         List<T> all;
 
         if (NamespaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) namespaces.list(of, toPredicate(filter));
+            all = namespaces.list(of, toPredicate(filter));
         } else if (WorkspaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) workspaces.list(of, toPredicate(filter));
+            all = workspaces.list(of, toPredicate(filter));
         } else if (StoreInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) stores.list(of, toPredicate(filter));
+            all = stores.list(of, toPredicate(filter));
         } else if (ResourceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) resources.list(of, toPredicate(filter));
+            all = resources.list(of, toPredicate(filter));
         } else if (LayerInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layers.list(of, toPredicate(filter));
+            all = layers.list(of, toPredicate(filter));
         } else if (LayerGroupInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layerGroups.list(of, toPredicate(filter));
+            all = layerGroups.list(of, toPredicate(filter));
         } else if (PublishedInfo.class.isAssignableFrom(of)) {
             all = new ArrayList<>();
             all.addAll((List<T>) layers.list(LayerInfo.class, toPredicate(filter)));
             all.addAll((List<T>) layerGroups.list(LayerGroupInfo.class, toPredicate(filter)));
         } else if (StyleInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) styles.list(of, toPredicate(filter));
+            all = styles.list(of, toPredicate(filter));
         } else if (MapInfo.class.isAssignableFrom(of)) {
             all = (List<T>) new ArrayList<>(maps);
         } else {

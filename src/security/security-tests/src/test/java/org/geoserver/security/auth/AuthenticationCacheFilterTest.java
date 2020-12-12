@@ -93,7 +93,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 }
             }
             if (o instanceof String) {
-                if (user.equals(((String) o))) {
+                if (user.equals(o)) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;
@@ -712,7 +712,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(auth);
         assertEquals(1, response.getCookies().length);
-        Cookie cookie = (Cookie) response.getCookies()[0];
+        Cookie cookie = response.getCookies()[0];
 
         request = createRequest("/foo/bar");
         request.setMethod("GET");
@@ -796,7 +796,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         // check for cancel cookie
         assertEquals(1, response.getCookies().length);
-        Cookie cancelCookie = (Cookie) response.getCookies()[0];
+        Cookie cancelCookie = response.getCookies()[0];
         assertNull(cancelCookie.getValue());
         updateUser("ug1", "abc@xyz.com", true);
     }

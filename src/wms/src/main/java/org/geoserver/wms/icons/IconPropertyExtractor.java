@@ -130,7 +130,7 @@ public final class IconPropertyExtractor {
                 if (value == null || (value instanceof Double && Double.isNaN((Double) value))) {
                     return defaultValue;
                 }
-                return (T) value;
+                return value;
             } catch (Exception e) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(

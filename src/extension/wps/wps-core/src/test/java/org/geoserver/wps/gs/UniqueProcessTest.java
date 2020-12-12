@@ -27,7 +27,6 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 public class UniqueProcessTest extends WPSTestSupport {
@@ -53,7 +52,7 @@ public class UniqueProcessTest extends WPSTestSupport {
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs3.getSchema());
+        tb.init(fs3.getSchema());
         // remove the property types H2 has troubles with (including multiple geometries)
         tb.remove("surfaceProperty");
         tb.remove("curveProperty");

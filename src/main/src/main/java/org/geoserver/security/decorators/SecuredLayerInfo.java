@@ -31,12 +31,10 @@ public class SecuredLayerInfo extends DecoratingLayerInfo {
     public ResourceInfo getResource() {
         ResourceInfo r = super.getResource();
         if (r == null) return null;
-        else if (r instanceof FeatureTypeInfo)
-            return (FeatureTypeInfo) SecuredObjects.secure(r, policy);
-        else if (r instanceof CoverageInfo) return (CoverageInfo) SecuredObjects.secure(r, policy);
-        else if (r instanceof WMSLayerInfo) return (WMSLayerInfo) SecuredObjects.secure(r, policy);
-        else if (r instanceof WMTSLayerInfo)
-            return (WMTSLayerInfo) SecuredObjects.secure(r, policy);
+        else if (r instanceof FeatureTypeInfo) return SecuredObjects.secure(r, policy);
+        else if (r instanceof CoverageInfo) return SecuredObjects.secure(r, policy);
+        else if (r instanceof WMSLayerInfo) return SecuredObjects.secure(r, policy);
+        else if (r instanceof WMTSLayerInfo) return SecuredObjects.secure(r, policy);
         else throw new RuntimeException("Don't know how to make resource of type " + r.getClass());
     }
 

@@ -42,7 +42,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
@@ -400,8 +399,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
                 params.put(PORT_NUMBER_PARAM_NAME, "5151");
             }
         } else {
-            Map<String, Serializable> storeParams =
-                    ((DataStoreInfo) storeInfo).getConnectionParameters();
+            Map<String, Serializable> storeParams = storeInfo.getConnectionParameters();
             params.put(SERVER_NAME_PARAM_NAME, (String) storeParams.get(SERVER_NAME_PARAM_NAME));
             params.put(
                     PORT_NUMBER_PARAM_NAME,

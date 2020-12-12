@@ -34,7 +34,7 @@ public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
     }
 
     public void setObject(WorkspaceInfo object) {
-        this.workspace = (WorkspaceInfo) object;
+        this.workspace = object;
         this.id = workspace != null ? workspace.getId() : null;
     }
 

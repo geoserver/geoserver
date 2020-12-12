@@ -8,7 +8,6 @@ package org.geoserver.wfs.xml;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
@@ -144,7 +143,7 @@ public class WFSXmlUtils {
     }
 
     public static SrsSyntax getSrsSyntax(Configuration obj) {
-        for (Configuration dep : ((List<Configuration>) obj.getDependencies())) {
+        for (Configuration dep : obj.getDependencies()) {
             if (dep instanceof org.geotools.gml2.GMLConfiguration) {
                 return ((org.geotools.gml2.GMLConfiguration) dep).getSrsSyntax();
             }
@@ -156,7 +155,7 @@ public class WFSXmlUtils {
     }
 
     public static void setSrsSyntax(Configuration obj, SrsSyntax srsSyntax) {
-        for (Configuration dep : ((List<Configuration>) obj.getDependencies())) {
+        for (Configuration dep : obj.getDependencies()) {
             if (dep instanceof org.geotools.gml2.GMLConfiguration) {
                 ((org.geotools.gml2.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
             }

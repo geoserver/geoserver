@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -27,14 +26,12 @@ public class DemoPage extends GeoServerBasePage {
                                                 new Label(
                                                         "theTitle",
                                                         new StringResourceModel(
-                                                                info.getTitleKey(),
-                                                                (Component) null,
-                                                                null))));
+                                                                info.getTitleKey(), null, null))));
                         item.add(
                                 new Label(
                                         "theDescription",
                                         new StringResourceModel(
-                                                info.getDescriptionKey(), (Component) null, null)));
+                                                info.getDescriptionKey(), null, null)));
                     }
                 });
     }

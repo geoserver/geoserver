@@ -210,7 +210,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object) */
     public IModel<TileLayer> newModel(final TileLayer tileLayer) {
-        return new UnconfiguredTileLayerDetachableModel(((TileLayer) tileLayer).getName());
+        return new UnconfiguredTileLayerDetachableModel(tileLayer.getName());
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator */

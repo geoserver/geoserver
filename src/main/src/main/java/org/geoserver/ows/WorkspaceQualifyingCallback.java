@@ -64,7 +64,7 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
     public void finished(Request request) {}
 
     protected <T> T parameter(Operation op, Class<T> clazz) {
-        return (T) OwsUtils.parameter(op.getParameters(), clazz);
+        return OwsUtils.parameter(op.getParameters(), clazz);
     }
 
     protected abstract void qualifyRequest(

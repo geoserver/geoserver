@@ -31,7 +31,7 @@ public class SecuredGridFormat extends DecoratingGridFormat {
         if (reader == null) {
             return reader;
         } else {
-            return (GridCoverage2DReader) SecuredObjects.secure(reader, policy);
+            return SecuredObjects.secure(reader, policy);
         }
     }
 
@@ -40,7 +40,7 @@ public class SecuredGridFormat extends DecoratingGridFormat {
         if (reader == null) {
             return reader;
         } else {
-            return (GridCoverage2DReader) SecuredObjects.secure(reader, policy);
+            return SecuredObjects.secure(reader, policy);
         }
     }
 

@@ -38,7 +38,7 @@ public class FileModelTest {
 
             FileModel model = new FileModel(new Model<String>(), root);
             model.setObject(f.getAbsolutePath());
-            String path = (String) model.getObject();
+            String path = model.getObject();
             assertEquals("file://" + f.getAbsolutePath(), path);
         } finally {
             f.delete();
@@ -55,7 +55,7 @@ public class FileModelTest {
 
         FileModel model = new FileModel(new Model<String>(), root);
         model.setObject(buildings.getAbsolutePath());
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 
@@ -63,7 +63,7 @@ public class FileModelTest {
     public void testRelativeUnmodified() throws IOException {
         FileModel model = new FileModel(new Model<String>(), root);
         model.setObject("file:data/cite/Buildings.properties");
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 
@@ -73,7 +73,7 @@ public class FileModelTest {
         map.put("url", new URL("file:data/cite/Buildings.properties"));
         MapModel<String> mapModel = new MapModel<>(map, "url");
         FileModel model = new FileModel(mapModel, root);
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 }

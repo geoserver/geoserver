@@ -182,7 +182,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object) */
     public IModel<TileLayer> newModel(final TileLayer tileLayer) {
-        return new TileLayerDetachableModel(((TileLayer) tileLayer).getName());
+        return new TileLayerDetachableModel(tileLayer.getName());
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator */

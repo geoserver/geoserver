@@ -21,7 +21,6 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
@@ -66,7 +65,6 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.geometry.Envelope;
-import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -1101,10 +1099,8 @@ public class CatalogBuilder {
         if (nativeCRS != null
                 && (nativeCRS.getIdentifiers() != null)
                 && !nativeCRS.getIdentifiers().isEmpty()) {
-            cinfo.getRequestSRS()
-                    .add(((Identifier) nativeCRS.getIdentifiers().toArray()[0]).toString());
-            cinfo.getResponseSRS()
-                    .add(((Identifier) nativeCRS.getIdentifiers().toArray()[0]).toString());
+            cinfo.getRequestSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
+            cinfo.getResponseSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
         }
 
         // supported formats
@@ -1735,7 +1731,7 @@ public class CatalogBuilder {
     /** Reattaches a serialized {@link ResourceInfo} to the catalog */
     public void attach(ResourceInfo resourceInfo) {
         resourceInfo = ModificationProxy.unwrap(resourceInfo);
-        ((ResourceInfoImpl) resourceInfo).setCatalog(catalog);
+        resourceInfo.setCatalog(catalog);
     }
 
     /** Reattaches a serialized {@link LayerInfo} to the catalog */

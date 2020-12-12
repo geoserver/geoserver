@@ -31,7 +31,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureCollection fc = source.getFeatures();
         SimpleFeatureIterator i = fc.features();
         try {
-            SimpleFeature f = (SimpleFeature) i.next();
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             try {
@@ -51,7 +51,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureCollection fc = source.getFeatures();
         SimpleFeatureIterator i = fc.features();
         try {
-            SimpleFeature f = (SimpleFeature) i.next();
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             try {
@@ -72,7 +72,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureCollection fc = source.getFeatures();
         SimpleFeatureIterator i = fc.features();
         try {
-            SimpleFeature f = (SimpleFeature) i.next();
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             template.description(f);

@@ -38,7 +38,6 @@ import org.geotools.filter.v2_0.FESConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
@@ -68,12 +67,12 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs1.getSchema());
+        tb.init(fs1.getSchema());
         tb.add("num", Integer.class);
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
-        tb.init((SimpleFeatureType) fs2.getSchema());
+        tb.init(fs2.getSchema());
         tb.add("num", Integer.class);
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
@@ -95,7 +94,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
     }
 
     void addFeatures(SimpleFeatureStore fs, SimpleFeatureCollection features) throws Exception {
-        SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) fs.getSchema());
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
 
         DefaultFeatureCollection toAdd = new DefaultFeatureCollection(null, null);
         FeatureIterator it = features.features();

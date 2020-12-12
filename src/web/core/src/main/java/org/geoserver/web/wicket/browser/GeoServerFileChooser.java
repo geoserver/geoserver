@@ -83,7 +83,7 @@ public class GeoServerFileChooser extends Panel {
         File dataDirectory = fileRootsFinder.getDataDirectory();
 
         // find under which root the selection should be placed
-        File selection = (File) file.getObject();
+        File selection = file.getObject();
 
         // first check if the file is a relative reference into the data dir
         if (selection != null) {

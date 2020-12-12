@@ -114,7 +114,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
 
     @Override
     public DataStoreInfo getStore() {
-        return (DataStoreInfo) SecuredObjects.secure(delegate.getStore(), policy);
+        return SecuredObjects.secure(delegate.getStore(), policy);
     }
 
     @Override

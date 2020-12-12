@@ -38,9 +38,7 @@ public class LiveActivityPanel extends Panel {
                             String id,
                             IModel<RequestData> itemModel,
                             Property<RequestData> property) {
-                        Object prop =
-                                ((BeanProperty<RequestData>) property)
-                                        .getPropertyValue((RequestData) itemModel.getObject());
+                        Object prop = property.getPropertyValue(itemModel.getObject());
 
                         String value = prop != null ? prop.toString() : "";
                         return new Label(id, value);

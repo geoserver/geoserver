@@ -79,17 +79,13 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
             dsFactory = resourcePool.getDataStoreFactory(storeInfo);
         } catch (IOException e) {
             String msg =
-                    (String)
-                            new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory")
-                                    .getObject();
+                    new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory").getObject();
             msg += ": " + e.getMessage();
             throw new IllegalArgumentException(msg);
         }
         if (dsFactory == null) {
             String msg =
-                    (String)
-                            new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory")
-                                    .getObject();
+                    new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory").getObject();
             throw new IllegalArgumentException(msg);
         }
 
@@ -299,7 +295,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     private NamespacePanel findNamespacePanel(MarkupContainer c) {
         Component child;
-        for (Iterator<? extends Component> it = ((MarkupContainer) c).iterator(); it.hasNext(); ) {
+        for (Iterator<? extends Component> it = c.iterator(); it.hasNext(); ) {
             child = it.next();
             if (child instanceof NamespacePanel) {
                 return (NamespacePanel) child;

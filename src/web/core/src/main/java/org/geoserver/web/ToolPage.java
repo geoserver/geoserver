@@ -7,7 +7,6 @@ package org.geoserver.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -47,14 +46,13 @@ public class ToolPage extends GeoServerSecuredPage {
                         link.add(
                                 new Label(
                                         "theTitle",
-                                        new StringResourceModel(
-                                                info.getTitleKey(), (Component) null, null)));
+                                        new StringResourceModel(info.getTitleKey(), null, null)));
                         item.add(link);
                         item.add(
                                 new Label(
                                         "theDescription",
                                         new StringResourceModel(
-                                                info.getDescriptionKey(), (Component) null, null)));
+                                                info.getDescriptionKey(), null, null)));
                     }
                 });
     }

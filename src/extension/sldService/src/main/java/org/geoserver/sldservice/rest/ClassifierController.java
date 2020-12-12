@@ -62,7 +62,6 @@ import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.ColorMapEntryImpl;
-import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
@@ -457,8 +456,7 @@ public class ClassifierController extends BaseSLDServiceController {
         rasterSymbolizer.setColorMap(colorMap);
         if (bandSelected) {
             SelectedChannelType grayChannel =
-                    SF.createSelectedChannelType(
-                            String.valueOf(selectedBand), (ContrastEnhancement) null);
+                    SF.createSelectedChannelType(String.valueOf(selectedBand), null);
             ChannelSelection channelSelection =
                     SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
             rasterSymbolizer.setChannelSelection(channelSelection);

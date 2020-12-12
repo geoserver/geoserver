@@ -581,7 +581,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             // filter out disabled coverages
             for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext(); ) {
-                CoverageInfo cv = (CoverageInfo) it.next();
+                CoverageInfo cv = it.next();
                 if (!cv.enabled()) {
                     it.remove();
                 }

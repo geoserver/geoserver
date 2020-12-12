@@ -921,7 +921,7 @@ public class GetMap {
         final int nLayers = layers.size();
 
         if (requestFilters == null || requestFilters.size() == 0) {
-            requestFilters = Collections.nCopies(layers.size(), (Filter) Filter.INCLUDE);
+            requestFilters = Collections.nCopies(layers.size(), Filter.INCLUDE);
         } else if (requestFilters.size() != nLayers) {
             throw new IllegalArgumentException(
                     "requested filters and number of layers do not match");

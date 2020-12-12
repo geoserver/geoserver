@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -223,8 +222,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         try {
             final Catalog catalog = getCatalog();
 
-            NamespaceInfo namespaceInfo = (NamespaceInfo) nsModel.getObject();
-            WorkspaceInfo workspaceInfo = (WorkspaceInfo) wsModel.getObject();
+            NamespaceInfo namespaceInfo = nsModel.getObject();
+            WorkspaceInfo workspaceInfo = wsModel.getObject();
 
             namespaceInfo.setIsolated(workspaceInfo.isIsolated());
 
@@ -653,14 +652,12 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                                     new AttributeModifier(
                                             "title",
                                             new StringResourceModel(
-                                                    info.getDescriptionKey(),
-                                                    (Component) null,
-                                                    null)));
+                                                    info.getDescriptionKey(), null, null)));
                             link.add(
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
 
                             Image image;
                             if (info.getIcon() != null) {

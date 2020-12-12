@@ -83,8 +83,7 @@ public class DataPanel extends Panel {
 
                                         @Override
                                         public void onClick(AjaxRequestTarget target) {
-                                            DataAttribute attribute =
-                                                    (DataAttribute) itemModel.getObject();
+                                            DataAttribute attribute = itemModel.getObject();
                                             try {
                                                 updateAttributeStats(attribute);
                                             } catch (IOException e) {

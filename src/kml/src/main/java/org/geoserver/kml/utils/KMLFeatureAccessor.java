@@ -54,8 +54,7 @@ public class KMLFeatureAccessor {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.kml");
 
     /** Factory used to create filter objects */
-    private static FilterFactory filterFactory =
-            (FilterFactory) CommonFactoryFinder.getFilterFactory(null);
+    private static FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
 
     /**
      * Loads the feature collection based on the current styling and the scale denominator. If no
@@ -208,8 +207,7 @@ public class KMLFeatureAccessor {
         if (KmlEncodingContext.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
             envelopes.add(aoi);
         } else {
-            Envelope intersection =
-                    KmlEncodingContext.WORLD_BOUNDS_WGS84.intersection((Envelope) aoi);
+            Envelope intersection = KmlEncodingContext.WORLD_BOUNDS_WGS84.intersection(aoi);
             if (intersection.getWidth() > 0) {
                 envelopes.add(new ReferencedEnvelope(intersection, DefaultGeographicCRS.WGS84));
             }

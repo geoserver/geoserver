@@ -67,7 +67,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
                 }
             } else if (n == 1) {
                 // clone single object up to
-                EObject q = (EObject) query.get(0);
+                EObject q = query.get(0);
 
                 for (int i = 1; i < m; i++) {
                     query.add(EMFUtils.clone(q, req.getFactory(), false));

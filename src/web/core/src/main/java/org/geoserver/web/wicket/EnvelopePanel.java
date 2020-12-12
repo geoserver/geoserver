@@ -122,7 +122,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     private void updateFields() {
-        ReferencedEnvelope e = (ReferencedEnvelope) getModelObject();
+        ReferencedEnvelope e = getModelObject();
         if (e != null) {
             this.minX = e.getMinX();
             this.minY = e.getMinY();

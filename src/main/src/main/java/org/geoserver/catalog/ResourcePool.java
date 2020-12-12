@@ -1484,7 +1484,7 @@ public class ResourcePool {
 
     public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints)
             throws IOException {
-        return getGridCoverageReader(info, (String) null, hints);
+        return getGridCoverageReader(info, null, hints);
     }
 
     public GridCoverageReader getGridCoverageReader(
@@ -1502,7 +1502,7 @@ public class ResourcePool {
     @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, Hints hints)
             throws IOException {
-        return getGridCoverageReader(info, (String) null, hints);
+        return getGridCoverageReader(info, null, hints);
     }
 
     /**
@@ -1515,7 +1515,7 @@ public class ResourcePool {
     @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader(
             CoverageStoreInfo storeInfo, String coverageName, Hints hints) throws IOException {
-        return getGridCoverageReader(storeInfo, (CoverageInfo) null, coverageName, hints);
+        return getGridCoverageReader(storeInfo, null, coverageName, hints);
     }
 
     /**
@@ -1624,7 +1624,7 @@ public class ResourcePool {
             // to the resourcePool without specifying the coverageName: No way to get the proper
             // coverageInfo in
             // that case so returning the simple reader.
-            final int numCoverages = ((GridCoverage2DReader) reader).getGridCoverageCount();
+            final int numCoverages = reader.getGridCoverageCount();
             if (numCoverages == 1) {
                 return CoverageDimensionCustomizerReader.wrap(
                         (GridCoverage2DReader) reader, null, coverageInfo);
@@ -1863,7 +1863,7 @@ public class ResourcePool {
      * @param info The WMTS configuration
      */
     public WebMapTileServer getWebMapTileServer(WMTSStoreInfo info) throws IOException {
-        WMTSStoreInfo expandedStore = (WMTSStoreInfo) clone(info, true);
+        WMTSStoreInfo expandedStore = clone(info, true);
 
         try {
             EntityResolver entityResolver = getEntityResolver();
@@ -1880,7 +1880,7 @@ public class ResourcePool {
             }
             if (wmts == null) {
                 synchronized (wmtsCache) {
-                    wmts = (WebMapTileServer) wmtsCache.get(id);
+                    wmts = wmtsCache.get(id);
                     if (wmts == null) {
                         HTTPClient client = getHTTPClient(expandedStore);
                         String capabilitiesURL = expandedStore.getCapabilitiesURL();
@@ -2675,7 +2675,7 @@ public class ResourcePool {
     public DataStoreInfo clone(final DataStoreInfo source, boolean allowEnvParametrization) {
         DataStoreInfo target;
         try {
-            target = (DataStoreInfo) SerializationUtils.clone(source);
+            target = SerializationUtils.clone(source);
             if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
                 ((StoreInfoImpl) target).setCatalog(catalog);
             }
@@ -2723,7 +2723,7 @@ public class ResourcePool {
             final CoverageStoreInfo source, boolean allowEnvParametrization) {
         CoverageStoreInfo target;
         try {
-            target = (CoverageStoreInfo) SerializationUtils.clone(source);
+            target = SerializationUtils.clone(source);
             if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
                 ((StoreInfoImpl) target).setCatalog(catalog);
             }
@@ -2773,7 +2773,7 @@ public class ResourcePool {
     public WMSStoreInfo clone(final WMSStoreInfo source, boolean allowEnvParametrization) {
         WMSStoreInfo target;
         try {
-            target = (WMSStoreInfo) SerializationUtils.clone(source);
+            target = SerializationUtils.clone(source);
             if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
                 ((StoreInfoImpl) target).setCatalog(catalog);
             }
@@ -2807,7 +2807,7 @@ public class ResourcePool {
     public WMTSStoreInfo clone(final WMTSStoreInfo source, boolean allowEnvParametrization) {
         WMTSStoreInfo target;
         try {
-            target = (WMTSStoreInfo) SerializationUtils.clone(source);
+            target = SerializationUtils.clone(source);
             if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
                 ((StoreInfoImpl) target).setCatalog(catalog);
             }

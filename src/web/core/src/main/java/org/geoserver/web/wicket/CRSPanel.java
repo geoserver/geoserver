@@ -168,8 +168,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                     protected void onUpdate(AjaxRequestTarget target) {
                         convertInput();
 
-                        CoordinateReferenceSystem crs =
-                                (CoordinateReferenceSystem) getConvertedInput();
+                        CoordinateReferenceSystem crs = getConvertedInput();
                         if (crs != null) {
                             setModelObject(crs);
                             wktLabel.setDefaultModelObject(crs.getName().toString());
@@ -202,8 +201,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                         popupWindow.setInitialHeight(375);
                         popupWindow.setInitialWidth(525);
                         popupWindow.setContent(new WKTPanel(popupWindow.getContentId(), getCRS()));
-                        CoordinateReferenceSystem crs =
-                                (CoordinateReferenceSystem) CRSPanel.this.getModelObject();
+                        CoordinateReferenceSystem crs = CRSPanel.this.getModelObject();
                         if (crs != null) popupWindow.setTitle(crs.getName().toString());
                         popupWindow.show(target);
                     }
@@ -218,7 +216,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
 
     @Override
     protected void onBeforeRender() {
-        CoordinateReferenceSystem crs = (CoordinateReferenceSystem) getModelObject();
+        CoordinateReferenceSystem crs = getModelObject();
         if (crs != null) {
             srsTextField.setModelObject(toSRS(crs));
             wktLabel.setDefaultModelObject(crs.getName().toString());

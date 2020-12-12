@@ -233,8 +233,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
                 (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] origin = (Double[]) getCoverage.getOutput().getGridCRS().getGridOrigin();
         assertEquals(2, origin.length);
-        assertEquals(0, Double.compare(10.5, (double) origin[0]));
-        assertEquals(0, Double.compare(-30.2, (double) origin[1]));
+        assertEquals(0, Double.compare(10.5, origin[0]));
+        assertEquals(0, Double.compare(-30.2, origin[1]));
 
         raw.put("GridOrigin", "12");
         try {
@@ -270,8 +270,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
                 (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] offsets = (Double[]) getCoverage.getOutput().getGridCRS().getGridOffsets();
         assertEquals(2, offsets.length);
-        assertEquals(0, Double.compare(10.5, (double) offsets[0]));
-        assertEquals(0, Double.compare(-30.2, (double) offsets[1]));
+        assertEquals(0, Double.compare(10.5, offsets[0]));
+        assertEquals(0, Double.compare(-30.2, offsets[1]));
 
         raw.put("GridOffsets", "12");
         try {

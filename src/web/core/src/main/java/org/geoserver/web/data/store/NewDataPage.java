@@ -60,8 +60,7 @@ public class NewDataPage extends GeoServerSecuredPage {
         final boolean thereAreWorkspaces = !getCatalog().getWorkspaces().isEmpty();
 
         if (!thereAreWorkspaces) {
-            super.error(
-                    (String) new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject());
+            super.error(new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject());
         }
 
         final Form storeForm = new Form("storeForm");

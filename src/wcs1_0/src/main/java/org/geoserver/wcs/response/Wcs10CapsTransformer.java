@@ -575,7 +575,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         }
                     });
 
-            return (String[]) finalArray.toArray(new String[1]);
+            return finalArray.toArray(new String[1]);
         }
 
         /** @param originalArray */
@@ -633,7 +633,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         }
                     });
 
-            return (String[]) finalArray.toArray(new String[1]);
+            return finalArray.toArray(new String[1]);
         }
 
         /** */

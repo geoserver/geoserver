@@ -446,7 +446,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 templates.processInput();
                 nameTextField.processInput();
                 wsChoice.processInput();
-                StyleType template = (StyleType) templates.getConvertedInput();
+                StyleType template = templates.getConvertedInput();
                 StyleGenerator styleGen = new StyleGenerator(stylePage.getCatalog());
                 styleGen.setWorkspace(getStylePage().getStyleInfo().getWorkspace());
 
@@ -487,7 +487,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 // we need to force validation or the value won't be converted
                 styles.processInput();
-                StyleInfo style = (StyleInfo) styles.getConvertedInput();
+                StyleInfo style = styles.getConvertedInput();
 
                 if (style != null) {
                     try {

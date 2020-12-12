@@ -60,10 +60,9 @@ public interface NetCDFEncoder {
                 && !map.isEmpty()
                 && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
             NetCDFLayerSettingsContainer settings =
-                    (NetCDFLayerSettingsContainer)
-                            map.get(
-                                    NetCDFSettingsContainer.NETCDFOUT_KEY,
-                                    NetCDFLayerSettingsContainer.class);
+                    map.get(
+                            NetCDFSettingsContainer.NETCDFOUT_KEY,
+                            NetCDFLayerSettingsContainer.class);
             return settings;
         }
 

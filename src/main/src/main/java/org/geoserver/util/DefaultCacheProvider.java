@@ -47,8 +47,7 @@ public class DefaultCacheProvider implements CacheProvider {
         String providerNames = GeoServerExtensions.getProperty(BEAN_NAME_PROPERTY);
         if (providerNames != null) {
             for (String providerName : providerNames.split("\\s*,\\s*")) {
-                cacheProvider =
-                        (CacheProvider) (CacheProvider) GeoServerExtensions.bean(providerName);
+                cacheProvider = (CacheProvider) GeoServerExtensions.bean(providerName);
                 if (cacheProvider != null) {
                     LOGGER.log(Level.INFO, "Using specified Cache Provider ", providerName);
                     break;
@@ -74,8 +73,7 @@ public class DefaultCacheProvider implements CacheProvider {
                             "Multiple Cache Providers in context: {0}\n\tUsing {1}.  Override by setting system property {2}",
                             new Object[] {available, providerName, BEAN_NAME_PROPERTY});
                 }
-                cacheProvider =
-                        (CacheProvider) (CacheProvider) GeoServerExtensions.bean(providerName);
+                cacheProvider = (CacheProvider) GeoServerExtensions.bean(providerName);
             }
         }
 

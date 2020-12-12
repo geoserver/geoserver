@@ -48,7 +48,7 @@ public class UTFGridMap extends RawMap {
         } else {
             pw.println("  \"\",");
             for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
-                UTFGridEntry entry = (UTFGridEntry) it.next();
+                UTFGridEntry entry = it.next();
                 pw.print("  \"");
                 pw.print(entry.getKey());
                 if (it.hasNext()) {
@@ -61,7 +61,7 @@ public class UTFGridMap extends RawMap {
         pw.println("],");
         pw.println("\"data\": {");
         for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
-            UTFGridEntry entry = (UTFGridEntry) it.next();
+            UTFGridEntry entry = it.next();
             pw.print("  \"");
             pw.print(entry.getKey());
             pw.print("\" : ");

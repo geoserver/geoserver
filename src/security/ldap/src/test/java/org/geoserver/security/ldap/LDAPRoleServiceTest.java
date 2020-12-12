@@ -45,10 +45,9 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
     }
 
     protected void configureAuthentication() {
-        ((LDAPRoleServiceConfig) config)
-                .setUser(
-                        "uid=admin,ou=People,dc=example,dc=com"); // ("uid=admin,ou=People,dc=example,dc=com");
-        ((LDAPRoleServiceConfig) config).setPassword("admin");
+        config.setUser(
+                "uid=admin,ou=People,dc=example,dc=com"); // ("uid=admin,ou=People,dc=example,dc=com");
+        config.setPassword("admin");
         config.setBindBeforeGroupSearch(true);
     }
 

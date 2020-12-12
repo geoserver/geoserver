@@ -48,7 +48,7 @@ public class WMSExtensionsTest {
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(mockContext.getBean("producer1")).andReturn(mockProducer1);
         expect(mockContext.getBean("producer2")).andReturn(mockProducer2);
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         // end of unpleasant block
 
         replay(mockContext);
@@ -70,7 +70,7 @@ public class WMSExtensionsTest {
                 .andReturn(new String[] {});
         expect(mockContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         // end of unpleasant block
 
         replay(mockContext);
@@ -87,7 +87,7 @@ public class WMSExtensionsTest {
         ApplicationContext mockContext = EasyMock.createMock(ApplicationContext.class);
         // I'm not so pleasant with this block of code as it implies knowing how
         // the internals of GeoServerExtensions work
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(mockContext.getBeanNamesForType(GetMapOutputFormat.class))
                 .andReturn(new String[] {"producer1"}); // call#1

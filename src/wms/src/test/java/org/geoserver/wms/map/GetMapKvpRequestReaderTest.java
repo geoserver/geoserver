@@ -138,7 +138,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
             // test setting has been saved
             assertNotNull(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
-            assertTrue((Boolean) wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
+            assertTrue(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
 
             // test no custom entity resolver will be used
             GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
@@ -167,7 +167,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     }
 
     public void testCreateRequest() throws Exception {
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         assertNotNull(request);
     }
 
@@ -184,8 +184,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("width", "800");
         raw.put("request", "GetMap");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
 
         String layer = MockData.BASIC_POLYGONS.getLocalPart();
         assertEquals(1, request.getLayers().size());
@@ -220,8 +220,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("time", "2006-02-27T22:08:12Z");
         kvp.put("elevation", "4");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertEquals(Color.BLACK, request.getBgColor());
         assertTrue(request.isTransparent());
@@ -259,8 +259,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("height", "600");
         raw.put("width", "800");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
         assertEquals(2, request.getStyles().size());
         LayerInfo basicPolygons =
                 getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
@@ -274,8 +274,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("interpolations", "bicubic");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getInterpolations());
         assertEquals(1, request.getInterpolations().size());
@@ -290,8 +290,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                         + ","
                         + getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("interpolations", "bicubic,,bilinear");
-        request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getInterpolations());
         assertEquals(3, request.getInterpolations().size());
@@ -306,8 +306,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", "testGroup2");
         kvp.put("interpolations", "bicubic");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getInterpolations());
         assertEquals(2, request.getInterpolations().size());
@@ -320,8 +320,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", "testGroup2,testGroup," + getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("interpolations", "bicubic,bilinear,nearest neighbor");
 
-        request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getInterpolations());
         assertEquals(4, request.getInterpolations().size());
@@ -337,8 +337,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", "testGroup2,testGroup," + getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("interpolations", ",bilinear");
 
-        request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getInterpolations());
         assertEquals(4, request.getInterpolations().size());
@@ -354,8 +354,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("filter", "<Filter><FeatureId id=\"foo\"/></Filter>");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getFilter());
         assertEquals(1, request.getFilter().size());
@@ -370,8 +370,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         HashMap kvp = new HashMap();
         kvp.put("cql_filter", "foo = bar");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getCQLFilter());
         assertEquals(1, request.getCQLFilter().size());
@@ -383,8 +383,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         HashMap kvp = new HashMap();
         kvp.put("featureid", "foo");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getFeatureId());
         assertEquals(1, request.getFeatureId().size());
@@ -397,8 +397,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));
         kvp.put("sortBy", "FID D");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertEquals(1, request.getSortBy().size());
 
@@ -412,8 +412,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", "testGroup2");
         kvp.put("sortBy", "FID D");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertEquals(2, request.getSortBy().size());
 
@@ -431,7 +431,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS) + "," + getLayerId(MockData.LAKES));
         kvp.put("sortBy", "FID D");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
         } catch (Exception e) {
@@ -455,13 +455,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         reader.setLaxStyleMatchAllowed(false);
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getSld());
         assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
-        final Style style = (Style) request.getStyles().get(0);
+        final Style style = request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("BasicPolygons", style.getName());
     }
@@ -476,12 +476,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
-        final Style style = (Style) request.getStyles().get(0);
+        final Style style = request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
     }
@@ -511,14 +511,14 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(manager.getConnections(), 1);
 
-        request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         // no connection is done, the result is taken from cache
         assertEquals(manager.getConnections(), 1);
@@ -549,14 +549,14 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(manager.getConnections(), 1);
 
-        request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         // new connection is done, the result is NOT taken from cache
         assertEquals(manager.getConnections(), 2);
@@ -578,10 +578,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         getGeoServer().remove(oldInfo);
         getGeoServer().add(info);
         reader = new GetMapKvpRequestReader(wms);
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         boolean error = false;
         try {
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+            request = reader.read(request, parseKvp(kvp), kvp);
         } catch (ServiceException e) {
             error = true;
         }
@@ -604,10 +604,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         getGeoServer().remove(oldInfo);
         getGeoServer().add(info);
         reader = new GetMapKvpRequestReader(wms);
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         boolean error = false;
         try {
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+            request = reader.read(request, parseKvp(kvp), kvp);
         } catch (ServiceException e) {
             error = true;
         }
@@ -627,12 +627,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "TheLibraryModeStyle");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
-        final Style style = (Style) request.getStyles().get(0);
+        final Style style = request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
     }
@@ -647,10 +647,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "ThisStyleDoesNotExists");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.setLaxStyleMatchAllowed(false);
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             // System.out.println(e);
@@ -669,10 +669,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "ThisStyleDoesNotExists");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.setLaxStyleMatchAllowed(false);
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             assertTrue("Exception should not reveal its cause", e.getCause() == null);
@@ -691,10 +691,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "ThisStyleDoesNotExists");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.setLaxStyleMatchAllowed(false);
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             assertTrue("Exception should not reveal its cause", e.getCause() == null);
@@ -713,10 +713,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "ThisStyleDoesNotExists");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.setLaxStyleMatchAllowed(false);
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             assertTrue("Exception should not reveal its cause", e.getCause() == null);
@@ -737,10 +737,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "ThisStyleDoesNotExists");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
             reader.setLaxStyleMatchAllowed(false);
-            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
             assertTrue("Exception should not reveal its cause", e.getCause() == null);
@@ -754,13 +754,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         // check the style
-        final Style style = (Style) request.getStyles().get(0);
+        final Style style = request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
         // check the layer
@@ -786,13 +786,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         kvp.put("styles", "TheLibraryModeStyle");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
         assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         // check the style
-        final Style style = (Style) request.getStyles().get(0);
+        final Style style = request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
         // check the layer
@@ -832,8 +832,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("remote_ows_type", "WFS");
         raw.put("remote_ows_url", RemoteOWSTestSupport.WFS_SERVER_URL);
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
 
         assertEquals("WFS", request.getRemoteOwsType()); // TODO: handle case?
         assertEquals(new URL(RemoteOWSTestSupport.WFS_SERVER_URL), request.getRemoteOwsURL());
@@ -856,9 +856,9 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("remote_ows_type", "WFS");
         raw.put("remote_ows_url", RemoteOWSTestSupport.WFS_SERVER_URL);
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
-            request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
             fail("This should have thrown an exception because of the missing style");
         } catch (ServiceException e) {
             assertEquals("NoDefaultStyle", e.getCode());
@@ -878,9 +878,9 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("remote_ows_type", "WFS");
         raw.put("remote_ows_url", "http://phantom.openplans.org:8080/crapserver/wfs?");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        GetMapRequest request = reader.createRequest();
         try {
-            request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
             fail("This should have thrown an exception because of the non existent layer");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -903,8 +903,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("sld", URLDecoder.decode(url.toString(), "UTF-8"));
         kvp.put("version", "1.1.1");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), kvp);
 
         assertEquals(1, request.getLayers().size());
         assertEquals(1, request.getStyles().size());
@@ -926,8 +926,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("service", "wms");
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(1, viewParamsList.size());
@@ -953,8 +953,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "viewParams",
                 "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(2, viewParamsList.size());
@@ -981,8 +981,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("service", "wms");
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD");
 
-        GetMapRequest request = (GetMapRequest) reader.createRequest();
-        request = (GetMapRequest) reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
 
         List<Map<String, String>> viewParamsList = request.getViewParams();
         assertEquals(2, viewParamsList.size());
@@ -1016,7 +1016,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         geoServer.save(service);
 
         try {
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
         } finally {
             service.setCiteCompliant(false);
@@ -1046,7 +1046,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         geoServer.save(service);
 
         try {
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
         } finally {
             service.setCiteCompliant(false);
@@ -1077,7 +1077,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         geoServer.save(service);
 
         try {
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
             throw new Exception("Shouldn't get here");
         } catch (Exception e) {
@@ -1116,7 +1116,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         geoServer.save(service);
 
         try {
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
             throw new Exception("Shouldn't get here");
         } catch (Exception e) {
@@ -1150,13 +1150,11 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                             + MockData.BASIC_POLYGONS.getLocalPart());
             kvp.put("styles", "ThisStyleDoesNotExists");
 
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             Instant startInstant = Instant.now();
             try {
                 reader.setLaxStyleMatchAllowed(false);
-                request =
-                        (GetMapRequest)
-                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
                 fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
             } catch (ServiceException e) {
                 LOG.log(Level.INFO, e.getMessage(), e);
@@ -1195,13 +1193,11 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                             + MockData.BASIC_POLYGONS.getLocalPart());
             kvp.put("styles", "ThisStyleDoesNotExists");
 
-            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            GetMapRequest request = reader.createRequest();
             Instant startInstant = Instant.now();
             try {
                 reader.setLaxStyleMatchAllowed(false);
-                request =
-                        (GetMapRequest)
-                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
                 fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
             } catch (ServiceException e) {
                 LOG.log(Level.INFO, e.getMessage(), e);

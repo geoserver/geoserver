@@ -81,8 +81,7 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-        BaseSecurityNamedServiceConfig target =
-                (BaseSecurityNamedServiceConfig) SerializationUtils.clone(this);
+        BaseSecurityNamedServiceConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
             if (allowEnvParametrization

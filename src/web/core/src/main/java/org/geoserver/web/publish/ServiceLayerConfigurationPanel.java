@@ -106,8 +106,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
     }
 
     protected ServiceResourceProvider getServiceResourceUtil() {
-        return (ServiceResourceProvider)
-                GeoServerApplication.get().getBeanOfType(ServiceResourceProvider.class);
+        return GeoServerApplication.get().getBeanOfType(ServiceResourceProvider.class);
     }
 
     private LoadableDetachableModel<List<String>> servicesVotedModel(ResourceInfo resource) {

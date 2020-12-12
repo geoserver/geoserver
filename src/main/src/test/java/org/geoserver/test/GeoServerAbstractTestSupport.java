@@ -632,8 +632,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
-        return putAsServletResponse(
-                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+        return putAsServletResponse(path, body != null ? body.getBytes() : null, contentType);
     }
 
     protected MockHttpServletResponse putAsServletResponse(
@@ -1137,9 +1136,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         List<Filter> filterList = getFilters();
         MockFilterChain chain;
         if (filterList != null) {
-            chain =
-                    new MockFilterChain(
-                            servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+            chain = new MockFilterChain(servlet, filterList.toArray(new Filter[filterList.size()]));
         } else {
             chain = new MockFilterChain(servlet);
         }

@@ -281,7 +281,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         if (stores.getModelObject() != null) {
-                            StoreInfo store = (StoreInfo) stores.getModelObject();
+                            StoreInfo store = stores.getModelObject();
                             NewLayerPage.this.storeId = store.getId();
                             provider.setStoreId(store.getId());
                             storeName.setDefaultModelObject(store.getName());

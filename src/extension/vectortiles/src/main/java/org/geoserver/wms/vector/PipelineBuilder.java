@@ -464,7 +464,7 @@ public class PipelineBuilder {
                 return null;
             }
             return new GeometryCollection(
-                    (Geometry[]) result.toArray(new Geometry[result.size()]), geom.getFactory());
+                    result.toArray(new Geometry[result.size()]), geom.getFactory());
         }
 
         /*

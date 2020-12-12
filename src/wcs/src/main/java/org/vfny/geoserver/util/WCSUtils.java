@@ -89,8 +89,7 @@ public class WCSUtils {
             final Interpolation interpolation)
             throws WcsException {
 
-        final ParameterValueGroup param =
-                (ParameterValueGroup) PROCESSOR.getOperation("Resample").getParameters();
+        final ParameterValueGroup param = PROCESSOR.getOperation("Resample").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         param.parameter("GridGeometry").setValue(gridGeometry);
@@ -185,8 +184,7 @@ public class WCSUtils {
         // ///////////////////////////////////////////////////////////////////
         if (interpolation != null) {
             /* Operations.DEFAULT.interpolate(coverage, interpolation) */
-            final ParameterValueGroup param =
-                    (ParameterValueGroup) PROCESSOR.getOperation("Interpolate").getParameters();
+            final ParameterValueGroup param = PROCESSOR.getOperation("Interpolate").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("Type").setValue(interpolation);
 
@@ -276,7 +274,7 @@ public class WCSUtils {
         final int[] bands = new int[length];
 
         for (int b = 0; b < length; b++) {
-            bands[b] = ((Integer) selectedBands.get(b)).intValue();
+            bands[b] = selectedBands.get(b).intValue();
         }
 
         return bandSelect(coverage, bands);
@@ -288,8 +286,7 @@ public class WCSUtils {
         if ((bands != null) && (bands.length > 0)) {
             /* Operations.DEFAULT.selectSampleDimension(coverage, bands) */
             final ParameterValueGroup param =
-                    (ParameterValueGroup)
-                            PROCESSOR.getOperation("SelectSampleDimension").getParameters();
+                    PROCESSOR.getOperation("SelectSampleDimension").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("SampleDimensions").setValue(bands);
             // param.parameter("VisibleSampleDimension").setValue(bands);

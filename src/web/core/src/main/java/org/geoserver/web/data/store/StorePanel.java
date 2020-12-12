@@ -69,7 +69,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         final CatalogIconFactory icons = CatalogIconFactory.get();
 
         if (property == StoreProvider.DATA_TYPE) {
-            final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
+            final StoreInfo storeInfo = itemModel.getObject();
 
             PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
@@ -82,7 +82,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         } else if (property == NAME) {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
-            final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
+            final StoreInfo storeInfo = itemModel.getObject();
             PackageResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();

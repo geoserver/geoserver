@@ -98,7 +98,7 @@ public class MetaTileOutputFormatTest {
         RenderedImageAdapter metaTileWrapped = mock(RenderedImageAdapter.class);
         when(metaTileWrapped.getWrappedImage()).thenReturn(metaTile);
 
-        RasterCleaner.addImage((RenderedImage) (PlanarImage) metaTileWrapped);
+        RasterCleaner.addImage(metaTileWrapped);
         cleaner.finished(null);
 
         verify((ImageReader) reader, times(1)).dispose();

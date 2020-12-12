@@ -92,7 +92,7 @@ public class ElevationParser {
                                 final NumberRange left = (NumberRange) o1;
                                 if (o2Double) {
                                     // o2 date
-                                    return left.getMinValue().compareTo(((Double) o2));
+                                    return left.getMinValue().compareTo(o2);
                                 }
                                 // o2 daterange
                                 return left.getMinValue()

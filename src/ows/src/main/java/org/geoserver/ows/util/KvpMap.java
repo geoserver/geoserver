@@ -46,7 +46,7 @@ public class KvpMap<K extends String, V> extends HashMap<K, V> {
     }
 
     public V put(K key, V value) {
-        return super.put((K) upper(key), value);
+        return super.put(upper(key), value);
     }
 
     @SuppressWarnings("unchecked")

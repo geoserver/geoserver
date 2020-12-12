@@ -88,7 +88,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
     public ICrypt newCrypt() {
         RequestCycle cycle = RequestCycle.get();
         ServletWebRequest req = (ServletWebRequest) cycle.getRequest();
-        HttpSession s = (HttpSession) req.getContainerRequest().getSession(false);
+        HttpSession s = req.getContainerRequest().getSession(false);
         if (s != null) {
             return getEncrypterFromSession(s);
         } else {

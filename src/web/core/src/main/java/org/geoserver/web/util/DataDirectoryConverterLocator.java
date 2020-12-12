@@ -116,7 +116,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         }
 
         public String convertToString(File value, Locale locale) {
-            return fromFile((File) value);
+            return fromFile(value);
         }
     }
 

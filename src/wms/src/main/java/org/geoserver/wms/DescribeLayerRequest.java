@@ -92,7 +92,7 @@ public class DescribeLayerRequest extends WMSRequest {
         StringBuffer sb = new StringBuffer("DescribeLayerRequest[layers=");
 
         for (Iterator<MapLayerInfo> it = layers.iterator(); it.hasNext(); ) {
-            sb.append(((MapLayerInfo) it.next()).getName());
+            sb.append(it.next().getName());
 
             if (it.hasNext()) {
                 sb.append(',');

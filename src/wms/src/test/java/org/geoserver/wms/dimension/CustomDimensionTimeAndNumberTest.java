@@ -131,7 +131,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
         @SuppressWarnings("unchecked")
         ParameterValue<List<Double>> val =
                 (ParameterValue<List<Double>>) readParam[readParam.length - 1];
-        assertEquals(10, (Double) val.getValue().get(0), 1E-6);
-        assertEquals(50, (Double) val.getValue().get(1), 1E-6);
+        assertEquals(10, val.getValue().get(0), 1E-6);
+        assertEquals(50, val.getValue().get(1), 1E-6);
     }
 }

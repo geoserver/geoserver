@@ -167,7 +167,7 @@ public class ReaderUtils {
                     root.getNodeName() + " does not contains a child element named " + name);
         }
 
-        return (Element[]) elements.toArray(new Element[0]);
+        return elements.toArray(new Element[0]);
     }
 
     /**
@@ -476,7 +476,7 @@ public class ReaderUtils {
             }
         }
 
-        Object[] s = (Object[]) keywords.toArray();
+        Object[] s = keywords.toArray();
 
         if (s == null) {
             return new ArrayList();

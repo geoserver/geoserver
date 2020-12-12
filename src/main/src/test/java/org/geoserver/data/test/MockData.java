@@ -625,7 +625,7 @@ public class MockData implements TestData {
         coverageInfo(name, coverage, styleName);
 
         // setup the meta information to be written in the catalog
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverage);
+        AbstractGridFormat format = GridFormatFinder.findFormat(coverage);
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
         Map params = new HashMap();
@@ -780,7 +780,7 @@ public class MockData implements TestData {
                                 : GridFormatFinder.findFormat(coverageFile));
         GridCoverage2DReader reader;
         try {
-            reader = (GridCoverage2DReader) format.getReader(coverageFile);
+            reader = format.getReader(coverageFile);
         } catch (Exception e) {
             String message =
                     "Exception while trying to read "
@@ -851,9 +851,7 @@ public class MockData implements TestData {
         parameters.put(
                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                 new GridGeometry2D(reader.getOriginalGridRange(), subEnvelope));
-        GridCoverage2D gc =
-                (GridCoverage2D)
-                        reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+        GridCoverage2D gc = reader.read(CoverageUtils.getParameters(readParams, parameters, true));
 
         // grid geometry
         final GridGeometry geometry = gc.getGridGeometry();
@@ -897,7 +895,7 @@ public class MockData implements TestData {
             if (categories != null && categories.size() >= 1) {
                 writer.write("<nullValues>\n");
                 for (Iterator<Category> it = sd[i].getCategories().iterator(); it.hasNext(); ) {
-                    Category cat = (Category) it.next();
+                    Category cat = it.next();
                     if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
                         double min = cat.getRange().getMinimum();
                         double max = cat.getRange().getMaximum();

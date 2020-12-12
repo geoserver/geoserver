@@ -161,7 +161,7 @@ public class LayerInfoImpl implements LayerInfo {
             else if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine(
                         "No Default Style found on cascaded WMS Resource"
-                                + ((WMSLayerInfo) getResource()).getName());
+                                + getResource().getName());
         }
 
         return defaultStyle;
@@ -181,7 +181,7 @@ public class LayerInfoImpl implements LayerInfo {
             else if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine(
                         "No Default Styles found on cascaded WMS Resource"
-                                + ((WMSLayerInfo) getResource()).getName());
+                                + getResource().getName());
         }
 
         return styles;

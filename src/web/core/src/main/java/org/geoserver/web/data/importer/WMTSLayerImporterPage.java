@@ -50,7 +50,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
 
         storeId = params.get("storeId").toString();
 
-        WMTSStoreInfo store = (WMTSStoreInfo) getCatalog().getStore(storeId, WMTSStoreInfo.class);
+        WMTSStoreInfo store = getCatalog().getStore(storeId, WMTSStoreInfo.class);
 
         // check if we have anything to import
         provider = new WMTSLayerProvider();
@@ -90,7 +90,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                             f.add(new Label("label", new StatusModel(itemModel)));
                             return f;
                         } else if (property == WMTSLayerProvider.ACTION) {
-                            final LayerResource resource = (LayerResource) itemModel.getObject();
+                            final LayerResource resource = itemModel.getObject();
                             final LayerStatus status = resource.getStatus();
                             if (status == LayerStatus.PUBLISHED
                                     || status == LayerStatus.NEWLY_PUBLISHED
@@ -290,7 +290,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         public String getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             return new ParamResourceModel(
                             "WMTSLayerImporterPage.status." + resource.getStatus(),
                             WMTSLayerImporterPage.this,
@@ -317,7 +317,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         public PackageResourceReference getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             if (resource.getStatus() == LayerStatus.ERROR) {
                 return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/error.png");

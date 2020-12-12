@@ -50,7 +50,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
                     }
 
                     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-                        return new LayerGroupDetachableModel((LayerGroupInfo) object);
+                        return new LayerGroupDetachableModel(object);
                     }
                 });
         getTopPager().setVisible(false);

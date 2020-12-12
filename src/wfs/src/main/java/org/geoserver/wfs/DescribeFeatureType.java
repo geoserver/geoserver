@@ -158,6 +158,6 @@ public class DescribeFeatureType {
             }
         }
 
-        return (FeatureTypeInfo[]) requested.toArray(new FeatureTypeInfo[requested.size()]);
+        return requested.toArray(new FeatureTypeInfo[requested.size()]);
     }
 }

@@ -176,7 +176,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                 }
                 // retrieves the right feature writer (based on the geometry type of the feature)
                 HTMLImageMapFeatureWriter featureWriter =
-                        (HTMLImageMapFeatureWriter) writers.get(ft.getDefaultGeometry().getClass());
+                        writers.get(ft.getDefaultGeometry().getClass());
                 // encodes a single feature, using the supplied style and the current featureWriter
                 featureWriter.writeFeature(ft, ftsList);
                 ft = null;
@@ -823,7 +823,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                     Class<?> gtype = geom.getClass();
 
                     // retrieves the right feature writer (based on the current geometry type)
-                    delegateWriter = (HTMLImageMapFeatureWriter) writers.get(gtype);
+                    delegateWriter = writers.get(gtype);
                     if (processStyle(ft, fts)) {
                         try {
                             startElement(ft, "." + i);
@@ -867,7 +867,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             if (delegateWriter.processStyle(ft, ftsList)) {
                 Iterator<String> iter = delegateWriter.extraAttributes.keySet().iterator();
                 while (iter.hasNext()) {
-                    String attrName = (String) iter.next();
+                    String attrName = iter.next();
                     extraAttributes.put(attrName, delegateWriter.extraAttributes.get(attrName));
                 }
                 return true;

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -144,7 +143,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
     /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
     }

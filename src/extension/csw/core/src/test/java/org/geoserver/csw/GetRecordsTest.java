@@ -148,7 +148,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetRecordsType gr =
                 (GetRecordsType)
-                        reader.read(null, getResourceAsReader("GetRecordsBrief.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetRecordsBrief.xml"), null);
         // check the attributes
         assertEquals("application/xml", gr.getOutputFormat());
         assertEquals("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", gr.getOutputSchema());

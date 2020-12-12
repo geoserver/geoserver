@@ -53,8 +53,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
     @Override
     protected List<Filter> getFilters() {
         // enable security
-        return Arrays.asList(
-                (Filter) applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
+        return Arrays.asList(applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
     }
 
     @Before

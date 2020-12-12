@@ -554,7 +554,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
         @SuppressWarnings("unchecked")
-        T result = (T) SecuredObjects.secure(info, policy);
+        T result = SecuredObjects.secure(info, policy);
         return result;
     }
 
@@ -601,7 +601,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 || store instanceof WMSStoreInfo
                 || store instanceof WMTSStoreInfo) {
             @SuppressWarnings("unchecked")
-            T result = (T) SecuredObjects.secure(store, policy);
+            T result = SecuredObjects.secure(store, policy);
             return result;
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
@@ -626,7 +626,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return (LayerInfo) SecuredObjects.secure(layer, policy);
+        return SecuredObjects.secure(layer, policy);
     }
 
     /** Given a layer group and a user, returns it back if the user can access it, null otherwise */

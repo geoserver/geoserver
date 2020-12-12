@@ -133,7 +133,7 @@ public final class Decimator {
 
         } else if (geom instanceof LineString) {
             LineString line = (LineString) geom;
-            CoordinateSequence seq = (CoordinateSequence) line.getCoordinateSequence();
+            CoordinateSequence seq = line.getCoordinateSequence();
             LiteCoordinateSequence lseq = new LiteCoordinateSequence(seq.toCoordinateArray());
 
             if (decimateOnEnvelope(line, lseq)) {

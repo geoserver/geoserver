@@ -68,7 +68,7 @@ public class KMLFileFormat extends VectorFormat {
         // we need to get the feature type, to use for the particular parse through the file
         // since we put it on the metadata from the list method, we first check if that's still
         // available
-        SimpleFeatureType ft = (SimpleFeatureType) task.getFeatureType();
+        SimpleFeatureType ft = task.getFeatureType();
         if (ft == null) {
             // if the type is not available, we can generate one from the resource
             // we aren't able to ask for the feature type from the resource directly,

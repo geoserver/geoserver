@@ -13,7 +13,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,8 +185,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             // output image
             BufferedImage finalLegend =
-                    ImageUtils.createImage(
-                            strokeWidth, strokeHeight, (IndexColorModel) null, false);
+                    ImageUtils.createImage(strokeWidth, strokeHeight, null, false);
             Graphics2D finalGraphics =
                     ImageUtils.prepareTransparency(
                             false,

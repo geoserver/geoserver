@@ -498,7 +498,7 @@ public class Transaction {
             Collections.sort(matches, comparator);
         }
 
-        return (TransactionElementHandler) matches.get(0);
+        return matches.get(0);
     }
 
     /**

@@ -50,7 +50,7 @@ public class EMFLogger extends RequestObjectLogger {
             if (value instanceof EObject && (level < 3)) {
                 log.append(property.getName());
                 log.append(":");
-                log((EObject) value, level + 1, log);
+                log(value, level + 1, log);
             } else if (value instanceof Collection) {
                 log(property.getName(), (Collection) value, level + 1, log);
             } else {
@@ -67,7 +67,7 @@ public class EMFLogger extends RequestObjectLogger {
             if (o instanceof EObject) {
                 log.append(pc);
                 log.append(":");
-                log((EObject) o, level, log);
+                log(o, level, log);
             } else if (o instanceof Collection) {
                 log(pc, (Collection) o, level + 1, log);
             } else {

@@ -96,7 +96,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
             if (properties == null) {
                 properties = new HashMap<>();
             }
-            Object property = ((PlanarImage) image).getProperty(NoDataContainer.GC_NODATA);
+            Object property = image.getProperty(NoDataContainer.GC_NODATA);
             if (property != null) {
                 CoverageUtilities.setNoDataProperty(properties, property);
                 gc =

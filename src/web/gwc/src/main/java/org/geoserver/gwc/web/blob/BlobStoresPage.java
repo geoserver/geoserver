@@ -179,8 +179,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                                     String id,
                                     IModel<BlobStoreInfo> itemModel,
                                     Property<BlobStoreInfo> property) {
-                                final BlobStoreInfo blobStore =
-                                        (BlobStoreInfo) itemModel.getObject();
+                                final BlobStoreInfo blobStore = itemModel.getObject();
                                 if (property == BlobStoresProvider.ID) {
                                     return new SimpleAjaxLink<BlobStoreInfo>(
                                             id, itemModel, property.getModel(itemModel)) {

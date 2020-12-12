@@ -116,7 +116,7 @@ public class CatalogStyleChangeListenerTest {
         // a change in the name of the default style should not cause a truncate
         verify(mockMediator, never()).truncateByLayerAndStyle(anyString(), anyString());
         // nor a save, as the default style name is dynamic
-        verify(mockMediator, never()).save((GeoServerTileLayer) any());
+        verify(mockMediator, never()).save(any());
 
         verify(mockTileLayer, never()).getInfo();
         verify(mockTileLayerInfo, never()).cachedStyles();
@@ -130,7 +130,7 @@ public class CatalogStyleChangeListenerTest {
         // a change in the name of the default style should not cause a truncate
         verify(mockMediator, never()).truncateByLayerAndStyle(anyString(), anyString());
         // nor a save, as the default style name is dynamic
-        verify(mockMediator, never()).save((GeoServerTileLayer) any());
+        verify(mockMediator, never()).save(any());
 
         verify(mockTileLayer, atLeastOnce()).getInfo();
         verify(mockTileLayerInfo, atLeastOnce()).cachedStyles();
@@ -148,13 +148,10 @@ public class CatalogStyleChangeListenerTest {
 
         verify(mockTileLayerInfo)
                 .addParameterFilter(
-                        (ParameterFilter)
-                                argThat(
-                                        allOf(
-                                                hasProperty("key", is("STYLES")),
-                                                hasProperty(
-                                                        "styles",
-                                                        is(ImmutableSet.of(STYLE_NAME))))));
+                        argThat(
+                                allOf(
+                                        hasProperty("key", is("STYLES")),
+                                        hasProperty("styles", is(ImmutableSet.of(STYLE_NAME))))));
 
         ImmutableSet<String> styles = ImmutableSet.of(STYLE_NAME);
         when(mockTileLayerInfo.cachedStyles()).thenReturn(styles);
@@ -163,15 +160,12 @@ public class CatalogStyleChangeListenerTest {
 
         verify(mockTileLayerInfo)
                 .addParameterFilter(
-                        (ParameterFilter)
-                                argThat(
-                                        allOf(
-                                                hasProperty("key", is("STYLES")),
-                                                hasProperty(
-                                                        "styles",
-                                                        is(
-                                                                ImmutableSet.of(
-                                                                        STYLE_NAME_MODIFIED))))));
+                        argThat(
+                                allOf(
+                                        hasProperty("key", is("STYLES")),
+                                        hasProperty(
+                                                "styles",
+                                                is(ImmutableSet.of(STYLE_NAME_MODIFIED))))));
 
         verify(mockTileLayer, times(1)).resetParameterFilters();
         verify(mockMediator, times(1))

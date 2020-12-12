@@ -116,7 +116,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         boolean forcedDecimal = false;
         for (int i = 0; i < results.getFeature().size(); i++) {
             // FeatureResults features = (FeatureResults) f.next();
-            FeatureCollection features = (FeatureCollection) results.getFeature().get(i);
+            FeatureCollection features = results.getFeature().get(i);
             SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();
 
             ResourceInfo meta =

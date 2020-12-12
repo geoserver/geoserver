@@ -111,7 +111,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
         GetGmlObjectType getGmlObject = wfsfactory.createGetGmlObjectType();
 
         // &lt;xsd:element ref="ogc:GmlObjectId"/&gt;
-        getGmlObject.setGmlObjectId((GmlObjectId) node.getChildValue(GmlObjectId.class));
+        getGmlObject.setGmlObjectId(node.getChildValue(GmlObjectId.class));
 
         // &lt;xsd:attribute default="GML3" name="outputFormat"
         //    type="xsd:string" use="optional"/&gt;

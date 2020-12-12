@@ -13,17 +13,29 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
+import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
+import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.oauth2.DiscoveryClient;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
+import org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -44,6 +56,28 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("jwkURIHelp", this).setDialog(dialog));
         add(new TextField<String>("jwkURI"));
+    }
+
+    @Override
+    protected Panel getRoleSourcePanel(RoleSource model) {
+        if (IdToken.equals(model) || AccessToken.equals(model)) {
+            return new TokenClaimPanel("panel");
+        }
+        return super.getRoleSourcePanel(model);
+    }
+
+    @Override
+    protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
+        List<RoleSource> sources = new ArrayList<>(Arrays.asList(OpenIdRoleSource.values()));
+        sources.addAll(Arrays.asList(PreAuthenticatedUserNameRoleSource.values()));
+        return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
+    }
+
+    static class TokenClaimPanel extends Panel {
+        public TokenClaimPanel(String id) {
+            super(id, new Model<>());
+            add(new TextField<String>("tokenRolesClaim").setRequired(true));
+        }
     }
 
     @Override

@@ -152,14 +152,11 @@ public class CasAuthFilterPanel
     }
 
     @Override
-    protected void createRoleSourceDropDown() {
+    protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
         List<RoleSource> sources =
                 new ArrayList<>(Arrays.asList(PreAuthenticatedUserNameRoleSource.values()));
         sources.addAll(Arrays.asList(CasAuthenticationFilterConfig.CasSpecificRoleSource.values()));
-        add(
-                roleSourceChoice =
-                        new DropDownChoice<>(
-                                "roleSource", sources, new RoleSourceChoiceRenderer()));
+        return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
     }
 
     static class CustomAttributePanel extends Panel {

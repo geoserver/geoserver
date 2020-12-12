@@ -39,7 +39,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
 
         add(new HelpLink("roleSourceHelp", this).setDialog(dialog));
 
-        createRoleSourceDropDown();
+        add(roleSourceChoice = createRoleSourceDropDown());
 
         roleSourceChoice.setNullValid(false);
 
@@ -74,13 +74,11 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
         return new EmptyPanel("panel");
     }
 
-    protected void createRoleSourceDropDown() {
-        add(
-                roleSourceChoice =
-                        new DropDownChoice<RoleSource>(
-                                "roleSource",
-                                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
-                                new RoleSourceChoiceRenderer()));
+    protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
+        return new DropDownChoice<RoleSource>(
+                "roleSource",
+                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
+                new RoleSourceChoiceRenderer());
     }
 
     protected void addRoleSourceDropDown(WebMarkupContainer container, RoleSource rs) {

@@ -294,10 +294,14 @@ and the GUI will auto-fill itself based on the document contents:
    .. figure:: images/discovery.png
       :align: center
 
-.. warning:: The oauth2-openid-connect does not implement the full protocol and has been tested
-   against a couple of servers only, more development and testing is needed before it can be consumed by
-   a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_
-   to improve the module are welcomed.
+In addition, the OpenID connect authentication is able to extract the user roles from
+either the ID token or the Access Token:
+
+   .. figure:: images/openidconnect-roles.png
+      :align: center
+
+The chosen attribute must be present in either the Access Token or in the Id token, 
+and be either a string or an array of strings.
 
 
 SSL Trusted Certificates

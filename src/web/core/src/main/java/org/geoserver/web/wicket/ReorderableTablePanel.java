@@ -58,8 +58,8 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                         @Override
                         protected List<Property<T>> load() {
                             List result = new ArrayList<Property<T>>(properties.getObject());
-                            result.add(0, (Property<T>) POSITION);
-                            result.add(0, (Property<T>) RENDERING_ORDER);
+                            result.add(0, POSITION);
+                            result.add(0, RENDERING_ORDER);
                             return result;
                         }
                     };
@@ -147,7 +147,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                             component =
                                     new UpDownPanel<T>(
                                             "component",
-                                            (T) itemModel.getObject(),
+                                            itemModel.getObject(),
                                             dataProvider.getItems(),
                                             ReorderableTablePanel.this,
                                             upTitle,

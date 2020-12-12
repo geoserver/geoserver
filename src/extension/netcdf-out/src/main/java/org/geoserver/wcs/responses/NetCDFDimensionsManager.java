@@ -261,7 +261,7 @@ public class NetCDFDimensionsManager {
 
             @Override
             public Array getValues() {
-                return (Array) values;
+                return values;
             }
 
             @Override

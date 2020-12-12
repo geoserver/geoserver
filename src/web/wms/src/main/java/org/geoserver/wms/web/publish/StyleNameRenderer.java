@@ -13,10 +13,10 @@ import org.geoserver.catalog.StyleInfo;
 public class StyleNameRenderer extends ChoiceRenderer<StyleInfo> {
 
     public Object getDisplayValue(StyleInfo object) {
-        return ((StyleInfo) object).prefixedName();
+        return object.prefixedName();
     }
 
     public String getIdValue(StyleInfo object, int index) {
-        return ((StyleInfo) object).getId();
+        return object.getId();
     }
 }

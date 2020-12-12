@@ -219,7 +219,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
     class AccessModeRenderer extends ChoiceRenderer<AccessMode> {
 
         public Object getDisplayValue(AccessMode object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(AccessMode object, int index) {

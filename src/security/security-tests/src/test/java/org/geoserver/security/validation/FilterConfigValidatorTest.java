@@ -128,7 +128,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
 
-        check((J2eeAuthenticationBaseFilterConfig) config);
+        check(config);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
         config.setName("testJ2ee");
 
-        check((J2eeAuthenticationBaseFilterConfig) config);
+        check(config);
     }
 
     @Test
@@ -313,6 +313,6 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         }
 
         config.setPrincipalHeaderAttribute("user");
-        check((PreAuthenticatedUserNameFilterConfig) config);
+        check(config);
     }
 }

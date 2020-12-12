@@ -83,7 +83,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                                     Property<ShortRule> property) {
 
                                 if (property == GeofenceRulesModel.BUTTONS) {
-                                    return new ButtonPanel(id, (ShortRule) itemModel.getObject());
+                                    return new ButtonPanel(id, itemModel.getObject());
                                 }
 
                                 return null;

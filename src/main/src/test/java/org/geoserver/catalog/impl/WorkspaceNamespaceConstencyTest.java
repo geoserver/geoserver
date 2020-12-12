@@ -9,7 +9,6 @@ import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.geoserver.catalog.Catalog;
@@ -18,7 +17,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.NamespaceWorkspaceConsistencyListener;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.junit.Test;
@@ -29,7 +27,7 @@ public class WorkspaceNamespaceConstencyTest {
     @Test
     public void testChangeWorkspace() {
         Catalog cat = createMock(Catalog.class);
-        cat.addListener((CatalogListener) anyObject());
+        cat.addListener(anyObject());
         expectLastCall();
 
         NamespaceInfo ns = createMock(NamespaceInfo.class);
@@ -46,8 +44,8 @@ public class WorkspaceNamespaceConstencyTest {
         CatalogModifyEvent e = createNiceMock(CatalogModifyEvent.class);
         expect(e.getSource()).andReturn(ws).anyTimes();
         expect(e.getPropertyNames()).andReturn(Arrays.asList("name"));
-        expect(e.getOldValues()).andReturn((List) Arrays.asList("gs"));
-        expect(e.getNewValues()).andReturn((List) Arrays.asList("abcd"));
+        expect(e.getOldValues()).andReturn(Arrays.asList("gs"));
+        expect(e.getNewValues()).andReturn(Arrays.asList("abcd"));
 
         replay(e, ws, ns, cat);
 
@@ -58,7 +56,7 @@ public class WorkspaceNamespaceConstencyTest {
     @Test
     public void testChangeNamespace() {
         Catalog cat = createMock(Catalog.class);
-        cat.addListener((CatalogListener) anyObject());
+        cat.addListener(anyObject());
         expectLastCall();
 
         WorkspaceInfo ws = createMock(WorkspaceInfo.class);
@@ -75,8 +73,8 @@ public class WorkspaceNamespaceConstencyTest {
         CatalogModifyEvent e = createNiceMock(CatalogModifyEvent.class);
         expect(e.getSource()).andReturn(ns).anyTimes();
         expect(e.getPropertyNames()).andReturn(Arrays.asList("prefix"));
-        expect(e.getOldValues()).andReturn((List) Arrays.asList("gs"));
-        expect(e.getNewValues()).andReturn((List) Arrays.asList("abcd"));
+        expect(e.getOldValues()).andReturn(Arrays.asList("gs"));
+        expect(e.getNewValues()).andReturn(Arrays.asList("abcd"));
 
         replay(e, ws, ns, cat);
 
@@ -87,7 +85,7 @@ public class WorkspaceNamespaceConstencyTest {
     @Test
     public void testChangeDefaultWorkspace() {
         Catalog cat = createMock(Catalog.class);
-        cat.addListener((CatalogListener) anyObject());
+        cat.addListener(anyObject());
         expectLastCall();
 
         NamespaceInfo def = createNiceMock(NamespaceInfo.class);
@@ -105,7 +103,7 @@ public class WorkspaceNamespaceConstencyTest {
         CatalogModifyEvent e = createNiceMock(CatalogModifyEvent.class);
         expect(e.getSource()).andReturn(cat).anyTimes();
         expect(e.getPropertyNames()).andReturn(Arrays.asList("defaultWorkspace"));
-        expect(e.getNewValues()).andReturn((List) Arrays.asList(ws));
+        expect(e.getNewValues()).andReturn(Arrays.asList(ws));
 
         replay(ns, ws, e, cat);
 
@@ -117,7 +115,7 @@ public class WorkspaceNamespaceConstencyTest {
     @Test
     public void testChangeDefaultNamespace() {
         Catalog cat = createMock(Catalog.class);
-        cat.addListener((CatalogListener) anyObject());
+        cat.addListener(anyObject());
         expectLastCall();
 
         WorkspaceInfo def = createNiceMock(WorkspaceInfo.class);
@@ -135,7 +133,7 @@ public class WorkspaceNamespaceConstencyTest {
         CatalogModifyEvent e = createNiceMock(CatalogModifyEvent.class);
         expect(e.getSource()).andReturn(cat).anyTimes();
         expect(e.getPropertyNames()).andReturn(Arrays.asList("defaultNamespace"));
-        expect(e.getNewValues()).andReturn((List) Arrays.asList(ns));
+        expect(e.getNewValues()).andReturn(Arrays.asList(ns));
 
         replay(ns, ws, e, cat);
 
@@ -147,7 +145,7 @@ public class WorkspaceNamespaceConstencyTest {
     @Test
     public void testChangeNamespaceURI() {
         Catalog cat = createMock(Catalog.class);
-        cat.addListener((CatalogListener) anyObject());
+        cat.addListener(anyObject());
         expectLastCall();
 
         NamespaceInfo ns = createNiceMock(NamespaceInfo.class);

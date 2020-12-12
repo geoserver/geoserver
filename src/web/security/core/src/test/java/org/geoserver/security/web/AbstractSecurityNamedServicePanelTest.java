@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -221,7 +220,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
                 break;
             }
         }
-        AjaxLink link = (AjaxLink) ((MarkupContainer) list.get(toClick)).get("link");
+        AjaxLink link = (AjaxLink) list.get(toClick).get("link");
         if (link.isEnabled()) {
             tester.executeAjaxEvent(link, "click");
         }

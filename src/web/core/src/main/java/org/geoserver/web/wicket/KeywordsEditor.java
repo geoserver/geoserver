@@ -154,7 +154,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                         @SuppressWarnings("unchecked")
                         List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
                         for (Iterator<KeywordInfo> it = selection.iterator(); it.hasNext(); ) {
-                            KeywordInfo selected = (KeywordInfo) it.next();
+                            KeywordInfo selected = it.next();
                             keywords.remove(selected);
                         }
                         choices.setChoices(keywords);

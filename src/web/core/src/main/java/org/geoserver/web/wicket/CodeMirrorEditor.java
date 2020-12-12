@@ -155,7 +155,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     private boolean isCodeMirrorSupported() {
         boolean enableCodeMirror = true;
-        WebClientInfo clientInfo = (WebClientInfo) WebSession.get().getClientInfo();
+        WebClientInfo clientInfo = WebSession.get().getClientInfo();
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());

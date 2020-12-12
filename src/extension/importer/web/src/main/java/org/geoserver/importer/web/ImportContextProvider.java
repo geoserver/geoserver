@@ -40,6 +40,6 @@ public class ImportContextProvider extends GeoServerDataProvider<ImportContext> 
 
     @Override
     protected IModel<ImportContext> newModel(ImportContext object) {
-        return new ImportContextModel((ImportContext) object);
+        return new ImportContextModel(object);
     }
 }

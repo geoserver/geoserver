@@ -81,10 +81,6 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
         // print(tester.getLastRenderedPage(), true, true);
 
         tester.assertModelValue("form:panel:dataset", true);
-        assertTrue(
-                (boolean)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(WCSEOMetadata.DATASET.key, Boolean.class));
+        assertTrue(layer.getResource().getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class));
     }
 }

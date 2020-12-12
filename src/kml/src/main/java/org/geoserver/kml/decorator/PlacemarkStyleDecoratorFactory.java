@@ -379,7 +379,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 Color color = null;
                 Expression sc = stroke.getColor();
                 if (sc != null) {
-                    color = (Color) sc.evaluate(feature, Color.class);
+                    color = sc.evaluate(feature, Color.class);
                 }
                 if (color == null) {
                     // Different from BLACK provided by Stroke.DEFAULT.getColor()

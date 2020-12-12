@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.web.context.WebApplicationContext;
 
 public class DefaultTileLayerCatalogTest {
 
@@ -51,7 +50,7 @@ public class DefaultTileLayerCatalogTest {
         Supplier<XStream> xStream =
                 () ->
                         XMLConfiguration.getConfiguredXStreamWithContext(
-                                new SecureXStream(), (WebApplicationContext) null, Context.PERSIST);
+                                new SecureXStream(), null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
         catalog.initialize();

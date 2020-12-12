@@ -70,7 +70,7 @@ public class IntegerParameterFilterSubform
                         List<Integer> floats = new ArrayList<Integer>(strings.length);
 
                         for (String s : strings) {
-                            floats.add((Integer) INTEGER.convertToObject(s, locale));
+                            floats.add(INTEGER.convertToObject(s, locale));
                         }
                         return floats;
                     }

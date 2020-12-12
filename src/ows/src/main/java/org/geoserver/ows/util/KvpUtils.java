@@ -90,11 +90,11 @@ public class KvpUtils {
                     List<String> list = new ArrayList<>(super.readFlat(rawList));
                     final int len = list.size();
                     if (len > 0) {
-                        String first = (String) list.get(0);
+                        String first = list.get(0);
                         if (first.startsWith("(")) {
                             list.set(0, first.substring(1));
                         }
-                        String last = (String) list.get(len - 1);
+                        String last = list.get(len - 1);
                         if (last.endsWith(")")) {
                             list.set(len - 1, last.substring(0, last.length() - 1));
                         }
@@ -251,7 +251,7 @@ public class KvpUtils {
                 Iterator<String> i = outerList.listIterator();
 
                 while (i.hasNext()) {
-                    kvpList.add(readFlat((String) i.next(), INNER_DELIMETER));
+                    kvpList.add(readFlat(i.next(), INNER_DELIMETER));
                 }
 
                 // handles single element list case
@@ -325,7 +325,7 @@ public class KvpUtils {
                 } else if (normalized.size() == 1) {
                     value = normalized.iterator().next();
                 } else {
-                    value = (String[]) normalized.toArray(new String[normalized.size()]);
+                    value = normalized.toArray(new String[normalized.size()]);
                 }
             }
 

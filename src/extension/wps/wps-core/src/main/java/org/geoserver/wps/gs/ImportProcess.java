@@ -347,7 +347,7 @@ public class ImportProcess implements GeoServerProcess {
                         catalog.getResourceLoader().get(Paths.path("data", workspace, store));
                 final File file = File.createTempFile(store, ".tif", directory.dir());
                 ((CoverageStoreInfo) storeInfo).setURL(URLs.fileToUrl(file).toExternalForm());
-                ((CoverageStoreInfo) storeInfo).setType("GeoTIFF");
+                storeInfo.setType("GeoTIFF");
 
                 // check the target crs
                 CoordinateReferenceSystem cvCrs = coverage.getCoordinateReferenceSystem();

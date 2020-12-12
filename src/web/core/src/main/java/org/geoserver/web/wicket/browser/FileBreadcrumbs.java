@@ -54,7 +54,7 @@ public abstract class FileBreadcrumbs extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        pathItemClicked((File) getModelObject(), target);
+                                        pathItemClicked(getModelObject(), target);
                                     }
                                 };
                         link.add(name);

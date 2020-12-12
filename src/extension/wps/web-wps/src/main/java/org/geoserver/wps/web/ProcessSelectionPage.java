@@ -150,8 +150,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                                     new Link("link") {
                                         @Override
                                         public void onClick() {
-                                            FilteredProcess fp =
-                                                    (FilteredProcess) itemModel.getObject();
+                                            FilteredProcess fp = itemModel.getObject();
                                             setResponsePage(
                                                     new ProcessLimitsPage(
                                                             ProcessSelectionPage.this, fp));

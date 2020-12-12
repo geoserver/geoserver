@@ -65,14 +65,14 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage vImage = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage vImage = this.legendProducer.buildLegendGraphic(req);
 
             // Change layout
             legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage hImage = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage hImage = this.legendProducer.buildLegendGraphic(req);
 
             // Check rotation
             assertEquals(vImage.getHeight(), hImage.getWidth());
@@ -122,7 +122,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
             // Check output
             assertEquals(HEIGHT_HINT, image.getHeight());
@@ -175,7 +175,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
             // Check output
             assertEquals(3 * HEIGHT_HINT, image.getHeight());
@@ -228,7 +228,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
             // Check output
             assertEquals(2 * HEIGHT_HINT, image.getHeight());
             assertPixel(image, 9, 13, new Color(115, 38, 0));
@@ -268,7 +268,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT, image.getHeight());
         assertPixel(image, 10, HEIGHT_HINT / 2, new Color(192, 160, 0));
@@ -312,7 +312,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("fontName", "Bitstream Vera Sans");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         // Title height may vary between test environments
         assertTrue(
@@ -329,7 +329,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("forceTitles", "off");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         // Verify the first icon of each layer is in the right place
@@ -383,7 +383,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("forceLabels", "on");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         assertTrue("Expected witdh > 40 but was " + image.getWidth(), 40 < image.getWidth());
@@ -396,7 +396,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("forceLabels", "off");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         // With no titles and no labels, legend should be as wide as a single icon
@@ -447,7 +447,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("grouplayout", "VERTICAL");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -472,7 +472,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("grouplayout", "VERTICAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -496,7 +496,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("grouplayout", "HORIZONTAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -518,7 +518,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         legendOptions.put("grouplayout", "HORIZONTAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *

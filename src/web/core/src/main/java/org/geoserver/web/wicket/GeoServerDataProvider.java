@@ -301,7 +301,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             IModel<T> result = modelCache.get(object);
             if (result == null) {
                 result = newModel(object);
-                modelCache.put((T) object, result);
+                modelCache.put(object, result);
             }
             return result;
         } else {
@@ -397,7 +397,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * implementation ( {@link BeanProperty} provides a good example)
          */
         public IModel<?> getModel(IModel<T> itemModel) {
-            Object value = getPropertyValue((T) itemModel.getObject());
+            Object value = getPropertyValue(itemModel.getObject());
             if (value instanceof IModel) {
                 return (IModel<?>) value;
             } else {

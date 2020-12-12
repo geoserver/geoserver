@@ -331,7 +331,7 @@ public class Dispatcher extends AbstractController {
                 Map<String, FileItem> kvpFileItems =
                         new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    for (FileItem item : (List<FileItem>) up.parseRequest(httpRequest)) {
+                    for (FileItem item : up.parseRequest(httpRequest)) {
                         if (item.isFormField()) {
                             kvpFileItems.put(item.getFieldName(), item);
                         } else {
@@ -519,7 +519,7 @@ public class Dispatcher extends AbstractController {
             if (xml.get("outputFormat") != null) {
                 req.setOutputFormat(normalize((String) xml.get("outputFormat")));
             }
-            if ((String) xml.get("namespace") != null) {
+            if (xml.get("namespace") != null) {
                 req.setNamespace(normalize((String) xml.get("namespace")));
             }
         }
@@ -846,7 +846,7 @@ public class Dispatcher extends AbstractController {
             }
         } else {
             // straight reflection
-            String version = (String) OwsUtils.property(requestBean, property, String.class);
+            String version = OwsUtils.property(requestBean, property, String.class);
 
             if (version != null) {
                 return normalize(version);
@@ -975,8 +975,8 @@ public class Dispatcher extends AbstractController {
                         });
 
                 // check first two and make sure bindings are not equal
-                Response r1 = (Response) responses.get(0);
-                Response r2 = (Response) responses.get(1);
+                Response r1 = responses.get(0);
+                Response r2 = responses.get(1);
 
                 if (r1.getBinding().equals(r2.getBinding())) {
                     String msg =
@@ -985,7 +985,7 @@ public class Dispatcher extends AbstractController {
                 }
             }
 
-            Response response = (Response) responses.get(0);
+            Response response = responses.get(0);
             response = fireResponseDispatchedCallback(req, opDescriptor, result, response);
 
             // load the output strategy to be used
@@ -1228,10 +1228,10 @@ public class Dispatcher extends AbstractController {
                 Collections.sort(vmatches, comparator);
             }
 
-            sBean = (Service) vmatches.get(vmatches.size() - 1);
+            sBean = vmatches.get(vmatches.size() - 1);
         } else {
             // only a single match, that was easy
-            sBean = (Service) matches.get(0);
+            sBean = matches.get(0);
         }
 
         return sBean;
@@ -1282,7 +1282,7 @@ public class Dispatcher extends AbstractController {
             Collections.sort(matches, comparator);
         }
 
-        return (KvpRequestReader) matches.get(0);
+        return matches.get(0);
     }
 
     static Collection<XmlRequestReader> loadXmlReaders() {
@@ -1470,11 +1470,10 @@ public class Dispatcher extends AbstractController {
                 Collections.sort(vmatches, comparator);
             }
 
-            if (vmatches.size() > 0)
-                xmlReader = (XmlRequestReader) vmatches.get(vmatches.size() - 1);
+            if (vmatches.size() > 0) xmlReader = vmatches.get(vmatches.size() - 1);
         } else {
             // only a single match, that was easy
-            xmlReader = (XmlRequestReader) matches.get(0);
+            xmlReader = matches.get(0);
         }
 
         return xmlReader;

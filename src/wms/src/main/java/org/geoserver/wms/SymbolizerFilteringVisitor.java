@@ -38,7 +38,7 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
             Symbolizer symcopy = copy(sym);
             if (symcopy != null) symArray.add(symcopy);
         }
-        Symbolizer[] symsCopy = (Symbolizer[]) symArray.toArray(new Symbolizer[symArray.size()]);
+        Symbolizer[] symsCopy = symArray.toArray(new Symbolizer[symArray.size()]);
 
         Graphic legendCopy = copy((Graphic) rule.getLegend());
         Description descCopy = rule.getDescription();

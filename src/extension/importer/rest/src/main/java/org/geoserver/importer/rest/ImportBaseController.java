@@ -102,7 +102,7 @@ public class ImportBaseController extends RestBaseController {
         ImportTransform tx = null;
         if (transformId != null) {
             try {
-                tx = (ImportTransform) task.getTransform().getTransforms().get(transformId);
+                tx = task.getTransform().getTransforms().get(transformId);
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 LOGGER.log(
                         Level.FINER,

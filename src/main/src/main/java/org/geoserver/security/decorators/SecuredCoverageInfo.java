@@ -62,12 +62,12 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         }
         GridCoverageReader reader = super.getGridCoverageReader(listener, hints);
-        return (GridCoverageReader) SecuredObjects.secure(reader, policy);
+        return SecuredObjects.secure(reader, policy);
     }
 
     @Override
     public CoverageStoreInfo getStore() {
-        return (CoverageStoreInfo) SecuredObjects.secure(super.getStore(), policy);
+        return SecuredObjects.secure(super.getStore(), policy);
     }
 
     @Override

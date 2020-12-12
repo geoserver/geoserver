@@ -64,7 +64,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetRecordByIdType dr =
                 (GetRecordByIdType)
-                        reader.read(null, getResourceAsReader("GetRecordById.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetRecordById.xml"), null);
         assertGetRecordByIdValid(dr);
     }
 
@@ -82,7 +82,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
                             reader.read(
                                     null,
                                     getResourceAsReader("GetRecordByIdEntityExpansion.xml"),
-                                    (Map) null);
+                                    null);
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();

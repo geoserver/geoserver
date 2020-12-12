@@ -49,7 +49,7 @@ public class ReaderDimensionAccessorTest {
         @Override
         public String[] getMetadataNames() {
             Set<String> keys = metadata.keySet();
-            return (String[]) keys.toArray(new String[keys.size()]);
+            return keys.toArray(new String[keys.size()]);
         }
 
         @Override

@@ -37,7 +37,6 @@ import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -115,7 +114,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                                     layer,
                                     paintArea,
                                     VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
-                                    (FeatureType) featureSource.getSchema()));
+                                    featureSource.getSchema()));
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels
                 buffer *=

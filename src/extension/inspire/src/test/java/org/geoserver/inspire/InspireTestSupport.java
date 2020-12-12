@@ -89,10 +89,7 @@ public class InspireTestSupport {
             assertEquals("Number of MediaType elements", 0, nodeList.getLength());
         } else {
             assertEquals("Number of MediaType elements", 1, nodeList.getLength());
-            assertEquals(
-                    "MediaType",
-                    mediaType,
-                    ((Element) nodeList.item(0)).getFirstChild().getNodeValue());
+            assertEquals("MediaType", mediaType, nodeList.item(0).getFirstChild().getNodeValue());
         }
     }
 
@@ -118,7 +115,7 @@ public class InspireTestSupport {
             Element sdi = (Element) spatialDataSetIdentifiers.item(i);
             NodeList nodeList = sdi.getElementsByTagNameNS(COMMON_NAMESPACE, "Code");
             assertEquals("Number of Code elements", 1, nodeList.getLength());
-            String code = ((Element) nodeList.item(0)).getFirstChild().getNodeValue();
+            String code = nodeList.item(0).getFirstChild().getNodeValue();
             assertTrue("Should be an identifier with code " + code, idMap.containsKey(code));
             nodeList = sdi.getElementsByTagNameNS(COMMON_NAMESPACE, "Namespace");
             String expectedNamespace = idMap.get(code).getNamespace();
@@ -132,8 +129,7 @@ public class InspireTestSupport {
                         "Number of Namespace elements for identifier with code " + code,
                         1,
                         nodeList.getLength());
-                String actualNamespace =
-                        ((Element) nodeList.item(0)).getFirstChild().getNodeValue();
+                String actualNamespace = nodeList.item(0).getFirstChild().getNodeValue();
                 assertEquals(
                         "Namespace for identifier with code " + code,
                         expectedNamespace,

@@ -497,7 +497,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         Map<String, String> params = buildGetFeatureInfo(convTile, bbox, height, width, x, y);
         Resource response;
         try {
-            response = GWC.get().dispatchOwsRequest(params, (Cookie[]) null);
+            response = GWC.get().dispatchOwsRequest(params, null);
         } catch (Exception e) {
             throw new GeoWebCacheException(e);
         }

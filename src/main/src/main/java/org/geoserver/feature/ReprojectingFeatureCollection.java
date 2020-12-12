@@ -202,12 +202,12 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
                 bounds.setToNull();
 
             } else {
-                SimpleFeature first = (SimpleFeature) i.next();
+                SimpleFeature first = i.next();
                 bounds = new ReferencedEnvelope(first.getBounds());
             }
 
             while (i.hasNext()) {
-                SimpleFeature f = (SimpleFeature) i.next();
+                SimpleFeature f = i.next();
                 bounds.include(f.getBounds());
             }
 
@@ -243,8 +243,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
                 if (crs != null) {
                     // if equal, nothing to do
                     if (!crs.equals(target)) {
-                        GeometryCoordinateSequenceTransformer transformer =
-                                (GeometryCoordinateSequenceTransformer) transformers.get(crs);
+                        GeometryCoordinateSequenceTransformer transformer = transformers.get(crs);
 
                         if (transformer == null) {
                             transformer = new GeometryCoordinateSequenceTransformer();
@@ -343,7 +342,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         }
 
         public SimpleFeature next() {
-            SimpleFeature feature = (SimpleFeature) delegate.next();
+            SimpleFeature feature = delegate.next();
 
             try {
                 return reproject(feature);

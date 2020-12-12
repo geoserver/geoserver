@@ -528,7 +528,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // perform read
             //
-            coverage = (GridCoverage2D) reader.read(readParameters);
+            coverage = reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
                 throw new IOException(
                         "No raster data found in the request (it may be that "
@@ -735,8 +735,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             final CoordinateReferenceSystem nativeGeoCRS =
                     CRSUtilities.getStandardGeographicCRS2D(nativeCRS);
-            final GeneralEnvelope nativeGeoEnvelope =
-                    (GeneralEnvelope) CRS.transform(nativeEnvelope, nativeGeoCRS);
+            final GeneralEnvelope nativeGeoEnvelope = CRS.transform(nativeEnvelope, nativeGeoCRS);
             nativeGeoEnvelope.setCoordinateReferenceSystem(nativeGeoCRS);
 
             GeneralEnvelope requestedBBOXInNativeGeographicCRS = null;

@@ -40,8 +40,6 @@ public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
         if (ds == null) return null;
         else if (policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
-        else
-            return (DataAccess<? extends FeatureType, ? extends Feature>)
-                    SecuredObjects.secure(ds, policy);
+        else return SecuredObjects.secure(ds, policy);
     }
 }

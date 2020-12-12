@@ -141,7 +141,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
-                    LayerInfo layer = (LayerInfo) itemModel.getObject();
+                    LayerInfo layer = itemModel.getObject();
                     handleLayer(layer, target);
                 }
             };

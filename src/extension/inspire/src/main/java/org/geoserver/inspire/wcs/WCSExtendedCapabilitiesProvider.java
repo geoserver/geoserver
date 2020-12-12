@@ -59,10 +59,8 @@ public class WCSExtendedCapabilitiesProvider
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
         UniqueResourceIdentifiers ids =
-                (UniqueResourceIdentifiers)
-                        serviceMetadata.get(
-                                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
-                                UniqueResourceIdentifiers.class);
+                serviceMetadata.get(
+                        SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         // Don't create extended capabilities element if mandatory content not present
         // or turned off
         if (metadataURL == null

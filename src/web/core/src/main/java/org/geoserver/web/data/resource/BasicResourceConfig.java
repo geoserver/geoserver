@@ -139,8 +139,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                         new PropertyModel<ProjectionPolicy>(model, "projectionPolicy"),
                         Arrays.asList(ProjectionPolicy.values()),
                         new ProjectionPolicyRenderer());
-        ResourceInfo ri = (ResourceInfo) model.getObject();
-        if (((ResourceInfo) model.getObject()).getCRS() == null) {
+        ResourceInfo ri = model.getObject();
+        if (model.getObject().getCRS() == null) {
             // no native, the only meaningful policy is to force
             ri.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         }
@@ -224,7 +224,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 form.process(null);
                 form.visitFormComponents(new FeedbackMessageCleaner<>(FeedbackMessage.UNDEFINED));
 
-                ReferencedEnvelope nativeBounds = (ReferencedEnvelope) nativeBBox.getModelObject();
+                ReferencedEnvelope nativeBounds = nativeBBox.getModelObject();
                 try {
                     // if the native bounds are not around compute them
                     if (nativeBounds == null) {
@@ -328,8 +328,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 } catch (FactoryException e) {
                     String msgKey = "BasicResourceConfig.noTransformFromNativeToDeclaredCRS";
                     String errMsg = e.getMessage();
-                    String message = (String) new ResourceModel(msgKey).getObject();
-                    form.error(message, Collections.singletonMap("error", (Object) errMsg));
+                    String message = new ResourceModel(msgKey).getObject();
+                    form.error(message, Collections.singletonMap("error", errMsg));
                 }
             }
         }

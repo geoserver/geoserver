@@ -98,7 +98,7 @@ public class LayerChooser extends Panel {
                     @Override
                     public Component getComponentForProperty(
                             String id, IModel<LayerInfo> value, Property<LayerInfo> property) {
-                        final LayerInfo layer = (LayerInfo) value.getObject();
+                        final LayerInfo layer = value.getObject();
                         final String text = property.getPropertyValue(layer).toString();
 
                         if (property == LayerProvider.name) {

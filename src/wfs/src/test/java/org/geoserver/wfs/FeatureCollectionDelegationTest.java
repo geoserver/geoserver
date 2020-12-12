@@ -91,7 +91,7 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
                         new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE),
                         new RetypingFeatureCollection(
                                 visitorCollection, visitorCollection.getSchema()),
-                        (SimpleFeatureCollection) SecuredObjects.secure(visitorCollection, policy));
+                        SecuredObjects.secure(visitorCollection, policy));
     }
 
     @Test

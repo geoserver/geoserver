@@ -150,7 +150,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         forwardMap = forwardMapLocal;
         backwardsMap = backwardsMapLocal;
 
-        return (String[]) transformedNames.toArray(new String[transformedNames.size()]);
+        return transformedNames.toArray(new String[transformedNames.size()]);
     }
 
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
@@ -186,7 +186,7 @@ public class RetypingDataStore extends DecoratingDataStore {
     /** Returns the type map given the external type name */
     FeatureTypeMap getTypeMapBackwards(String externalTypeName, boolean checkMap)
             throws IOException {
-        FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(externalTypeName);
+        FeatureTypeMap map = backwardsMap.get(externalTypeName);
         if (map == null && checkMap)
             throw new IOException(
                     "Type mapping has not been established for type  "
@@ -259,7 +259,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         if (!joins.isEmpty()) {
             modified.getJoins().clear();
             for (Join join : joins) {
-                FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(join.getTypeName());
+                FeatureTypeMap map = backwardsMap.get(join.getTypeName());
                 if (map == null) {
                     // nothing we can do about it
                     modified.getJoins().add(join);

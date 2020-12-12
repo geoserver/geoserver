@@ -18,7 +18,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 public class GetFeaturePagingTest extends WFSTestSupport {
@@ -44,11 +43,11 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs1.getSchema());
+        tb.init(fs1.getSchema());
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
-        tb.init((SimpleFeatureType) fs2.getSchema());
+        tb.init(fs2.getSchema());
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 

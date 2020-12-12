@@ -34,7 +34,7 @@ public class SecuredStructuredGridCoverage2DReader
         if (format == null) {
             return null;
         } else {
-            return (Format) SecuredObjects.secure(format, policy);
+            return SecuredObjects.secure(format, policy);
         }
     }
 
@@ -49,7 +49,7 @@ public class SecuredStructuredGridCoverage2DReader
         if (info == null) {
             return null;
         } else {
-            return (ServiceInfo) SecuredObjects.secure(info, policy);
+            return SecuredObjects.secure(info, policy);
         }
     }
 
@@ -59,7 +59,7 @@ public class SecuredStructuredGridCoverage2DReader
         if (info == null) {
             return null;
         } else {
-            return (ResourceInfo) SecuredObjects.secure(info, policy);
+            return SecuredObjects.secure(info, policy);
         }
     }
 }

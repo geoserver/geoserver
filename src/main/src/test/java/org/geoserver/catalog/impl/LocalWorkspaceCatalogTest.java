@@ -33,7 +33,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 public class LocalWorkspaceCatalogTest {
 
@@ -162,13 +161,7 @@ public class LocalWorkspaceCatalogTest {
         expect(cat.getLayers()).andReturn(layers).anyTimes();
         List<LayerInfo> layers2 = new ArrayList<>(layers);
         layers2.add(null);
-        expect(
-                        cat.list(
-                                LayerInfo.class,
-                                Filter.INCLUDE,
-                                (Integer) null,
-                                (Integer) null,
-                                (SortBy) null))
+        expect(cat.list(LayerInfo.class, Filter.INCLUDE, null, null, null))
                 .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers2.iterator()))
                 .anyTimes();
         replay(cat);

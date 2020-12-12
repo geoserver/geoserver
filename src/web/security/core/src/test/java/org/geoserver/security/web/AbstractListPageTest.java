@@ -71,7 +71,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
 
         @SuppressWarnings("unchecked")
-        Iterator<Component> it = (Iterator<Component>) listView.iterator();
+        Iterator<Component> it = listView.iterator();
 
         while (it.hasNext()) {
             Component container = it.next();

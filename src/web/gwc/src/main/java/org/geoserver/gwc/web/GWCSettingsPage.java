@@ -138,8 +138,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
             AttributeModifier attributeModifier =
-                    new AttributeModifier(
-                            "title", new StringResourceModel(titleKey, (Component) null, null));
+                    new AttributeModifier("title", new StringResourceModel(titleKey, null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

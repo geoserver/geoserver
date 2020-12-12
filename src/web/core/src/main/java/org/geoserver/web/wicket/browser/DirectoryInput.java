@@ -92,7 +92,7 @@ public class DirectoryInput extends FileInput {
                                     protected Component getContents(String id) {
                                         File file = null;
                                         textField.processInput();
-                                        String input = (String) textField.getConvertedInput();
+                                        String input = textField.getConvertedInput();
                                         if (input != null && !input.equals("")) {
                                             file = new File(input);
                                         }

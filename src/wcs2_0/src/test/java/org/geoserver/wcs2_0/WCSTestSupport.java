@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -408,7 +407,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             if (geometry != null) {
                 final MathTransform gridToCRS;
                 if (geometry instanceof GridGeometry2D) {
-                    gridToCRS = ((GridGeometry2D) geometry).getGridToCRS();
+                    gridToCRS = geometry.getGridToCRS();
                 } else {
                     gridToCRS = geometry.getGridToCRS();
                 }
@@ -434,7 +433,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
     }

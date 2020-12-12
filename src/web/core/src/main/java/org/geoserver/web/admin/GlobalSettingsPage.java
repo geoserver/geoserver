@@ -215,8 +215,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
     public void onSave(boolean doReturn) {
         GeoServer gs = getGeoServer();
-        gs.save((GeoServerInfo) globalInfoModel.getObject());
-        gs.save((LoggingInfo) loggingInfoModel.getObject());
+        gs.save(globalInfoModel.getObject());
+        gs.save(loggingInfoModel.getObject());
         if (doReturn) {
             doReturn();
         }

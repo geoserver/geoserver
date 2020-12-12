@@ -252,10 +252,10 @@ class CustomDimensionFilterConverter {
                 @SuppressWarnings("unchecked")
                 final Range range =
                         new Range(
-                                (Class<Comparable>) binding,
+                                binding,
                                 (Comparable) rangeValues.get(0),
                                 (Comparable) rangeValues.get(1));
-                return Arrays.asList((Object) range);
+                return Arrays.asList(range);
             } else {
                 // no range value present, convert all values
                 // filter null results
@@ -335,7 +335,7 @@ class CustomDimensionFilterConverter {
                 @SuppressWarnings("unchecked")
                 final Range range =
                         new Range(
-                                (Class<Comparable>) binding,
+                                binding,
                                 (Comparable) rangeValues.get(0),
                                 (Comparable) rangeValues.get(1));
                 return Arrays.asList(range);

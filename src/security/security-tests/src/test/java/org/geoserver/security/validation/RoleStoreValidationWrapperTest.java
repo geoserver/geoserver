@@ -226,7 +226,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
                         ServiceAccessRuleDAO serviceAccessDAO =
                                 createNiceMock(ServiceAccessRuleDAO.class);
-                        expect(serviceAccessDAO.getRulesAssociatedWithRole((String) anyObject()))
+                        expect(serviceAccessDAO.getRulesAssociatedWithRole(anyObject()))
                                 .andReturn(new TreeSet<ServiceAccessRule>())
                                 .anyTimes();
                         expect(secMgr.getServiceAccessRuleDAO())

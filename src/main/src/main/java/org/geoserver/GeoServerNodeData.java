@@ -91,7 +91,7 @@ public class GeoServerNodeData {
         } else {
             try {
                 Map<String, String> options = parseProperties(nodeOpts);
-                String id = (String) options.get("id");
+                String id = options.get("id");
                 if (id != null) {
                     if (SUBSTITUTIONS.keySet().stream().anyMatch(id::contains)) {
                         final InetAddress address = getLocalHostLANAddress();
@@ -105,12 +105,12 @@ public class GeoServerNodeData {
                 }
 
                 nodeId = id;
-                String bgcolor = (String) options.get("background");
+                String bgcolor = options.get("background");
                 if (bgcolor == null) {
                     bgcolor = "#dadada";
                 }
                 String style = DEFAULT_NODE_ID_TEMPLATE.replace("$background", bgcolor);
-                String color = (String) options.get("color");
+                String color = options.get("color");
                 if (color == null) {
                     color = "#0076a1";
                 }

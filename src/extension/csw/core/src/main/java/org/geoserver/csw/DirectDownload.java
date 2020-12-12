@@ -192,7 +192,7 @@ public class DirectDownload {
         ServiceInfo info = reader.getInfo();
         if (info instanceof FileServiceInfo) {
             FileServiceInfo fileInfo = (FileServiceInfo) info;
-            FileGroupProvider provider = (FileGroupProvider) fileInfo;
+            FileGroupProvider provider = fileInfo;
             FilesCollector collector = new FilesCollector(provider);
             collector.collectFull(result);
         } else {
@@ -213,7 +213,7 @@ public class DirectDownload {
             FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
 
             // Get the resource files
-            FileGroupProvider fileGroupProvider = (FileGroupProvider) fileResourceInfo;
+            FileGroupProvider fileGroupProvider = fileResourceInfo;
             FilesCollector collector = new FilesCollector(fileGroupProvider);
 
             // Only structuredReaders can support multiple coverages

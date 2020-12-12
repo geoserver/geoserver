@@ -312,13 +312,13 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         }
 
         // load the format/reader
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(file);
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
         GridCoverage2DReader reader = null;
         try {
-            reader = (GridCoverage2DReader) format.getReader(file);
+            reader = format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException(
                         "No reader for "

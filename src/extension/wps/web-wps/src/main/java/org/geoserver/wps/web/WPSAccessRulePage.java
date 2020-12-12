@@ -144,8 +144,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                                     new Link("link") {
                                         @Override
                                         public void onClick() {
-                                            ProcessGroupInfo pfi =
-                                                    (ProcessGroupInfo) itemModel.getObject();
+                                            ProcessGroupInfo pfi = itemModel.getObject();
                                             setResponsePage(
                                                     new ProcessSelectionPage(
                                                             WPSAccessRulePage.this, pfi));
@@ -186,7 +185,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(catalogModeChoice);
 
         SubmitLink submit =
-                new SubmitLink("submit", new StringResourceModel("save", (Component) null, null)) {
+                new SubmitLink("submit", new StringResourceModel("save", null, null)) {
                     @Override
                     public void onSubmit() {
                         saveProcessFactories(true);

@@ -102,7 +102,7 @@ public class ImportPage extends GeoServerSecuredPage {
                                         try {
                                             xp.save(model.getObject(), bout);
                                         } catch (IOException e) {
-                                            bout = new ByteArrayOutputStream();
+                                            bout.reset();
                                             LOGGER.log(Level.FINER, e.getMessage(), e);
                                             e.printStackTrace(new PrintWriter(bout));
                                         }

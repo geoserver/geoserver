@@ -221,7 +221,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                     @Override
                                     protected void onSubmit(
                                             AjaxRequestTarget target, Form<?> form) {
-                                        getList().remove((ParameterFilter) getDefaultModelObject());
+                                        getList().remove(getDefaultModelObject());
                                         target.add(container);
                                     }
                                 };

@@ -258,7 +258,7 @@ public abstract class SolrConfigurationPage extends Panel {
                             String id,
                             IModel<SolrAttribute> itemModel,
                             Property<SolrAttribute> property) {
-                        SolrAttribute att = (SolrAttribute) itemModel.getObject();
+                        SolrAttribute att = itemModel.getObject();
                         boolean isGeometry =
                                 att.getType() != null
                                         && Geometry.class.isAssignableFrom(att.getType());
@@ -277,11 +277,7 @@ public abstract class SolrConfigurationPage extends Panel {
                             }
                         } else if (property == SolrAttributeProvider.NAME && (isGeometry || isPK)) {
                             Fragment f = new Fragment(id, "label", SolrConfigurationPage.this);
-                            f.add(
-                                    new Label(
-                                            "label",
-                                            ((SolrAttribute) itemModel.getObject()).getName()
-                                                    + "*"));
+                            f.add(new Label("label", itemModel.getObject().getName() + "*"));
                             return f;
 
                         } else if (property == SolrAttributeProvider.TYPE && isGeometry) {
@@ -358,7 +354,7 @@ public abstract class SolrConfigurationPage extends Panel {
         private static final long serialVersionUID = -6371918467884222834L;
 
         public Object getDisplayValue(Class<?> object) {
-            return ((Class<?>) object).getSimpleName();
+            return object.getSimpleName();
         }
 
         public String getIdValue(Class<?> object, int index) {

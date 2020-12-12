@@ -50,7 +50,6 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -117,10 +116,10 @@ public class MockCreator implements Callback {
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
         expect(catalog.getResourceLoader()).andReturn(loader).anyTimes();
 
-        catalog.removeListeners((Class) EasyMock.anyObject());
+        catalog.removeListeners(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
-        catalog.addListener((CatalogListener) EasyMock.anyObject());
+        catalog.addListener(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
         expect(catalog.getResourcePool())

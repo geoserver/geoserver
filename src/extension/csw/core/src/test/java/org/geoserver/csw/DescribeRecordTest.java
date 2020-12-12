@@ -104,7 +104,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         DescribeRecordType dr =
                 (DescribeRecordType)
-                        reader.read(null, getResourceAsReader("DescribeRecord.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("DescribeRecord.xml"), null);
         assertDescribeRecordValid(dr);
     }
 

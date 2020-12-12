@@ -650,7 +650,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertEquals(2, props.size());
 
         for (Entry<Object, Object> entry : props.entrySet()) {
-            if ("user2".equals(entry.getValue())) assertEquals(user2KeyA, (String) entry.getKey());
+            if ("user2".equals(entry.getValue())) assertEquals(user2KeyA, entry.getKey());
             if ("user3".equals(entry.getValue())) user3KeyA = (String) entry.getKey();
         }
         assertNotNull(user3KeyA);

@@ -309,7 +309,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         }
 
         public JSONObject buildObject() {
-            return JSONObject.fromObject(((StringWriter) writer).toString());
+            return JSONObject.fromObject(writer.toString());
         }
     }
 

@@ -136,9 +136,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                                 AjaxRequestTarget target, Form form) {
                                             UniqueResourceIdentifiers identifiers =
                                                     provider.getItems();
-                                            UniqueResourceIdentifier sdi =
-                                                    (UniqueResourceIdentifier)
-                                                            itemModel.getObject();
+                                            UniqueResourceIdentifier sdi = itemModel.getObject();
                                             identifiers.remove(sdi);
                                             target.add(container);
                                         }

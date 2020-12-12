@@ -71,7 +71,7 @@ public class RequestUtils {
 
         // prune out those not provided
         for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
-            Version version = (Version) v.next();
+            Version version = v.next();
 
             if (!provided.contains(version)) {
                 v.remove();
@@ -82,7 +82,7 @@ public class RequestUtils {
         String version = null;
         if (!accepted.isEmpty()) {
             // return the highest version provided
-            version = ((Version) accepted.last()).toString();
+            version = accepted.last().toString();
         } else {
             for (String v : acceptedList) {
                 accepted.add(new Version(v));
@@ -152,7 +152,7 @@ public class RequestUtils {
         // through this list and find the first version number that it supports"
         Version negotiated = null;
         for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
-            Version version = (Version) v.next();
+            Version version = v.next();
 
             if (provided.contains(version)) {
                 negotiated = version;

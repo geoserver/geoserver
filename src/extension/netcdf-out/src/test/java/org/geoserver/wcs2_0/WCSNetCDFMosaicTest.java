@@ -730,7 +730,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertArrayEquals(
                     new double[] {1461664800, 1461708000},
                     (double[]) timeVar.read().copyTo1DJavaArray(),
-                    (double) DELTA);
+                    DELTA);
             Variable rlonVar = dataset.findVariable("rlon");
             assertNotNull(rlonVar);
             assertEquals(1, rlonVar.getDimensions().size());
@@ -820,9 +820,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals(
                     "GRIB reference time", reftimeVar.findAttribute("long_name").getStringValue());
             assertArrayEquals(
-                    new double[] {6, 3},
-                    (double[]) reftimeVar.read().copyTo1DJavaArray(),
-                    (double) DELTA);
+                    new double[] {6, 3}, (double[]) reftimeVar.read().copyTo1DJavaArray(), DELTA);
             // scalar extra variable copied from source with dimensions ""
             Variable scalarReftimeVar = dataset.findVariable("scalar_forecast_reference_time");
             assertEquals(0, scalarReftimeVar.getDimensions().size());

@@ -142,7 +142,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 // avoid double proxy
                 Object o = ModificationProxy.unwrap(result);
                 if (o == result) {
-                    result = ModificationProxy.create(result, (Class) method.getReturnType());
+                    result = ModificationProxy.create(result, method.getReturnType());
 
                     // cache the proxy, in case it is modified itself
                     properties().put(property, result);

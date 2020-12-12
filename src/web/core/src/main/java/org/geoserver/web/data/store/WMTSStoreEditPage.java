@@ -61,7 +61,7 @@ public class WMTSStoreEditPage extends AbstractWMTSStorePage {
         Catalog catalog = getCatalog();
 
         // Cloning into "expandedStore" through the super class "clone" method
-        WMTSStoreInfo expandedStore = (WMTSStoreInfo) catalog.getResourcePool().clone(info, true);
+        WMTSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
 
         getCatalog().validate(expandedStore, false).throwIfInvalid();
 

@@ -28,7 +28,7 @@ public class AnimatorFilterTest extends WMSTestSupport {
 
     @Override
     public List<Filter> getFilters() {
-        return Arrays.asList((Filter) new AnimatorFilter());
+        return Arrays.asList(new AnimatorFilter());
     }
 
     @Test

@@ -133,7 +133,7 @@ public class SecurityManagerConfig implements SecurityConfig {
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-        SecurityManagerConfig target = (SecurityManagerConfig) SerializationUtils.clone(this);
+        SecurityManagerConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
             if (allowEnvParametrization

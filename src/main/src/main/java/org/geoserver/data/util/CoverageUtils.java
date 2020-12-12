@@ -53,7 +53,7 @@ public class CoverageUtils {
                 final ParameterValue val = (ParameterValue) it.next();
 
                 if (val != null) {
-                    final ParameterDescriptor descr = (ParameterDescriptor) val.getDescriptor();
+                    final ParameterDescriptor descr = val.getDescriptor();
                     final String _key = descr.getName().toString();
 
                     if ("namespace".equals(_key)) {
@@ -78,8 +78,7 @@ public class CoverageUtils {
             }
 
             return (!parameters.isEmpty())
-                    ? (GeneralParameterValue[])
-                            parameters.toArray(new GeneralParameterValue[parameters.size()])
+                    ? parameters.toArray(new GeneralParameterValue[parameters.size()])
                     : null;
         } else {
             return null;
@@ -136,8 +135,7 @@ public class CoverageUtils {
             }
 
             return (!parameters.isEmpty())
-                    ? (GeneralParameterValue[])
-                            parameters.toArray(new GeneralParameterValue[parameters.size()])
+                    ? parameters.toArray(new GeneralParameterValue[parameters.size()])
                     : new GeneralParameterValue[0];
         } else {
             return new GeneralParameterValue[0];
@@ -155,7 +153,7 @@ public class CoverageUtils {
                 final ParameterValue val = (ParameterValue) it.next();
 
                 if (val != null) {
-                    final ParameterDescriptor descr = (ParameterDescriptor) val.getDescriptor();
+                    final ParameterDescriptor descr = val.getDescriptor();
 
                     final String _key = descr.getName().toString();
 
@@ -205,7 +203,7 @@ public class CoverageUtils {
         try {
             if (key.equalsIgnoreCase("crs")) {
                 if ((getParamValue(paramValues, index) != null)
-                        && (((String) getParamValue(paramValues, index)).length() > 0)) {
+                        && (getParamValue(paramValues, index).length() > 0)) {
                     if ((paramValues.get(index) != null)
                             && (((String) paramValues.get(index)).length() > 0)) {
                         value = CRS.parseWKT((String) paramValues.get(index));
@@ -216,8 +214,8 @@ public class CoverageUtils {
                 }
             } else if (key.equalsIgnoreCase("envelope")) {
                 if ((getParamValue(paramValues, index) != null)
-                        && (((String) getParamValue(paramValues, index)).length() > 0)) {
-                    String tmp = (String) getParamValue(paramValues, index);
+                        && (getParamValue(paramValues, index).length() > 0)) {
+                    String tmp = getParamValue(paramValues, index);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
                         tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]")).trim();
@@ -232,10 +230,9 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    (org.opengis.geometry.Envelope)
-                                            new GeneralEnvelope(
-                                                    new double[] {coords[0], coords[1]},
-                                                    new double[] {coords[2], coords[3]});
+                                    new GeneralEnvelope(
+                                            new double[] {coords[0], coords[1]},
+                                            new double[] {coords[2], coords[3]});
                         }
                     }
                 }
@@ -294,10 +291,9 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    (org.opengis.geometry.Envelope)
-                                            new GeneralEnvelope(
-                                                    new double[] {coords[0], coords[1]},
-                                                    new double[] {coords[2], coords[3]});
+                                    new GeneralEnvelope(
+                                            new double[] {coords[0], coords[1]},
+                                            new double[] {coords[2], coords[3]});
                         }
                     }
                 }
@@ -321,10 +317,9 @@ public class CoverageUtils {
                             }
 
                             value =
-                                    (org.opengis.geometry.Envelope)
-                                            new GeneralEnvelope(
-                                                    new double[] {coords[0], coords[1]},
-                                                    new double[] {coords[2], coords[3]});
+                                    new GeneralEnvelope(
+                                            new double[] {coords[0], coords[1]},
+                                            new double[] {coords[2], coords[3]});
                         }
                     }
                 } else if ((params.get(key) != null)
@@ -362,7 +357,7 @@ public class CoverageUtils {
                         if (sfilter instanceof String) {
                             value = ECQL.toFilter((String) sfilter);
                         } else if (sfilter instanceof Filter) {
-                            value = (Filter) sfilter;
+                            value = sfilter;
                         }
                     } else {
                         value = param.getValue();

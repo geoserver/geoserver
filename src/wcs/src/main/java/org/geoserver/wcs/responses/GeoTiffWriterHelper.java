@@ -166,12 +166,11 @@ public class GeoTiffWriterHelper {
                 new ImageWorker(ri).writeTIFF(stream, compression, quality, tileWidth, tileHeight);
             } else {
                 final GeneralParameterValue[] wps =
-                        (GeneralParameterValue[])
-                                geotoolsWriteParams
-                                        .values()
-                                        .toArray(
-                                                new GeneralParameterValue
-                                                        [geotoolsWriteParams.values().size()]);
+                        geotoolsWriteParams
+                                .values()
+                                .toArray(
+                                        new GeneralParameterValue
+                                                [geotoolsWriteParams.values().size()]);
 
                 // write out the coverage
                 AbstractGridCoverageWriter writer =

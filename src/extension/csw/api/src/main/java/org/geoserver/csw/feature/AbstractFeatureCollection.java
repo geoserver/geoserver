@@ -296,7 +296,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
             for (iterator = iterator(); !progress.isCanceled() && iterator.hasNext(); ) {
                 if (size > 0) progress.progress(position++ / size);
                 try {
-                    Feature feature = (Feature) iterator.next();
+                    Feature feature = iterator.next();
                     visitor.visit(feature);
                 } catch (Exception erp) {
                     progress.exceptionOccurred(erp);

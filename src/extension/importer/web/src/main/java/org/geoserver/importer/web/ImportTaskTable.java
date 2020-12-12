@@ -134,7 +134,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 case READY:
                     // return advanced option link
                     // for now disable if this is not a vector layer
-                    ImportTask task = (ImportTask) itemModel.getObject();
+                    ImportTask task = itemModel.getObject();
                     if (task.getLayer() != null
                             && task.getLayer().getResource() instanceof FeatureTypeInfo) {
                         return new AdvancedOptionPanel(id, itemModel);

@@ -13,7 +13,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -626,7 +625,7 @@ public class ColorMapLegendCreator {
         //
         // create a sample image for computing dimensions of text strings
         //
-        BufferedImage image = ImageUtils.createImage(1, 1, (IndexColorModel) null, transparent);
+        BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
         Graphics2D graphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
@@ -756,8 +755,7 @@ public class ColorMapLegendCreator {
 
         // creating a backbuffer image on which we should draw the bkgColor for this colormap
         // element
-        final BufferedImage image =
-                ImageUtils.createImage(1, 1, (IndexColorModel) null, transparent);
+        final BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
         final Graphics2D graphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
@@ -934,8 +932,7 @@ public class ColorMapLegendCreator {
         final int totalWidth = (int) finalDimension.getWidth();
         final int totalHeight = (int) finalDimension.getHeight();
         BufferedImage finalLegend =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, transparent);
+                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
 
         /*
          * For RAMP type, only HORIZONTAL or VERTICAL condition is valid

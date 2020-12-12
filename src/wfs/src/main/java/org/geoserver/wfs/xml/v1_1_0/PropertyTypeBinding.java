@@ -83,7 +83,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
         PropertyType property = wfsfactory.createPropertyType();
 
         // &lt;xsd:element name="Name" type="xsd:QName"&gt;
-        property.setName((QName) node.getChildValue(QName.class));
+        property.setName(node.getChildValue(QName.class));
 
         // &lt;xsd:element minOccurs="0" name="Value"&gt;
         if (node.hasChild("Value")) {

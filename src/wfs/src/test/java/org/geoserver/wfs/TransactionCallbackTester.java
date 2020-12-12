@@ -52,7 +52,7 @@ public class TransactionCallbackTester implements TransactionCallback {
             } else if (element instanceof Delete) {
                 try {
                     // mass delete more than requested
-                    ((Delete) element).setFilter(CQL.toFilter("FID > 102"));
+                    element.setFilter(CQL.toFilter("FID > 102"));
                 } catch (CQLException e) {
                     throw new WFSException(e);
                 }

@@ -667,18 +667,16 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     List<Exception> validateSLD() {
         try {
             final String style = editor.getInput();
-            ByteArrayInputStream input = new ByteArrayInputStream(style.getBytes());
             List<Exception> validationErrors =
                     styleHandler()
                             .validate(
-                                    input,
+                                    new ByteArrayInputStream(style.getBytes()),
                                     null,
                                     getCatalog().getResourcePool().getEntityResolver());
-            input = new ByteArrayInputStream(style.getBytes());
             StyledLayerDescriptor sld =
                     styleHandler()
                             .parse(
-                                    input,
+                                    new ByteArrayInputStream(style.getBytes()),
                                     null,
                                     null,
                                     getCatalog().getResourcePool().getEntityResolver());

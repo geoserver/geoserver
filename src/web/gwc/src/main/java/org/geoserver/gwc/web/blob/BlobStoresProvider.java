@@ -61,6 +61,6 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
     @Override
     protected List<BlobStoreInfo> getItems() {
-        return (List<BlobStoreInfo>) GWC.get().getBlobStores();
+        return GWC.get().getBlobStores();
     }
 }

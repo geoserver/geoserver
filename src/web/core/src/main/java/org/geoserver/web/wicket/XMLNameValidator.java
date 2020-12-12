@@ -39,7 +39,7 @@ public class XMLNameValidator implements IValidator<String> {
 
     @Override
     public void validate(IValidatable<String> validatable) {
-        String value = (String) validatable.getValue();
+        String value = validatable.getValue();
         if (!XML_NAME_PATTERN.matcher(value).matches()) {
             validatable.error(
                     new ValidationError("invalidXMLName")

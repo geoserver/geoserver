@@ -361,8 +361,7 @@ public class GWCTest {
 
         when(tld.getLayerNames())
                 .thenReturn(ImmutableSet.of(tileLayer.getName(), tileLayerGroup.getName()));
-        Iterable<TileLayer> tileLayers =
-                ImmutableList.of((TileLayer) tileLayer, (TileLayer) tileLayerGroup);
+        Iterable<TileLayer> tileLayers = ImmutableList.of(tileLayer, tileLayerGroup);
         when(tld.getLayerList()).thenReturn(tileLayers);
 
         when(tld.layerExists(eq(tileLayer.getName()))).thenReturn(true);
@@ -1123,12 +1122,12 @@ public class GWCTest {
         assertDispatchMismatch(request, "no parameter filter exists for MAXFEATURES");
         request.setMaxFeatures(null);
 
-        request.setTime(Arrays.asList((Object) 1, (Object) 2));
+        request.setTime(Arrays.asList(1, 2));
         assertDispatchMismatch(request, "no parameter filter exists for TIME");
         request.setTime(Collections.emptyList());
 
         List<Map<String, String>> viewParams =
-                ImmutableList.of((Map<String, String>) ImmutableMap.of("paramKey", "paramVal"));
+                ImmutableList.of(ImmutableMap.of("paramKey", "paramVal"));
         request.setViewParams(viewParams);
         assertDispatchMismatch(request, "no parameter filter exists for VIEWPARAMS");
         request.setViewParams(null);

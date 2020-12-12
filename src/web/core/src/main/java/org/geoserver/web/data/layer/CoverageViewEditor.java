@@ -73,7 +73,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new ListMultipleChoice<String>(
                         "coveragesChoice",
                         new Model<>(),
-                        new ArrayList<String>((List<String>) coverages.getObject()),
+                        new ArrayList<String>(coverages.getObject()),
                         new ChoiceRenderer<String>() {
                             @Override
                             public Object getDisplayValue(String coverage) {

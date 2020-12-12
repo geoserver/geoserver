@@ -202,7 +202,7 @@ public class DefaultControlFlowConfigurationTest {
         Properties properties;
 
         public FixedWatcher(Properties properties) {
-            super((Resource) null);
+            super(null);
             this.properties = properties;
         }
 

@@ -432,7 +432,7 @@ public class SystemTestData extends CiteTestData {
      */
     public void addStyle(String name, String filename, Class scope, Catalog catalog)
             throws IOException {
-        addStyle((WorkspaceInfo) null, name, filename, scope, catalog);
+        addStyle(null, name, filename, scope, catalog);
     }
 
     /**

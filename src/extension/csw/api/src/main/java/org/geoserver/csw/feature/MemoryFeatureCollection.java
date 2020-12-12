@@ -164,7 +164,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
     }
 
     public boolean addAll(FeatureCollection<FeatureType, Feature> c) {
-        Feature[] array = (Feature[]) c.toArray(new Feature[c.size()]);
+        Feature[] array = c.toArray(new Feature[c.size()]);
         return features.addAll(Arrays.asList(array));
     }
 }

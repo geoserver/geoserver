@@ -711,10 +711,10 @@ public class GeoJSONTest extends WFSTestSupport {
         assertThat(geometry.getString("type"), is("Point"));
 
         JSONArray coords = geometry.getJSONArray("coordinates");
-        assertThat((Iterable<?>) coords, contains((Object) 120, 0));
+        assertThat((Iterable<?>) coords, contains(120, 0));
 
         JSONArray bbox = collection.getJSONArray("bbox");
-        assertThat((Iterable<?>) bbox, Matchers.contains((Object) (-170), -30, 120, 45));
+        assertThat((Iterable<?>) bbox, Matchers.contains(-170, -30, 120, 45));
 
         CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
         JSONObject aCRS = collection.getJSONObject("crs");
@@ -740,11 +740,10 @@ public class GeoJSONTest extends WFSTestSupport {
         assertThat(geometry.getString("type"), is("Point"));
 
         JSONArray coords = geometry.getJSONArray("coordinates");
-        assertThat((Iterable<?>) coords, contains((Object) 120.12, 0.56));
+        assertThat((Iterable<?>) coords, contains(120.12, 0.56));
 
         JSONArray bbox = collection.getJSONArray("bbox");
-        assertThat(
-                (Iterable<?>) bbox, Matchers.contains((Object) (-170.19), -30.13, 120.12, 45.23));
+        assertThat((Iterable<?>) bbox, Matchers.contains(-170.19, -30.13, 120.12, 45.23));
 
         CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
         JSONObject aCRS = collection.getJSONObject("crs");

@@ -55,7 +55,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
 
     @Override
     public void visit(FeatureTypeStyle fts) {
-        FeatureTypeStyle copy = new FeatureTypeStyleImpl((FeatureTypeStyleImpl) fts);
+        FeatureTypeStyle copy = new FeatureTypeStyleImpl(fts);
 
         // preserve only the rules active at this scale range
         List<Rule> rulesCopy = new ArrayList<Rule>();
@@ -71,7 +71,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
     }
 
     public Style getSimplifiedStyle() {
-        return (Style) getCopy();
+        return getCopy();
     }
 
     @Override

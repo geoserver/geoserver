@@ -40,7 +40,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Test
     public void testStandardWorkflow() throws Exception {
         TestCallback callback = new TestCallback();
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
         Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss");
@@ -64,7 +64,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
                         throw new RuntimeException(message);
                     }
                 };
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
         Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
@@ -96,7 +96,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
                         return super.beforeRender(mapContent);
                     }
                 };
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
         Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
@@ -126,7 +126,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
                         }
                     }
                 };
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
         Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
@@ -146,7 +146,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Test
     public void testAnimator() throws Exception {
         TestCallback callback = new TestCallback();
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
         String requestURL =
                 "wms/animate?layers="
                         + getLayerId(MockData.BASIC_POLYGONS)
@@ -169,7 +169,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Test
     public void testAnimatedGifDimensions() throws Exception {
         TestCallback callback = new TestCallback();
-        getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
+        getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         setupVectorDimension(
                 ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);

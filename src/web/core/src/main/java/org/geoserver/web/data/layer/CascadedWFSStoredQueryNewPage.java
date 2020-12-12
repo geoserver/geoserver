@@ -211,7 +211,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
         @Override
         public void validate(IValidatable<String> validatable) {
-            String csqName = (String) validatable.getValue();
+            String csqName = validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
             List<FeatureTypeInfo> ftis =

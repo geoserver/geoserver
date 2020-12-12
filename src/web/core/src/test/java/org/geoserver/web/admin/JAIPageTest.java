@@ -56,7 +56,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSave() {
-        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
+        JAIInfo info = geoServer.getGlobal().getJAI();
 
         login();
 
@@ -72,7 +72,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testApply() {
-        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
+        JAIInfo info = geoServer.getGlobal().getJAI();
 
         login();
 
@@ -95,7 +95,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         }
         GeoServer geoServer = getGeoServerApplication().getGeoServer();
         GeoServerInfo global = geoServer.getGlobal();
-        JAIInfo info = (JAIInfo) global.getJAI();
+        JAIInfo info = global.getJAI();
 
         // Ensure that by default Warp acceleration is set to false
         Assert.assertFalse(info.isAllowNativeWarp());
@@ -141,7 +141,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         // Ensure no exception has been thrown
         tester.assertNoErrorMessage();
 
-        info = (JAIInfo) global.getJAI();
+        info = global.getJAI();
 
         // Check that Warp is enabled
         if (isJAIExtEnabled) {
@@ -183,7 +183,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         // Ensure no exception has been thrown
         tester.assertNoErrorMessage();
 
-        info = (JAIInfo) global.getJAI();
+        info = global.getJAI();
 
         // Check that Warp is disabled
         Assert.assertFalse(info.isAllowNativeWarp());

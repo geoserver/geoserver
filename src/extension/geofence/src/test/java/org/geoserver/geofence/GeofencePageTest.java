@@ -8,7 +8,6 @@ import static junit.framework.TestCase.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URISyntaxException;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
@@ -130,6 +129,6 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         String success =
                 new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated")
                         .getObject();
-        tester.assertInfoMessages((Serializable[]) new String[] {success});
+        tester.assertInfoMessages(new String[] {success});
     }
 }

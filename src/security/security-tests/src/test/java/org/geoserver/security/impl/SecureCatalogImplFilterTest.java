@@ -23,7 +23,6 @@ import org.geoserver.security.*;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -115,9 +114,9 @@ public class SecureCatalogImplFilterTest {
                         catalog.list(
                                 eq(FeatureTypeInfo.class),
                                 capture(filterCapture),
-                                (Integer) isNull(),
-                                (Integer) isNull(),
-                                (SortBy) isNull()))
+                                isNull(),
+                                isNull(),
+                                isNull()))
                 .andStubAnswer(
                         new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
 

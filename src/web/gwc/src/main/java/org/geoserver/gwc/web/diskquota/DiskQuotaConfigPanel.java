@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -309,7 +308,7 @@ public class DiskQuotaConfigPanel extends Panel {
                 new AttributeModifier(
                         "title",
                         new StringResourceModel(
-                                "DiskQuotaConfigPanel.cleanUpFreq.title", (Component) null, null)));
+                                "DiskQuotaConfigPanel.cleanUpFreq.title", null, null)));
         add(cleanUpFreq);
         {
             Date lastRun = diskQuotaConfig.getLastCleanUpTime();
@@ -396,8 +395,7 @@ public class DiskQuotaConfigPanel extends Panel {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
             AttributeModifier attributeModifier =
-                    new AttributeModifier(
-                            "title", new StringResourceModel(titleKey, (Component) null, null));
+                    new AttributeModifier("title", new StringResourceModel(titleKey, null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

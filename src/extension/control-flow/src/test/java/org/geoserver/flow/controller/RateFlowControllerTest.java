@@ -28,8 +28,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         checkHeaders(firstRequest, "Any OGC request", 2, 1);
 
         // grab the cookie
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -71,8 +70,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         assertTrue(controller.requestIncoming(firstRequest, Integer.MAX_VALUE));
 
         // grab the cookie
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request

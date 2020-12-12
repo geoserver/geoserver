@@ -62,7 +62,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.mockito.Mockito;
@@ -508,7 +507,7 @@ public class VectorTileMapOutputFormatTest {
 
         request.setLayers(layers);
         request.setStyles(styles);
-        request.setBbox((Envelope) requestEnvelope);
+        request.setBbox(requestEnvelope);
         request.setCrs(requestEnvelope.getCoordinateReferenceSystem());
         if (requestEnvelope.getCoordinateReferenceSystem() == WGS84) {
             request.setSRS("EPSG:4326");

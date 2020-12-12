@@ -39,7 +39,7 @@ public class WicketHierarchyPrinter {
         printer.setClassDumpEnabled(dumpClass);
         printer.setValueDumpEnabled(dumpValue);
         if (c instanceof Page) {
-            printer.print((Page) c);
+            printer.print(c);
         } else {
             printer.print(c);
         }

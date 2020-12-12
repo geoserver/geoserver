@@ -23,8 +23,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // make three testing threads that will "process" forever, and will use the cookie to

@@ -210,7 +210,7 @@ public class MonitorFilterTest {
         // "Referrer" was misspelled in the HTTP spec, check if it works with the "correct"
         // spelling.
         MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
-        ((MockHttpServletRequest) req).addHeader("Referrer", "http://testhost/testpath");
+        req.addHeader("Referrer", "http://testhost/testpath");
         filter.doFilter(req, response(), chain);
 
         RequestData data = dao.getLast();

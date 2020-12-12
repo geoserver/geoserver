@@ -67,7 +67,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
             ResourceNameIterator iter =
                     new ResourceNameIterator(path, style, variation, locale, null, false);
             while (iter.hasNext()) {
-                String newPath = (String) iter.next();
+                String newPath = iter.next();
 
                 final Properties props = propertiesFactory.load(clazz, newPath);
                 if (props != null) {

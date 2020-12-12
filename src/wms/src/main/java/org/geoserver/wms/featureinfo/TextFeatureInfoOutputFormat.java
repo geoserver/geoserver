@@ -99,7 +99,7 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
                         if (feature instanceof SimpleFeature) {
                             f = (SimpleFeature) feature;
-                            schema = (SimpleFeatureType) f.getType();
+                            schema = f.getType();
                             types = schema.getAttributeDescriptors();
 
                             for (AttributeDescriptor descriptor : types) {

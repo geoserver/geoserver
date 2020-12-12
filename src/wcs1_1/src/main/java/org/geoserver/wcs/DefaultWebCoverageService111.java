@@ -346,7 +346,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             //
             // perform Read ...
             //
-            coverage = (GridCoverage2D) reader.read(readParameters);
+            coverage = reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
                 throw new IOException("The requested coverage could not be found.");
             }

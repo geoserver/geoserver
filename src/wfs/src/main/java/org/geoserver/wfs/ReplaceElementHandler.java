@@ -64,7 +64,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             }
         }
 
-        return (QName[]) typeNames.toArray(new QName[typeNames.size()]);
+        return typeNames.toArray(new QName[typeNames.size()]);
     }
 
     public void checkValidity(TransactionElement element, Map featureTypeInfos)

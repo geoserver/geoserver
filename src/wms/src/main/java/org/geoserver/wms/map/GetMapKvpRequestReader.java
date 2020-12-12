@@ -234,8 +234,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (httpRequest != null) {
             request.setRequestCharset(httpRequest.getCharacterEncoding());
             request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-            List<String> headerNames =
-                    (List<String>) EnumerationUtils.toList(httpRequest.getHeaderNames());
+            List<String> headerNames = EnumerationUtils.toList(httpRequest.getHeaderNames());
             for (String headerName : headerNames) {
                 request.putHttpRequestHeader(headerName, httpRequest.getHeader(headerName));
             }
@@ -516,7 +515,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
                 for (int i = 0; i < requestedLayerInfos.size(); i++) {
                     Object o = requestedLayerInfos.get(i);
-                    Style style = oldStyles.isEmpty() ? null : (Style) oldStyles.get(i);
+                    Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
 
                     if (o instanceof LayerGroupInfo) {
                         LayerGroupInfo groupInfo = (LayerGroupInfo) o;
@@ -596,7 +595,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 }
 
                 for (int i = 0; i < styles.size(); i++) {
-                    Style currStyle = (Style) getMap.getStyles().get(i);
+                    Style currStyle = getMap.getStyles().get(i);
                     if (currStyle == null)
                         throw new ServiceException(
                                 "Could not find a style for layer "
@@ -890,7 +889,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             for (Iterator i = featureId.iterator(); i.hasNext(); ) {
                 ids.add(filterFactory.featureId((String) i.next()));
             }
-            filters = Collections.singletonList((Filter) filterFactory.id(ids));
+            filters = Collections.singletonList(filterFactory.id(ids));
         }
 
         if (!cqlFilters.isEmpty()) {
@@ -1526,7 +1525,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // no raw kvp or request has no crs
         if (getMapRequest.getRawKvp() == null || getMapRequest.getCrs() == null) return null;
-        String wktString = (String) getMapRequest.getRawKvp().get("clip");
+        String wktString = getMapRequest.getRawKvp().get("clip");
         // not found
         if (wktString == null) return null;
         try {

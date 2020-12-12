@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.security.ldap;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.directory.server.annotations.CreateLdapServer;
@@ -156,7 +155,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
                                 LDAPAuthProviderPanel.class.getSimpleName()
                                         + ".connectionSuccessful")
                         .getObject();
-        tester.assertInfoMessages((Serializable[]) new String[] {success});
+        tester.assertInfoMessages(new String[] {success});
     }
 
     private void testFailedConnection() throws Exception {

@@ -150,7 +150,7 @@ public class CoverageAccessPage extends ServerAdminPage {
     public void save(boolean doReturn) {
         GeoServer gs = (GeoServer) geoServerModel.getObject();
         GeoServerInfo global = gs.getGlobal();
-        global.setCoverageAccess((CoverageAccessInfo) coverageModel.getObject());
+        global.setCoverageAccess(coverageModel.getObject());
         gs.save(global);
         if (doReturn) doReturn();
     }

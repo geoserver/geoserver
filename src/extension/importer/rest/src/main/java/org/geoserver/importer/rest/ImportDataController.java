@@ -113,7 +113,7 @@ public class ImportDataController extends ImportBaseController {
             response = lookupFile(fileName, dir);
             response.setParent((ImportContext) dir.getParent());
         }
-        return (ImportData) response;
+        return response;
     }
 
     Directory lookupDirectory(Long importId) {

@@ -55,8 +55,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
 
         assertEquals(new Envelope(-2, 2, -2, 2), ep.getModelObject());
         assertEquals(
-                DefaultGeographicCRS.WGS84,
-                ((ReferencedEnvelope) ep.getModelObject()).getCoordinateReferenceSystem());
+                DefaultGeographicCRS.WGS84, ep.getModelObject().getCoordinateReferenceSystem());
     }
 
     @Test
@@ -97,9 +96,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         ft.submit();
 
         assertEquals(new Envelope(-2, 2, -2, 2), ep.getModelObject());
-        assertEquals(
-                epsg4140,
-                ((ReferencedEnvelope) ep.getModelObject()).getCoordinateReferenceSystem());
+        assertEquals(epsg4140, ep.getModelObject().getCoordinateReferenceSystem());
     }
 
     @Test

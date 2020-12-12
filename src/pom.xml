@@ -2011,7 +2011,7 @@
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.4</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>
-  <pmd.version>6.20.0</pmd.version>
+  <pmd.version>6.29.0</pmd.version>
   <checkstyle.skip>false</checkstyle.skip>
   <qa>false</qa>
   <lint>deprecation,unchecked</lint>
@@ -2250,7 +2250,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>3.11.0</version>
+            <version>3.14.0</version>
             <dependencies>
               <dependency>
                 <groupId>net.sourceforge.pmd</groupId>

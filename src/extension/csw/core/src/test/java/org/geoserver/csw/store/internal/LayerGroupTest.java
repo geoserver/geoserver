@@ -25,7 +25,7 @@ public class LayerGroupTest extends CSWInternalTestSupport {
     private String id_buildingsandbridges;
 
     private String addLayerGroup(String name, PublishedInfo... publisheds) {
-        LayerGroupInfo group = (LayerGroupInfo) getCatalog().getFactory().createLayerGroup();
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
         group.setName(name);
         group.setTitle(name);
         group.getLayers().addAll(Arrays.asList(publisheds));

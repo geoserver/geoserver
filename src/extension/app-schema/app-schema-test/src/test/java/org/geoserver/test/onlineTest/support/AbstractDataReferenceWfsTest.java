@@ -107,7 +107,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
             setup.setFixture(fixture);
             // do an online/offline check
             Map<String, Boolean> online = setup.getOnlineMap();
-            Boolean available = (Boolean) online.get(fixtureId);
+            Boolean available = online.get(fixtureId);
             if (available == null || available.booleanValue()) {
                 // test the connection
                 try {

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import org.geoserver.wps.WPSException;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
-import org.locationtech.jts.geom.Geometry;
 
 /**
  * ComplexTransmuter interface
@@ -41,7 +40,7 @@ public abstract class ComplexTransmuter implements Transmuter {
         Parser parser = new Parser(config);
 
         try {
-            decoded = (Geometry) parser.parse(stream);
+            decoded = parser.parse(stream);
         } catch (Exception e) {
             throw new WPSException("NoApplicableCode", "Parsing error " + e);
         }

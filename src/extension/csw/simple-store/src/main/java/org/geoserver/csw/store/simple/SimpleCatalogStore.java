@@ -83,7 +83,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
 
         // sorting
         if (q.getSortBy() != null && q.getSortBy().length > 0) {
-            Feature[] features = (Feature[]) records.toArray(new Feature[records.size()]);
+            Feature[] features = records.toArray(new Feature[records.size()]);
             Comparator<Feature> comparator =
                     ComplexComparatorFactory.buildComparator(q.getSortBy());
             Arrays.sort(features, comparator);

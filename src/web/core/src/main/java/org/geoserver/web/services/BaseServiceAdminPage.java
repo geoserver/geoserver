@@ -8,7 +8,6 @@ package org.geoserver.web.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -141,7 +140,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(extensionPanels);
 
         SubmitLink submit =
-                new SubmitLink("submit", new StringResourceModel("save", (Component) null, null)) {
+                new SubmitLink("submit", new StringResourceModel("save", null, null)) {
                     @Override
                     public void onSubmit() {
                         try {
@@ -168,7 +167,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
     protected void onSave(IModel<T> infoModel, boolean doReturn) {
-        handleSubmit((T) infoModel.getObject());
+        handleSubmit(infoModel.getObject());
         // execute all submit hooks
         onSubmitHooks.forEach(
                 x -> {

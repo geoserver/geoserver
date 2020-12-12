@@ -175,7 +175,7 @@ public abstract class FeatureTypeSchemaBuilder {
         for (int i = 0; i < featureTypeInfos.length; i++) {
             String prefix = featureTypeInfos[i].getNamespace().getPrefix();
             @SuppressWarnings("unchecked")
-            List<FeatureTypeInfo> l = (List) ns2featureTypeInfos.get(prefix);
+            List<FeatureTypeInfo> l = ns2featureTypeInfos.get(prefix);
 
             if (l == null) {
                 l = new ArrayList<>();
@@ -195,7 +195,7 @@ public abstract class FeatureTypeSchemaBuilder {
             schema.setTargetNamespace(gmlSchema().getTargetNamespace());
         } else if (ns2featureTypeInfos.entrySet().size() == 1) {
             // only 1 namespace, write target namespace out
-            String targetPrefix = (String) ns2featureTypeInfos.keySet().iterator().next();
+            String targetPrefix = ns2featureTypeInfos.keySet().iterator().next();
             String targetNamespace = catalog.getNamespaceByPrefix(targetPrefix).getURI();
             schema.setTargetNamespace(targetNamespace);
             schema.getQNamePrefixToNamespaceMap().put(targetPrefix, targetNamespace);

@@ -512,7 +512,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
-        return list(of, filter, (Integer) null, (Integer) null, (SortBy) null);
+        return list(of, filter, null, null, null);
     }
 
     /**

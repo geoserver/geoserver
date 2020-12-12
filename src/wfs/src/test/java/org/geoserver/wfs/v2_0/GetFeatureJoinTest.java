@@ -68,15 +68,15 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs1.getSchema());
+        tb.init(fs1.getSchema());
         // tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
-        tb.init((SimpleFeatureType) fs2.getSchema());
+        tb.init(fs2.getSchema());
         // tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
-        tb.init((SimpleFeatureType) fs3.getSchema());
+        tb.init(fs3.getSchema());
         tb.remove("surfaceProperty");
         tb.remove("curveProperty");
         tb.remove("uriProperty");
@@ -184,7 +184,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     }
 
     void addFeature(SimpleFeatureStore store, String wkt, Object... atts) throws Exception {
-        SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) store.getSchema());
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder(store.getSchema());
         b.add(new WKTReader().read(wkt));
         for (Object att : atts) {
             b.add(att);

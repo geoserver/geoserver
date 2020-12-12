@@ -72,7 +72,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
     }
 
     double[] ordinates(List<Double> corner) {
-        Double[] objects = (Double[]) corner.toArray(new Double[corner.size()]);
+        Double[] objects = corner.toArray(new Double[corner.size()]);
         double[] result = new double[objects.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = objects[i];

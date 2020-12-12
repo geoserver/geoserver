@@ -27,7 +27,7 @@ public class DataAccessRuleDAOTest extends TestCase {
     public void setUp() throws Exception {
         // make a nice little catalog that does always tell us stuff is there
         Catalog catalog = createNiceMock(Catalog.class);
-        expect(catalog.getWorkspaceByName((String) anyObject()))
+        expect(catalog.getWorkspaceByName(anyObject()))
                 .andReturn(new WorkspaceInfoImpl())
                 .anyTimes();
         expect(catalog.getLayerByName((String) anyObject()))

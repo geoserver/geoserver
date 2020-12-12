@@ -38,7 +38,7 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
             final GWCConfig saneDefaults = defaultSettings.saneConfig();
             tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layerInfo, saneDefaults);
         } else {
-            GeoServerTileLayerInfo info = ((GeoServerTileLayer) tileLayer).getInfo();
+            GeoServerTileLayerInfo info = tileLayer.getInfo();
             tileLayerInfo = info.clone();
         }
         if (isNew) tileLayerInfo.setEnabled(true);

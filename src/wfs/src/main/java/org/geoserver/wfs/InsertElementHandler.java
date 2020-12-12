@@ -303,6 +303,6 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             LOGGER.finer("Insert was empty - does not need a FeatureSource");
         }
 
-        return (QName[]) typeNames.toArray(new QName[typeNames.size()]);
+        return typeNames.toArray(new QName[typeNames.size()]);
     }
 }

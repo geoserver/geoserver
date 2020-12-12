@@ -101,7 +101,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             String id,
                             IModel<InputLimit> itemModel,
                             Property<InputLimit> property) {
-                        InputLimit limit = (InputLimit) itemModel.getObject();
+                        InputLimit limit = itemModel.getObject();
                         String propertyName = property.getName();
                         if (propertyName.equals("type")) {
                             String type;

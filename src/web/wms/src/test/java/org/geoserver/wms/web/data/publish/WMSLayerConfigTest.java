@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
@@ -76,7 +75,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:panel:styles:defaultStyle", DropDownChoice.class);
 
         // check selecting something else works
-        StyleInfo target = ((List<StyleInfo>) new StylesModel().getObject()).get(0);
+        StyleInfo target = new StylesModel().getObject().get(0);
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();

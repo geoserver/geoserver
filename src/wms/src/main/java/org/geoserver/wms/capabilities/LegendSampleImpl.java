@@ -36,7 +36,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphic;
 import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geoserver.wms.legendgraphic.PNGLegendOutputFormat;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Default implementation of LegendSample. Implements samples caching to disk (png file on a
@@ -131,8 +130,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
             prefix = new String[] {"workspaces", style.getWorkspace().getName()};
         }
         String fileName = style.getFilename();
-        String[] pathParts =
-                (String[]) ArrayUtils.addAll(prefix, new String[] {"styles", fileName});
+        String[] pathParts = ArrayUtils.addAll(prefix, new String[] {"styles", fileName});
         String path = Paths.path(pathParts);
         return loader.get(path);
     }
@@ -173,7 +171,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
         Resource sampleLegendFolder = getSamplesFolder();
 
         legendGraphicRequest.setStrict(false);
-        legendGraphicRequest.setLayer((FeatureType) null);
+        legendGraphicRequest.setLayer(null);
         legendGraphicRequest.setStyle(style.getStyle());
         legendGraphicRequest.setFormat(pngOutputFormat.getContentType());
         Object legendGraphic = pngOutputFormat.produceLegendGraphic(legendGraphicRequest);

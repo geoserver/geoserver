@@ -143,7 +143,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         if (opacity == null) return;
         if (opacity instanceof Literal) {
             Literal lo = (Literal) opacity;
-            double value = ((Double) lo.evaluate(null, Double.class)).doubleValue();
+            double value = lo.evaluate(null, Double.class).doubleValue();
             translucentSymbolizers = translucentSymbolizers || value != 1;
         } else {
             // we cannot know, so we assume some will be non opaque
@@ -159,7 +159,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         if (color == null) return;
         if (color instanceof Literal) {
             Literal lc = (Literal) color;
-            String rgbColor = (String) lc.evaluate(null, String.class);
+            String rgbColor = lc.evaluate(null, String.class);
             colors.add(Color.decode(rgbColor));
         } else {
             unknownColors = true;

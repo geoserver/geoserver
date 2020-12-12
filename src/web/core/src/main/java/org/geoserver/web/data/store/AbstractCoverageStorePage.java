@@ -43,11 +43,8 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         if (format == null) {
             String msg = "Coverage Store factory not found";
             msg =
-                    (String)
-                            new ResourceModel(
-                                            "CoverageStoreEditPage.cantGetCoverageStoreFactory",
-                                            msg)
-                                    .getObject();
+                    new ResourceModel("CoverageStoreEditPage.cantGetCoverageStoreFactory", msg)
+                            .getObject();
             throw new IllegalArgumentException(msg);
         }
 

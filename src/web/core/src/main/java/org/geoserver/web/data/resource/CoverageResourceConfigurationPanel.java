@@ -86,7 +86,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
                     @Override
                     public void onClick() {
-                        CoverageInfo coverageInfo = (CoverageInfo) model.getObject();
+                        CoverageInfo coverageInfo = model.getObject();
                         try {
                             CoverageStoreInfo store = coverageInfo.getStore();
                             WorkspaceInfo workspace = store.getWorkspace();

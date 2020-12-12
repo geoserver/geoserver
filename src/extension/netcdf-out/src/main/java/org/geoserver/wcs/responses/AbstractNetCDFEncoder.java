@@ -618,7 +618,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sample = (int) unitConverter.convert(sample);
                 }
                 if (dataPacker != null) {
-                    sample = dataPacker.pack((double) sample);
+                    sample = dataPacker.pack(sample);
                 }
                 setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 break;

@@ -279,7 +279,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
                 }
             }
 
-            propNames = (String[]) allowedAtts.toArray(new String[allowedAtts.size()]);
+            propNames = allowedAtts.toArray(new String[allowedAtts.size()]);
         }
 
         return propNames;

@@ -51,19 +51,16 @@ import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
-import org.geotools.util.factory.Hints;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.util.ProgressListener;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
-    private static final String NULL_STRING = (String) null;
+    private static final String NULL_STRING = null;
 
     protected Authentication rwUser;
 
@@ -194,7 +191,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                                 }));
 
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getWorkspace((String) anyObject()))
+        expect(catalog.getWorkspace(anyObject()))
                 .andReturn(createNiceMock(WorkspaceInfo.class))
                 .anyTimes();
         replay(catalog);
@@ -341,10 +338,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
-            expect(
-                            ((FeatureTypeInfo) resource)
-                                    .getFeatureSource(
-                                            (ProgressListener) anyObject(), (Hints) anyObject()))
+            expect(((FeatureTypeInfo) resource).getFeatureSource(anyObject(), anyObject()))
                     .andReturn(fs)
                     .anyTimes();
         }
@@ -638,7 +632,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                                 capture(cap),
                                 EasyMock.anyInt(),
                                 EasyMock.anyInt(),
-                                (SortBy) anyObject()))
+                                anyObject()))
                 .andStubAnswer(
                         new IAnswer<CloseableIterator<T>>() {
                             @Override

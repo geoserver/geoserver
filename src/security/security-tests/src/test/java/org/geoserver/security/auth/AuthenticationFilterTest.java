@@ -1057,7 +1057,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(auth);
         assertEquals(1, response.getCookies().length);
-        Cookie cookie = (Cookie) response.getCookies()[0];
+        Cookie cookie = response.getCookies()[0];
 
         request = createRequest("/foo/bar");
         request.setMethod("GET");
@@ -1158,7 +1158,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         // check for cancel cookie
         assertEquals(1, response.getCookies().length);
-        Cookie cancelCookie = (Cookie) response.getCookies()[0];
+        Cookie cancelCookie = response.getCookies()[0];
         assertNull(cancelCookie.getValue());
         updateUser("ug1", "abc@xyz.com", true);
     }
@@ -1466,7 +1466,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
         assertEquals(1, response.getCookies().length);
-        Cookie cookie = (Cookie) response.getCookies()[0];
+        Cookie cookie = response.getCookies()[0];
         assertNotNull(cookie.getValue());
 
         // check logout
@@ -1489,7 +1489,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNotNull(tmp);
         assertTrue(tmp.endsWith(GeoServerLogoutFilter.URL_AFTER_LOGOUT));
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        Cookie cancelCookie = (Cookie) response.getCookies()[0];
+        Cookie cancelCookie = response.getCookies()[0];
         assertNull(cancelCookie.getValue());
 
         // check no remember me for root user
@@ -1542,7 +1542,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertTrue(tmp.endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FORM));
         // check for cancel cookie
         assertEquals(1, response.getCookies().length);
-        cancelCookie = (Cookie) response.getCookies()[0];
+        cancelCookie = response.getCookies()[0];
         assertNull(cancelCookie.getValue());
         updateUser("ug1", testUserName, true);
     }

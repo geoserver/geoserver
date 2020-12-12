@@ -456,7 +456,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         for (int t = 0; t < length; t++) {
             if (layerStyles[t] instanceof NamedStyle) {
                 layers.add(currLayer);
-                String styleName = ((NamedStyle) layerStyles[t]).getName();
+                String styleName = layerStyles[t].getName();
                 s = wms.getStyleByName(styleName);
 
                 if (s == null) {

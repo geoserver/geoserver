@@ -155,7 +155,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         workspaceNameContainer.add(workspaceNameTextField);
 
         // store chooser
-        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+        WorkspaceInfo ws = workspace.getObject();
         store = new StoreModel<StoreInfo>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
                 new DropDownChoice<StoreInfo>(
@@ -394,7 +394,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         ImportSourcePanel panel = (ImportSourcePanel) sourcePanel.get("content");
         ImportData source = panel.createImportSource();
 
-        WorkspaceInfo targetWorkspace = (WorkspaceInfo) workspace.getObject();
+        WorkspaceInfo targetWorkspace = workspace.getObject();
         if (targetWorkspace == null) {
             Catalog cat = getCatalog();
 
@@ -424,7 +424,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
     }
 
     void updateTargetStore(AjaxRequestTarget target) {
-        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+        WorkspaceInfo ws = workspace.getObject();
         store.setObject(
                 ws != null
                         ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws)

@@ -91,7 +91,7 @@ public class DataLinkEditor extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                                        ResourceInfo ri = resourceModel.getObject();
                                         ri.getDataLinks().remove(getModelObject());
                                         updateLinksVisibility();
                                         target.add(container);
@@ -115,7 +115,7 @@ public class DataLinkEditor extends Panel {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                        ResourceInfo ri = resourceModel.getObject();
                         DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();
                         link.setType("text/plain");
                         ri.getDataLinks().add(link);

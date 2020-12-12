@@ -55,7 +55,7 @@ public class GridPanel extends FormComponentPanel<GridEnvelope2D> {
     }
 
     private void updateFields() {
-        GridEnvelope2D e = (GridEnvelope2D) getModelObject();
+        GridEnvelope2D e = getModelObject();
         if (e != null) {
             this.minX = (int) e.getMinX();
             this.minY = (int) e.getMinY();

@@ -39,7 +39,7 @@ public class ModuleStatusTest {
         expect(appContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(appContext.getBeanNamesForType(ModuleStatus.class))
                 .andStubReturn(new String[] {"testStatus", "defaultStatus"});
-        expect(appContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
+        expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
         expect(appContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
         EasyMock.replay(status, appContext);
 

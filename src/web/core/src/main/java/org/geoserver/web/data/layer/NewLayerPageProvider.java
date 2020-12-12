@@ -119,8 +119,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
 
             } else if (store instanceof WMTSStoreInfo) {
                 WMTSStoreInfo wmsInfo = (WMTSStoreInfo) store;
-                WMTSStoreInfo expandedStore =
-                        (WMTSStoreInfo) getCatalog().getResourcePool().clone(wmsInfo, true);
+                WMTSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
                 builder.setStore(store);

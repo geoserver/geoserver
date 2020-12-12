@@ -48,7 +48,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
                         @Override
                         public String getObject() {
-                            StoreInfo si = (StoreInfo) itemModel.getObject();
+                            StoreInfo si = itemModel.getObject();
                             return (String) getPropertyValue(si);
                         }
                     };
@@ -146,7 +146,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
 
     public IModel<StoreInfo> newModel(StoreInfo object) {
-        return new StoreInfoDetachableModel((StoreInfo) object);
+        return new StoreInfoDetachableModel(object);
     }
 
     /**

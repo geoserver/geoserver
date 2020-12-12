@@ -98,8 +98,7 @@ public class RecordsTest extends TestCase {
     private void assertRecordElement(Feature f, String elementName, Object... values) {
         AttributeDescriptor identifierDescriptor = CSWRecordDescriptor.getDescriptor(elementName);
         Collection<Property> propertyList = f.getProperties(identifierDescriptor.getName());
-        Property[] properties =
-                (Property[]) propertyList.toArray(new Property[propertyList.size()]);
+        Property[] properties = propertyList.toArray(new Property[propertyList.size()]);
         assertEquals(properties.length, values.length);
         for (int i = 0; i < properties.length; i++) {
             ComplexAttribute cad = (ComplexAttribute) properties[i];

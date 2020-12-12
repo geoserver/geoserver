@@ -144,7 +144,7 @@ public class KvpRequestReader {
     public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
         for (Map.Entry<String, Object> entry : kvp.entrySet()) {
-            String property = (String) entry.getKey();
+            String property = entry.getKey();
             Object value = entry.getValue();
 
             if (value == null) {

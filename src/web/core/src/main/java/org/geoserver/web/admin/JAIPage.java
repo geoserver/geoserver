@@ -68,7 +68,7 @@ public class JAIPage extends ServerAdminPage {
         addPngEncoderEditor(form);
         CheckBox checkBoxMosaic = new CheckBox("allowNativeMosaic");
         CheckBox checkBoxWarp = new CheckBox("allowNativeWarp");
-        JAIInfo info = (JAIInfo) jaiModel.getObject();
+        JAIInfo info = jaiModel.getObject();
         JAIEXTInfo je = null;
         boolean isJAIExtEnabled = ImageWorker.isJaiExtEnabled();
         if (isJAIExtEnabled) {
@@ -112,9 +112,9 @@ public class JAIPage extends ServerAdminPage {
     }
 
     private void save(boolean doReturn) {
-        GeoServer gs = (GeoServer) geoServerModel.getObject();
+        GeoServer gs = geoServerModel.getObject();
         GeoServerInfo global = gs.getGlobal();
-        global.setJAI((JAIInfo) jaiModel.getObject());
+        global.setJAI(jaiModel.getObject());
         gs.save(global);
         if (doReturn) doReturn();
     }

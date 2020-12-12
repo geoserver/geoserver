@@ -226,7 +226,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                 layerDetails.setType((ruleFormData.layerDetails.layerType));
                                 rules.save(ruleFormData.rule.getId(), layerDetails);
                             } else {
-                                rules.save(ruleFormData.rule.getId(), (LayerDetails) null);
+                                rules.save(ruleFormData.rule.getId(), null);
                             }
                             doReturn(GeofenceServerPage.class);
                         } catch (DuplicateKeyException e) {
@@ -813,7 +813,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         private static final long serialVersionUID = -7478943956804313995L;
 
         public Object getDisplayValue(LayerType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(LayerType object, int index) {
@@ -826,7 +826,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         private static final long serialVersionUID = -7478943956804313995L;
 
         public Object getDisplayValue(GrantType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(GrantType object, int index) {
@@ -839,7 +839,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         private static final long serialVersionUID = -7478943956804313995L;
 
         public Object getDisplayValue(AccessType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(AccessType object, int index) {
@@ -852,7 +852,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         private static final long serialVersionUID = -7478943956804313995L;
 
         public Object getDisplayValue(CatalogMode object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(CatalogMode object, int index) {

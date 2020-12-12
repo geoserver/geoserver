@@ -202,7 +202,7 @@ abstract class DimensionHelper {
         try {
             // do we have time?
             WMTSLayerInfo wli = (WMTSLayerInfo) layerInfo.getResource();
-            WMTSLayer wl = (WMTSLayer) wli.getWMTSLayer(null);
+            WMTSLayer wl = wli.getWMTSLayer(null);
             for (String dimName : wl.getDimensions().keySet()) {
                 if (TIME.equalsIgnoreCase(dimName)) {
                     Dimension timeDimension = wl.getDimension(dimName);

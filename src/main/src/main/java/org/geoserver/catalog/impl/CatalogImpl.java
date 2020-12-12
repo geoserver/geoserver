@@ -318,19 +318,19 @@ public class CatalogImpl implements Catalog {
     }
 
     public DataStoreInfo getDataStore(String id) {
-        return (DataStoreInfo) getStore(id, DataStoreInfo.class);
+        return getStore(id, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(String name) {
-        return (DataStoreInfo) getStoreByName(name, DataStoreInfo.class);
+        return getStoreByName(name, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(String workspaceName, String name) {
-        return (DataStoreInfo) getStoreByName(workspaceName, name, DataStoreInfo.class);
+        return getStoreByName(workspaceName, name, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(WorkspaceInfo workspace, String name) {
-        return (DataStoreInfo) getStoreByName(workspace, name, DataStoreInfo.class);
+        return getStoreByName(workspace, name, DataStoreInfo.class);
     }
 
     public List<DataStoreInfo> getDataStoresByWorkspace(String workspaceName) {
@@ -370,11 +370,11 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageStoreInfo getCoverageStore(String id) {
-        return (CoverageStoreInfo) getStore(id, CoverageStoreInfo.class);
+        return getStore(id, CoverageStoreInfo.class);
     }
 
     public CoverageStoreInfo getCoverageStoreByName(String name) {
-        return (CoverageStoreInfo) getStoreByName(name, CoverageStoreInfo.class);
+        return getStoreByName(name, CoverageStoreInfo.class);
     }
 
     public CoverageStoreInfo getCoverageStoreByName(String workspaceName, String name) {
@@ -570,11 +570,11 @@ public class CatalogImpl implements Catalog {
     }
 
     public FeatureTypeInfo getFeatureType(String id) {
-        return (FeatureTypeInfo) getResource(id, FeatureTypeInfo.class);
+        return getResource(id, FeatureTypeInfo.class);
     }
 
     public FeatureTypeInfo getFeatureTypeByName(String ns, String name) {
-        return (FeatureTypeInfo) getResourceByName(ns, name, FeatureTypeInfo.class);
+        return getResourceByName(ns, name, FeatureTypeInfo.class);
     }
 
     public FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name) {
@@ -586,7 +586,7 @@ public class CatalogImpl implements Catalog {
     }
 
     public FeatureTypeInfo getFeatureTypeByName(String name) {
-        return (FeatureTypeInfo) getResourceByName(name, FeatureTypeInfo.class);
+        return getResourceByName(name, FeatureTypeInfo.class);
     }
 
     public List<FeatureTypeInfo> getFeatureTypes() {
@@ -614,15 +614,15 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageInfo getCoverage(String id) {
-        return (CoverageInfo) getResource(id, CoverageInfo.class);
+        return getResource(id, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(String ns, String name) {
-        return (CoverageInfo) getResourceByName(ns, name, CoverageInfo.class);
+        return getResourceByName(ns, name, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
-        return (CoverageInfo) getResourceByName(ns, name, CoverageInfo.class);
+        return getResourceByName(ns, name, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(Name name) {
@@ -630,7 +630,7 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageInfo getCoverageByName(String name) {
-        return (CoverageInfo) getResourceByName(name, CoverageInfo.class);
+        return getResourceByName(name, CoverageInfo.class);
     }
 
     public List<CoverageInfo> getCoverages() {

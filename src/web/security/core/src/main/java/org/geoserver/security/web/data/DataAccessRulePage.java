@@ -150,7 +150,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
     class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
         public Object getDisplayValue(CatalogMode cm) {
-            return (String) new ParamResourceModel(cm.name(), getPage()).getObject();
+            return new ParamResourceModel(cm.name(), getPage()).getObject();
         }
 
         public String getIdValue(CatalogMode cm, int index) {

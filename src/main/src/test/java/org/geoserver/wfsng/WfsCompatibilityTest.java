@@ -59,7 +59,7 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
                 xp.load(
                         getClass().getResourceAsStream("featuretype.xml"),
                         FeatureTypeInfoImpl.class);
-        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        ftInfo.setStore(storeInfo);
         getCatalog().add(ftInfo);
 
         DataAccess<? extends FeatureType, ? extends Feature> store = storeInfo.getDataStore(null);

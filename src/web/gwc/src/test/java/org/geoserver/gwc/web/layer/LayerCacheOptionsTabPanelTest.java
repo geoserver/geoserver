@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -307,7 +306,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure that the Component is rendered again
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown
-        tester.assertErrorMessages((Serializable[]) new String[] {"Filter should not be empty"});
+        tester.assertErrorMessages(new String[] {"Filter should not be empty"});
         // Create new form tester for the final submit
         FormTester form = tester.newFormTester("form");
         // Save the changes

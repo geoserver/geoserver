@@ -675,7 +675,7 @@ public class ManifestLoader {
                                 at.entrySet().iterator();
                         while (it.hasNext()) {
                             java.util.Map.Entry<Object, Object> entry = it.next();
-                            String attrName = ((Attributes.Name) entry.getKey()).toString();
+                            String attrName = entry.getKey().toString();
                             ret.put(attrName, entry.getValue().toString());
                         }
                     } else {
@@ -684,7 +684,7 @@ public class ManifestLoader {
                                 at.entrySet().iterator();
                         while (it.hasNext()) {
                             java.util.Map.Entry<Object, Object> entry = it.next();
-                            String attrName = ((Attributes.Name) entry.getKey()).toString();
+                            String attrName = entry.getKey().toString();
 
                             // search into including array to filter over attributes
                             int i = 0;
@@ -739,7 +739,7 @@ public class ManifestLoader {
                     // for each attribute
                     final Iterator<Object> it = at.keySet().iterator();
                     while (it.hasNext()) {
-                        String attrName = ((Attributes.Name) it.next()).toString();
+                        String attrName = it.next().toString();
                         boolean skip = false;
                         // search into including array to filter over attributes
                         int i = 0;

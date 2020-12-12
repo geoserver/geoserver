@@ -2003,6 +2003,6 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name feature) throws IOException {
         DataAccess<FeatureType, Feature> mfDataAccess =
                 AppSchemaDataAccessRegistry.getDataAccess(feature);
-        return (FeatureSource) mfDataAccess.getFeatureSource(feature);
+        return mfDataAccess.getFeatureSource(feature);
     }
 }

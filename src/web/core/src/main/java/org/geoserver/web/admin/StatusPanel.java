@@ -327,7 +327,7 @@ public class StatusPanel extends Panel {
         CloseableIterator<DataStoreInfo> i = getDataStores();
         try {
             while (i.hasNext()) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+                DataStoreInfo meta = i.next();
 
                 if (!meta.isEnabled()) {
                     // Don't count locks from disabled datastores.

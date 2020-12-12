@@ -181,7 +181,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     void addZoomLevel(AjaxRequestTarget target) {
-        ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
+        ReferencedEnvelope bbox = bounds.getModelObject();
         if (null == bbox) {
             String message =
                     new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
@@ -216,7 +216,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     void computeBounds() {
         // perform manual processing of the required fields
         CoordinateReferenceSystem coordSys;
-        coordSys = (CoordinateReferenceSystem) crs.getModelObject();
+        coordSys = crs.getModelObject();
         if (coordSys == null) {
             bounds.error(
                     new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet")
@@ -357,7 +357,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             units.setOutputMarkupId(true);
             metersPerUnit.setOutputMarkupId(true);
 
-            updateUnits((CoordinateReferenceSystem) getModelObject());
+            updateUnits(getModelObject());
 
             add(units);
             add(metersPerUnit);
@@ -412,7 +412,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         private void updateUnits() {
-            CoordinateReferenceSystem crs = (CoordinateReferenceSystem) getConvertedInput();
+            CoordinateReferenceSystem crs = getConvertedInput();
             updateUnits(crs);
         }
 

@@ -149,11 +149,11 @@ public abstract class TransactionRequest extends RequestObject {
 
             for (TransactionElement element : elements) {
                 if (element instanceof Insert) {
-                    tx.getInsert().add(((Insert) element).getAdaptee());
+                    tx.getInsert().add(element.getAdaptee());
                 } else if (element instanceof Update) {
-                    tx.getUpdate().add(((Update) element).getAdaptee());
+                    tx.getUpdate().add(element.getAdaptee());
                 } else if (element instanceof Delete) {
-                    tx.getDelete().add(((Delete) element).getAdaptee());
+                    tx.getDelete().add(element.getAdaptee());
                 }
                 // no replace in wfs 1.1, cannot be there
             }

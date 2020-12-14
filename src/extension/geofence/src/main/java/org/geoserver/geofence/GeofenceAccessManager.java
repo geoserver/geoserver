@@ -8,13 +8,29 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.*;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.LayerAttribute;
@@ -22,6 +38,7 @@ import org.geoserver.geofence.core.model.enums.AccessType;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
+import org.geoserver.geofence.services.dto.CatalogModeDTO;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
@@ -33,8 +50,19 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.security.*;
+import org.geoserver.security.AccessLimits;
+import org.geoserver.security.CatalogMode;
+import org.geoserver.security.CoverageAccessLimits;
+import org.geoserver.security.DataAccessLimits;
+import org.geoserver.security.LayerGroupAccessLimits;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.StyleAccessLimits;
+import org.geoserver.security.VectorAccessLimits;
+import org.geoserver.security.WMSAccessLimits;
+import org.geoserver.security.WMTSAccessLimits;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
@@ -94,6 +122,8 @@ public class GeofenceAccessManager
 
     private final GeoFenceConfigurationManager configurationManager;
 
+    private LayerGroupContainmentCache groupsCache;
+
     // list of accepted roles, for the useRolesToFilter option
     // List<String> roles = new ArrayList<String>();
 
@@ -105,6 +135,7 @@ public class GeofenceAccessManager
         this.rules = rules;
         this.catalog = catalog;
         this.configurationManager = configurationManager;
+        this.groupsCache = new LayerGroupContainmentCache(catalog);
     }
 
     boolean isAdmin(Authentication user) {
@@ -247,108 +278,236 @@ public class GeofenceAccessManager
 
     @Override
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerInfo) {
-        // return getAccessLimits(user, layerInfo.getResource());
-        LOGGER.fine("Not limiting layergroups");
-        return null;
-        // TODO
+        return getAccessLimits(user, layerInfo, Collections.emptyList());
     }
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
         LOGGER.log(Level.FINE, "Getting access limits for Layer {0}", layer.getName());
-        return getAccessLimits(user, layer.getResource());
+        return getAccessLimits(user, layer, Collections.emptyList());
     }
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         LOGGER.log(Level.FINE, "Getting access limits for Resource {0}", resource.getName());
         // extract the user name
-        String username = null;
+        String workspace = resource.getStore().getWorkspace().getName();
+        String layer = resource.getName();
+        return (DataAccessLimits)
+                getAccessLimits(user, resource, layer, workspace, Collections.emptyList());
+    }
+
+    @Override
+    public DataAccessLimits getAccessLimits(
+            Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+        String workspace = layer.getResource().getStore().getWorkspace().getName();
+        String layerName = layer.getName();
+        return (DataAccessLimits) getAccessLimits(user, layer, layerName, workspace, containers);
+    }
+
+    @Override
+    public LayerGroupAccessLimits getAccessLimits(
+            Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
+        WorkspaceInfo ws = layerGroup.getWorkspace();
+        String workspace = ws != null ? ws.getName() : null;
+        String layer = layerGroup.getName();
+        return (LayerGroupAccessLimits)
+                getAccessLimits(user, layerGroup, layer, workspace, containers);
+    }
+
+    private AccessLimits getAccessLimits(
+            Authentication user,
+            CatalogInfo info,
+            String layer,
+            String workspace,
+            List<LayerGroupInfo> containers) {
         if ((user != null) && !(user instanceof AnonymousAuthenticationToken)) {
             // shortcut, if the user is the admin, he can do everything
             if (isAdmin(user)) {
                 LOGGER.log(
                         Level.FINE,
                         "Admin level access, returning " + "full rights for layer {0}",
-                        resource.prefixedName());
-
-                return buildAccessLimits(resource, AccessInfo.ALLOW_ALL);
-            }
-
-            username = user.getName();
-            if (username != null && username.isEmpty()) {
-                username = null;
+                        layer);
+                return buildAdminAccessLimits(info);
             }
         }
 
-        // get info from the current request
-        String service = null;
-        String request = null;
-        Request owsRequest = Dispatcher.REQUEST.get();
-        if (owsRequest != null) {
-            service = owsRequest.getService();
-            request = owsRequest.getRequest();
-        }
-
-        // get the resource info
-        String layer = resource.getName();
-        StoreInfo store = resource.getStore();
-        WorkspaceInfo ws = store.getWorkspace();
-        String workspace = ws.getName();
-
-        // get the request infos
-        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
-        setRuleFilterUserOrRole(user, ruleFilter);
-
-        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
-        if (service != null) {
-            if ("*".equals(service)) {
-                ruleFilter.setService(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setService(service);
-            }
-        } else {
-            ruleFilter.setService(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-
-        if (request != null) {
-            if ("*".equals(request)) {
-                ruleFilter.setRequest(RuleFilter.SpecialFilterType.ANY);
-            } else {
-                ruleFilter.setRequest(request);
-            }
-        } else {
-            ruleFilter.setRequest(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-        ruleFilter.setWorkspace(workspace);
-        ruleFilter.setLayer(layer);
-
-        String sourceAddress = retrieveCallerIpAddress();
-        if (sourceAddress != null) {
-            ruleFilter.setSourceAddress(sourceAddress);
-        } else {
-            LOGGER.log(Level.WARNING, "No source IP address found");
-            ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
-        }
-
-        LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);
-
+        RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user);
         AccessInfo rule = rules.getAccessInfo(ruleFilter);
+        Pair<Geometry, AccessInfo> containerRule =
+                getAllowedAreaAndAccessInfoFromContainers(info, containers, user);
+        if (rule == null) rule = AccessInfo.DENY_ALL;
 
-        if (rule == null) {
-            rule = AccessInfo.DENY_ALL;
+        AccessLimits limits;
+        if (info instanceof LayerGroupInfo) {
+            limits = buildLayerGroupAccessLimits(rule, containerRule);
+        } else if (info instanceof ResourceInfo) {
+            limits = buildResourceAccessLimits((ResourceInfo) info, rule, containerRule);
+        } else {
+            limits =
+                    buildResourceAccessLimits(
+                            ((LayerInfo) info).getResource(), rule, containerRule);
         }
 
-        DataAccessLimits limits = buildAccessLimits(resource, rule);
         LOGGER.log(
                 Level.FINE,
                 "Returning {0} for layer {1} and user {2}",
-                new Object[] {limits, resource.prefixedName(), username});
+                new Object[] {limits, layer, getUserNameFromAuth(user)});
 
         return limits;
     }
 
-    /** @param user */
+    // build the accessLimits for an admin user
+    private AccessLimits buildAdminAccessLimits(CatalogInfo info) {
+        AccessLimits accessLimits;
+        if (info instanceof LayerGroupInfo)
+            accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL, null);
+        else if (info instanceof ResourceInfo)
+            accessLimits =
+                    buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
+        else
+            accessLimits =
+                    buildResourceAccessLimits(
+                            ((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null);
+        return accessLimits;
+    }
+
+    private Pair<Geometry, AccessInfo> getAllowedAreaAndAccessInfoFromContainers(
+            CatalogInfo resource, List<LayerGroupInfo> containers, Authentication user) {
+        boolean directAccess = containers == null || containers.isEmpty();
+        Request req = Dispatcher.REQUEST.get();
+        String service = req != null ? req.getService() : null;
+        boolean isWms = service != null && service.equalsIgnoreCase("WMS");
+        Pair<Geometry, AccessInfo> containerRule = null;
+        if (directAccess && isWms) {
+            containerRule = getContainerRuleForLayerDirectAccess(resource, user);
+        } else {
+            containerRule = handleContainers(containers, user);
+        }
+        return containerRule;
+    }
+
+    private String getUserNameFromAuth(Authentication authentication) {
+        String username = authentication != null ? authentication.getName() : null;
+        if (username != null && username.isEmpty()) {
+            username = null;
+        }
+        return username;
+    }
+
+    private Pair<Geometry, AccessInfo> handleContainers(
+            List<LayerGroupInfo> groups, Authentication user) {
+        Geometry allowedArea = null;
+        MutablePair<Geometry, AccessInfo> lessRestrictiveRule = new MutablePair<>(null, null);
+        for (LayerGroupInfo lgi : groups) {
+            WorkspaceInfo ws = lgi.getWorkspace();
+            String workspace = ws != null ? ws.getName() : null;
+            String layer = lgi.getName();
+            RuleFilter filter = buildRuleFilter(workspace, layer, user);
+            AccessInfo accessInfo = rules.getAccessInfo(filter);
+            allowedArea =
+                    getReprojectArea(accessInfo, lgi.getBounds().getCoordinateReferenceSystem());
+            lessRestrictiveRule =
+                    getLessRestrictiveRule(
+                            lessRestrictiveRule, new MutablePair<>(allowedArea, accessInfo));
+        }
+        return lessRestrictiveRule;
+    }
+
+    // get the AccessInfo from the layer's containers returning a tuple with
+    // the Geometry of the allowed area if found and the less restrictive accessInfo
+    // among the ones of associated layerGroups
+    private Pair<Geometry, AccessInfo> getContainerRuleForLayerDirectAccess(
+            Object resource, Authentication user) {
+        MutablePair<Geometry, AccessInfo> result = new MutablePair<>(null, null);
+        Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries;
+        if (resource instanceof ResourceInfo)
+            summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
+        else if (resource instanceof LayerInfo)
+            summaries = groupsCache.getContainerGroupsFor(((LayerInfo) resource).getResource());
+        else summaries = groupsCache.getContainerGroupsFor((LayerGroupInfo) resource);
+
+        for (LayerGroupContainmentCache.LayerGroupSummary gs : summaries) {
+            LayerGroupInfo.Mode mode = gs.getMode();
+            if (mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER)) {
+                // opaque mode deny access for the layer
+                AccessInfo newInfo = AccessInfo.DENY_ALL;
+                result =
+                        getLessRestrictiveRule(
+                                result, new MutablePair<Geometry, AccessInfo>(null, newInfo));
+            } else if (!mode.equals(LayerGroupInfo.Mode.SINGLE)) {
+                // not opaque and not single mode, the container rule
+                // should override the layer rule
+                String workspace = gs.getWorkspace();
+                String layer = gs.getName();
+                RuleFilter filter = buildRuleFilter(workspace, layer, user);
+                AccessInfo newAccess = rules.getAccessInfo(filter);
+                Geometry allowedArea = getAllowedAreaAsGeomLayerGroup(newAccess, layer);
+                MutablePair<Geometry, AccessInfo> newInfo =
+                        new MutablePair<>(allowedArea, newAccess);
+                result = getLessRestrictiveRule(result, newInfo);
+            }
+        }
+        return result;
+    }
+
+    private Geometry getAllowedAreaAsGeomLayerGroup(AccessInfo layerGroupInfo, String layerGroup) {
+        String allowedAreaWKT = layerGroupInfo.getAreaWkt();
+        if (allowedAreaWKT != null) {
+            LayerGroupInfo gi = catalog.getLayerGroupByName(layerGroup);
+            CoordinateReferenceSystem crs = gi.getBounds().getCoordinateReferenceSystem();
+            return getReprojectArea(layerGroupInfo, crs);
+        }
+
+        return null;
+    }
+
+    // compares two access info and return the less restrictive one
+    private MutablePair<Geometry, AccessInfo> getLessRestrictiveRule(
+            MutablePair<Geometry, AccessInfo> current, MutablePair<Geometry, AccessInfo> newInfo) {
+        AccessInfo currentAccess = current.getRight();
+        AccessInfo newAccess = newInfo.getRight();
+        MutablePair<Geometry, AccessInfo> result = current;
+        if (currentAccess == null) {
+            result = newInfo;
+
+        } else if (newAccess != null) {
+
+            if (currentAccess.getGrant().equals(GrantType.DENY)) {
+                result = newInfo;
+
+            } else if (currentAccess.getGrant().equals(GrantType.LIMIT)
+                    && newAccess.getGrant().equals(GrantType.ALLOW)) {
+                result = newInfo;
+
+            } else if (currentAccess.getGrant().equals(newAccess.getGrant())) {
+                result = getLessRestrictiveAllowedArea(current, newInfo);
+            }
+        }
+        return result;
+    }
+
+    // compares two accessRules applied to a LayerGroup and will return the less restrictive.
+    // if one of them has null allowedArea it will be priviledged. If both have the areas are
+    // merged.
+    private MutablePair<Geometry, AccessInfo> getLessRestrictiveAllowedArea(
+            MutablePair<Geometry, AccessInfo> current,
+            MutablePair<Geometry, AccessInfo> newAccess) {
+        Geometry currentAllowedArea = current.getLeft();
+        Geometry newAllowedArea = newAccess.getLeft();
+        MutablePair<Geometry, AccessInfo> result;
+        if (currentAllowedArea == null) {
+            result = current;
+        } else if (newAllowedArea == null) {
+            result = newAccess;
+        } else {
+            Geometry mergedAllowedArea = currentAllowedArea.union(newAllowedArea);
+            current.setLeft(mergedAllowedArea);
+            result = current;
+        }
+        return result;
+    }
+
     private void setRuleFilterUserOrRole(Authentication user, RuleFilter ruleFilter) {
         if (user != null) {
             GeoFenceConfiguration config = configurationManager.getConfiguration();
@@ -376,11 +535,21 @@ public class GeofenceAccessManager
         }
     }
 
-    /** */
-    DataAccessLimits buildAccessLimits(ResourceInfo resource, AccessInfo rule) {
-        // basic filter
-        Filter readFilter = (rule.getGrant() == GrantType.ALLOW) ? Filter.INCLUDE : Filter.EXCLUDE;
-        Filter writeFilter = (rule.getGrant() == GrantType.ALLOW) ? Filter.INCLUDE : Filter.EXCLUDE;
+    /**
+     * Build the access info for a Resource, taking into account the containerRule if any exists
+     *
+     * @param info the ResourceInfo object for which the AccessLimits are requested
+     * @param rule the AccessInfo associated to the resource
+     * @param containerRule a tuple with the container's allowedArea Geometry and AccessInfo
+     * @return the AccessLimits of the Resource
+     */
+    AccessLimits buildResourceAccessLimits(
+            ResourceInfo info, AccessInfo rule, Pair<Geometry, AccessInfo> containerRule) {
+
+        GrantType actualGrant = getGrant(rule, containerRule);
+        boolean includeFilter = actualGrant == GrantType.ALLOW || actualGrant == GrantType.LIMIT;
+        Filter readFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
+        Filter writeFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
         try {
             if (rule.getCqlFilterRead() != null) {
                 readFilter = ECQL.toFilter(rule.getCqlFilterRead());
@@ -399,8 +568,164 @@ public class GeofenceAccessManager
                 toPropertyNames(rule.getAttributes(), PropertyAccessMode.WRITE);
 
         // reproject the area if necessary
+        CoordinateReferenceSystem crs = getCrsFromInfo(info);
+        Geometry containersAllowedArea = containerRule != null ? containerRule.getLeft() : null;
+        Geometry reprojArea =
+                containersAllowedArea == null ? getReprojectArea(rule, crs) : containersAllowedArea;
+        CatalogMode catalogMode = getCatalogMode(rule, containerRule);
+
+        LOGGER.log(
+                Level.FINE,
+                "Returning mode {0} for resource {1}",
+                new Object[] {catalogMode, info});
+
+        AccessLimits accessLimits = null;
+        if (info instanceof FeatureTypeInfo) {
+            // merge the area among the filters
+            if (reprojArea != null) {
+                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(reprojArea));
+                readFilter = mergeFilter(readFilter, areaFilter);
+                writeFilter = mergeFilter(writeFilter, areaFilter);
+            }
+
+            accessLimits =
+                    new VectorAccessLimits(
+                            catalogMode, readAttributes, readFilter, writeAttributes, writeFilter);
+
+        } else if (info instanceof CoverageInfo) {
+            accessLimits =
+                    new CoverageAccessLimits(
+                            catalogMode, readFilter, toMultiPoly(reprojArea), null);
+
+        } else if (info instanceof WMSLayerInfo) {
+            accessLimits =
+                    new WMSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea), true);
+
+        } else if (info instanceof WMTSLayerInfo) {
+            accessLimits = new WMTSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea));
+        } else {
+            throw new IllegalArgumentException("Don't know how to handle resource " + info);
+        }
+
+        return accessLimits;
+    }
+
+    /**
+     * @param rule the AccessInfo associated to the LayerGroup
+     * @param containerRule a tuple with the container's allowedArea Geometry and AccessInfo
+     * @return the AccessLimits of the LayerGroup
+     */
+    AccessLimits buildLayerGroupAccessLimits(
+            AccessInfo rule, Pair<Geometry, AccessInfo> containerRule) {
+        GrantType grant = getGrant(rule, containerRule);
+        // the SecureCatalog will grant access  to the layerGroup
+        // if AccessLimits are null
+        if (grant.equals(GrantType.ALLOW) || grant.equals(GrantType.LIMIT)) return null;
+        else return new LayerGroupAccessLimits(getCatalogMode(rule, containerRule));
+    }
+
+    // return the container grant if present otherwise return the resource grant
+    private GrantType getGrant(AccessInfo rule, Pair<Geometry, AccessInfo> containerRule) {
+        AccessInfo accessInfoContainer = containerRule != null ? containerRule.getRight() : null;
+        GrantType containerGrant =
+                accessInfoContainer != null ? accessInfoContainer.getGrant() : null;
+        GrantType actualGrant;
+        if (containerGrant != null) actualGrant = containerGrant;
+        else actualGrant = rule.getGrant();
+
+        return actualGrant;
+    }
+
+    // get the catalogMode for the resource privileging the container one if passed
+    private CatalogMode getCatalogMode(AccessInfo rule, Pair<Geometry, AccessInfo> containerRule) {
+        AccessInfo accessInfoContainer = containerRule != null ? containerRule.getRight() : null;
+        CatalogModeDTO ruleCatalogMode;
+        if (accessInfoContainer != null) ruleCatalogMode = accessInfoContainer.getCatalogMode();
+        else ruleCatalogMode = rule.getCatalogMode();
+        CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
+        if (ruleCatalogMode != null) {
+            switch (ruleCatalogMode) {
+                case CHALLENGE:
+                    catalogMode = CatalogMode.CHALLENGE;
+                    break;
+                case HIDE:
+                    catalogMode = CatalogMode.HIDE;
+                    break;
+                case MIXED:
+                    catalogMode = CatalogMode.MIXED;
+                    break;
+            }
+        }
+        return catalogMode;
+    }
+
+    private CoordinateReferenceSystem getCrsFromInfo(CatalogInfo info) {
+        CoordinateReferenceSystem crs = null;
+        if (info instanceof LayerInfo) {
+            crs = ((LayerInfo) info).getResource().getCRS();
+        } else if (info instanceof ResourceInfo) {
+            crs = ((ResourceInfo) info).getCRS();
+        } else if (info instanceof LayerGroupInfo) {
+            crs = ((LayerGroupInfo) info).getBounds().getCoordinateReferenceSystem();
+        } else {
+            throw new RuntimeException(
+                    "Cannot retrieve CRS from info " + info.getClass().getSimpleName());
+        }
+        return crs;
+    }
+
+    // Builds a rule filter to retrieve the AccessInfo for the resource
+    private RuleFilter buildRuleFilter(String workspace, String layer, Authentication user) {
+        // get the request infos
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+        setRuleFilterUserOrRole(user, ruleFilter);
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        // get info from the current request
+        String service = null;
+        String request = null;
+        Request owsRequest = Dispatcher.REQUEST.get();
+        if (owsRequest != null) {
+            service = owsRequest.getService();
+            request = owsRequest.getRequest();
+        }
+        if (service != null) {
+            if ("*".equals(service)) {
+                ruleFilter.setService(RuleFilter.SpecialFilterType.ANY);
+            } else {
+                ruleFilter.setService(service);
+            }
+        } else {
+            ruleFilter.setService(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+
+        if (request != null) {
+            if ("*".equals(request)) {
+                ruleFilter.setRequest(RuleFilter.SpecialFilterType.ANY);
+            } else {
+                ruleFilter.setRequest(request);
+            }
+        } else {
+            ruleFilter.setRequest(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+        ruleFilter.setWorkspace(workspace);
+        ruleFilter.setLayer(layer);
+        String sourceAddress = retrieveCallerIpAddress();
+        if (sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        } else {
+            LOGGER.log(Level.WARNING, "No source IP address found");
+            ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+
+        LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);
+
+        return ruleFilter;
+    }
+
+    private Geometry getReprojectArea(AccessInfo rule, CoordinateReferenceSystem resourceCrs) {
+        // reproject the area if necessary
         Geometry reprojArea = null;
-        String areaWkt = rule.getAreaWkt();
+        String areaWkt = rule != null ? rule.getAreaWkt() : null;
         if (areaWkt != null) {
             try {
 
@@ -411,7 +736,6 @@ public class GeofenceAccessManager
                 if (reprojArea != null) {
                     // rule area is always expressed as 4326
                     CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:4326");
-                    CoordinateReferenceSystem resourceCrs = resource.getCRS();
                     if ((resourceCrs != null) && !CRS.equalsIgnoreMetadata(geomCrs, resourceCrs)) {
                         MathTransform mt = CRS.findMathTransform(geomCrs, resourceCrs, true);
                         reprojArea = JTS.transform(reprojArea, mt);
@@ -424,51 +748,7 @@ public class GeofenceAccessManager
                         "Failed to reproject the restricted area to the layer's native SRS", e);
             }
         }
-
-        CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
-
-        if (rule.getCatalogMode() != null) {
-            switch (rule.getCatalogMode()) {
-                case CHALLENGE:
-                    catalogMode = CatalogMode.CHALLENGE;
-                    break;
-                case HIDE:
-                    catalogMode = CatalogMode.HIDE;
-                    break;
-                case MIXED:
-                    catalogMode = CatalogMode.MIXED;
-                    break;
-            }
-        }
-
-        LOGGER.log(
-                Level.FINE,
-                "Returning mode {0} for resource {1}",
-                new Object[] {catalogMode, resource});
-
-        if (resource instanceof FeatureTypeInfo) {
-            // merge the area among the filters
-            if (reprojArea != null) {
-                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(reprojArea));
-                readFilter = mergeFilter(readFilter, areaFilter);
-                writeFilter = mergeFilter(writeFilter, areaFilter);
-            }
-
-            return new VectorAccessLimits(
-                    catalogMode, readAttributes, readFilter, writeAttributes, writeFilter);
-
-        } else if (resource instanceof CoverageInfo) {
-            return new CoverageAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea), null);
-
-        } else if (resource instanceof WMSLayerInfo) {
-            return new WMSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea), true);
-
-        } else if (resource instanceof WMTSLayerInfo) {
-            return new WMTSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea));
-
-        } else {
-            throw new IllegalArgumentException("Don't know how to handle resource " + resource);
-        }
+        return reprojArea;
     }
 
     private MultiPolygon toMultiPoly(Geometry reprojArea) {

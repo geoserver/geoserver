@@ -35,7 +35,7 @@ import org.geoserver.catalog.event.CatalogRemoveEvent;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class LayerGroupContainmentCache {
+public class LayerGroupContainmentCache {
 
     /** Builds a concurrent set wrapping a {@link ConcurrentHashMap} */
     static final Function<? super String, ? extends Set<LayerGroupSummary>> CONCURRENT_SET_BUILDER =
@@ -195,7 +195,7 @@ class LayerGroupContainmentCache {
      * Information summary about a layer group, just enough information to avoid performing linear
      * searches against the catalog to match against rules and scan layer containment upwards
      */
-    static class LayerGroupSummary {
+    public static class LayerGroupSummary {
         String id;
 
         String workspace;

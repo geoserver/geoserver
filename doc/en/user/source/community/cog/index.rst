@@ -130,14 +130,3 @@ Note that all the settings reported in the previous tables can also be specified
 You just need to replace UPPER CASE words with lower case words and underscores with dots.
 So, the value for Maximum HTTP requests can be specified by setting either a ``IIO_HTTP_MAX_REQUESTS`` Environment variable or a ``iio.http.max.requests`` Java System Property alternatively (Environment variables are checked first).
 
-Current Limitations
--------------------
-
-* At the moment, COG ImageMosaic doesn't support neither harvesting nor automatic index creation. Therefore, make sure to have an index already defined on a database, containing the COG granules URLs and set the ``UseExistingSchema=true`` flag on the mosaic/indexer.properties file. In case the mosaic folder containing indexer and datastore properties files has different naming with respect to the table in the database, make sure to also set ``Name`` and ``TypeName`` properties in indexer.properties, matching the actual table name. See :ref:`mosaic_datastore_properties` for details on index stored on a database.
-
-* At the moment, the portion of the COG needed to serve a request is read from network to memory, using as few requests as possible. This has two implications: 
-
-   * WMS serving is normally fine as long as internal overviews are present, the COG reader will never read large amount of data this way
-
-   * WCS serving at native resolution can be problematic, it's best to disable it, or to set tight service limits on it
-

@@ -22,13 +22,19 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.spatial.Intersects;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -315,6 +321,168 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
         }
     }
 
+    @Test
+    public void testAllowedAreaSRIDIsPreserved() throws Exception {
+        // test that when adding an allowed area with a SRID different from
+        // the layerGroup one, the final filter has been reprojected to the correct CRS
+        Long idRule = null;
+        Long idRule2 = null;
+        LayerGroupInfo group1 = null;
+        try {
+            Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS");
+            login("admin", "geoserver", new String[] {"ROLE_ADMINISTRATOR"});
+            Catalog catalog = getCatalog();
+            LayerInfo basicPolygons = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+            LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
+            group1 =
+                    createsLayerGroup(
+                            catalog,
+                            "group41",
+                            LayerGroupInfo.Mode.NAMED,
+                            null,
+                            Arrays.asList(basicPolygons, fifteen));
+            // limit rule for anonymousUser on LayerGroup group1
+            idRule =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            null,
+                            "group41",
+                            7,
+                            ruleService);
+
+            // add allowed Area to layer groups rules
+            addRuleLimits(idRule, CatalogMode.HIDE, AREA_WKT, 3857, ruleService);
+            // mock a WMS request to check contained layers direct access
+            Request req = new Request();
+            req.setService("WMS");
+            req.setRequest("GetMap");
+            Dispatcher.REQUEST.set(req);
+            logout();
+
+            login("anonymousUser", "", new String[] {"ROLE_ANONYMOUS"});
+
+            VectorAccessLimits vl =
+                    (VectorAccessLimits) accessManager.getAccessLimits(user, basicPolygons);
+            Intersects intersects = (Intersects) vl.getReadFilter();
+            MultiPolygon allowedArea =
+                    intersects.getExpression2().evaluate(null, MultiPolygon.class);
+            allowedArea.normalize();
+
+            Geometry geom = new WKTReader().read(AREA_WKT);
+            geom.setSRID(3857);
+            MathTransform mt =
+                    CRS.findMathTransform(
+                            CRS.decode("EPSG:3857"), basicPolygons.getResource().getCRS(), true);
+            MultiPolygon reproj = (MultiPolygon) JTS.transform(geom, mt);
+            reproj.normalize();
+            assertTrue(allowedArea.equalsExact(reproj, 10.0E-15));
+            logout();
+        } finally {
+            removeLayerGroup(group1);
+            deleteRules(ruleService, idRule, idRule2);
+        }
+    }
+
+    @Test
+    public void testLayerGroupsAllowedAreaWithDifferentSRIDS() throws Exception {
+        // tests that when having a Layer directly accessed for WMS request
+        // belonging to two LayerGroups each with a different CRS for the allowed area
+        // the resulting geometry filter has a geometry that is a union of the two areas
+        // in the correct CRS.
+        Long idRule = null;
+        Long idRule2 = null;
+        LayerGroupInfo group1 = null;
+        LayerGroupInfo group2 = null;
+
+        try {
+            Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS");
+            login("admin", "geoserver", new String[] {"ROLE_ADMINISTRATOR"});
+            Catalog catalog = getCatalog();
+            LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+            LayerInfo namedPlaces = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+            group1 =
+                    createsLayerGroup(
+                            catalog,
+                            "group51",
+                            LayerGroupInfo.Mode.NAMED,
+                            null,
+                            Arrays.asList(lakes, namedPlaces));
+            // limit rule for anonymousUser on LayerGroup group1
+            idRule =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            null,
+                            "group51",
+                            8,
+                            ruleService);
+
+            group2 =
+                    createsLayerGroup(
+                            catalog,
+                            "group52",
+                            LayerGroupInfo.Mode.NAMED,
+                            null,
+                            Arrays.asList(lakes, namedPlaces));
+            // limit rule for anonymousUser on LayerGroup group1
+            idRule2 =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            null,
+                            "group52",
+                            9,
+                            ruleService);
+
+            // add allowed Area to layer groups rules
+            addRuleLimits(idRule, CatalogMode.HIDE, AREA_WKT, 4326, ruleService);
+            addRuleLimits(idRule2, CatalogMode.HIDE, AREA_WKT_2, 3857, ruleService);
+
+            // mock a WMS request to check contained layers direct access
+            Request req = new Request();
+            req.setService("WMS");
+            req.setRequest("GetMap");
+            Dispatcher.REQUEST.set(req);
+            logout();
+
+            login("anonymousUser", "", new String[] {"ROLE_ANONYMOUS"});
+
+            VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
+            Intersects intersects = (Intersects) vl.getReadFilter();
+            MultiPolygon allowedArea =
+                    intersects.getExpression2().evaluate(null, MultiPolygon.class);
+            allowedArea.normalize();
+
+            // union of the allowed area where the 3857 is reprojected to 4326
+            Geometry geom = new WKTReader().read(AREA_WKT);
+            geom.setSRID(4326);
+            Geometry geom2 = new WKTReader().read(AREA_WKT_2);
+            geom2.setSRID(3857);
+            MathTransform mt =
+                    CRS.findMathTransform(CRS.decode("EPSG:3857"), CRS.decode("EPSG:4326"), true);
+            geom2 = JTS.transform(geom2, mt);
+            Geometry union = geom.union(geom2);
+            union.setSRID(4326);
+            union.normalize();
+
+            assertTrue(allowedArea.equalsExact(union, 10.0E-15));
+            logout();
+        } finally {
+            removeLayerGroup(group1, group2);
+            deleteRules(ruleService, idRule, idRule2);
+        }
+    }
+
     protected Authentication getUser(String username, String password, String... roles) {
 
         List<GrantedAuthority> l = new ArrayList<>();
@@ -332,6 +500,17 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
             LayerInfo rootLayer,
             List<LayerInfo> layers)
             throws Exception {
+        return createsLayerGroup(catalog, name, mode, rootLayer, layers, null);
+    }
+
+    protected LayerGroupInfo createsLayerGroup(
+            Catalog catalog,
+            String name,
+            LayerGroupInfo.Mode mode,
+            LayerInfo rootLayer,
+            List<LayerInfo> layers,
+            CoordinateReferenceSystem groupCRS)
+            throws Exception {
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
         group.setName(name);
 
@@ -346,7 +525,21 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.calculateLayerGroupBounds(group);
-
+        if (groupCRS != null) {
+            ReferencedEnvelope re = group.getBounds();
+            MathTransform transform =
+                    CRS.findMathTransform(
+                            group.getBounds().getCoordinateReferenceSystem(), groupCRS);
+            Envelope bbox = JTS.transform(re, transform);
+            ReferencedEnvelope newRe =
+                    new ReferencedEnvelope(
+                            bbox.getMinX(),
+                            bbox.getMaxX(),
+                            bbox.getMinY(),
+                            bbox.getMaxY(),
+                            groupCRS);
+            group.setBounds(newRe);
+        }
         catalog.add(group);
         return group;
     }

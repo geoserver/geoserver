@@ -39,6 +39,8 @@ When Access type ACCESS is selected as well as a specific layer, it becomes poss
    :align: center
 
 
+Allowed area can be defined in whatever SRID. Geoserver will automatically reproject it to the resource CRS when needed.
+
 Layer groups
 ^^^^^^^^^^^^
 Layer groups are also supported. If no workspace has been specified, the layer dropdown will show global layer groups, while if a workspace is selected the workspace's layergroup will be showed together with the layers.

@@ -30,9 +30,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     static final Logger LOGGER = Logging.getLogger(DefaultGeoServerFacade.class);
 
     GeoServerInfo global;
-    List<SettingsInfo> settings = new ArrayList<SettingsInfo>();
+    List<SettingsInfo> settings = new ArrayList<>();
     LoggingInfo logging;
-    List<ServiceInfo> services = new ArrayList<ServiceInfo>();
+    List<ServiceInfo> services = new ArrayList<>();
 
     GeoServer geoServer;
 
@@ -227,7 +227,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             global.setMetadata(new MetadataMap());
         }
         if (global.getClientProperties() == null) {
-            global.setClientProperties(new HashMap<Object, Object>());
+            global.setClientProperties(new HashMap<>());
         }
         if (global.getCoverageAccess() == null) {
             global.setCoverageAccess(new CoverageAccessInfoImpl());

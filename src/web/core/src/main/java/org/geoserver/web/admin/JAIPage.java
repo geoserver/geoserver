@@ -44,8 +44,7 @@ public class JAIPage extends ServerAdminPage {
         jaiModel = getJAIModel();
 
         // form and submit
-        Form<JAIInfo> form =
-                new Form<JAIInfo>("form", new CompoundPropertyModel<JAIInfo>(jaiModel));
+        Form<JAIInfo> form = new Form<>("form", new CompoundPropertyModel<>(jaiModel));
         add(form);
 
         // All the fields
@@ -57,10 +56,10 @@ public class JAIPage extends ServerAdminPage {
         TextField<Double> memoryThreshold = new PercentageTextField("memoryThreshold");
         memoryThreshold.add(percentageValidator);
         form.add(memoryThreshold);
-        TextField<Integer> tileThreads = new TextField<Integer>("tileThreads");
+        TextField<Integer> tileThreads = new TextField<>("tileThreads");
         tileThreads.add(RangeValidator.minimum(0));
         form.add(tileThreads);
-        TextField<Integer> tilePriority = new TextField<Integer>("tilePriority");
+        TextField<Integer> tilePriority = new TextField<>("tilePriority");
         tilePriority.add(RangeValidator.minimum(0));
         form.add(tilePriority);
         form.add(new CheckBox("recycling"));
@@ -143,13 +142,13 @@ public class JAIPage extends ServerAdminPage {
     private void addPngEncoderEditor(Form<JAIInfo> form) {
         // get the list of available encoders
         List<PngEncoderType> encoders =
-                new ArrayList<PngEncoderType>(Arrays.asList(JAIInfo.PngEncoderType.values()));
+                new ArrayList<>(Arrays.asList(JAIInfo.PngEncoderType.values()));
         if (!PackageUtil.isCodecLibAvailable()) {
             encoders.remove(PngEncoderType.NATIVE);
         }
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor =
-                new DropDownChoice<JAIInfo.PngEncoderType>(
+                new DropDownChoice<>(
                         "pngEncoderType",
                         encoders,
                         new ChoiceRenderer<JAIInfo.PngEncoderType>() {

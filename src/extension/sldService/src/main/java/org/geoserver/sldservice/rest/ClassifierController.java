@@ -300,7 +300,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     private List<Color> getCustomColors(String customClasses) {
-        List<Color> colors = new ArrayList<Color>();
+        List<Color> colors = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             colors.add(Color.decode(parts[2]));
@@ -310,8 +310,8 @@ public class ClassifierController extends BaseSLDServiceController {
 
     private RangedClassifier getCustomClassifier(
             String customClasses, Class<?> propertyType, boolean normalize) {
-        List<Comparable> min = new ArrayList<Comparable>();
-        List<Comparable> max = new ArrayList<Comparable>();
+        List<Comparable> min = new ArrayList<>();
+        List<Comparable> max = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             if (parts.length != 3) {
@@ -782,7 +782,7 @@ public class ClassifierController extends BaseSLDServiceController {
     public class RulesList {
         private String layerName;
 
-        private List<JSONObject> rules = new ArrayList<JSONObject>();
+        private List<JSONObject> rules = new ArrayList<>();
 
         public RulesList(final String layer) {
             setLayerName(layer);

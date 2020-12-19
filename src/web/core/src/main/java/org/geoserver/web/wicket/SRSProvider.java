@@ -141,7 +141,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             };
 
     private static final ArrayList<Property<SRS>> PROPERTIES =
-            new ArrayList<Property<SRS>>(Arrays.asList(CODE, DESCRIPTION));
+            new ArrayList<>(Arrays.asList(CODE, DESCRIPTION));
 
     private volatile List<SRS> items;
 
@@ -189,7 +189,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
         }
 
         // make a set with each code
-        Set<SRS> idSet = new HashSet<SRS>();
+        Set<SRS> idSet = new HashSet<>();
         for (String code : codes) {
             // make sure we're using just the non prefix part
             String id = code.substring(code.indexOf(':') + 1);
@@ -200,7 +200,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             }
         }
 
-        List<SRS> srsList = new ArrayList<SRS>(idSet);
+        List<SRS> srsList = new ArrayList<>(idSet);
         Collections.sort(srsList, new CodeComparator()); // sort to get them in order
         return srsList;
     }

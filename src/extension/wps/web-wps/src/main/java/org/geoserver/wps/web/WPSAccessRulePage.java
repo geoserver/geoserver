@@ -60,7 +60,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
     private WPSInfo wpsInfo;
     private RadioChoice catalogModeChoice;
 
-    private List<String> availableRoles = new ArrayList<String>();
+    private List<String> availableRoles = new ArrayList<>();
 
     public WPSAccessRulePage() {
         wpsInfo = getGeoServer().getService(WPSInfo.class);
@@ -79,7 +79,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         }
 
         TextField<Integer> maxComplexInputSize =
-                new TextField<Integer>("maxComplexInputSize", Integer.class);
+                new TextField<>("maxComplexInputSize", Integer.class);
         maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
@@ -178,7 +178,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         catalogModeChoice =
                 new RadioChoice<>(
                         "processAccessMode",
-                        new PropertyModel<CatalogMode>(wpsInfo, "catalogMode"),
+                        new PropertyModel<>(wpsInfo, "catalogMode"),
                         CATALOG_MODES,
                         new CatalogModeRenderer());
         catalogModeChoice.setSuffix(" ");
@@ -226,7 +226,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
     }
 
     private List<ProcessGroupInfo> cloneFactoryInfos(List<ProcessGroupInfo> processFactories) {
-        List<ProcessGroupInfo> result = new ArrayList<ProcessGroupInfo>();
+        List<ProcessGroupInfo> result = new ArrayList<>();
         for (ProcessGroupInfo pfi : processFactories) {
             result.add(pfi.clone());
         }

@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,7 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     List<String> roles = new ArrayList<>();
 
-    List<ProcessInfo> filteredProcesses = new ArrayList<ProcessInfo>();
+    List<ProcessInfo> filteredProcesses = new ArrayList<>();
 
     MetadataMap metadata = new MetadataMap();
 
@@ -71,10 +70,10 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         clone.setFactoryClass(factoryClass);
         clone.setRoles(roles);
         if (filteredProcesses != null) {
-            clone.setFilteredProcesses(new ArrayList<ProcessInfo>(filteredProcesses));
+            clone.setFilteredProcesses(new ArrayList<>(filteredProcesses));
         }
         if (metadata != null) {
-            clone.metadata = new MetadataMap(new HashMap<String, Serializable>(metadata));
+            clone.metadata = new MetadataMap(new HashMap<>(metadata));
         }
 
         return clone;

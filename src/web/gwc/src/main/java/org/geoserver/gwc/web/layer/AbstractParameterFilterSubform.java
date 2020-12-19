@@ -74,9 +74,7 @@ public abstract class AbstractParameterFilterSubform<T extends ParameterFilter>
     protected void addNormalize(IModel<? extends CaseNormalizingParameterFilter> model) {
         CaseNormalizingParameterFilter filter = model.getObject();
         filter.setNormalize(filter.getNormalize());
-        normalize =
-                new CaseNormalizerSubform(
-                        "normalize", new PropertyModel<CaseNormalizer>(model, "normalize"));
+        normalize = new CaseNormalizerSubform("normalize", new PropertyModel<>(model, "normalize"));
         add(normalize);
     }
 }

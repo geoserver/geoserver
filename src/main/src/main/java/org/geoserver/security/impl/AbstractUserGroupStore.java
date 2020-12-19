@@ -186,7 +186,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
         for (Object key : user.getProperties().keySet()) {
             SortedSet<GeoServerUser> users = helper.propertyMap.get(key);
             if (users == null) {
-                users = new TreeSet<GeoServerUser>();
+                users = new TreeSet<>();
                 helper.propertyMap.put((String) key, users);
             }
             users.add(user);
@@ -249,7 +249,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
 
         Collection<GeoServerUserGroup> groups = helper.user_groupMap.get(user);
         if (groups != null) {
-            Collection<GeoServerUserGroup> toBeRemoved = new ArrayList<GeoServerUserGroup>();
+            Collection<GeoServerUserGroup> toBeRemoved = new ArrayList<>();
             toBeRemoved.addAll(groups);
             for (GeoServerUserGroup group : toBeRemoved) {
                 disAssociateUserFromGroup(user, group);
@@ -270,7 +270,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
         Collection<GeoServerUser> users = helper.group_userMap.get(group);
         if (users != null) {
-            Collection<GeoServerUser> toBeRemoved = new ArrayList<GeoServerUser>();
+            Collection<GeoServerUser> toBeRemoved = new ArrayList<>();
             toBeRemoved.addAll(users);
             for (GeoServerUser user : toBeRemoved) {
                 disAssociateUserFromGroup(user, group);
@@ -316,7 +316,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
 
         SortedSet<GeoServerUser> users = helper.group_userMap.get(group);
         if (users == null) {
-            users = new TreeSet<GeoServerUser>();
+            users = new TreeSet<>();
             helper.group_userMap.put(group, users);
         }
         if (users.contains(user) == false) {
@@ -326,7 +326,7 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
 
         SortedSet<GeoServerUserGroup> groups = helper.user_groupMap.get(user);
         if (groups == null) {
-            groups = new TreeSet<GeoServerUserGroup>();
+            groups = new TreeSet<>();
             helper.user_groupMap.put(user, groups);
         }
         if (groups.contains(group) == false) {

@@ -40,9 +40,9 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         // use a detached copy of gwc config to support the tabbed pane
         final GWCConfig gwcConfig = gwc.getConfig().clone();
 
-        IModel<GWCConfig> formModel = new Model<GWCConfig>(gwcConfig);
+        IModel<GWCConfig> formModel = new Model<>(gwcConfig);
 
-        final Form<GWCConfig> form = new Form<GWCConfig>("form", formModel);
+        final Form<GWCConfig> form = new Form<>("form", formModel);
         add(form);
 
         final GWCServicesPanel gwcServicesPanel =

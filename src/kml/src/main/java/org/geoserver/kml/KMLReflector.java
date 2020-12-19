@@ -35,21 +35,21 @@ public class KMLReflector {
     private static int DEFAULT_OVERLAY_SIZE;
 
     static {
-        Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> temp = new HashMap<>();
         Map<String, Object> options;
 
-        options = new HashMap<String, Object>();
+        options = new HashMap<>();
         options.put("superoverlay", true);
         options.put("mode", "superoverlay");
         temp.put("superoverlay", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap<>();
         options.put("superoverlay", false);
         options.put("kmscore", 100); // download -> really download vectors
         options.put("mode", "download");
         temp.put("download", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap<>();
         options.put("superoverlay", false);
         options.put("mode", "refresh");
         temp.put("refresh", options);

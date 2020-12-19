@@ -137,11 +137,11 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         }
 
         private Map<Class, List<Symbolizer>> classifySymbolizers(List<Symbolizer> symbolizers) {
-            Map<Class, List<Symbolizer>> result = new HashMap<Class, List<Symbolizer>>();
-            result.put(PointSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(LineSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(PolygonSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(TextSymbolizer.class, new ArrayList<Symbolizer>());
+            Map<Class, List<Symbolizer>> result = new HashMap<>();
+            result.put(PointSymbolizer.class, new ArrayList<>());
+            result.put(LineSymbolizer.class, new ArrayList<>());
+            result.put(PolygonSymbolizer.class, new ArrayList<>());
+            result.put(TextSymbolizer.class, new ArrayList<>());
 
             for (Symbolizer s : symbolizers) {
                 if (s instanceof PointSymbolizer) {

@@ -14,14 +14,14 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
-    protected Map<Version, GMLInfo> gml = new HashMap<Version, GMLInfo>();
+    protected Map<Version, GMLInfo> gml = new HashMap<>();
     protected ServiceLevel serviceLevel = ServiceLevel.COMPLETE;
     protected int maxFeatures = Integer.MAX_VALUE;
     protected boolean featureBounding = true;
     protected boolean canonicalSchemaLocation = false;
     protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
-    protected List<String> srs = new ArrayList<String>();
+    protected List<String> srs = new ArrayList<>();
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
 

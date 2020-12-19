@@ -68,7 +68,7 @@ public abstract class CasAuthenticationHelper {
     }
 
     protected List<String> getResponseHeaderValues(HttpURLConnection conn, String hName) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (int i = 0; ; i++) {
             String headerName = conn.getHeaderFieldKey(i);
             String headerValue = conn.getHeaderField(i);
@@ -85,7 +85,7 @@ public abstract class CasAuthenticationHelper {
     }
 
     protected List<HttpCookie> getCookies(HttpURLConnection conn) {
-        List<HttpCookie> result = new ArrayList<HttpCookie>();
+        List<HttpCookie> result = new ArrayList<>();
         List<String> cookieStrings = getResponseHeaderValues(conn, "Set-Cookie");
         for (String cookieString : cookieStrings) {
             result.addAll(HttpCookie.parse("Set-Cookie: " + cookieString));

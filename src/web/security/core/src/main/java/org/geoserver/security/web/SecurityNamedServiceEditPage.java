@@ -68,7 +68,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         public ContentPanel(String id, IModel<T> config) {
             super(id, new Model());
 
-            Form<T> form = new Form<>("form", new CompoundPropertyModel<T>(config));
+            Form<T> form = new Form<>("form", new CompoundPropertyModel<>(config));
             add(form);
             form.add(panel = createPanel("panel", panelInfo, config));
 
@@ -110,7 +110,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         public TabbedLayoutPanel(String id, final IModel<T> config) {
             super(id, new Model());
 
-            List<ITab> tabs = new ArrayList<ITab>();
+            List<ITab> tabs = new ArrayList<>();
 
             // add the primary panel to the first tab
             tabs.add(

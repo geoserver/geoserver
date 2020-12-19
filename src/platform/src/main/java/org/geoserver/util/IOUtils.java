@@ -111,7 +111,7 @@ public class IOUtils {
         // prepare the escaped ${key} keys so that it won't be necessary to do
         // it over and over
         // while parsing the file
-        Map<String, String> escapedMap = new HashMap<String, String>();
+        Map<String, String> escapedMap = new HashMap<>();
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             escapedMap.put("${" + entry.getKey() + "}", entry.getValue());
         }

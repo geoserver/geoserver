@@ -73,7 +73,7 @@ public class DirectoryTest extends TestCase {
 
         assertEquals(2, spatial.getSuppFiles().size());
 
-        Set<String> exts = new HashSet<String>(Arrays.asList("shx", "dbf"));
+        Set<String> exts = new HashSet<>(Arrays.asList("shx", "dbf"));
         for (File supp : spatial.getSuppFiles()) {
             exts.remove(FilenameUtils.getExtension(supp.getName()));
         }

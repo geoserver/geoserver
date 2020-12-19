@@ -15,7 +15,7 @@ package org.geoserver.security;
  */
 public class AdminRequest {
 
-    static ThreadLocal<Object> REQUEST = new ThreadLocal<Object>();
+    static ThreadLocal<Object> REQUEST = new ThreadLocal<>();
 
     public static void start(Object request) {
         REQUEST.set(request);

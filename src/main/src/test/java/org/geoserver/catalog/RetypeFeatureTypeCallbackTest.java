@@ -81,7 +81,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     private void setUpNonGeometryLayer(SystemTestData testData) throws IOException {
         // Loading a vector layer with location given as latitude and longitude and no geometry
-        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         testData.addVectorLayer(
                 LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME,
                 props,
@@ -92,7 +92,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     private void setReprojectedUpNonGeometryLayer(SystemTestData testData) throws IOException {
         // Loading a vector layer with location given as latitude and longitude and no geometry
-        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         // declaring a different CRS to test re-projection
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         props.put(LayerProperty.SRS, 900913);
@@ -449,7 +449,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
                     // else use the passed fields of this query
                     // but make sure geom field is replaced with Long and Lat fields
                     List<String> existingProperties =
-                            new LinkedList<String>(Arrays.asList(query.getPropertyNames()));
+                            new LinkedList<>(Arrays.asList(query.getPropertyNames()));
                     // remove geom column
                     existingProperties.remove(TestRetypeFeatureTypeCallback.RETYPED_GEOM_COLUMN);
                     // make sure longitude field is present

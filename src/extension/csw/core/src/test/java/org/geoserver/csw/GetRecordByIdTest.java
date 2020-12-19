@@ -29,7 +29,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReader() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecordById");

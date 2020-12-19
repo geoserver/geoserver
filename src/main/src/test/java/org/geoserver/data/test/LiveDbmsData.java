@@ -54,7 +54,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * List of file paths (relative to the source data directory) that will be subjected to token
      * filtering. By default only <code>catalog.xml</code> will be filtered.
      */
-    protected List<String> filteredPaths = new ArrayList<String>(Arrays.asList("catalog.xml"));
+    protected List<String> filteredPaths = new ArrayList<>(Arrays.asList("catalog.xml"));
 
     protected File sqlScript;
 

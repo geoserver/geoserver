@@ -22,7 +22,7 @@ public class AuthorityURLInfoInfoListConverterTest {
     public void testFromString() {
         final String serialized =
                 "[{\"name\":\"auth1\",\"href\":\"http://geoserver.org/auth1?\"},{\"name\":\"auth2\",\"href\":\"http://geoserver.org/auth2;someparam=somevalue&\"}]";
-        List<AuthorityURLInfo> expected = new ArrayList<AuthorityURLInfo>();
+        List<AuthorityURLInfo> expected = new ArrayList<>();
 
         AuthorityURLInfo auth1 = new AuthorityURL();
         auth1.setName("auth1");
@@ -54,7 +54,7 @@ public class AuthorityURLInfoInfoListConverterTest {
 
     @Test
     public void testToString() {
-        List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
+        List<AuthorityURLInfo> list = new ArrayList<>();
 
         AuthorityURLInfo auth1 = new AuthorityURL();
         auth1.setName("auth1");
@@ -74,7 +74,7 @@ public class AuthorityURLInfoInfoListConverterTest {
 
     @Test
     public void testToStringListWithNullElement() {
-        List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
+        List<AuthorityURLInfo> list = new ArrayList<>();
 
         AuthorityURLInfo auth1 = new AuthorityURL();
         auth1.setName("auth1");
@@ -90,7 +90,7 @@ public class AuthorityURLInfoInfoListConverterTest {
 
     @Test
     public void testToStringListWithOnlyNullElements() {
-        List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
+        List<AuthorityURLInfo> list = new ArrayList<>();
         list.add(null);
         list.add(null);
         list.add(null);
@@ -100,7 +100,7 @@ public class AuthorityURLInfoInfoListConverterTest {
 
     @Test
     public void testToStringEmptyList() {
-        List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
+        List<AuthorityURLInfo> list = new ArrayList<>();
 
         String actual = AuthorityURLInfoInfoListConverter.toString(list);
         assertNull(actual);

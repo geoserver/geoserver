@@ -61,7 +61,7 @@ public abstract class WebMap {
 
     public void setResponseHeader(final String name, final String value) {
         if (responseHeaders == null) {
-            responseHeaders = new HashMap<String, String>();
+            responseHeaders = new HashMap<>();
         }
         responseHeaders.put(name, value);
     }

@@ -90,7 +90,7 @@ public class GwcServiceProxy {
     private final class ResponseWrapper extends HttpServletResponseWrapper {
 
         final BufferedServletOutputStream out = new BufferedServletOutputStream();
-        Map<String, String> headers = new LinkedHashMap<String, String>();
+        Map<String, String> headers = new LinkedHashMap<>();
 
         private ResponseWrapper(HttpServletResponse response) {
             super(response);

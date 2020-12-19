@@ -91,7 +91,7 @@ public abstract class Cell {
      * @author Simone Giannecchini, GeoSolutions SAS
      */
     public abstract static class Row {
-        private final List<Cell> cells = new ArrayList<Cell>();
+        private final List<Cell> cells = new ArrayList<>();
 
         Row() {}
 

@@ -37,7 +37,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     WcsXmlReader xmlReader;
 
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -72,7 +72,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     /** Prepares the basic KVP map (service, version, request) */
     protected Map<String, Object> baseMap() {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.1.1");
         raw.put("request", "GetCoverage");

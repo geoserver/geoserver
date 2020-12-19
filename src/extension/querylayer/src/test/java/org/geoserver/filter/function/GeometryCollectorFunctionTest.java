@@ -46,7 +46,7 @@ public class GeometryCollectorFunctionTest extends GeoServerSystemTestSupport {
     @Test
     public void testTwo() throws Exception {
         WKTReader reader = new WKTReader();
-        List<Geometry> geometries = new ArrayList<Geometry>();
+        List<Geometry> geometries = new ArrayList<>();
         final Geometry p0 = reader.read("POINT(0 0)");
         geometries.add(p0);
         final Geometry p1 = reader.read("POINT(1 1)");

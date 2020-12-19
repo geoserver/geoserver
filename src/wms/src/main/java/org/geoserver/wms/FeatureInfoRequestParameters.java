@@ -127,7 +127,7 @@ public class FeatureInfoRequestParameters {
      */
     private List<Style> getStyles(final GetFeatureInfoRequest request, List<MapLayerInfo> layers) {
         List<Style> getMapStyles = request.getGetMapRequest().getStyles();
-        List<Style> styles = new ArrayList<Style>();
+        List<Style> styles = new ArrayList<>();
         List<MapLayerInfo> getMapLayers = request.getGetMapRequest().getLayers();
         for (int i = 0; i < layers.size(); i++) {
             final String targetLayer = layers.get(i).getName();

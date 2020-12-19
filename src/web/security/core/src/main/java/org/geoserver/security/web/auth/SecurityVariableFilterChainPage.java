@@ -39,12 +39,11 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
         VariableFilterChainWrapper wrapper = new VariableFilterChainWrapper(chain);
 
         Form<VariableFilterChainWrapper> theForm =
-                new Form<VariableFilterChainWrapper>(
-                        "form", new CompoundPropertyModel<VariableFilterChainWrapper>(wrapper));
+                new Form<>("form", new CompoundPropertyModel<>(wrapper));
 
         super.initialize(chain, secMgrConfig, isNew, theForm, wrapper);
 
-        List<String> filterNames = new ArrayList<String>();
+        List<String> filterNames = new ArrayList<>();
         try {
             filterNames.addAll(
                     getSecurityManager().listFilters(GeoServerExceptionTranslationFilter.class));
@@ -53,16 +52,16 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
                 filterNames.add(filter.getName());
             }
             form.add(
-                    new DropDownChoice<String>(
+                    new DropDownChoice<>(
                             "exceptionTranslationName",
-                            new PropertyModel<String>(
+                            new PropertyModel<>(
                                     chainWrapper.getChain(), "exceptionTranslationName"),
                             filterNames));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        filterNames = new ArrayList<String>();
+        filterNames = new ArrayList<>();
         try {
             filterNames.addAll(
                     getSecurityManager().listFilters(GeoServerSecurityInterceptorFilter.class));
@@ -71,9 +70,9 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
                 filterNames.add(filter.getName());
             }
             form.add(
-                    new DropDownChoice<String>(
+                    new DropDownChoice<>(
                             "interceptorName",
-                            new PropertyModel<String>(chainWrapper.getChain(), "interceptorName"),
+                            new PropertyModel<>(chainWrapper.getChain(), "interceptorName"),
                             filterNames));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -107,7 +106,7 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
         public List<String> getObject() {
 
             GeoServerSecurityManager secMgr = getSecurityManager();
-            List<String> filters = new ArrayList<String>(chainModel.getChain().getFilterNames());
+            List<String> filters = new ArrayList<>(chainModel.getChain().getFilterNames());
             try {
                 filters.retainAll(chainModel.getVariableFilterChain().listFilterCandidates(secMgr));
             } catch (IOException e) {

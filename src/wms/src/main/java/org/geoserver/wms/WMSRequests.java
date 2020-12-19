@@ -191,7 +191,7 @@ public class WMSRequests {
      */
     public static String getGetLegendGraphicUrl(WMSRequest req, Layer[] layers, String[] kvp) {
         // parameters
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<>();
 
         params.put("service", "wms");
         params.put("request", "GetLegendGraphic");
@@ -239,7 +239,7 @@ public class WMSRequests {
             Envelope bbox,
             String[] kvp) {
         // parameters
-        LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
         params.put("service", "wms");
         params.put("request", "GetMap");

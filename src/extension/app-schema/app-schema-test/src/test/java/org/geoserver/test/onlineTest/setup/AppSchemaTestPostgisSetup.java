@@ -122,11 +122,11 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                         .append(".\"")
                         .append(tableName)
                         .append("\"(");
-                List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
+                List<GeometryDescriptor> geoms = new ArrayList<>();
                 // +pkey
                 int size = schema.getAttributeCount() + 1;
                 String[] fieldNames = new String[size];
-                List<String> createParams = new ArrayList<String>();
+                List<String> createParams = new ArrayList<>();
                 int j = 0;
                 String field;
                 String type;

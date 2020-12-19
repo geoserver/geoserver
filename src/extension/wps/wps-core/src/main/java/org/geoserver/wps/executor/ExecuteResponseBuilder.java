@@ -169,7 +169,7 @@ public class ExecuteResponseBuilder {
         if ((status != null && status.isAsynchronous())
                 && request.getBaseUrl() != null
                 && status.getExecutionId() != null) {
-            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            Map<String, String> kvp = new LinkedHashMap<>();
             kvp.put("service", "WPS");
             kvp.put("version", "1.0.0");
             kvp.put("request", "GetExecutionStatus");

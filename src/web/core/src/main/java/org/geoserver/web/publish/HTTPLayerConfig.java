@@ -29,7 +29,7 @@ public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                                 "cachingEnabled")));
 
         TextField<Long> maxAge =
-                new TextField<Long>(
+                new TextField<>(
                         ResourceInfo.CACHE_AGE_MAX,
                         new MapModel<>(
                                 new PropertyModel<>(model, "resource.metadata"), "cacheAgeMax"),

@@ -152,7 +152,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         Element spatialOperators = getFirstElementByTagName(doc, "ogc:Spatial_Operators");
         NodeList ops = spatialOperators.getChildNodes();
 
-        TreeSet<String> o = new TreeSet<String>();
+        TreeSet<String> o = new TreeSet<>();
         for (int i = 0; i < ops.getLength(); i++) {
             String operator = ops.item(i).getLocalName();
             o.add(operator);

@@ -91,16 +91,13 @@ public class SystemTestData extends CiteTestData {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static LayerProperty<String> NAME = new LayerProperty<String>();
-        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY =
-                new LayerProperty<ProjectionPolicy>();
-        public static LayerProperty<String> STYLE = new LayerProperty<String>();
-        public static LayerProperty<ReferencedEnvelope> ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<Integer> SRS = new LayerProperty<Integer>();
-        public static LayerProperty<String> STORE = new LayerProperty<String>();
+        public static LayerProperty<String> NAME = new LayerProperty<>();
+        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY = new LayerProperty<>();
+        public static LayerProperty<String> STYLE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<Integer> SRS = new LayerProperty<>();
+        public static LayerProperty<String> STORE = new LayerProperty<>();
     }
 
     /** Keys for overriding default layer properties */
@@ -111,9 +108,9 @@ public class SystemTestData extends CiteTestData {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static StyleProperty<String> FORMAT = new StyleProperty<String>();
-        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<Version>();
-        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<LegendInfo>();
+        public static StyleProperty<String> FORMAT = new StyleProperty<>();
+        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<>();
+        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<>();
     }
 
     /** data directory root */

@@ -45,7 +45,7 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
 
     /** Returns the list of all the supported output formats */
     public List<String> getOutputFormats() {
-        Set<String> formats = new HashSet<String>();
+        Set<String> formats = new HashSet<>();
         List<CoverageResponseDelegate> delegates =
                 GeoServerExtensions.extensions(CoverageResponseDelegate.class, applicationContext);
         for (CoverageResponseDelegate delegate : delegates) {
@@ -54,7 +54,7 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
             }
         }
 
-        List<String> result = new ArrayList<String>(formats);
+        List<String> result = new ArrayList<>(formats);
         Collections.sort(result);
         return result;
     }

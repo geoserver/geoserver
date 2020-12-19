@@ -61,7 +61,7 @@ public class AuthenticationChainPalette extends Palette<String> {
         @Override
         public List<String> getObject() {
             try {
-                return new ArrayList<String>(
+                return new ArrayList<>(
                         GeoServerApplication.get()
                                 .getSecurityManager()
                                 .listAuthenticationProviders());

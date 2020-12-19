@@ -26,7 +26,7 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
     /** @see org.geoserver.web.CapabilitiesHomePageLinkProvider#getCapabilitiesComponent */
     public Component getCapabilitiesComponent(final String id) {
 
-        List<CapsInfo> serviceInfoLinks = new ArrayList<CapabilitiesHomePagePanel.CapsInfo>();
+        List<CapsInfo> serviceInfoLinks = new ArrayList<>();
 
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
         for (Service si : extensions) {

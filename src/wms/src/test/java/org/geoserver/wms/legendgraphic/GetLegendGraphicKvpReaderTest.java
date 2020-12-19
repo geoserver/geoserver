@@ -69,13 +69,13 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      */
     @Before
     public void setParameters() throws Exception {
-        requiredParameters = new HashMap<String, String>();
+        requiredParameters = new HashMap<>();
         requiredParameters.put("VERSION", "1.0.0");
         requiredParameters.put("REQUEST", "GetLegendGraphic");
         requiredParameters.put("LAYER", "cite:Ponds");
         requiredParameters.put("FORMAT", "image/png");
 
-        optionalParameters = new HashMap<String, String>();
+        optionalParameters = new HashMap<>();
         optionalParameters.put("STYLE", "Ponds");
         optionalParameters.put("FEATURETYPE", "fake_not_used");
         // optionalParameters.put("RULE", "testRule");
@@ -84,7 +84,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         optionalParameters.put("HEIGHT", "90");
         optionalParameters.put("LANGUAGE", "en");
         // ??optionalParameters.put("EXCEPTIONS", "");
-        allParameters = new HashMap<String, String>(requiredParameters);
+        allParameters = new HashMap<>(requiredParameters);
         allParameters.putAll(optionalParameters);
 
         wms = getWMS();

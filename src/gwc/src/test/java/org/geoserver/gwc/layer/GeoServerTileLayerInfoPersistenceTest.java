@@ -123,7 +123,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
 
     @Test
     public void testMarshallingGridSubsets() throws Exception {
-        List<XMLGridSubset> subsets = new ArrayList<XMLGridSubset>();
+        List<XMLGridSubset> subsets = new ArrayList<>();
         XMLGridSubset subset;
         subset = new XMLGridSubset();
         subset.setGridSetName("EPSG:4326");

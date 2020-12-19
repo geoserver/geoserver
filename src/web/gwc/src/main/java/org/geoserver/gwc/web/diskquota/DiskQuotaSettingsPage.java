@@ -74,12 +74,11 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         }
 
         final Form<Map<String, Serializable>> form;
-        form = new Form<Map<String, Serializable>>("form");
+        form = new Form<>("form");
         add(form);
 
-        final IModel<DiskQuotaConfig> diskQuotaModel = new Model<DiskQuotaConfig>(diskQuotaConfig);
-        final IModel<JDBCConfiguration> jdbcQuotaModel =
-                new Model<JDBCConfiguration>(jdbcQuotaConfiguration);
+        final IModel<DiskQuotaConfig> diskQuotaModel = new Model<>(diskQuotaConfig);
+        final IModel<JDBCConfiguration> jdbcQuotaModel = new Model<>(jdbcQuotaConfiguration);
 
         final DiskQuotaConfigPanel diskQuotaConfigPanel =
                 new DiskQuotaConfigPanel("diskQuotaPanel", diskQuotaModel, jdbcQuotaModel);

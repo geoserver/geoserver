@@ -66,8 +66,7 @@ public class NewDataPage extends GeoServerSecuredPage {
         final Form storeForm = new Form("storeForm");
         add(storeForm);
 
-        final ArrayList<String> sortedDsNames =
-                new ArrayList<String>(getAvailableDataStores().keySet());
+        final ArrayList<String> sortedDsNames = new ArrayList<>(getAvailableDataStores().keySet());
         Collections.sort(sortedDsNames);
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
@@ -99,7 +98,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                     }
                 };
 
-        final List<String> sortedCoverageNames = new ArrayList<String>();
+        final List<String> sortedCoverageNames = new ArrayList<>();
         sortedCoverageNames.addAll(getAvailableCoverageStores().keySet());
         Collections.sort(sortedCoverageNames);
 
@@ -180,7 +179,7 @@ public class NewDataPage extends GeoServerSecuredPage {
             final Iterator<DataAccessFactory> availableDataStores;
             availableDataStores = DataStoreUtils.getAvailableDataStoreFactories().iterator();
 
-            Map<String, DataAccessFactory> storeNames = new HashMap<String, DataAccessFactory>();
+            Map<String, DataAccessFactory> storeNames = new HashMap<>();
 
             while (availableDataStores.hasNext()) {
                 DataAccessFactory factory = availableDataStores.next();
@@ -197,7 +196,7 @@ public class NewDataPage extends GeoServerSecuredPage {
     private Map<String, Format> getAvailableCoverageStores() {
         if (coverages == null) {
             Format[] availableFormats = GridFormatFinder.getFormatArray();
-            Map<String, Format> formatNames = new HashMap<String, Format>();
+            Map<String, Format> formatNames = new HashMap<>();
             for (Format format : availableFormats) {
                 formatNames.put(format.getName(), format);
             }
@@ -207,7 +206,7 @@ public class NewDataPage extends GeoServerSecuredPage {
     }
 
     private List<OtherStoreDescription> getOtherStores() {
-        List<OtherStoreDescription> stores = new ArrayList<OtherStoreDescription>();
+        List<OtherStoreDescription> stores = new ArrayList<>();
         PackageResourceReference wmsIcon =
                 new PackageResourceReference(
                         GeoServerApplication.class, "img/icons/geosilk/server_map.png");

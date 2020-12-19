@@ -112,7 +112,7 @@ public class VFSWorker {
             }
             LOGGER.fine("Listing spatial data files archived in " + archiveFile.getName());
             FileObject[] containedFiles = fileSystem.findFiles(fileSelector);
-            List<String> names = new ArrayList<String>(containedFiles.length);
+            List<String> names = new ArrayList<>(containedFiles.length);
             for (FileObject fo : containedFiles) {
                 // path relative to its filesystem (ie, to the archive file)
                 String pathDecoded = fo.getName().getPathDecoded();

@@ -810,7 +810,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected void login(String username, String password, String... roles) {
         SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> l = new ArrayList<>();
         for (String role : roles) {
             l.add(new SimpleGrantedAuthority(role));
         }
@@ -1999,7 +1999,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void checkValidationErrors(Document dom, Schema schema)
             throws SAXException, IOException {
         final Validator validator = schema.newValidator();
-        final List<Exception> validationErrors = new ArrayList<Exception>();
+        final List<Exception> validationErrors = new ArrayList<>();
         validator.setErrorHandler(
                 new ErrorHandler() {
 

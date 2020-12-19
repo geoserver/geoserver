@@ -212,7 +212,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
     private Filter buildRulesFilter(org.opengis.filter.FilterFactory ff, List<Rule> rules) {
         // build up a or of all the rule filters
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         for (Rule rule : rules) {
             if (rule.getFilter() == null || rule.isElseFilter()) return Filter.INCLUDE;
             filters.add(rule.getFilter());

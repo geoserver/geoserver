@@ -95,7 +95,7 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
 
     @Override
     public List<String> getOutputFormats() {
-        return new ArrayList<String>(outputFormats);
+        return new ArrayList<>(outputFormats);
     }
 
     /** Default implementation, implementers should override. */

@@ -18,7 +18,7 @@ public class LocalPublished {
     public static final String KEY = "localPublished";
 
     /** the layer thread local */
-    static ThreadLocal<PublishedInfo> published = new ThreadLocal<PublishedInfo>();
+    static ThreadLocal<PublishedInfo> published = new ThreadLocal<>();
 
     public static void set(PublishedInfo p) {
         published.set(p);

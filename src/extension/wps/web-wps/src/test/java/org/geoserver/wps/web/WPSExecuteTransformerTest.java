@@ -42,7 +42,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
     @Before
     public void setUpInternal() throws Exception {
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
         namespaces.put("ows", "http://www.opengis.net/ows/1.1");
         namespaces.put("gml", "http://www.opengis.net/gml");

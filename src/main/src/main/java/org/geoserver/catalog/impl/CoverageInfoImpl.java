@@ -39,17 +39,17 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     protected GridGeometry grid;
 
-    protected List<String> supportedFormats = new ArrayList<String>();
+    protected List<String> supportedFormats = new ArrayList<>();
 
-    protected List<String> interpolationMethods = new ArrayList<String>();
+    protected List<String> interpolationMethods = new ArrayList<>();
 
     protected String defaultInterpolationMethod;
 
-    protected List<CoverageDimensionInfo> dimensions = new ArrayList<CoverageDimensionInfo>();
+    protected List<CoverageDimensionInfo> dimensions = new ArrayList<>();
 
-    protected List<String> requestSRS = new ArrayList<String>();
+    protected List<String> requestSRS = new ArrayList<>();
 
-    protected List<String> responseSRS = new ArrayList<String>();
+    protected List<String> responseSRS = new ArrayList<>();
 
     protected Map<String, Serializable> parameters = new HashMap<>();
 

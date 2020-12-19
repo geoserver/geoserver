@@ -87,7 +87,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             layer.setDefaultStyle(style);
         }
 
-        LinkedHashSet<StyleInfo> styles = new LinkedHashSet<StyleInfo>();
+        LinkedHashSet<StyleInfo> styles = new LinkedHashSet<>();
         for (StyleInfo s : layer.getStyles()) {
             s = ResolvingProxy.resolve(getCatalog(), s);
             s = unwrap(s);

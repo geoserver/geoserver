@@ -496,7 +496,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         ReferencedEnvelope mapEnvelope =
                 new ReferencedEnvelope(mapbbox, DefaultGeographicCRS.WGS84);
 
-        final HashMap<String, String> hints = new HashMap<String, String>();
+        final HashMap<String, String> hints = new HashMap<>();
 
         double originalScale =
                 RendererUtilities.calculateScale(mapEnvelope, mapWidth, mapHeight, hints);
@@ -552,7 +552,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
         GetMapRequest getMapRequest = new GetMapRequest();
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> layers = new ArrayList<>();
 
         layers.add(
                 new MapLayerInfo(

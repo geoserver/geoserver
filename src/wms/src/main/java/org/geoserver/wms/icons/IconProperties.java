@@ -189,7 +189,7 @@ public abstract class IconProperties {
                         return ResponseUtils.buildURL(
                                 baseURL,
                                 "styles/" + target.getPath(),
-                                Collections.<String, String>emptyMap(),
+                                Collections.emptyMap(),
                                 URLType.RESOURCE);
                     } else if (!("http".equals(graphicProtocol)
                             || "https".equals(graphicProtocol))) {

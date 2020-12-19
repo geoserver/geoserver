@@ -42,16 +42,14 @@ public class FileBlobStorePanel extends Panel {
                 paramPanel =
                         new DirectoryParamPanel(
                                 "baseDirectory",
-                                new PropertyModel<String>(
-                                        getDefaultModel().getObject(), "baseDirectory"),
+                                new PropertyModel<>(getDefaultModel().getObject(), "baseDirectory"),
                                 new ParamResourceModel("baseDirectory", this),
                                 true));
         paramPanel.add(new AttributeModifier("title", new ResourceModel("baseDirectory.title")));
         paramPanel
                 .getFormComponent()
                 .setModel((IModel<String>) paramPanel.getDefaultModel()); // disable filemodel
-        paramPanel.setFileFilter(
-                new Model<DirectoryFileFilter>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
+        paramPanel.setFileFilter(new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
         add(
                 new TextField<Integer>("fileSystemBlockSize")
                         .setRequired(true)

@@ -46,8 +46,7 @@ public class NetCDFDimensionsManager {
      * A dimension mapping between dimension names and dimension mapper instances We use a Linked
      * map to preserve the dimension order
      */
-    private Map<String, NetCDFDimensionMapping> netcdfDimensions =
-            new LinkedHashMap<String, NetCDFDimensionMapping>();
+    private Map<String, NetCDFDimensionMapping> netcdfDimensions = new LinkedHashMap<>();
 
     public final int getNumDimensions() {
         return netcdfDimensions.keySet().size();

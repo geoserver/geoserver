@@ -81,7 +81,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("Yaugher Volcanic Group");
         names.add("-Py");
         String name =
@@ -162,7 +162,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("Yaugher Volcanic Group 1");
         names.add("Yaugher Volcanic Group 2");
         names.add("-Py");
@@ -255,7 +255,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("Yaugher Volcanic Group 1");
         names.add("Yaugher Volcanic Group 2");
         names.add("-Py");
@@ -362,7 +362,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("New Group");
         names.add("-Xy");
         String name =
@@ -457,7 +457,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 "New Group", "//gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("New Group");
         names.add("-Xy");
         String name = evaluate("//gsml:GeologicUnit/gml:name[1]", doc);
@@ -524,7 +524,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("New Group");
         names.add("-Xy");
         String name = evaluate("//gsml:GeologicUnit[@gml:id='gu.25682']/gml:name[1]", doc);
@@ -682,7 +682,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(3, "//gsml:GeologicUnit/gml:name", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("Yaugher Volcanic Group 1");
         names.add("Yaugher Volcanic Group 2");
         names.add("-Py");

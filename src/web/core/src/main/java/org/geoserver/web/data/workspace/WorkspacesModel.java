@@ -21,7 +21,7 @@ public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>
     @Override
     protected List<WorkspaceInfo> load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
-        List<WorkspaceInfo> workspaces = new ArrayList<WorkspaceInfo>(catalog.getWorkspaces());
+        List<WorkspaceInfo> workspaces = new ArrayList<>(catalog.getWorkspaces());
         Collections.sort(workspaces, new WorkspaceComparator());
         return workspaces;
     }

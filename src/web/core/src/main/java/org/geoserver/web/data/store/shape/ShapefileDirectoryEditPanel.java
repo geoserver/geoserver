@@ -36,7 +36,7 @@ public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
                         new MapModel<>(paramsModel, URLP.key),
                         new ParamResourceModel("shapefile", this),
                         true);
-        file.setFileFilter(new Model<ExtensionFileFilter>(new ExtensionFileFilter(".shp")));
+        file.setFileFilter(new Model<>(new ExtensionFileFilter(".shp")));
         return file;
     }
 }

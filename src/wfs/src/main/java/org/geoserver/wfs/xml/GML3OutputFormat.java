@@ -134,7 +134,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
 
         // round up the info objects for each feature collection
-        HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<String, Set<ResourceInfo>>();
+        HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<>();
         for (int fcIndex = 0; fcIndex < featureCollections.size(); fcIndex++) {
             if (request != null) {
                 List<Query> queries = request.getQueries();
@@ -160,7 +160,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                     Set<ResourceInfo> metas = ns2metas.get(featureTypeName.getNamespaceURI());
 
                     if (metas == null) {
-                        metas = new HashSet<ResourceInfo>();
+                        metas = new HashSet<>();
                         ns2metas.put(featureTypeName.getNamespaceURI(), metas);
                     }
                     metas.add(meta);

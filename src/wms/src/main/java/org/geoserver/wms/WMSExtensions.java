@@ -52,7 +52,7 @@ public class WMSExtensions {
         Set<String> producerFormats;
         for (GetMapOutputFormat producer : producers) {
             producerFormats = producer.getOutputFormatNames();
-            Set<String> caseInsensitiveFormats = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            Set<String> caseInsensitiveFormats = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             caseInsensitiveFormats.addAll(producerFormats);
             if (caseInsensitiveFormats.contains(outputFormat)) {
                 return producer;

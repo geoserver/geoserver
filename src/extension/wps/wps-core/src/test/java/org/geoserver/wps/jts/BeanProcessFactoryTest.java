@@ -119,7 +119,7 @@ public class BeanProcessFactoryTest extends WPSTestSupport {
                 };
 
         org.geotools.process.Process p = factory.create(new NameImpl("bean", "Bounds"));
-        Map<String, Object> inputs = new HashMap<String, Object>();
+        Map<String, Object> inputs = new HashMap<>();
         inputs.put("features", fc);
         Map<String, Object> result = p.execute(inputs, null);
 

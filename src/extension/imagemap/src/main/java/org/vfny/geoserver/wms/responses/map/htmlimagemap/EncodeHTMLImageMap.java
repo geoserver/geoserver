@@ -108,7 +108,7 @@ public class EncodeHTMLImageMap extends WebMap {
             // ie. SELECT * FROM ... WHERE (the_geom && BBOX) AND (filter1 OR
             // filter2 OR filter3);
 
-            final List<Filter> filtersToDS = new ArrayList<Filter>();
+            final List<Filter> filtersToDS = new ArrayList<>();
 
             final int stylesLength = styles.length;
 
@@ -212,7 +212,7 @@ public class EncodeHTMLImageMap extends WebMap {
 
     /** Filter given rules, to consider only the rules compatible with the current scale. */
     private Rule[] filterRules(List<Rule> rules) {
-        List<Rule> result = new ArrayList<Rule>();
+        List<Rule> result = new ArrayList<>();
         for (Rule rule : rules) {
             double scaleDenominator;
             try {

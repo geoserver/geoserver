@@ -69,7 +69,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
     public GetCapabilitiesScaleHintTest() {
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();

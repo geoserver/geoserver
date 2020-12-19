@@ -36,7 +36,7 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
             testData.copyTo(is, "ogr2ogr.xml");
         }
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("", "http://www.opengis.net/wfs");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));

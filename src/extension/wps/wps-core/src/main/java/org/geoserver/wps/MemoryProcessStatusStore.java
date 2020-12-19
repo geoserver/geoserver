@@ -30,7 +30,7 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
 
     static final Logger LOGGER = Logging.getLogger(MemoryProcessStatusStore.class);
 
-    Map<String, ExecutionStatus> statuses = new ConcurrentHashMap<String, ExecutionStatus>();
+    Map<String, ExecutionStatus> statuses = new ConcurrentHashMap<>();
 
     @Override
     public void save(ExecutionStatus status) {

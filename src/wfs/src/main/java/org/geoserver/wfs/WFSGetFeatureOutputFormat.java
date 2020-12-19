@@ -151,7 +151,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * element names to be returned in the WFS 1.0 capabilities
      */
     protected List<String> getAllCapabilitiesElementNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String name : getOutputFormats()) {
             if (XML_ELEMENT.matcher(name).matches()) {
                 result.add(name);

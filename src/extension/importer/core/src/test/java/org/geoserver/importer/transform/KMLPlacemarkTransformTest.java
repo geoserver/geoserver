@@ -111,7 +111,7 @@ public class KMLPlacemarkTransformTest extends TestCase {
 
     public void testFolders() throws Exception {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(origType);
-        List<Folder> folders = new ArrayList<Folder>(2);
+        List<Folder> folders = new ArrayList<>(2);
         folders.add(new Folder("foo"));
         folders.add(new Folder("bar"));
         fb.featureUserData("Folder", folders);

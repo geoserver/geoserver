@@ -158,7 +158,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
     @Test
     public void testDefaultGridOrigin() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>(baseMap());
+        Map<String, Object> raw = new HashMap<>(baseMap());
         final String getLayerId = getLayerId(TASMANIA_BM);
         raw.put("identifier", getLayerId);
         raw.put("format", "image/geotiff");
@@ -174,7 +174,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
     @Test
     public void testSpatialSubsetOnePixel() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>(baseMap());
+        Map<String, Object> raw = new HashMap<>(baseMap());
         final String getLayerId = getLayerId(RAIN);
         raw.put("identifier", getLayerId);
         raw.put("format", "image/geotiff");

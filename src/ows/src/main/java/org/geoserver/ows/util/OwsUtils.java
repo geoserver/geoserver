@@ -75,8 +75,7 @@ public class OwsUtils {
     }
 
     /** Cache of reflection information about a class, keyed by class. */
-    static Map<Class, ClassProperties> classPropertiesCache =
-            new SoftValueHashMap<Class, ClassProperties>();
+    static Map<Class, ClassProperties> classPropertiesCache = new SoftValueHashMap<>();
 
     /** Accessor for the class to property info cache. */
     static ClassProperties classProperties(Class clazz) {

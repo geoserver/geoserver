@@ -452,7 +452,7 @@ public class PipelineBuilder {
          * difference.
          */
         private Geometry collectionClip(GeometryCollection geom) throws Exception {
-            ArrayList<Geometry> result = new ArrayList<Geometry>();
+            ArrayList<Geometry> result = new ArrayList<>();
             for (int t = 0; t < geom.getNumGeometries(); t++) {
                 Geometry g = geom.getGeometryN(0);
                 Geometry clipped = _run(g); // gets the non-degenerative of the result

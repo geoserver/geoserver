@@ -34,8 +34,7 @@ public class DirectTemplateFeatureCollectionFactory
     static Logger LOGGER = Logging.getLogger(DirectTemplateFeatureCollectionFactory.class);
 
     /** thread local to track open iterators */
-    static ThreadLocal<List<TemplateFeatureIterator>> ITERATORS =
-            new ThreadLocal<List<TemplateFeatureIterator>>();
+    static ThreadLocal<List<TemplateFeatureIterator>> ITERATORS = new ThreadLocal<>();
 
     public void purge() {
         List<TemplateFeatureIterator> its = ITERATORS.get();

@@ -104,8 +104,7 @@ public class InspireTestSupport {
                 ids.size(),
                 spatialDataSetIdentifiers.getLength());
 
-        final Map<String, UniqueResourceIdentifier> idMap =
-                new HashMap<String, UniqueResourceIdentifier>();
+        final Map<String, UniqueResourceIdentifier> idMap = new HashMap<>();
 
         for (UniqueResourceIdentifier id : ids) {
             idMap.put(id.getCode(), id);

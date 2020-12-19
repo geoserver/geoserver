@@ -107,11 +107,10 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
                             public Component buildComponent(String id) {
 
                                 return current =
-                                        new LDAPUserGroupServicePanel(
-                                                id, new Model<LDAPUserGroupServiceConfig>(config));
+                                        new LDAPUserGroupServicePanel(id, new Model<>(config));
                             };
                         },
-                        new CompoundPropertyModel<Object>(config)) {
+                        new CompoundPropertyModel<>(config)) {
 
                     private static final long serialVersionUID = -4090244876841730821L;
 

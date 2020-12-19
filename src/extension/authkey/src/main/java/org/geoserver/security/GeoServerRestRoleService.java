@@ -47,7 +47,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         implements GeoServerRoleService {
 
     static final SortedSet<String> emptyStringSet =
-            Collections.unmodifiableSortedSet(new TreeSet<String>());
+            Collections.unmodifiableSortedSet(new TreeSet<>());
 
     static final Map<String, String> emptyMap = Collections.emptyMap();
 
@@ -100,8 +100,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     private String groupAdminGroup;
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     /** Default Constructor */
     public GeoServerRestRoleService(SecurityNamedServiceConfig config) throws IOException {
@@ -165,7 +164,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
-        final SortedSet<String> users = new TreeSet<String>();
+        final SortedSet<String> users = new TreeSet<>();
 
         return Collections.unmodifiableSortedSet(users);
     }
@@ -173,7 +172,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
     @SuppressWarnings("unchecked")
     @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
 
         try {
             return (SortedSet<GeoServerRole>)
@@ -263,7 +262,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
-        SortedSet<GeoServerRole> set = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> set = new TreeSet<>();
         GeoServerRole role = getRoleByName(groupname);
         if (role != null) {
             set.add(role);
@@ -275,7 +274,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
     @SuppressWarnings("unchecked")
     @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
 
         try {
             return (SortedSet<GeoServerRole>)

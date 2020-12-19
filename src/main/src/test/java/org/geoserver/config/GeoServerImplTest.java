@@ -183,7 +183,7 @@ public class GeoServerImplTest {
         GeoServerInfoImpl gsii = new GeoServerInfoImpl(geoServer);
         Map<Object, Object> before = gsii.getClientProperties();
 
-        Map<Object, Object> newProps = new HashMap<Object, Object>();
+        Map<Object, Object> newProps = new HashMap<>();
         newProps.put("123", "456");
         gsii.setClientProperties(newProps);
 

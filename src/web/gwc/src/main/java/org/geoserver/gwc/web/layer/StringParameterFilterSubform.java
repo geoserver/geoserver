@@ -64,15 +64,12 @@ public class StringParameterFilterSubform
 
         final Component defaultValue;
 
-        defaultValue =
-                new TextField<String>(
-                        "defaultValue", new PropertyModel<String>(model, "defaultValue"));
+        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final TextArea<List<String>> values;
         values =
-                new TextArea<List<String>>(
-                        "values", new PropertyModel<List<String>>(model, "values")) {
+                new TextArea<List<String>>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
 

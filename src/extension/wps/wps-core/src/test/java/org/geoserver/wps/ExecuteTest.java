@@ -45,7 +45,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -94,7 +93,7 @@ public class ExecuteTest extends WPSTestSupport {
         String pgf = PRIMITIVEGEOFEATURE.getLocalPart();
         testData.addVectorLayer(
                 new QName("http://foo.org", pgf, "foo"),
-                new HashMap<LayerProperty, Object>(),
+                new HashMap<>(),
                 pgf + ".properties",
                 MockData.class,
                 getCatalog());

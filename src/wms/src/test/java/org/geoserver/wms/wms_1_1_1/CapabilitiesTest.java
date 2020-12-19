@@ -48,7 +48,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
-import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -734,10 +733,7 @@ public class CapabilitiesTest extends WMSTestSupport {
 
         Capabilities_1_3_0_Transformer tr =
                 new Capabilities_1_3_0_Transformer(
-                        wms,
-                        BASE_URL,
-                        wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>());
+                        wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

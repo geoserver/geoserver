@@ -66,7 +66,7 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         form.add(maxOutputMemory);
         // max dimension values
         TextField<Integer> maxRequestedDimensionValues =
-                new TextField<Integer>("maxRequestedDimensionValues");
+                new TextField<>("maxRequestedDimensionValues");
         maxRequestedDimensionValues.add(RangeValidator.minimum(0));
         form.add(maxRequestedDimensionValues);
 

@@ -25,7 +25,7 @@ public class NamespacesModel extends LoadableDetachableModel {
     @Override
     protected Object load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
-        List<NamespaceInfo> namespaces = new ArrayList<NamespaceInfo>(catalog.getNamespaces());
+        List<NamespaceInfo> namespaces = new ArrayList<>(catalog.getNamespaces());
         Collections.sort(
                 namespaces,
                 new Comparator<NamespaceInfo>() {

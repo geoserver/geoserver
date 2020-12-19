@@ -166,7 +166,7 @@ public class SampleDataAccessMockData extends SystemTestData {
     public void info(String datastore, String prefix, String type) throws IOException {
 
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_SRS_HANDLINGS, 2);
         params.put(KEY_ALIAS, null);

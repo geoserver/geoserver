@@ -63,7 +63,7 @@ public class Format {
         this.mimeType = mimeType;
         this.type = type;
         if (options != null) {
-            this.options = new ArrayList<String>(Arrays.asList(options));
+            this.options = new ArrayList<>(Arrays.asList(options));
         }
         if (type == null) {
             this.type = OutputType.BINARY;

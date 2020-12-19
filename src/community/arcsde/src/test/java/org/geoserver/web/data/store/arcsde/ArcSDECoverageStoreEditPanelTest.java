@@ -103,8 +103,8 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // null... odd.
         storeInfo.setName("test storeInfo Name");
 
-        editForm = new Form<CoverageStoreInfo>("formId");
-        editForm.setModel(new Model<CoverageStoreInfo>(storeInfo));
+        editForm = new Form<>("formId");
+        editForm.setModel(new Model<>(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
 
         StoreEditPanel storeEditPanel =

@@ -70,10 +70,10 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         this.availableCoverages = availableCoverages;
 
         coveragesChoice =
-                new ListMultipleChoice<String>(
+                new ListMultipleChoice<>(
                         "coveragesChoice",
                         new Model<>(),
-                        new ArrayList<String>(coverages.getObject()),
+                        new ArrayList<>(coverages.getObject()),
                         new ChoiceRenderer<String>() {
                             @Override
                             public Object getDisplayValue(String coverage) {
@@ -85,10 +85,10 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
         new ArrayList<CoverageBand>();
         outputBandsChoice =
-                new ListMultipleChoice<CoverageBand>(
+                new ListMultipleChoice<>(
                         "outputBandsChoice",
                         new Model<>(),
-                        new ArrayList<CoverageBand>(outputBands.getObject()),
+                        new ArrayList<>(outputBands.getObject()),
                         new ChoiceRenderer<CoverageBand>() {
                             @Override
                             public Object getDisplayValue(CoverageBand vcb) {
@@ -98,7 +98,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         outputBandsChoice.setOutputMarkupId(true);
         add(outputBandsChoice);
 
-        currentOutputBands = new ArrayList<CoverageBand>(outputBandsChoice.getChoices());
+        currentOutputBands = new ArrayList<>(outputBandsChoice.getChoices());
 
         add(addBandButton());
         definition = new TextField<>("definition", new Model<>());

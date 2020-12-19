@@ -121,7 +121,7 @@ public class QueryFunction extends FunctionImpl {
             query.setMaxFeatures(maxResults + 1);
             FeatureSource fs = ft.getFeatureSource(null, null);
             fi = fs.getFeatures(query).features();
-            List<Object> results = new ArrayList<Object>(maxResults);
+            List<Object> results = new ArrayList<>(maxResults);
             while (fi.hasNext()) {
                 Feature f = fi.next();
                 Object value = f.getProperty(attribute).getValue();

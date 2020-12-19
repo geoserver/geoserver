@@ -51,11 +51,9 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
     protected GeoServer geoServer;
 
-    protected Map<String, CatalogStoreMapping> mappings =
-            new HashMap<String, CatalogStoreMapping>();
+    protected Map<String, CatalogStoreMapping> mappings = new HashMap<>();
 
-    protected Map<String, PropertyFileWatcher> watchers =
-            new HashMap<String, PropertyFileWatcher>();
+    protected Map<String, PropertyFileWatcher> watchers = new HashMap<>();
 
     public InternalCatalogStore(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -96,7 +94,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
             RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
             throws IOException {
 
-        Map<String, String> interpolationProperties = new HashMap<String, String>();
+        Map<String, String> interpolationProperties = new HashMap<>();
 
         String baseUrl = (String) q.getHints().get(GetRecords.KEY_BASEURL);
         if (baseUrl != null) {

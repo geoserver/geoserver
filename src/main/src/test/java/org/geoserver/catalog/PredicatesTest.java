@@ -113,7 +113,7 @@ public class PredicatesTest {
         assertTrue(equal("id", ws.getId()).evaluate(ws));
         assertFalse(equal("id", "somethingElse").evaluate(ws));
 
-        Set<StyleInfo> styles = new HashSet<StyleInfo>();
+        Set<StyleInfo> styles = new HashSet<>();
         styles.add(style1);
 
         assertFalse(equal("styles", styles, MatchAction.ALL).evaluate(vectorLayer));

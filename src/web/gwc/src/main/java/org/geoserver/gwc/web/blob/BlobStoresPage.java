@@ -72,8 +72,8 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
 
-                                final Set<String> ids = new HashSet<String>();
-                                final List<String> assignedLayers = new ArrayList<String>();
+                                final Set<String> ids = new HashSet<>();
+                                final List<String> assignedLayers = new ArrayList<>();
 
                                 for (BlobStoreInfo config : blobStoresPanel.getSelection()) {
                                     if (config.isDefault()) {

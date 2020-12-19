@@ -126,7 +126,7 @@ public class GetRecordById {
             throws IOException {
         // prepare to build the queries
 
-        Set<FeatureId> fids = new HashSet<FeatureId>();
+        Set<FeatureId> fids = new HashSet<>();
         for (URI id : ids) {
             fids.add(FF.featureId(id.toString()));
         }
@@ -135,7 +135,7 @@ public class GetRecordById {
 
         // build queries
 
-        List<GetRecords.WrappedQuery> result = new ArrayList<GetRecords.WrappedQuery>();
+        List<GetRecords.WrappedQuery> result = new ArrayList<>();
 
         for (RecordDescriptor rd : rds) {
             Name typeName = rd.getFeatureDescriptor().getName();
@@ -171,7 +171,7 @@ public class GetRecordById {
             request.setOutputFormat(CSW.NAMESPACE);
         }
 
-        List<RecordDescriptor> list = new ArrayList<RecordDescriptor>();
+        List<RecordDescriptor> list = new ArrayList<>();
         for (RecordDescriptor rd : recordDescriptors) {
             if (outputSchema.equals(rd.getOutputSchema())) {
                 list.add(rd);

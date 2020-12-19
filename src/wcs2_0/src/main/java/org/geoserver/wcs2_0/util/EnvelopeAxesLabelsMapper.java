@@ -35,7 +35,7 @@ public class EnvelopeAxesLabelsMapper {
 
         final int dimension = cs.getDimension();
         // loop through dimensions
-        final ArrayList<String> retValue = new ArrayList<String>();
+        final ArrayList<String> retValue = new ArrayList<>();
         if (!axesSwitch) {
             for (int i = 0; i < dimension; i++) {
                 CoordinateSystemAxis axis = cs.getAxis(i);

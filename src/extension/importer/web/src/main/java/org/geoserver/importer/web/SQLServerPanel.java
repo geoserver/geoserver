@@ -32,7 +32,7 @@ public class SQLServerPanel extends AbstractDbPanel {
 
     @Override
     protected LinkedHashMap<String, Component> buildParamPanels() {
-        LinkedHashMap<String, Component> result = new LinkedHashMap<String, Component>();
+        LinkedHashMap<String, Component> result = new LinkedHashMap<>();
 
         // basic panel
         basicParamPanel = new BasicDbParamPanel("01", "localhost", 4866, true);

@@ -87,11 +87,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
                         : Long.MAX_VALUE;
         ExecutorService animatorExecutorService =
                 new ThreadPoolExecutor(
-                        4,
-                        20,
-                        framesTimeout,
-                        TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>());
+                        4, 20, framesTimeout, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
         this.wmsConfig.setAnimatorExecutorService(animatorExecutorService);
     }
@@ -114,7 +110,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     }
 
     List<Font> loadFontsFromDataDirectory() {
-        List<Font> result = new ArrayList<Font>();
+        List<Font> result = new ArrayList<>();
         for (Resource file :
                 Resources.list(
                         data.getStyles(), new Resources.ExtensionFilter("TTF", "OTF"), true)) {

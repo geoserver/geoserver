@@ -41,7 +41,7 @@ public class MockHttpResponse implements HTTPResponse {
     public MockHttpResponse(byte[] response, String contentType, String... headers) {
         this.response = response;
         this.contentType = contentType;
-        this.headers = new HashMap<String, String>();
+        this.headers = new HashMap<>();
 
         if (headers != null) {
             if (headers.length % 2 != 0) {

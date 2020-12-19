@@ -70,7 +70,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         testData.addStyle(
                 STYLE_NAME_WITHOUT_DESCRIPTION, "styleWithoutDescription.sld", getClass(), catalog);
 
-        Map<LayerProperty, Object> properties = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITH_TITLE);
 
         testData.addVectorLayer(
@@ -80,7 +80,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
                 CapabilitiesTest.class,
                 catalog);
 
-        properties = new HashMap<LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITHOUT_TITLE);
 
         testData.addVectorLayer(
@@ -90,7 +90,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
                 CapabilitiesTest.class,
                 catalog);
 
-        properties = new HashMap<LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITHOUT_DESCRIPTION);
 
         testData.addVectorLayer(
@@ -115,7 +115,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");

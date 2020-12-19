@@ -29,7 +29,7 @@ public class DecorationTestSupport {
         GetMapRequest request = new GetMapRequest();
         request.setWidth(1000);
         request.setHeight(1000);
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
 
         if (dpi > 0) {
             request.getFormatOptions().put("dpi", dpi);

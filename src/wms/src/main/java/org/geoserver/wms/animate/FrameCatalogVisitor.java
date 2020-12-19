@@ -59,12 +59,12 @@ public class FrameCatalogVisitor {
             String aparam,
             String avalue) {
         if (this.tasks == null) {
-            this.tasks = new LinkedList<Future<RenderedImage>>();
+            this.tasks = new LinkedList<>();
         }
 
         FrameLoader loader = new FrameLoader(request, wms, wmsConfiguration, aparam, avalue);
 
-        final FutureTask<RenderedImage> task = new FutureTask<RenderedImage>(loader);
+        final FutureTask<RenderedImage> task = new FutureTask<>(loader);
         this.tasks.add(task);
         this.framesNumber++;
 
@@ -74,7 +74,7 @@ public class FrameCatalogVisitor {
 
     /** Invokes the Executor service and produces the frames images. */
     public RenderedImageList produce(WMS wmsConfiguration) throws IOException {
-        List<RenderedImage> images = new ArrayList<RenderedImage>();
+        List<RenderedImage> images = new ArrayList<>();
 
         long gifAnimatedSize = 0;
 
@@ -228,7 +228,7 @@ class FrameLoader implements Callable<RenderedImage> {
                     }
                 }
             } else {
-                kvps = new ArrayList<String>();
+                kvps = new ArrayList<>();
             }
             // insert the right one
             kvps.add(simpleParamKey + ":" + value);

@@ -217,7 +217,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
          * We use a {@link BlockingQueue} to decouple to incoming flux of {@link RequestData} to
          * audit with the thread that writes to disk.
          */
-        BlockingQueue<RequestData> queue = new ArrayBlockingQueue<RequestData>(10000);
+        BlockingQueue<RequestData> queue = new ArrayBlockingQueue<>(10000);
 
         /** The {@link File} where we audit to. */
         private File logFile;
@@ -266,7 +266,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             try {
                 while (true) {
                     // grab as many items from the queue as possible
-                    List<RequestData> rds = new ArrayList<RequestData>();
+                    List<RequestData> rds = new ArrayList<>();
                     if (queue.size() > 0) {
                         queue.drainTo(rds);
                     } else {

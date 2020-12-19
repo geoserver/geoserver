@@ -141,7 +141,7 @@ public class ImportPage extends GeoServerSecuredPage {
         add(taskTable);
 
         final AjaxLink<Long> importLink =
-                new AjaxLink<Long>("import", new Model<Long>()) {
+                new AjaxLink<Long>("import", new Model<>()) {
                     @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);

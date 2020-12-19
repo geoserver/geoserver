@@ -191,7 +191,7 @@ public class StyleParameterFilter extends ParameterFilter {
 
     /** Set/update the availableStyles and defaultStyle based on the given GeoServer layer. */
     public void setLayer(LayerInfo layer) {
-        availableStyles = new TreeSet<String>();
+        availableStyles = new TreeSet<>();
 
         for (StyleInfo style : layer.getStyles()) {
             availableStyles.add(style.prefixedName());
@@ -219,7 +219,7 @@ public class StyleParameterFilter extends ParameterFilter {
         if (styles == null) {
             this.allowedStyles = null;
         } else {
-            this.allowedStyles = new TreeSet<String>(styles);
+            this.allowedStyles = new TreeSet<>(styles);
         }
     }
 

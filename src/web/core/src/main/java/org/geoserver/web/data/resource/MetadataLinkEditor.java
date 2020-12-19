@@ -93,7 +93,7 @@ public class MetadataLinkEditor extends Panel {
                         TextField<String> metadataType =
                                 new TextField<>(
                                         "type",
-                                        new PropertyModel<String>(item.getModel(), "metadataType"));
+                                        new PropertyModel<>(item.getModel(), "metadataType"));
                         final RepeatingView commonKeys = new RepeatingView("commonTypes");
                         item.add(commonKeys);
                         for (String key : LINK_TYPES) {
@@ -104,8 +104,7 @@ public class MetadataLinkEditor extends Panel {
 
                         TextField<String> about =
                                 new TextField<>(
-                                        "about",
-                                        new PropertyModel<String>(item.getModel(), "about"));
+                                        "about", new PropertyModel<>(item.getModel(), "about"));
                         item.add(about);
 
                         FormComponentFeedbackBorder urlBorder =
@@ -113,14 +112,13 @@ public class MetadataLinkEditor extends Panel {
                         item.add(urlBorder);
                         TextField<String> format =
                                 new TextField<>(
-                                        "format",
-                                        new PropertyModel<String>(item.getModel(), "type"));
+                                        "format", new PropertyModel<>(item.getModel(), "type"));
                         format.setRequired(true);
                         item.add(format);
                         TextField<String> url =
                                 new TextField<>(
                                         "metadataLinkURL",
-                                        new PropertyModel<String>(item.getModel(), "content"));
+                                        new PropertyModel<>(item.getModel(), "content"));
                         url.add(new UrlValidator());
                         url.setRequired(true);
                         urlBorder.add(url);

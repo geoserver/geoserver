@@ -106,7 +106,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         }
 
         // check coverages are legit
-        List<String> badCoverageIds = new ArrayList<String>();
+        List<String> badCoverageIds = new ArrayList<>();
 
         for (String encodedCoverageId : request.getCoverageId()) {
             String newCoverageID = encodedCoverageId;

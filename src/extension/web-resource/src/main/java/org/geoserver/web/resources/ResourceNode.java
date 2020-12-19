@@ -51,7 +51,7 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     @Override
     public Set<TreeNode<Resource>> getChildren() {
-        Set<TreeNode<Resource>> children = new TreeSet<TreeNode<Resource>>();
+        Set<TreeNode<Resource>> children = new TreeSet<>();
         for (Resource res : resource.list()) {
             children.add(new ResourceNode(res, expandedStates));
         }

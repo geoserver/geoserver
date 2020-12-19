@@ -208,7 +208,7 @@ public final class Files {
             if (!file.isDirectory()) {
                 return Collections.emptyList();
             }
-            List<Resource> result = new ArrayList<Resource>();
+            List<Resource> result = new ArrayList<>();
             for (File child : Optional.ofNullable(file.listFiles()).orElse(new File[0])) {
                 result.add(new ResourceAdaptor(child));
             }

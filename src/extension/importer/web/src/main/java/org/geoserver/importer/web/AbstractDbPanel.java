@@ -93,7 +93,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
 
     /** Switches between the types of param panels */
     Component connectionTypeChoice(final Map<String, Component> paramPanelMap) {
-        ArrayList<String> connectionTypeList = new ArrayList<String>(paramPanelMap.keySet());
+        ArrayList<String> connectionTypeList = new ArrayList<>(paramPanelMap.keySet());
         DropDownChoice<String> choice =
                 new DropDownChoice<>(
                         "connType",

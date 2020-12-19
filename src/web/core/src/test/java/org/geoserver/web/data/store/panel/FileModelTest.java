@@ -36,7 +36,7 @@ public class FileModelTest {
         try {
             f.createNewFile();
 
-            FileModel model = new FileModel(new Model<String>(), root);
+            FileModel model = new FileModel(new Model<>(), root);
             model.setObject(f.getAbsolutePath());
             String path = model.getObject();
             assertEquals("file://" + f.getAbsolutePath(), path);
@@ -53,7 +53,7 @@ public class FileModelTest {
         File cite = new File(data, MockData.CITE_PREFIX);
         File buildings = new File(cite, "Buildings.properties");
 
-        FileModel model = new FileModel(new Model<String>(), root);
+        FileModel model = new FileModel(new Model<>(), root);
         model.setObject(buildings.getAbsolutePath());
         String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
@@ -61,7 +61,7 @@ public class FileModelTest {
 
     @Test
     public void testRelativeUnmodified() throws IOException {
-        FileModel model = new FileModel(new Model<String>(), root);
+        FileModel model = new FileModel(new Model<>(), root);
         model.setObject("file:data/cite/Buildings.properties");
         String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);

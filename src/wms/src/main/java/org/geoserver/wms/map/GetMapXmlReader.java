@@ -295,9 +295,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             throw new ServiceException("SLD document contains no layers");
         }
 
-        final List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
-        final List<Style> styles = new ArrayList<Style>();
-        final List<Filter> filters = new ArrayList<Filter>();
+        final List<MapLayerInfo> layers = new ArrayList<>();
+        final List<Style> styles = new ArrayList<>();
+        final List<Filter> filters = new ArrayList<>();
         MapLayerInfo currLayer;
 
         StyledLayer sl = null;

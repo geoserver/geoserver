@@ -295,7 +295,7 @@ public class Resources {
      */
     public static List<Resource> search(Resource resource, long lastModified) {
         if (resource.getType() == Type.DIRECTORY) {
-            ArrayList<Resource> results = new ArrayList<Resource>();
+            ArrayList<Resource> results = new ArrayList<>();
             for (Resource child : resource.list()) {
                 switch (child.getType()) {
                     case RESOURCE:
@@ -399,7 +399,7 @@ public class Resources {
      * @return filtered list
      */
     public static List<Resource> list(Resource dir, Filter<Resource> filter, boolean recursive) {
-        List<Resource> res = new ArrayList<Resource>();
+        List<Resource> res = new ArrayList<>();
         for (Resource child : dir.list()) {
             if (filter.accept(child)) {
                 res.add(child);
@@ -443,7 +443,7 @@ public class Resources {
          * @param extensions in upper case
          */
         public ExtensionFilter(String... extensions) {
-            this.extensions = new HashSet<String>(Arrays.asList(extensions));
+            this.extensions = new HashSet<>(Arrays.asList(extensions));
         }
 
         @Override
@@ -815,7 +815,7 @@ public class Resources {
 
         @Override
         public List<Resource> list() {
-            List<Resource> children = new ArrayList<Resource>();
+            List<Resource> children = new ArrayList<>();
             for (Resource child : delegate.list()) {
                 children.add(new SerializableResourceWrapper(child));
             }

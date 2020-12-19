@@ -54,7 +54,7 @@ public class ArcGridPPIO extends CDataPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws IOException {
         Parameter<Boolean> forceSquareCells =
-                new Parameter<Boolean>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
+                new Parameter<>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
         new ArcGridFormat()
                 .getWriter(os)
                 .write((GridCoverage2D) value, new GeneralParameterValue[] {forceSquareCells});

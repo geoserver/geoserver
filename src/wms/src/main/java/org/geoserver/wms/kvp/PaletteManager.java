@@ -45,10 +45,9 @@ public class PaletteManager {
     public static final String SAFE = "SAFE";
 
     public static final IndexColorModel safePalette = buildDefaultPalette();
-    static SoftValueHashMap<String, PaletteCacheEntry> paletteCache =
-            new SoftValueHashMap<String, PaletteCacheEntry>();
+    static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<>();
     static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache =
-            new SoftValueHashMap<IndexColorModelKey, InverseColorMapOp>();
+            new SoftValueHashMap<>();
 
     /** TODO: we should probably provide the data directory as a constructor parameter here */
     private PaletteManager() {}
@@ -83,12 +82,12 @@ public class PaletteManager {
 
         Resource palettes = loader.get("palettes");
 
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         names.addAll(
                 Arrays.asList(
                         new String[] {name + ".gif", name + ".png", name + ".pal", name + ".tif"}));
 
-        List<Resource> paletteFiles = new ArrayList<Resource>();
+        List<Resource> paletteFiles = new ArrayList<>();
         for (Resource item : palettes.list()) {
             if (names.contains(item.name().toLowerCase())) {
                 paletteFiles.add(item);

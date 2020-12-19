@@ -42,7 +42,7 @@ public class RoleChoice extends DropDownChoice<String> {
         @Override
         public List<String> getObject() {
             SecurityRoleServiceConfig config = configModel.getObject();
-            List<String> roleNames = new ArrayList<String>();
+            List<String> roleNames = new ArrayList<>();
             if (config.getId() != null) {
                 try {
                     for (GeoServerRole role :

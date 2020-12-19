@@ -46,7 +46,7 @@ public class StreamingKMLBuilder {
         // create a generator that will generate a folder and feature dumps/ground overlays for each
         // layer
         IteratorFactory<Feature> generatorFactory = new PlainFolderIteratorFactory(context);
-        IteratorList<Feature> folders = new IteratorList<Feature>(generatorFactory);
+        IteratorList<Feature> folders = new IteratorList<>(generatorFactory);
         context.addFeatures(document, folders);
 
         return kml;

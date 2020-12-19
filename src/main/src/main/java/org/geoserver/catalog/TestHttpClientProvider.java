@@ -18,7 +18,7 @@ public class TestHttpClientProvider {
 
     public static final String MOCKSERVER = "http://mock.test.geoserver.org";
 
-    static final Map<String, HTTPClient> CLIENTS = new ConcurrentHashMap<String, HTTPClient>();
+    static final Map<String, HTTPClient> CLIENTS = new ConcurrentHashMap<>();
 
     private static boolean TEST_MODE = false;
 

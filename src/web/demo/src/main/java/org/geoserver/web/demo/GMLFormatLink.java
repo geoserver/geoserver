@@ -18,8 +18,7 @@ public class GMLFormatLink extends CommonFormatLink {
     private GeoServer geoserver;
 
     /** GML output params computation may be expensive, results are cached in this map */
-    private final transient Map<String, GMLOutputParams> gmlParamsCache =
-            new HashMap<String, GMLOutputParams>();
+    private final transient Map<String, GMLOutputParams> gmlParamsCache = new HashMap<>();
 
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {

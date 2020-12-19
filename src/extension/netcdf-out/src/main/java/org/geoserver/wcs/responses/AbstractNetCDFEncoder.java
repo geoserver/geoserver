@@ -453,7 +453,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
             // Add bounds variable for ranges
             if (isRange) {
-                final List<Dimension> boundsDimensions = new ArrayList<Dimension>();
+                final List<Dimension> boundsDimensions = new ArrayList<>();
                 boundsDimensions.add(netcdfDimension);
                 boundsDimensions.add(boundDimension);
                 final String boundName = dimensionName + NetCDFUtilities.BOUNDS_SUFFIX;

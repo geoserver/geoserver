@@ -179,7 +179,7 @@ public class XMLRoleService extends AbstractRoleService {
             for (int i = 0; i < userRolesNodes.getLength(); i++) {
                 Node userRolesNode = userRolesNodes.item(i);
                 String userName = xmlXPath.getUserNameExpression().evaluate(userRolesNode);
-                SortedSet<GeoServerRole> roleSet = new TreeSet<GeoServerRole>();
+                SortedSet<GeoServerRole> roleSet = new TreeSet<>();
                 helper.user_roleMap.put(userName, roleSet);
                 NodeList userRolesRefNodes =
                         (NodeList)
@@ -201,7 +201,7 @@ public class XMLRoleService extends AbstractRoleService {
             for (int i = 0; i < groupRolesNodes.getLength(); i++) {
                 Node groupRolesNode = groupRolesNodes.item(i);
                 String groupName = xmlXPath.getGroupNameExpression().evaluate(groupRolesNode);
-                SortedSet<GeoServerRole> roleSet = new TreeSet<GeoServerRole>();
+                SortedSet<GeoServerRole> roleSet = new TreeSet<>();
                 helper.group_roleMap.put(groupName, roleSet);
                 NodeList groupRolesRefNodes =
                         (NodeList)

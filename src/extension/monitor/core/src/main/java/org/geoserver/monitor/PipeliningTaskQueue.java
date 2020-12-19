@@ -74,7 +74,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Queuing task into pipeline " + key);
         }
-        pipeline.add(new Pipelineable<K>(key, task));
+        pipeline.add(new Pipelineable<>(key, task));
     }
 
     public void clear(K key) {

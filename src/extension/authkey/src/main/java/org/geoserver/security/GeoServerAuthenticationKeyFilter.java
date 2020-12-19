@@ -147,7 +147,7 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
 
         LOGGER.log(Level.FINE, "found user: = " + user.getUsername() + ", trying to authenticate");
 
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
         for (GrantedAuthority auth : user.getAuthorities()) {
             roles.add((GeoServerRole) auth);
         }

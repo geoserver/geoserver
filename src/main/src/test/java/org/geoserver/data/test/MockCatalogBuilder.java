@@ -694,8 +694,8 @@ public class MockCatalogBuilder {
         expect(lg.getId()).andReturn(newId()).anyTimes();
         expect(lg.getName()).andReturn(name).anyTimes();
 
-        List<PublishedInfo> grpLayers = new ArrayList<PublishedInfo>();
-        List<StyleInfo> grpStyles = new ArrayList<StyleInfo>();
+        List<PublishedInfo> grpLayers = new ArrayList<>();
+        List<StyleInfo> grpStyles = new ArrayList<>();
         for (int i = 0; i < layerNames.size(); i++) {
             String layerName = layerNames.get(i);
             LayerInfo l = null;
@@ -785,10 +785,10 @@ public class MockCatalogBuilder {
 
             // clear out local lists but push up to be included when this workspace is complete
             featureTypesByNamespace.addAll(featureTypes);
-            featureTypes = new LinkedList<FeatureTypeInfo>();
+            featureTypes = new LinkedList<>();
 
             coveragesByNamespace.addAll(coverages);
-            coverages = new LinkedList<CoverageInfo>();
+            coverages = new LinkedList<>();
 
         } else if (!dataStores.isEmpty() || !coverageStores.isEmpty()) {
             WorkspaceInfo ws = workspaces.peekLast();
@@ -814,7 +814,7 @@ public class MockCatalogBuilder {
                     .anyTimes();
             expect(catalog.getCoverageStoresByWorkspace(ws)).andReturn(coverageStores).anyTimes();
 
-            List<StoreInfo> l = new LinkedList<StoreInfo>(dataStores);
+            List<StoreInfo> l = new LinkedList<>(dataStores);
             l.addAll(coverageStores);
 
             expect(catalog.getStoresByWorkspace(ws.getName(), StoreInfo.class))
@@ -861,7 +861,7 @@ public class MockCatalogBuilder {
         } else if (!workspaces.isEmpty()) {
 
             // all the resources
-            List<ResourceInfo> l = new LinkedList<ResourceInfo>(featureTypesAll);
+            List<ResourceInfo> l = new LinkedList<>(featureTypesAll);
             l.addAll(coveragesAll);
             expect(catalog.getResources(ResourceInfo.class)).andReturn(l).anyTimes();
             expect(catalog.getResources(FeatureTypeInfo.class))
@@ -872,7 +872,7 @@ public class MockCatalogBuilder {
             expect(catalog.getCoverages()).andReturn(coveragesAll).anyTimes();
 
             // add all the stores
-            List<StoreInfo> m = new LinkedList<StoreInfo>(dataStoresAll);
+            List<StoreInfo> m = new LinkedList<>(dataStoresAll);
             m.addAll(coverageStoresAll);
             expect(catalog.getStores(StoreInfo.class)).andReturn(m).anyTimes();
             expect(catalog.getStores(DataStoreInfo.class)).andReturn(dataStoresAll).anyTimes();

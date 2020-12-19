@@ -31,7 +31,7 @@ public class MimeTypesFormComponent extends FormComponentPanel<String> {
     protected AjaxCheckBox allMimeTypesCheckBox;
 
     /** list of behaviors to add, staged before the palette recorder component is created */
-    List<Behavior> toAdd = new ArrayList<Behavior>();
+    List<Behavior> toAdd = new ArrayList<>();
 
     public MimeTypesFormComponent(
             String id,

@@ -42,7 +42,7 @@ public class DataPanel extends Panel {
     String featureTypeId;
 
     public DataPanel(String id, FeatureTypeInfo ft) {
-        super(id, new Model<FeatureTypeInfo>(ft));
+        super(id, new Model<>(ft));
         this.featureTypeId = ft.getId();
 
         add(

@@ -16,7 +16,7 @@ public class MemoryImportStore implements ImportStore {
 
     AtomicLong idseq = new AtomicLong();
 
-    Queue<ImportContext> imports = new ConcurrentLinkedQueue<ImportContext>();
+    Queue<ImportContext> imports = new ConcurrentLinkedQueue<>();
 
     @Override
     public String getName() {

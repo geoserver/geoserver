@@ -19,7 +19,7 @@ import org.junit.Test;
 public class RoleHierarchyHelperTest {
 
     protected Map<String, String> createFromArray(String[][] array) {
-        Map<String, String> mappings = new HashMap<String, String>();
+        Map<String, String> mappings = new HashMap<>();
         for (int i = 0; i < array.length; i++) {
             mappings.put(array[i][0], array[i][1]);
         }

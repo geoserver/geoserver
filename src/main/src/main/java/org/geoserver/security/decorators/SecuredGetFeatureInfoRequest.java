@@ -29,7 +29,7 @@ import org.geotools.ows.wms.request.GetMapRequest;
  */
 public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
 
-    List<Layer> queryLayers = new ArrayList<Layer>();
+    List<Layer> queryLayers = new ArrayList<>();
     GetFeatureInfoRequest delegate;
     int x;
     int y;

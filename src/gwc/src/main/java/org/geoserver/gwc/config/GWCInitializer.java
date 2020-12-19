@@ -142,7 +142,7 @@ public class GWCInitializer implements GeoServerReinitializer {
             if (LOGGER.isLoggable(Level.FINEST)) {
                 LOGGER.finest("Setting default CacheConfiguration");
             }
-            Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+            Map<String, CacheConfiguration> map = new HashMap<>();
             map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
             gwcConfig.setCacheConfigurations(map);
             configPersister.save(gwcConfig);

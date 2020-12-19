@@ -42,7 +42,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPParameterCQL() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecords");
@@ -97,7 +97,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPParameterFilter() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecords");
@@ -155,7 +155,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
         // the query
         QueryType query = (QueryType) gr.getQuery();
-        List<QName> expected = new ArrayList<QName>();
+        List<QName> expected = new ArrayList<>();
         String rimNamespace = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
         expected.add(new QName(rimNamespace, "Service"));
         expected.add(new QName(rimNamespace, "Classification"));
@@ -464,13 +464,13 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
 
         // extract the identifiers and verify they are sorted
-        List<String> identifiers = new ArrayList<String>();
+        List<String> identifiers = new ArrayList<>();
         XpathEngine xpath = XMLUnit.newXpathEngine();
         for (int i = 1; i < 11; i++) {
             String id = xpath.evaluate("//csw:SummaryRecord[" + i + "]/dc:identifier", d);
             identifiers.add(id);
         }
-        List<String> sorted = new ArrayList<String>(identifiers);
+        List<String> sorted = new ArrayList<>(identifiers);
         Collections.sort(sorted);
         assertEquals(sorted, identifiers);
     }
@@ -492,13 +492,13 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
 
         // extract the identifiers and verify they are sorted
-        List<String> dates = new ArrayList<String>();
+        List<String> dates = new ArrayList<>();
         XpathEngine xpath = XMLUnit.newXpathEngine();
         for (int i = 1; i < 11; i++) {
             String id = xpath.evaluate("//csw:Record[" + i + "]/dc:date", d);
             dates.add(id);
         }
-        List<String> sorted = new ArrayList<String>(dates);
+        List<String> sorted = new ArrayList<>(dates);
         Collections.sort(sorted);
         assertEquals(sorted, dates);
     }

@@ -74,7 +74,7 @@ public class FileProvider extends SortableDataProvider<File, String> {
     IModel<? extends FileFilter> fileFilter;
 
     public FileProvider(File directory) {
-        this.directory = new Model<File>(directory);
+        this.directory = new Model<>(directory);
     }
 
     public FileProvider(IModel<File> directory) {
@@ -113,7 +113,7 @@ public class FileProvider extends SortableDataProvider<File, String> {
 
     @Override
     public IModel<File> model(File object) {
-        return new Model<File>(object);
+        return new Model<>(object);
     }
 
     @Override

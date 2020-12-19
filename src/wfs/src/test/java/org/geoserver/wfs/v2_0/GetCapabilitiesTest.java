@@ -145,7 +145,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                         "//ows:Operation[@name=\"GetFeature\"]/ows:Parameter[@name=\"outputFormat\"]/ows:AllowedValues/ows:Value",
                         doc);
 
-        Set<String> s1 = new TreeSet<String>();
+        Set<String> s1 = new TreeSet<>();
         for (int i = 0; i < formats.getLength(); i++) {
             String format = formats.item(i).getFirstChild().getNodeValue();
             s1.add(format);
@@ -154,7 +154,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         List<WFSGetFeatureOutputFormat> extensions =
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
-        Set<String> s2 = new TreeSet<String>();
+        Set<String> s2 = new TreeSet<>();
         for (Iterator e = extensions.iterator(); e.hasNext(); ) {
             WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) e.next();
             s2.addAll(extension.getOutputFormats());
@@ -191,7 +191,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                         "//fes:Spatial_Capabilities/fes:SpatialOperators/fes:SpatialOperator/@name",
                         doc);
 
-        Set<String> ops = new TreeSet<String>();
+        Set<String> ops = new TreeSet<>();
         for (int i = 0; i < spatialOperators.getLength(); i++) {
             String format = spatialOperators.item(i).getFirstChild().getNodeValue();
             ops.add(format);

@@ -161,7 +161,7 @@ public class WMSTest extends WMSTestSupport {
         Filter filter = wms.getTimeElevationToFilter(times, elevations, timeWithStartEnd);
         FeatureCollection features = fs.getFeatures(filter);
 
-        Set<Integer> results = new HashSet<Integer>();
+        Set<Integer> results = new HashSet<>();
         FeatureIterator it = features.features();
         try {
             while (it.hasNext()) {

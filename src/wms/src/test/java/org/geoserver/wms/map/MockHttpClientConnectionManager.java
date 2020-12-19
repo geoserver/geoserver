@@ -136,7 +136,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                     public HttpResponse receiveResponseHeader() throws HttpException, IOException {
                         return new HttpResponse() {
 
-                            List<Header> headers = new ArrayList<Header>();
+                            List<Header> headers = new ArrayList<>();
 
                             @Override
                             public void addHeader(Header arg0) {}

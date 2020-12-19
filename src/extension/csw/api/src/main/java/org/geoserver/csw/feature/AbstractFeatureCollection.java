@@ -214,7 +214,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     //
     /** Set of open resource iterators */
     @SuppressWarnings("unchecked")
-    protected final Set open = new HashSet<Iterator<F>>();
+    protected final Set open = new HashSet<>();
 
     /**
      * Returns the set of open iterators.

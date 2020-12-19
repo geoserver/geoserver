@@ -134,7 +134,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     List<InputType> parseDataInputs(Map<String, Parameter<?>> inputParams, String inputString) {
         List<IOParam> params = parseIOParameters(inputString);
 
-        List<InputType> result = new ArrayList<InputType>();
+        List<InputType> result = new ArrayList<>();
         for (IOParam ioParam : params) {
             // common
             Wps10Factory factory = Wps10Factory.eINSTANCE;
@@ -167,7 +167,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
 
     /** Parses a list of a I/O parameters */
     List<IOParam> parseIOParameters(String inputString) {
-        List<IOParam> result = new ArrayList<IOParam>();
+        List<IOParam> result = new ArrayList<>();
 
         if (inputString == null || "".equals(inputString.trim())) {
             return Collections.emptyList();
@@ -196,7 +196,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     Map<String, String> parseAttributes(String[] attributes) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         // start from 1, 0 is the value
         for (int i = 1; i < attributes.length; i++) {
@@ -252,8 +252,8 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
                     bbox.setCrs(
                             GML2EncodingUtils.epsgCode(envelope.getCoordinateReferenceSystem()));
                 }
-                List<Double> min = new ArrayList<Double>(envelope.getDimension());
-                List<Double> max = new ArrayList<Double>(envelope.getDimension());
+                List<Double> min = new ArrayList<>(envelope.getDimension());
+                List<Double> max = new ArrayList<>(envelope.getDimension());
                 for (int i = 0; i < envelope.getDimension(); i++) {
                     min.set(i, envelope.getMinimum(i));
                     max.set(i, envelope.getMaximum(i));

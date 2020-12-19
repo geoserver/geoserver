@@ -28,7 +28,7 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
 
     static StylePublisher publisher;
 
-    static List<String[]> paths = new ArrayList<String[]>();
+    static List<String[]> paths = new ArrayList<>();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

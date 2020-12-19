@@ -48,7 +48,7 @@ public class InstanceOfTest {
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         // Ensure the function is returned correctly
-        List<Expression> args = new ArrayList<Expression>();
+        List<Expression> args = new ArrayList<>();
         args.add(ff.literal(Object.class));
         Function f = factory.function(IsInstanceOf.NAME.getFunctionName(), args, null);
         assertNotNull(f);

@@ -32,7 +32,7 @@ public class PasswordPolicyChoice extends DropDownChoice<String> {
         PasswordPolicyNamesModel() {
             try {
                 policyNames =
-                        new ArrayList<String>(
+                        new ArrayList<>(
                                 GeoServerApplication.get()
                                         .getSecurityManager()
                                         .listPasswordValidators());

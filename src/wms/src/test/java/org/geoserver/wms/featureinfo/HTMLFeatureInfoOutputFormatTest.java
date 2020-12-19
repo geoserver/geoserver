@@ -103,11 +103,11 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         // test request with some parameters to use in templates
         Request request = new Request();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         parameters.put("LAYER", "testLayer");
         parameters.put("NUMBER1", 10);
         parameters.put("NUMBER2", 100);
-        Map<String, String> env = new HashMap<String, String>();
+        Map<String, String> env = new HashMap<>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
@@ -120,7 +120,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         initFeatureType(featureType);
 
         // fake layer list
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);

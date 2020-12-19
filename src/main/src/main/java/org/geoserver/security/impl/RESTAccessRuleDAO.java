@@ -39,7 +39,7 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
 
     @Override
     protected void loadRules(Properties props) {
-        rules = new LinkedHashSet<String>();
+        rules = new LinkedHashSet<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String key = (String) entry.getKey();
             String val = (String) entry.getValue();

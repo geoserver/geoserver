@@ -34,7 +34,7 @@ class FidTransformeVisitor extends DuplicatingFilterVisitor {
         if (ids.isEmpty()) {
             throw new IllegalArgumentException("Invalid fid filter provides, has no fids inside");
         }
-        Set<FeatureId> fids = new HashSet<FeatureId>();
+        Set<FeatureId> fids = new HashSet<>();
         for (Iterator it = ids.iterator(); it.hasNext(); ) {
             FeatureId id = new FeatureIdImpl((String) it.next());
             FeatureId retyped =

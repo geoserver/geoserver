@@ -45,7 +45,7 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected StyleInfo defaultStyle;
 
-    protected Set<StyleInfo> styles = new HashSet<StyleInfo>();
+    protected Set<StyleInfo> styles = new HashSet<>();
 
     protected ResourceInfo resource;
 
@@ -77,7 +77,7 @@ public class LayerInfoImpl implements LayerInfo {
      *
      * @since 2.1.3
      */
-    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(1);
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(1);
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -85,7 +85,7 @@ public class LayerInfoImpl implements LayerInfo {
      *
      * @since 2.1.3
      */
-    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<>(1);
 
     protected WMSInterpolation defaultWMSInterpolationMethod;
 

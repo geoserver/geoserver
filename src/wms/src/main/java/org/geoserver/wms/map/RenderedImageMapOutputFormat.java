@@ -207,8 +207,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private String extension = null;
 
     /** The known producer capabilities */
-    private final Map<String, MapProducerCapabilities> capabilities =
-            new HashMap<String, MapProducerCapabilities>();
+    private final Map<String, MapProducerCapabilities> capabilities = new HashMap<>();
 
     /** */
     public RenderedImageMapOutputFormat(WMS wms) {
@@ -355,7 +354,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && mapContent.layers().size() == 1
                 && mapContent.getAngle() == 0.0
                 && (layout == null || layout.isEmpty())) {
-            List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
+            List<GridCoverage2D> renderedCoverages = new ArrayList<>(2);
             try {
                 Interpolation interpolation = null;
                 if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
@@ -382,7 +381,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         boolean useAlpha = transparent || MetatileMapOutputFormat.isRequestTiled(request, this);
         final RenderedImage preparedImage =
                 prepareImage(paintArea.width, paintArea.height, palette, useAlpha);
-        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
+        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
 
         final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
 
@@ -445,7 +444,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         renderer.setJava2DHints(hints);
 
         // setup the renderer hints
-        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Map<Object, Object> rendererParams = new HashMap<>();
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
@@ -1741,7 +1740,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     || !foundBandIndices) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
-                List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+                List<GeneralParameterValue> paramList = new ArrayList<>();
                 paramList.addAll(Arrays.asList(readParams));
                 if (!foundGG && readGG != null) {
                     paramList.add(readGG);

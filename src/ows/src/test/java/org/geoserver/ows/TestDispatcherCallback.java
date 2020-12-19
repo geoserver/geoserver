@@ -18,7 +18,7 @@ public class TestDispatcherCallback implements DispatcherCallback {
         FINISHED
     }
 
-    public ThreadLocal<Status> dispatcherStatus = new ThreadLocal<Status>();
+    public ThreadLocal<Status> dispatcherStatus = new ThreadLocal<>();
 
     @Override
     public Request init(Request request) {

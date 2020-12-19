@@ -518,7 +518,7 @@ public class VectorTileMapOutputFormatTest {
         }
         request.setWidth(renderingArea.width);
         request.setHeight(renderingArea.height);
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
         request.setBuffer(buffer);
         return request;
     }

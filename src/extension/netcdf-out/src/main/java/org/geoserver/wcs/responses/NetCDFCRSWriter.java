@@ -80,8 +80,7 @@ class NetCDFCRSWriter {
     private GridCoverage2D sampleGranule;
 
     /** A map to assign a Dimension Mapping to each coordinate */
-    private Map<String, NetCDFDimensionMapping> coordinatesDimensions =
-            new LinkedHashMap<String, NetCDFDimensionMapping>();
+    private Map<String, NetCDFDimensionMapping> coordinatesDimensions = new LinkedHashMap<>();
 
     /** The underlying CoordinateReferenceSystem */
     private CoordinateReferenceSystem crs;
@@ -314,7 +313,7 @@ class NetCDFCRSWriter {
             List<GeneralParameterValue> valuesList = values.values();
 
             // Set up NetCDF CF parameters to be written
-            Map<String, List<Double>> parameterValues = new HashMap<String, List<Double>>();
+            Map<String, List<Double>> parameterValues = new HashMap<>();
 
             // Loop over the available conversion parameters
             for (GeneralParameterValue param : valuesList) {
@@ -379,7 +378,7 @@ class NetCDFCRSWriter {
             List<Double> paramValues = parameterValues.get(mappedKey);
             paramValues.add(value);
         } else {
-            List<Double> paramValues = new ArrayList<Double>(1);
+            List<Double> paramValues = new ArrayList<>(1);
             paramValues.add(value);
             parameterValues.put(mappedKey, paramValues);
         }

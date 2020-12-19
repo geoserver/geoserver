@@ -64,14 +64,14 @@ public class StatusBar extends Panel {
         usageBar.add(
                 new AttributeModifier(
                         "style",
-                        new Model<String>(
+                        new Model<>(
                                 "width: "
                                         + usedPercentage
                                         + "px; left: 5px; border-left: inherit;")));
 
         String redStyle =
                 "width: " + excessPercentage + "px; left: " + (5 + usedPercentage) + "px;";
-        excessBar.add(new AttributeModifier("style", new Model<String>(redStyle)));
+        excessBar.add(new AttributeModifier("style", new Model<>(redStyle)));
 
         add(usageBar);
         add(excessBar);

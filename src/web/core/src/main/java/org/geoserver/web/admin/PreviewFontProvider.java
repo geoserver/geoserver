@@ -19,8 +19,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  */
 @SuppressWarnings({"serial"})
 public class PreviewFontProvider extends GeoServerDataProvider<PreviewFont> {
-    public static final Property<PreviewFont> NAME =
-            new BeanProperty<PreviewFont>("name", "fontName");
+    public static final Property<PreviewFont> NAME = new BeanProperty<>("name", "fontName");
 
     public static final Property<PreviewFont> PREVIEW_IMAGE =
             new BeanProperty<PreviewFont>("previewImage", "previewImage") {
@@ -33,7 +32,7 @@ public class PreviewFontProvider extends GeoServerDataProvider<PreviewFont> {
 
     @Override
     protected List<PreviewFont> getItems() {
-        List<PreviewFont> result = new ArrayList<PreviewFont>();
+        List<PreviewFont> result = new ArrayList<>();
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Font fonts[] = ge.getAllFonts();

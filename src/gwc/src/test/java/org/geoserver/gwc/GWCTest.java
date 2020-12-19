@@ -868,7 +868,7 @@ public class GWCTest {
         String layerName = tileLayer.getName();
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
 
-        ArrayList<TileLayer> mockList = new ArrayList<TileLayer>();
+        ArrayList<TileLayer> mockList = new ArrayList<>();
         mockList.add(tileLayer);
         when(tileBreeder.getLayers()).thenReturn(mockList);
         for (String grid : tileLayer.getGridSubsets())
@@ -1486,7 +1486,7 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresSavesConfig() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo>of());
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
@@ -1498,7 +1498,7 @@ public class GWCTest {
         when(blobStoreAggregator.getBlobStoreNames()).thenReturn(Arrays.asList("store0", "store1"));
 
         BlobStoreInfo config = new FileBlobStoreInfo("TestBlobStore");
-        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo>of(config);
+        List<BlobStoreInfo> newStores = ImmutableList.of(config);
         mediator.setBlobStores(newStores);
 
         verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(0).getName()));
@@ -1508,7 +1508,7 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception {
-        when(blobStoreAggregator.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo>of());
+        when(blobStoreAggregator.getBlobStores()).thenReturn(ImmutableList.of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
@@ -1523,7 +1523,7 @@ public class GWCTest {
 
         when(blobStoreAggregator.getBlobStores()).thenReturn(oldStores);
 
-        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo>of(config);
+        List<BlobStoreInfo> newStores = ImmutableList.of(config);
         try {
             mediator.setBlobStores(newStores);
             fail("Expected ConfigurationException");

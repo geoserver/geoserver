@@ -22,7 +22,7 @@ public class LayerIdentifierInfoListConverterTest {
     public void testFromString() {
         final String serialized =
                 "[{\"authority\":\"auth1\",\"identifier\":\"IDENTIFIER_1\"},{\"authority\":\"auth2\",\"identifier\":\"IDENTIFIER_2\"}]";
-        List<LayerIdentifierInfo> expected = new ArrayList<LayerIdentifierInfo>();
+        List<LayerIdentifierInfo> expected = new ArrayList<>();
 
         LayerIdentifierInfo id1 = new LayerIdentifier();
         id1.setAuthority("auth1");
@@ -54,7 +54,7 @@ public class LayerIdentifierInfoListConverterTest {
 
     @Test
     public void testToString() {
-        List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
+        List<LayerIdentifierInfo> list = new ArrayList<>();
 
         LayerIdentifierInfo id1 = new LayerIdentifier();
         id1.setAuthority("auth1");
@@ -75,7 +75,7 @@ public class LayerIdentifierInfoListConverterTest {
 
     @Test
     public void testToStringListWithNullElement() {
-        List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
+        List<LayerIdentifierInfo> list = new ArrayList<>();
 
         LayerIdentifierInfo id1 = new LayerIdentifier();
         id1.setAuthority("auth1");
@@ -91,7 +91,7 @@ public class LayerIdentifierInfoListConverterTest {
 
     @Test
     public void testToStringListWithOnlyNullElements() {
-        List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
+        List<LayerIdentifierInfo> list = new ArrayList<>();
         list.add(null);
         list.add(null);
         list.add(null);
@@ -101,7 +101,7 @@ public class LayerIdentifierInfoListConverterTest {
 
     @Test
     public void testToStringEmptyList() {
-        List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
+        List<LayerIdentifierInfo> list = new ArrayList<>();
 
         String actual = LayerIdentifierInfoListConverter.toString(list);
         assertNull(actual);

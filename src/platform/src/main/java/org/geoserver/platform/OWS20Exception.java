@@ -26,8 +26,7 @@ public class OWS20Exception extends ServiceException {
 
     public static class OWSExceptionCode {
 
-        private static final Map<String, OWSExceptionCode> codes =
-                new HashMap<String, OWSExceptionCode>();
+        private static final Map<String, OWSExceptionCode> codes = new HashMap<>();
 
         public static final OWSExceptionCode OperationNotSupported =
                 new OWSExceptionCode("OperationNotSupported", 501, "Not Implemented");

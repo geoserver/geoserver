@@ -186,7 +186,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
     }
 
     public List<BlobStoreInfo> getStoresFromTable(GeoServerTablePanel<BlobStoreInfo> table) {
-        List<BlobStoreInfo> result = new ArrayList<BlobStoreInfo>();
+        List<BlobStoreInfo> result = new ArrayList<>();
         Iterator<BlobStoreInfo> it = table.getDataProvider().iterator(0, table.size());
         while (it.hasNext()) {
             result.add(it.next());

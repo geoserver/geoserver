@@ -34,7 +34,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
     }
 
     public static final Property<GeoServerRole> ROLENAME =
-            new BeanProperty<GeoServerRole>("rolename", "authority");
+            new BeanProperty<>("rolename", "authority");
 
     public static final String ParentPropertyName = "parentrolename";
 
@@ -69,7 +69,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
 
         @Override
         public Comparator<GeoServerRole> getComparator() {
-            return new PropertyComparator<GeoServerRole>(this);
+            return new PropertyComparator<>(this);
         }
 
         @Override
@@ -104,7 +104,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
 
                 @Override
                 public Comparator<GeoServerRole> getComparator() {
-                    return new PropertyComparator<GeoServerRole>(this);
+                    return new PropertyComparator<>(this);
                 }
 
                 @Override
@@ -129,20 +129,19 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
                                 .getSecurityManager()
                                 .loadRoleService(roleServiceName);
 
-            if (service == null) roles = new TreeSet<GeoServerRole>();
+            if (service == null) roles = new TreeSet<>();
             else roles = service.getRoles();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        List<GeoServerRole> roleList = new ArrayList<GeoServerRole>();
+        List<GeoServerRole> roleList = new ArrayList<>();
         roleList.addAll(roles);
         return roleList;
     }
 
     @Override
     protected List<Property<GeoServerRole>> getProperties() {
-        List<Property<GeoServerRole>> result =
-                new ArrayList<GeoServerDataProvider.Property<GeoServerRole>>();
+        List<Property<GeoServerRole>> result = new ArrayList<>();
         result.add(ROLENAME);
         result.add(new ParentProperty());
         result.add(HASROLEPARAMS);

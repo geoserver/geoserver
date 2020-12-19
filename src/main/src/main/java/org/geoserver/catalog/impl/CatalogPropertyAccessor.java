@@ -94,7 +94,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
     private List<String> getAnyText(final Info input) {
 
         final Set<String> propNames = fullTextProperties(input);
-        List<String> textProps = new ArrayList<String>(propNames.size());
+        List<String> textProps = new ArrayList<>(propNames.size());
         for (String propName : propNames) {
             Object property = getProperty(input, propName);
             if (property instanceof Collection) {
@@ -133,7 +133,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         if (input instanceof Collection) {
             @SuppressWarnings("unchecked")
             Collection<Object> col = (Collection<Object>) input;
-            List<Object> result = new ArrayList<Object>(col.size());
+            List<Object> result = new ArrayList<>(col.size());
             for (Object o : col) {
                 if (o == null) {
                     continue;
@@ -239,7 +239,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         }
         if (colProp.getClass().isArray()) {
             int length = Array.getLength(colProp);
-            List<Object> array = new ArrayList<Object>(length);
+            List<Object> array = new ArrayList<>(length);
             for (int j = 0; j < length; j++) {
                 array.add(Array.get(colProp, j));
             }

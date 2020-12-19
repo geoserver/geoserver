@@ -155,7 +155,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter =
-                new TextField<String>("filter", new Model<String>()) {
+                new TextField<String>("filter", new Model<>()) {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
@@ -202,7 +202,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
                     @Override
                     protected Item<T> newItem(String id, int index, IModel<T> model) {
-                        OddEvenItem<T> item = new OddEvenItem<T>(id, index, model);
+                        OddEvenItem<T> item = new OddEvenItem<>(id, index, model);
                         item.setOutputMarkupId(true);
                         return item;
                     }
@@ -376,7 +376,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Returns the items that have been selected by the user */
     @SuppressWarnings("unchecked")
     public List<T> getSelection() {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         int i = 0;
         for (Iterator<Component> it = dataView.iterator(); it.hasNext(); ) {
             Component item = it.next();
@@ -389,7 +389,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
 
     CheckBox selectAllCheckbox() {
-        CheckBox sa = new CheckBox("selectAll", new PropertyModel<Boolean>(this, "selectAllValue"));
+        CheckBox sa = new CheckBox("selectAll", new PropertyModel<>(this, "selectAllValue"));
         sa.setOutputMarkupId(true);
         sa.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
@@ -568,10 +568,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 @SuppressWarnings("unchecked")
                 Property<T> property = (Property<T>) getModelObject();
                 if (currSort == null || !property.getName().equals(currSort.getProperty())) {
-                    dataProvider.setSort(new SortParam<Object>(property.getName(), true));
+                    dataProvider.setSort(new SortParam<>(property.getName(), true));
                 } else {
                     dataProvider.setSort(
-                            new SortParam<Object>(property.getName(), !currSort.isAscending()));
+                            new SortParam<>(property.getName(), !currSort.isAscending()));
                 }
                 setSelection(false);
                 target.add(listContainer);

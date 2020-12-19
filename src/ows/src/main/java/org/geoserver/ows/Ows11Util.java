@@ -156,9 +156,7 @@ public class Ows11Util {
             throw new IllegalArgumentException(
                     "Request object" + request + " has no 'baseUrl' property.");
         }
-        String href =
-                ResponseUtils.buildURL(
-                        baseUrl, service, new HashMap<String, String>(), URLType.SERVICE);
+        String href = ResponseUtils.buildURL(baseUrl, service, new HashMap<>(), URLType.SERVICE);
 
         DCPType dcp = f.createDCPType();
         dcp.setHTTP(f.createHTTPType());

@@ -151,7 +151,7 @@ public class WCSUtils {
                 new GridGeometry2D(
                         targetRange, gg.getGridToCRS(), gg.getCoordinateReferenceSystem2D());
 
-        List<GridCoverage2D> sources = new ArrayList<GridCoverage2D>(2);
+        List<GridCoverage2D> sources = new ArrayList<>(2);
         sources.add(coverage);
 
         // perform the mosaic

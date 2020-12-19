@@ -181,7 +181,7 @@ public class GeoServerDialog extends Panel {
                         delegate.onError(target, form);
                     }
                 };
-        link.setDefaultModel(new Model<Component>(contents));
+        link.setDefaultModel(new Model<>(contents));
         return link;
     }
 

@@ -59,7 +59,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected CatalogFacade catalogFacade;
 
-    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
+    protected Map<String, String> interpolationProperties = new HashMap<>();
 
     protected SortBy[] sortOrder;
 
@@ -283,7 +283,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected static List<Object> interpolate(Map<String, String> properties, Collection<?> value) {
         if (value.size() > 0) {
-            List<Object> elements = new ArrayList<Object>();
+            List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;
                 if (element instanceof Collection<?>) {

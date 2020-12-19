@@ -100,7 +100,7 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
                 if (intersection instanceof MultiPolygon) {
                     rasterFilter = (MultiPolygon) intersection;
                 } else {
-                    final List<Polygon> accum = new ArrayList<Polygon>();
+                    final List<Polygon> accum = new ArrayList<>();
                     intersection.apply(
                             new GeometryComponentFilter() {
                                 public void filter(Geometry geom) {
@@ -165,7 +165,7 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (a == null) return b;
         if (b == null) return a;
 
-        List<Integer> indices = new ArrayList<Integer>(Math.min(a.length, b.length));
+        List<Integer> indices = new ArrayList<>(Math.min(a.length, b.length));
         List<GeneralParameterValue> bAsList = Arrays.asList(b);
 
         for (int i = 0; i < a.length; i++) {
@@ -189,7 +189,7 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (a == null) return b;
         if (b == null) return a;
 
-        List<PropertyName> results = new ArrayList<PropertyName>();
+        List<PropertyName> results = new ArrayList<>();
         for (PropertyName p : a) {
             if (b.contains(p)) {
                 results.add(p);

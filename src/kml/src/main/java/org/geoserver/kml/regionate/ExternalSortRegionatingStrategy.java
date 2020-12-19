@@ -48,7 +48,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
     static final SimpleFeatureType IDX_FEATURE_TYPE;
 
     /** Java type to H2 type map (covers only types that do not have a size) */
-    static Map<Class<?>, String> CLASS_MAPPINGS = new LinkedHashMap<Class<?>, String>();
+    static Map<Class<?>, String> CLASS_MAPPINGS = new LinkedHashMap<>();
 
     static {
         CLASS_MAPPINGS.put(Boolean.class, "BOOLEAN");

@@ -28,7 +28,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
 
     public AbstractToolWrapper(String executable, Map<String, String> environment) {
         this.executable = executable;
-        this.environment = new HashMap<String, String>();
+        this.environment = new HashMap<>();
         if (environment != null) {
             this.environment.putAll(environment);
         }
@@ -41,7 +41,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
 
     @Override
     public Map<String, String> getEnvironment() {
-        return new HashMap<String, String>(environment);
+        return new HashMap<>(environment);
     }
 
     @Override
@@ -58,7 +58,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
             CoordinateReferenceSystem crs)
             throws IOException, InterruptedException {
         // build the command line
-        List<String> cmd = new ArrayList<String>();
+        List<String> cmd = new ArrayList<>();
         cmd.add(executable);
 
         String toolFormatParameter = getToolFormatParameter();

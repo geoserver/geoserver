@@ -30,7 +30,7 @@ public class DescribeLayerModel {
 
     private static final Logger LOGGER = Logging.getLogger(DescribeLayerModel.class);
 
-    private final List<LayerDescription> layerDescriptions = new ArrayList<LayerDescription>();
+    private final List<LayerDescription> layerDescriptions = new ArrayList<>();
 
     private final String version;
 

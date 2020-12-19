@@ -19,7 +19,7 @@ public class StylesModel extends LoadableDetachableModel<List<StyleInfo>> {
     @Override
     protected List<StyleInfo> load() {
         List<StyleInfo> styles =
-                new ArrayList<StyleInfo>(GeoServerApplication.get().getCatalog().getStyles());
+                new ArrayList<>(GeoServerApplication.get().getCatalog().getStyles());
         Collections.sort(styles, new StyleNameComparator());
         return styles;
     }

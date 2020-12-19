@@ -32,7 +32,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -242,7 +241,7 @@ public class MonitorFilterTest {
 
     @Test
     public void testUserRemoteUser() throws Exception {
-        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+        Object principal = new User("username", "", Collections.emptyList());
 
         testRemoteUser(principal);
     }
@@ -279,7 +278,7 @@ public class MonitorFilterTest {
     @Test
     public void testDisableReverseDNSProcessor() throws Exception {
         // step 1 : verify DND lookup working without configuration option
-        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+        Object principal = new User("username", "", Collections.emptyList());
         RequestData data = testRemoteUser(principal);
         assertNotNull(data.getRemoteHost());
         try {
@@ -297,7 +296,7 @@ public class MonitorFilterTest {
                                 }
                             });
 
-            principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+            principal = new User("username", "", Collections.emptyList());
             data = testRemoteUser(principal);
             assertNull(data.getRemoteHost());
         } finally {

@@ -118,7 +118,7 @@ public class UTFGridMap extends RawMap {
     private List<UTFGridEntry> writeGrid(
             PrintWriter pw, RenderedImage image, UTFGridEntries entries) {
         Map<Integer, UTFGridEntry> keyToFeature = entries.getEntryMap();
-        List<UTFGridEntry> result = new ArrayList<UTFGridEntry>();
+        List<UTFGridEntry> result = new ArrayList<>();
 
         int key = 1;
         Raster data = getData(image);

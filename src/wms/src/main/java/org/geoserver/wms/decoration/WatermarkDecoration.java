@@ -41,8 +41,7 @@ public class WatermarkDecoration implements MapDecoration {
     private float opacity = 1.0f;
 
     /** Transient cache to avoid reloading the same file over and over */
-    private static final Map<URL, LogoCacheEntry> logoCache =
-            new SoftValueHashMap<URL, LogoCacheEntry>();
+    private static final Map<URL, LogoCacheEntry> logoCache = new SoftValueHashMap<>();
 
     public void loadOptions(Map<String, String> options) {
         this.imageURL = options.get("url");

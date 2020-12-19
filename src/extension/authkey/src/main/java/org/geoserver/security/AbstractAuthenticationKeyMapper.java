@@ -29,7 +29,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     private String userGroupServiceName;
     private GeoServerSecurityManager securityManager;
 
-    private Map<String, String> parameters = new HashMap<String, String>();
+    private Map<String, String> parameters = new HashMap<>();
 
     public AbstractAuthenticationKeyMapper() {
         super();
@@ -85,7 +85,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
 
     /** Returns the list of configuration parameters supported by the mapper. */
     public Set<String> getAvailableParameters() {
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 
     /**

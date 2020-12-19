@@ -85,7 +85,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
         // The request filter chain objects have to be cloned
         config = getSecurityManager().getSecurityConfig();
-        List<RequestFilterChain> clones = new ArrayList<RequestFilterChain>();
+        List<RequestFilterChain> clones = new ArrayList<>();
 
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
             try {
@@ -109,9 +109,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
             throw new RuntimeException(e1);
         }
         form.add(
-                new TextField<String>(
+                new TextField<>(
                         "redirectURL",
-                        new PropertyModel<String>(this, "logoutFilterConfig.redirectURL")));
+                        new PropertyModel<>(this, "logoutFilterConfig.redirectURL")));
 
         try {
             sslFilterConfig =
@@ -121,35 +121,30 @@ public class AuthenticationPage extends AbstractSecurityPage {
         } catch (IOException e1) {
             throw new RuntimeException(e1);
         }
-        form.add(
-                new TextField<Integer>(
-                        "sslPort", new PropertyModel<Integer>(this, "sslFilterConfig.sslPort")));
+        form.add(new TextField<>("sslPort", new PropertyModel<>(this, "sslFilterConfig.sslPort")));
 
         // brute force attack
         form.add(
                 new CheckBox(
                         "bfEnabled",
-                        new PropertyModel<Boolean>(this, "config.bruteForcePrevention.enabled")));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.enabled")));
         final TextField<Integer> bfMinDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMinDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.minDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.minDelaySeconds"));
         bfMinDelay.add(RangeValidator.minimum(0));
         form.add(bfMinDelay);
         final TextField<Integer> bfMaxDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxDelaySeconds"));
         bfMaxDelay.add(RangeValidator.minimum(0));
         form.add(bfMaxDelay);
 
         final TextField<List<String>> netmasks =
                 new TextField<List<String>>(
                         "bfWhitelistedNetmasks",
-                        new PropertyModel<List<String>>(
-                                this, "config.bruteForcePrevention.whitelistedMasks")) {
+                        new PropertyModel<>(this, "config.bruteForcePrevention.whitelistedMasks")) {
 
                     @SuppressWarnings("unchecked")
                     @Override
@@ -195,10 +190,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     }
                 });
         final TextField<Integer> bfMaxBlockedThreads =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxBlockedThreads",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxBlockedThreads"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxBlockedThreads"));
         bfMaxBlockedThreads.add(RangeValidator.minimum(0));
         form.add(bfMaxBlockedThreads);
 
@@ -215,8 +209,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                 authFilterChainPanel =
                         new AuthFilterChainPanel(
                                 "filterChain",
-                                new PropertyModel<GeoServerSecurityFilterChain>(
-                                        form.getModel(), "filterChain")));
+                                new PropertyModel<>(form.getModel(), "filterChain")));
         form.add(new HelpLink("filterChainHelp").setDialog(dialog));
 
         form.add(new AuthenticationChainPanel("providerChain"));
@@ -273,10 +266,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
             this.setOutputMarkupId(true);
 
-            add(
-                    urlPathField =
-                            new TextField<String>(
-                                    "urlPath", new PropertyModel<String>(this, "urlPath")));
+            add(urlPathField = new TextField<>("urlPath", new PropertyModel<>(this, "urlPath")));
             urlPathField.setOutputMarkupId(true);
             urlPathField.add(
                     new OnChangeAjaxBehavior() {
@@ -286,17 +276,17 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
             add(
                     chainTestResultField =
-                            new TextField<String>(
+                            new TextField<>(
                                     "chainTestResult",
-                                    new PropertyModel<String>(this, "chainTestResult")));
+                                    new PropertyModel<>(this, "chainTestResult")));
             chainTestResultField.setEnabled(false);
             chainTestResultField.setOutputMarkupId(true);
 
             add(
                     httpMethodChoice =
-                            new DropDownChoice<HTTPMethod>(
+                            new DropDownChoice<>(
                                     "httpMethod",
-                                    new PropertyModel<HTTPMethod>(this, "httpMethod"),
+                                    new PropertyModel<>(this, "httpMethod"),
                                     Arrays.asList(HTTPMethod.values())));
             httpMethodChoice.setOutputMarkupId(true);
             httpMethodChoice.setNullValid(false);

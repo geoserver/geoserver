@@ -66,8 +66,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         table.setOutputMarkupId(true);
         container.add(table);
         authorityURLs =
-                new ListView<AuthorityURLInfo>(
-                        "authorities", new ArrayList<AuthorityURLInfo>(list.getObject())) {
+                new ListView<AuthorityURLInfo>("authorities", new ArrayList<>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -81,9 +80,8 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         // Authority name
                         TextField<String> authName;
                         authName =
-                                new TextField<String>(
-                                        "authName",
-                                        new PropertyModel<String>(item.getModel(), "name"));
+                                new TextField<>(
+                                        "authName", new PropertyModel<>(item.getModel(), "name"));
                         authName.setRequired(true);
 
                         FormComponentFeedbackBorder authNameBorder =
@@ -94,9 +92,9 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         // Authority URL
                         TextField<String> authURL;
                         authURL =
-                                new TextField<String>(
+                                new TextField<>(
                                         "authorityURL",
-                                        new PropertyModel<String>(item.getModel(), "href"));
+                                        new PropertyModel<>(item.getModel(), "href"));
                         authURL.setRequired(true);
                         authURL.add(new UrlValidator());
                         FormComponentFeedbackBorder urlBorder =
@@ -106,16 +104,14 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>(
-                                        "removeLink", new Model<Integer>(item.getIndex())) {
+                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         List<AuthorityURLInfo> list =
-                                                new ArrayList<AuthorityURLInfo>(
-                                                        authorityURLs.getModelObject());
+                                                new ArrayList<>(authorityURLs.getModelObject());
                                         int index = getModelObject();
                                         list.remove(index);
                                         authorityURLs.setModelObject(list);
@@ -165,7 +161,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     public void convertInput() {
         List<AuthorityURLInfo> info = authorityURLs.getModelObject();
         if (info == null || info.size() == 0) {
-            setConvertedInput(new ArrayList<AuthorityURLInfo>(2));
+            setConvertedInput(new ArrayList<>(2));
             return;
         }
 

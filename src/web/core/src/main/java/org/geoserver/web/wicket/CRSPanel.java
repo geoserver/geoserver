@@ -50,8 +50,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
     private static final long serialVersionUID = -6677103383336166008L;
 
-    private static Behavior READ_ONLY =
-            new AttributeModifier("readonly", new Model<String>("readonly"));
+    private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model<>("readonly"));
 
     /** pop-up window for WKT and SRS list */
     protected ModalWindow popupWindow;
@@ -157,7 +156,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         popupWindow = new ModalWindow("popup");
         add(popupWindow);
 
-        srsTextField = new TextField<String>("srs", new Model<String>());
+        srsTextField = new TextField<>("srs", new Model<>());
         add(srsTextField);
         srsTextField.setOutputMarkupId(true);
 
@@ -398,7 +397,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
             add(wktLabel);
 
             if (crs != null) {
-                wktLabel.setDefaultModel(new Model<String>(crs.toString()));
+                wktLabel.setDefaultModel(new Model<>(crs.toString()));
             }
         }
     }

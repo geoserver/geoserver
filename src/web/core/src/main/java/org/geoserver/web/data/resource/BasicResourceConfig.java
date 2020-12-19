@@ -64,7 +64,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         add(new Label("storeName", model.getObject().getStore().getName()));
         add(new Label("nativeName", model.getObject().getNativeName()));
-        TextField<String> name = new TextField<String>("name");
+        TextField<String> name = new TextField<>("name");
         name.setRequired(true);
         add(name);
         add(new CheckBox("enabled"));
@@ -79,12 +79,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
-        final Form<ResourceInfo> refForm = new Form<ResourceInfo>("referencingForm");
+        final Form<ResourceInfo> refForm = new Form<>("referencingForm");
         add(refForm);
 
         // native bbox
         PropertyModel<ReferencedEnvelope> nativeBBoxModel =
-                new PropertyModel<ReferencedEnvelope>(model, "nativeBoundingBox");
+                new PropertyModel<>(model, "nativeBoundingBox");
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
@@ -93,8 +93,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         // lat/lon bbox
         final EnvelopePanel latLonPanel =
                 new EnvelopePanel(
-                        "latLonBoundingBox",
-                        new PropertyModel<ReferencedEnvelope>(model, "latLonBoundingBox"));
+                        "latLonBoundingBox", new PropertyModel<>(model, "latLonBoundingBox"));
         latLonPanel.setOutputMarkupId(true);
         latLonPanel.setRequired(true);
         refForm.add(latLonPanel);
@@ -109,10 +108,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             // normal behavior for resoureces not belonging to WFS and WMS Store
             // or if WMS and WFS Store features dont have multiple SRS advertised
             // native srs , declared srs, and srs handling dropdown
-            nativeCRS =
-                    new CRSPanel(
-                            "nativeSRS",
-                            new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"));
+            nativeCRS = new CRSPanel("nativeSRS", new PropertyModel<>(model, "nativeCRS"));
             nativeCRS.setReadOnly(true);
         } else {
             // or resoureces belonging to WFS and WMS Store
@@ -125,8 +121,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(nativeBoundsLink);
         refForm.add(nativeCRS);
         declaredCRS =
-                new CRSPanel(
-                        "declaredSRS", new SRSToCRSModel(new PropertyModel<String>(model, "sRS")));
+                new CRSPanel("declaredSRS", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
         declaredCRS.setRequired(true);
         refForm.add(declaredCRS);
 
@@ -134,9 +129,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
 
         projectionPolicy =
-                new DropDownChoice<ProjectionPolicy>(
+                new DropDownChoice<>(
                         "srsHandling",
-                        new PropertyModel<ProjectionPolicy>(model, "projectionPolicy"),
+                        new PropertyModel<>(model, "projectionPolicy"),
                         Arrays.asList(ProjectionPolicy.values()),
                         new ProjectionPolicyRenderer());
         ResourceInfo ri = model.getObject();
@@ -401,7 +396,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         CRSPanel nativeCRS =
                 new CRSPanel(
                         "nativeSRS",
-                        new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
+                        new PropertyModel<>(model, "nativeCRS"),
                         otherSRS,
                         !otherSRS.isEmpty()) {
 

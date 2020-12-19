@@ -158,7 +158,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             throws IOException {
 
         GeoTiffReader reader = null;
-        List<File> removeFiles = new ArrayList<File>();
+        List<File> removeFiles = new ArrayList<>();
         String location = null;
         try {
             File tempFolder = config.getTempFolder();
@@ -301,7 +301,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             reader = new GeoTiffReader(warpedFile);
             GridCoverage2D cov = addLocationProperty(reader.read(null), warpedFile);
 
-            Map<String, Object> result = new HashMap<String, Object>();
+            Map<String, Object> result = new HashMap<>();
             result.put("result", cov);
             result.put("path", warpedFile.getAbsolutePath());
             return result;
@@ -643,7 +643,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
         // if(!gcpMatcher.matches()) {
         // throw new WPSException("Invalid GCP syntax:" + gcps);
         // }
-        List<String> gcpCommand = new ArrayList<String>();
+        List<String> gcpCommand = new ArrayList<>();
         int gcpPoints = 0;
         // Setting up gcp command arguments
         while (gcpMatcher.find()) {

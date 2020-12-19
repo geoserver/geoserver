@@ -31,7 +31,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
             String id,
             IModel<List<GeoServerRole>> model,
             IModel<List<GeoServerRole>> choicesModel) {
-        super(id, model, choicesModel, new ChoiceRenderer<GeoServerRole>("authority", "authority"));
+        super(id, model, choicesModel, new ChoiceRenderer<>("authority", "authority"));
 
         //        rolePalette = new Palette<GeoServerRole>(
         //                "roles", , choicesModel,

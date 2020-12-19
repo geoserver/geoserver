@@ -94,7 +94,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             throw new RuntimeException(e);
         }
 
-        final Map<String, ParamInfo> paramsMetadata = new LinkedHashMap<String, ParamInfo>();
+        final Map<String, ParamInfo> paramsMetadata = new LinkedHashMap<>();
 
         {
             final boolean isNew = null == info.getId();

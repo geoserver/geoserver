@@ -69,11 +69,10 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         final double newMinimum = -2000d;
         final double newMaximum = 2000d;
-        final NumberRange<Double> range =
-                new NumberRange<Double>(Double.class, newMinimum, newMaximum);
+        final NumberRange<Double> range = new NumberRange<>(Double.class, newMinimum, newMaximum);
         coverageDim.setRange(range);
 
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);
@@ -118,11 +117,10 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         final double newMinimum = -2000d;
         final double newMaximum = 2000d;
-        final NumberRange<Double> range =
-                new NumberRange<Double>(Double.class, newMinimum, newMaximum);
+        final NumberRange<Double> range = new NumberRange<>(Double.class, newMinimum, newMaximum);
         coverageDim.setRange(range);
 
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);
@@ -153,7 +151,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setRange(NumberRange.create(0d, 10000d));
 
         // Definition of the nodata
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         nullValues.add(noData1);
         coverageDim.setNullValues(nullValues);
@@ -196,7 +194,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setDimensionType(SampleDimensionType.REAL_64BITS);
 
         // Definition of the nodata
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);

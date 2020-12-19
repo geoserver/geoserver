@@ -31,7 +31,7 @@ public class VectorZonalStatsTest extends WPSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(
                 LayerProperty.ENVELOPE,
                 new ReferencedEnvelope(

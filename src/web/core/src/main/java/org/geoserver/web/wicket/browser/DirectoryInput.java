@@ -56,7 +56,7 @@ public class DirectoryInput extends FileInput {
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        gsDialog.setTitle(new Model<String>(windowTitle));
+                        gsDialog.setTitle(new Model<>(windowTitle));
                         gsDialog.showOkCancel(
                                 target,
                                 new GeoServerDialog.DialogDelegate() {
@@ -98,7 +98,7 @@ public class DirectoryInput extends FileInput {
                                         }
 
                                         GeoServerFileChooser chooser =
-                                                new GeoServerFileChooser(id, new Model<File>(file));
+                                                new GeoServerFileChooser(id, new Model<>(file));
                                         chooser.setFilter(fileFilter);
 
                                         return chooser;

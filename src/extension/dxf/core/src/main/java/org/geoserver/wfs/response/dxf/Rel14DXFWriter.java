@@ -57,7 +57,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
 
     public Rel14DXFWriter() {
         super();
-        textConfig = new HashMap<String, Object>();
+        textConfig = new HashMap<>();
         textConfig.put("height", 0.72);
     }
 
@@ -525,8 +525,8 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         if (blockNames == null) {
             // initializes block cache
             // for names and handles
-            blockNames = new HashMap<String, String>();
-            blockHandles = new HashMap<String, String>();
+            blockNames = new HashMap<>();
+            blockHandles = new HashMap<>();
             // cycle through feature to accumulate
             // blocks
             for (SimpleFeatureCollection coll : featureList) addBlocks(coll);

@@ -53,24 +53,21 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * needed. We cache names instead of beans because doing the latter we would break the
      * "singleton=false" directive of some beans
      */
-    static SoftValueHashMap<Class, String[]> extensionsCache =
-            new SoftValueHashMap<Class, String[]>(40);
+    static SoftValueHashMap<Class, String[]> extensionsCache = new SoftValueHashMap<>(40);
 
-    static ConcurrentHashMap<String, Object> singletonBeanCache =
-            new ConcurrentHashMap<String, Object>();
+    static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<>();
 
     /**
      * Property cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
      * #getProperty(String)} results.
      */
-    static ConcurrentHashMap<String, String> propertyCache =
-            new ConcurrentHashMap<String, String>();
+    static ConcurrentHashMap<String, String> propertyCache = new ConcurrentHashMap<>();
 
     /**
      * File cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
      * #file(String)} results.
      */
-    static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<String, File>();
+    static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<>();
 
     /** SPI lookups are very expensive, we need to cache them */
     static SoftValueHashMap<Class, List<?>> spiCache = new SoftValueHashMap<>(40);
@@ -124,7 +121,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         // look up all the beans
-        List<T> result = new ArrayList<T>(names.size());
+        List<T> result = new ArrayList<>(names.size());
         for (String name : names) {
             Object bean = getBean(context, name);
             if (!excludeBean(name, bean, filters)) result.add((T) bean);

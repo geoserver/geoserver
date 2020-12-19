@@ -1144,7 +1144,7 @@ public class XStreamPersisterTest {
         Multimap<String, Object> mmap = ArrayListMultimap.create();
         mmap.put("one", "abc");
         mmap.put("one", Integer.valueOf(2));
-        mmap.put("two", new NumberRange<Integer>(Integer.class, 10, 20));
+        mmap.put("two", new NumberRange<>(Integer.class, 10, 20));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         persister.save(mmap, out);
@@ -1232,7 +1232,7 @@ public class XStreamPersisterTest {
                         "v-component_of_current_surface@0",
                         1,
                         CompositionType.BAND_SELECT);
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand_u);
         coverageBands.add(outputBand_v);
         CoverageView coverageView = new CoverageView("regional_currents", coverageBands);

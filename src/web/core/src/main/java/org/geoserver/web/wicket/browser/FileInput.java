@@ -122,8 +122,7 @@ public class FileInput extends Panel {
                         }
 
                         GeoServerFileChooser chooser =
-                                new GeoServerFileChooser(
-                                        dialog.getContentId(), new Model<File>(file)) {
+                                new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
                                     private static final long serialVersionUID =
                                             -7096642192491726498L;
 

@@ -112,7 +112,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
 
         GeoServerSecurityManager secMgr = getSecurityManager();
 
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (ServiceAccessRule rule :
                 secMgr.getServiceAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -28,7 +27,7 @@ public class GetExecutionsTest extends WPSTestSupport {
         String pgf = PRIMITIVEGEOFEATURE.getLocalPart();
         testData.addVectorLayer(
                 new QName("http://foo.org", pgf, "foo"),
-                new HashMap<LayerProperty, Object>(),
+                new HashMap<>(),
                 pgf + ".properties",
                 MockData.class,
                 getCatalog());

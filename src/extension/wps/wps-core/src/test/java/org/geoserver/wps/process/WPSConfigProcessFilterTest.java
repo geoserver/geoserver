@@ -40,7 +40,7 @@ public class WPSConfigProcessFilterTest extends AbstractProcessFilterTest {
         ProcessGroupInfo jtsGroup = new ProcessGroupInfoImpl();
         jtsGroup.setFactoryClass(jts.getClass());
         jtsGroup.setEnabled(true);
-        List<Name> jtsNames = new ArrayList<Name>(jts.getNames());
+        List<Name> jtsNames = new ArrayList<>(jts.getNames());
         jtsNames.remove(bufferName);
         for (Name jtsName : jtsNames) {
             ProcessInfo pai = new ProcessInfoImpl();

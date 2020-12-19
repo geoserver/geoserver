@@ -88,7 +88,7 @@ public class ExecuteRequest {
     LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
-        Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
+        Map<String, InputProvider> providers = new LinkedHashMap<>();
 
         // see what output raw data we have that need the user chosen mime type to be
         // sent back to the process as an input
@@ -163,7 +163,7 @@ public class ExecuteRequest {
 
     private Map<String, String> getRequestedRawDataMimeTypes(
             Collection<String> rawResults, Name name, ProcessFactory pf) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         ResponseFormType form = request.getResponseForm();
         OutputDefinitionType raw = form.getRawDataOutput();
         ResponseDocumentType document = form.getResponseDocument();

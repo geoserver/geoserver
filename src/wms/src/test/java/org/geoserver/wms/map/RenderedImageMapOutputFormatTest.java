@@ -156,7 +156,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     private String mapFormat = "image/gif";
 
-    private static final ThreadLocal<Boolean> usedCustomLabelCache = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<Boolean> usedCustomLabelCache = new ThreadLocal<>();
 
     public static class CustomLabelCache implements LabelCache {
         public CustomLabelCache() {}
@@ -1358,7 +1358,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                         2,
                         CompositionType.BAND_SELECT);
 
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(1);
+        final List<CoverageBand> coverageBands = new ArrayList<>(1);
         coverageBands.add(b0);
         coverageBands.add(b1);
         coverageBands.add(b2);
@@ -1487,7 +1487,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Parameter<int[]> bandIndicesParam =
                 (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
         bandIndicesParam.setValue(bandIndices);
-        List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+        List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.add(bandIndicesParam);
         GeneralParameterValue[] readParams =
                 paramList.toArray(new GeneralParameterValue[paramList.size()]);

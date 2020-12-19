@@ -134,8 +134,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     JobQueue synchronousJobs = new JobQueue();
 
-    ConcurrentHashMap<Long, ImportTask> currentlyProcessing =
-            new ConcurrentHashMap<Long, ImportTask>();
+    ConcurrentHashMap<Long, ImportTask> currentlyProcessing = new ConcurrentHashMap<>();
 
     ImporterInfo configuration;
 
@@ -524,7 +523,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     List<ImportTask> initForDirectory(ImportContext context, Directory data) throws IOException {
-        List<ImportTask> tasks = new ArrayList<ImportTask>();
+        List<ImportTask> tasks = new ArrayList<>();
 
         // flatten out the directory into itself and all sub directories and process in order
         for (Directory dir : data.flatten()) {
@@ -532,12 +531,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (dir.getFiles().isEmpty()) continue;
 
             // group the contents of the directory by format
-            Map<DataFormat, List<FileData>> map = new HashMap<DataFormat, List<FileData>>();
+            Map<DataFormat, List<FileData>> map = new HashMap<>();
             for (FileData f : dir.getFiles()) {
                 DataFormat format = f.getFormat();
                 List<FileData> files = map.get(format);
                 if (files == null) {
-                    files = new ArrayList<FileData>();
+                    files = new ArrayList<>();
                     map.put(format, files);
                 }
                 files.add(f);
@@ -553,7 +552,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (targetStore == null) {
 
                 // create a task for each "format" if that format can handle a directory
-                for (DataFormat format : new ArrayList<DataFormat>(map.keySet())) {
+                for (DataFormat format : new ArrayList<>(map.keySet())) {
                     if (format != null && format.canRead(dir)) {
                         List<FileData> files = map.get(format);
                         if (files.size() == 1) {
@@ -613,7 +612,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportData data, DataFormat format, ImportContext context, boolean skipNoFormat)
             throws IOException {
 
-        List<ImportTask> tasks = new ArrayList<ImportTask>();
+        List<ImportTask> tasks = new ArrayList<>();
 
         boolean direct = false;
 

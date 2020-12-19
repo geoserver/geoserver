@@ -31,8 +31,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class LockingUserGroupService extends AbstractLockingService
         implements GeoServerUserGroupService, UserGroupLoadedListener {
 
-    protected Set<UserGroupLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     /** Constructor for the locking wrapper */
     public LockingUserGroupService(GeoServerUserGroupService service) {

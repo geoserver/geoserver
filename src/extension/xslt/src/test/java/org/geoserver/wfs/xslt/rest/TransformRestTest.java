@@ -53,7 +53,7 @@ public class TransformRestTest extends XSLTTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("h", "http://www.w3.org/1999/xhtml");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));

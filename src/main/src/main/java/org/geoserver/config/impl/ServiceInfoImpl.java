@@ -152,7 +152,7 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     public List<String> keywordValues() {
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (keywords != null) {
             for (KeywordInfo kw : keywords) {
                 values.add(kw.getValue());

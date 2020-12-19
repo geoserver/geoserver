@@ -103,7 +103,7 @@ public class GeoServerUserDaoTest {
         assertEquals("wfs", user.getUsername());
         assertEquals("pwd", user.getPassword());
         assertEquals(2, user.getAuthorities().size());
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         for (GrantedAuthority ga : user.getAuthorities()) {
             authorities.add(ga.getAuthority());
         }

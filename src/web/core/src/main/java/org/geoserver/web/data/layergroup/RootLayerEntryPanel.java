@@ -52,7 +52,7 @@ public class RootLayerEntryPanel extends Panel {
         add(rootLayerField);
 
         // global styles
-        List<StyleInfo> globalStyles = new ArrayList<StyleInfo>();
+        List<StyleInfo> globalStyles = new ArrayList<>();
         List<StyleInfo> allStyles = GeoServerApplication.get().getCatalog().getStyles();
         for (StyleInfo s : allStyles) {
             if (s.getWorkspace() == null) {
@@ -61,7 +61,7 @@ public class RootLayerEntryPanel extends Panel {
         }
 
         // available styles
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        List<StyleInfo> styles = new ArrayList<>();
         styles.addAll(globalStyles);
         if (workspace != null) {
             styles.addAll(GeoServerApplication.get().getCatalog().getStylesByWorkspace(workspace));

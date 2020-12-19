@@ -49,7 +49,7 @@ public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFi
 
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
-        return new DropDownChoice<RoleSource>(
+        return new DropDownChoice<>(
                 "roleSource",
                 Arrays.asList(J2EERoleSource.values()),
                 new RoleSourceChoiceRenderer());

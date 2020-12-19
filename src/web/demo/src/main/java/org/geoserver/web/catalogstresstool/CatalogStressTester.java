@@ -156,8 +156,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     }
                 };
         workspace =
-                new DropDownChoice<Tuple>(
-                        "workspace", new Model<Tuple>(), wsModel, new TupleChoiceRenderer());
+                new DropDownChoice<>(
+                        "workspace", new Model<>(), wsModel, new TupleChoiceRenderer());
         workspace.setNullValid(true);
 
         workspace.setOutputMarkupId(true);
@@ -213,8 +213,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 };
 
         store =
-                new DropDownChoice<Tuple>(
-                        "store", new Model<Tuple>(), storesModel, new TupleChoiceRenderer());
+                new DropDownChoice<>(
+                        "store", new Model<>(), storesModel, new TupleChoiceRenderer());
         store.setNullValid(true);
 
         store.setOutputMarkupId(true);
@@ -267,9 +267,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 };
 
         resourceAndLayer =
-                new DropDownChoice<Tuple>(
+                new DropDownChoice<>(
                         "resourceAndLayer",
-                        new Model<Tuple>(),
+                        new Model<>(),
                         resourcesModel,
                         new TupleChoiceRenderer());
         resourceAndLayer.setNullValid(true);
@@ -277,20 +277,19 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         resourceAndLayer.setOutputMarkupId(true);
         form.add(resourceAndLayer);
 
-        recursive = new CheckBox("recursive", new Model<Boolean>(Boolean.FALSE));
+        recursive = new CheckBox("recursive", new Model<>(Boolean.FALSE));
         form.add(recursive);
 
-        duplicateCount =
-                new TextField<Integer>("duplicateCount", new Model<Integer>(100), Integer.class);
+        duplicateCount = new TextField<>("duplicateCount", new Model<>(100), Integer.class);
         duplicateCount.setRequired(true);
-        duplicateCount.add(new RangeValidator<Integer>(1, 100000));
+        duplicateCount.add(new RangeValidator<>(1, 100000));
         form.add(duplicateCount);
 
-        sufix = new TextField<String>("sufix", new Model<String>("-copy-"));
+        sufix = new TextField<>("sufix", new Model<>("-copy-"));
         sufix.setRequired(true);
         form.add(sufix);
 
-        progress = new Label("progress", new Model<String>("0/0"));
+        progress = new Label("progress", new Model<>("0/0"));
         progress.setOutputMarkupId(true);
         form.add(progress);
 

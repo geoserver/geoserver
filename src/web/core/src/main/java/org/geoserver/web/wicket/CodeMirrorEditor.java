@@ -123,7 +123,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                             "style", "border: 1px solid black; padding-bottom: 3px"));
         }
         container.add(editorParent);
-        editor = new TextArea<String>("editor", model);
+        editor = new TextArea<>("editor", model);
         editorParent.add(editor);
         editor.setOutputMarkupId(true);
 

@@ -49,7 +49,7 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
                 // do we use a KML placemark dump, or a ground overlay?
                 if (useVectorOutput(context)) {
                     List<Feature> features =
-                            new IteratorList<Feature>(
+                            new IteratorList<>(
                                     new FeatureIteratorFactory(context, (FeatureLayer) layer));
                     context.addFeatures(folder, features);
                 } else {
@@ -78,7 +78,7 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
             FeatureLayer centroidsLayer =
                     new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
             List<Feature> features =
-                    new IteratorList<Feature>(new FeatureIteratorFactory(context, centroidsLayer));
+                    new IteratorList<>(new FeatureIteratorFactory(context, centroidsLayer));
             context.addFeatures(folder, features);
         }
 

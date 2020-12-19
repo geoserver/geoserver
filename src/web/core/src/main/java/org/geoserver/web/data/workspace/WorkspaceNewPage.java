@@ -56,12 +56,12 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
-        this.model = new CompoundPropertyModel<WorkspaceInfo>(ws);
+        this.model = new CompoundPropertyModel<>(ws);
         Form form = new Form("form");
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         tabs.add(
-                new AbstractTab(new Model<String>("Basic Info")) {
+                new AbstractTab(new Model<>("Basic Info")) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -248,7 +248,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         public WsNewInfoPanel(String id, IModel<WorkspaceInfo> model) {
             super(id, model);
-            TextField<String> nameTextField = new TextField<String>("name");
+            TextField<String> nameTextField = new TextField<>("name");
             nameTextField.setRequired(true);
             nameTextField.add(new XMLNameValidator());
             nameTextField.add(
@@ -267,14 +267,13 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                     });
             add(nameTextField.setRequired(true));
 
-            nsUriTextField = new TextField<String>("uri", new Model<String>());
+            nsUriTextField = new TextField<>("uri", new Model<>());
             // maybe a bit too restrictive, but better than not validation at all
             nsUriTextField.setRequired(true);
             nsUriTextField.add(new URIValidator());
             add(nsUriTextField);
 
-            CheckBox defaultChk =
-                    new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+            CheckBox defaultChk = new CheckBox("default", new PropertyModel<>(this, "defaultWs"));
             add(defaultChk);
 
             // add checkbox for isolated workspaces

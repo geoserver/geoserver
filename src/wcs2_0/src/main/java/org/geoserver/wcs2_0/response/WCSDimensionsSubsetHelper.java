@@ -81,9 +81,9 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class WCSDimensionsSubsetHelper {
 
-    public static final Set<String> TIME_NAMES = new HashSet<String>();
+    public static final Set<String> TIME_NAMES = new HashSet<>();
 
-    public static final Set<String> ELEVATION_NAMES = new HashSet<String>();
+    public static final Set<String> ELEVATION_NAMES = new HashSet<>();
 
     private static final Logger LOGGER = Logging.getLogger(WCSDimensionsHelper.class);
 
@@ -248,7 +248,7 @@ public class WCSDimensionsSubsetHelper {
         // put aside the dimensions that we have for double checking
         final List<String> axesNames =
                 envelopeDimensionsMapper.getAxesNames(sourceEnvelopeInSubsettingCRS, true);
-        final List<String> foundDimensions = new ArrayList<String>();
+        final List<String> foundDimensions = new ArrayList<>();
 
         // === parse dimensions
         // the subsetting envelope is initialized with the source envelope in subsetting CRS
@@ -597,7 +597,7 @@ public class WCSDimensionsSubsetHelper {
                                 "subset");
                     }
 
-                    elevationSubset = new NumberRange<Double>(Double.class, low, high);
+                    elevationSubset = new NumberRange<>(Double.class, low, high);
                 } else if (dim instanceof DimensionSliceType) {
 
                     // SLICING
@@ -605,7 +605,7 @@ public class WCSDimensionsSubsetHelper {
                     final String slicePointS = slicing.getSlicePoint();
                     final Double slicePoint = PARSER.parseDouble(slicePointS);
 
-                    elevationSubset = new NumberRange<Double>(Double.class, slicePoint, slicePoint);
+                    elevationSubset = new NumberRange<>(Double.class, slicePoint, slicePoint);
                 } else {
                     throw new WCS20Exception(
                             "Invalid element found while attempting to parse dimension subsetting request: "
@@ -667,14 +667,14 @@ public class WCSDimensionsSubsetHelper {
             if (newSlicePoint == null) {
                 newSlicePoint = previous;
             }
-            elevationSubset = new NumberRange<Double>(Double.class, newSlicePoint, newSlicePoint);
+            elevationSubset = new NumberRange<>(Double.class, newSlicePoint, newSlicePoint);
         }
         return elevationSubset;
     }
 
     /** Extract custom dimension subset from the current helper */
     private Map<String, List<Object>> extractDimensionsSubset() throws IOException {
-        Map<String, List<Object>> dimensionSubset = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> dimensionSubset = new HashMap<>();
 
         if (enabledDimensions != null && !enabledDimensions.isEmpty()) {
             Set<String> dimensionKeys = enabledDimensions.keySet();
@@ -689,7 +689,7 @@ public class WCSDimensionsSubsetHelper {
                 // only care for custom dimensions
                 if (dimensionKeys.stream().anyMatch(dimension::equalsIgnoreCase)) {
                     dimension = dimension.toUpperCase(); // using uppercase with imagemosaic
-                    List<Object> selectedValues = new ArrayList<Object>();
+                    List<Object> selectedValues = new ArrayList<>();
 
                     // now decide what to do
                     if (dim instanceof DimensionTrimType) {
@@ -893,7 +893,7 @@ public class WCSDimensionsSubsetHelper {
         // single elements dimensions sets
         final SimpleFeatureCollection collection = source.getGranules(query);
         final SimpleFeatureIterator iterator = collection.features();
-        final List<GridCoverageRequest> requests = new ArrayList<GridCoverageRequest>();
+        final List<GridCoverageRequest> requests = new ArrayList<>();
         try {
             while (iterator.hasNext()) {
                 final SimpleFeature feature = iterator.next();
@@ -922,7 +922,7 @@ public class WCSDimensionsSubsetHelper {
             throws MismatchedDimensionException, UnsupportedOperationException, IOException,
                     TransformException, FactoryException {
         List<GridCoverageRequest> list = splitRequest();
-        Set<GridCoverageRequest> set = new HashSet<GridCoverageRequest>();
+        Set<GridCoverageRequest> set = new HashSet<>();
         for (GridCoverageRequest request : list) {
             set.add(request);
         }
@@ -991,7 +991,7 @@ public class WCSDimensionsSubsetHelper {
         List<String> customDomains =
                 (List<String>)
                         (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
-        Map<String, List<Object>> dimensionsSubset = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> dimensionsSubset = new HashMap<>();
         for (String customDomain : customDomains) {
             String startAttribute = null;
             String endAttribute = null;
@@ -1019,7 +1019,7 @@ public class WCSDimensionsSubsetHelper {
                                         objectClass, (Number) value, (Number) endValue);
                     }
                 }
-                List<Object> dimensionValues = new ArrayList<Object>();
+                List<Object> dimensionValues = new ArrayList<>();
                 dimensionValues.add(value);
                 dimensionsSubset.put(descriptor.getName().toUpperCase(), dimensionValues);
             }
@@ -1271,7 +1271,7 @@ public class WCSDimensionsSubsetHelper {
             throw new UnsupportedOperationException(
                     "Only structuredGridCoverage2DReaders are currently supported");
         }
-        List<DimensionBean> dimensions = new ArrayList<DimensionBean>();
+        List<DimensionBean> dimensions = new ArrayList<>();
         if (accessor == null) {
             return dimensions;
         }

@@ -271,7 +271,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     }
 
     private List<String> getDemoList(final Resource demoDir) {
-        final List<String> demoList = new ArrayList<String>();
+        final List<String> demoList = new ArrayList<>();
         for (Resource file : demoDir.list()) {
             if (file.getType() != Type.DIRECTORY) {
                 final String name = file.name();

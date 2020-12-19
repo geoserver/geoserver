@@ -54,8 +54,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
 
         // compute the layer bounds and the total bounds
-        List<ReferencedEnvelope> layerBounds =
-                new ArrayList<ReferencedEnvelope>(mapContent.layers().size());
+        List<ReferencedEnvelope> layerBounds = new ArrayList<>(mapContent.layers().size());
         ReferencedEnvelope aggregatedBounds =
                 computePerLayerQueryBounds(mapContent, layerBounds, null);
         if (aggregatedBounds != null) {

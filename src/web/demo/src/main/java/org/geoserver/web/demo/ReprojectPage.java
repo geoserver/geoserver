@@ -219,7 +219,7 @@ public class ReprojectPage extends GeoServerBasePage {
 
             MathTransform mt = getTransform();
             if (mt != null) {
-                wktLabel.setDefaultModel(new Model<String>(mt.toString()));
+                wktLabel.setDefaultModel(new Model<>(mt.toString()));
             }
         }
     }

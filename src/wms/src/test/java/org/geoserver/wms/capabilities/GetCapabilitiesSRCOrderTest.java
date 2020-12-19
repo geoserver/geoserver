@@ -19,7 +19,6 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -44,7 +43,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 
     /** Instantiates a new gets the capabilities SRC order test. */
     public GetCapabilitiesSRCOrderTest() {
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wms", "http://www.opengis.net/wms");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
@@ -93,10 +92,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 
         Capabilities_1_3_0_Transformer tr =
                 new Capabilities_1_3_0_Transformer(
-                        wms,
-                        BASE_URL,
-                        wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>());
+                        wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

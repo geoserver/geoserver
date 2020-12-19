@@ -19,7 +19,7 @@ public class EnumAdapterModelTest {
     @Test
     public void testGetObject() {
         IModel<String> delegate = new Model<>("DISABLE");
-        EnumAdapterModel<SslMode> model = new EnumAdapterModel<SslMode>(delegate, SslMode.class);
+        EnumAdapterModel<SslMode> model = new EnumAdapterModel<>(delegate, SslMode.class);
         assertEquals(SslMode.DISABLE, model.getObject());
     }
 }

@@ -432,9 +432,7 @@ public class GeofenceAccessManager
             if (mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER)) {
                 // opaque mode deny access for the layer
                 AccessInfo newInfo = AccessInfo.DENY_ALL;
-                result =
-                        getLessRestrictiveRule(
-                                result, new MutablePair<Geometry, AccessInfo>(null, newInfo));
+                result = getLessRestrictiveRule(result, new MutablePair<>(null, newInfo));
             } else if (!mode.equals(LayerGroupInfo.Mode.SINGLE)) {
                 // not opaque and not single mode, the container rule
                 // should override the layer rule
@@ -787,7 +785,7 @@ public class GeofenceAccessManager
         }
 
         // filter and translate
-        List<PropertyName> result = new ArrayList<PropertyName>();
+        List<PropertyName> result = new ArrayList<>();
         for (LayerAttribute attribute : attributes) {
             if ((attribute.getAccess() == AccessType.READWRITE)
                     || ((mode == PropertyAccessMode.READ)
@@ -868,7 +866,7 @@ public class GeofenceAccessManager
             Authentication user) {
         // get the layer
         String layerName = (String) gsRequest.getKvp().get("LAYER");
-        List<LayerInfo> layers = new ArrayList<LayerInfo>();
+        List<LayerInfo> layers = new ArrayList<>();
         LayerInfo candidateLayer = catalog.getLayerByName(layerName);
         if (candidateLayer == null) {
             if (layerName.indexOf(":") == -1) {
@@ -1020,7 +1018,7 @@ public class GeofenceAccessManager
 
     private void checkStyleAllowed(AccessInfo rule, String styleName) {
         // otherwise check if the requested style is allowed
-        Set<String> allowedStyles = new HashSet<String>();
+        Set<String> allowedStyles = new HashSet<>();
         if (rule.getDefaultStyle() != null) {
             allowedStyles.add(rule.getDefaultStyle());
         }

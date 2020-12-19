@@ -248,10 +248,7 @@ public class RasterLayerLegendHelper {
                 image = ImageUtils.createImage(width, height, null, transparent);
                 final Graphics2D graphics =
                         ImageUtils.prepareTransparency(
-                                transparent,
-                                bgColor,
-                                image,
-                                new HashMap<RenderingHints.Key, Object>());
+                                transparent, bgColor, image, new HashMap<>());
                 if (defaultLegend == null) {
                     drawRasterIcon(graphics);
                 } else {

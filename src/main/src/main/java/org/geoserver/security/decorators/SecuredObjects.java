@@ -20,8 +20,7 @@ import org.geoserver.security.WrapperPolicy;
  */
 public class SecuredObjects {
     /** Caches factories that can handle a certain class for quick access */
-    static final Map<Class<?>, SecuredObjectFactory> FACTORY_CACHE =
-            new ConcurrentHashMap<Class<?>, SecuredObjectFactory>();
+    static final Map<Class<?>, SecuredObjectFactory> FACTORY_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Given an object to secure and a wrapping policy, scans the extension points for a factory

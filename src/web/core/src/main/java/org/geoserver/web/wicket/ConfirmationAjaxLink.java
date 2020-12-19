@@ -23,7 +23,7 @@ public abstract class ConfirmationAjaxLink<T> extends SimpleAjaxLink<T> {
     IModel<String> confirm;
 
     public ConfirmationAjaxLink(String id, IModel<T> linkModel, String label, String confirm) {
-        this(id, linkModel, new Model<String>(label), new Model<String>(confirm));
+        this(id, linkModel, new Model<>(label), new Model<>(confirm));
     }
 
     public ConfirmationAjaxLink(

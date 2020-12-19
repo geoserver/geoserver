@@ -43,11 +43,11 @@ public class JSONTypeTest extends TestCase {
 
     @Test
     public void testCallbackFunction() {
-        Map<String, Map<String, String>> kvp = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> kvp = new HashMap<>();
 
         assertEquals(JSONType.CALLBACK_FUNCTION, JSONType.getCallbackFunction(kvp));
 
-        Map<String, String> formatOpts = new HashMap<String, String>();
+        Map<String, String> formatOpts = new HashMap<>();
         kvp.put("FORMAT_OPTIONS", formatOpts);
 
         assertEquals(JSONType.CALLBACK_FUNCTION, JSONType.getCallbackFunction(kvp));

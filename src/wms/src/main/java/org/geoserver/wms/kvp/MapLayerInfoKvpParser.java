@@ -45,7 +45,7 @@ public class MapLayerInfoKvpParser extends KvpParser {
 
         final List<String> layerNames = (List<String>) rawNamesParser.parse(paramValue);
 
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>(layerNames.size());
+        List<MapLayerInfo> layers = new ArrayList<>(layerNames.size());
 
         MapLayerInfo layer = null;
 

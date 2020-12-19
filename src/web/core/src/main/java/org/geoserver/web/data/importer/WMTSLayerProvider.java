@@ -28,12 +28,9 @@ import org.geotools.ows.wmts.model.WMTSLayer;
 @SuppressWarnings("serial")
 public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
 
-    public static final Property<LayerResource> STATUS =
-            new BeanProperty<LayerResource>("status", "status");
-    public static final Property<LayerResource> NAME =
-            new BeanProperty<LayerResource>("name", "localName");
-    public static final Property<LayerResource> ACTION =
-            new PropertyPlaceholder<LayerResource>("action");
+    public static final Property<LayerResource> STATUS = new BeanProperty<>("status", "status");
+    public static final Property<LayerResource> NAME = new BeanProperty<>("name", "localName");
+    public static final Property<LayerResource> ACTION = new PropertyPlaceholder<>("action");
 
     public static final List<Property<LayerResource>> PROPERTIES =
             Arrays.asList(NAME, ACTION, STATUS);
@@ -77,7 +74,7 @@ public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
                     LayerResource resource = resources.get(type.getNativeName());
                     if (resource != null) resource.setStatus(LayerStatus.PUBLISHED);
                 }
-                result = new ArrayList<LayerResource>(resources.values());
+                result = new ArrayList<>(resources.values());
 
                 // return by natural order
                 Collections.sort(result);

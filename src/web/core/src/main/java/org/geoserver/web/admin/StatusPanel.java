@@ -85,7 +85,7 @@ public class StatusPanel extends Panel {
     }
 
     public void initUI() {
-        values = new HashMap<String, String>();
+        values = new HashMap<>();
         updateModel();
 
         // TODO: if we just provide the values directly as the models they won't

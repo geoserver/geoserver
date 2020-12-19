@@ -663,14 +663,14 @@ public class ImportProcess implements GeoServerProcess {
         // shapefile store it will move the geometry and name it the_geom
 
         // collect the source names
-        Set<String> sourceNames = new HashSet<String>();
+        Set<String> sourceNames = new HashSet<>();
         for (AttributeDescriptor sd : sourceType.getAttributeDescriptors()) {
             sourceNames.add(sd.getLocalName());
         }
 
         // first check if we have been kissed by sheer luck and the names are
         // the same
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for (String name : sourceNames) {
             if (targetType.getDescriptor(name) != null) {
                 result.put(name, name);

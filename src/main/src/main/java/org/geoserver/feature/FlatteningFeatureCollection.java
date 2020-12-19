@@ -46,7 +46,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         SimpleFeatureType schema = collection.getSchema();
 
         // collect the attributes
-        List<AttributeDescriptor> attributeDescriptors = new ArrayList<AttributeDescriptor>();
+        List<AttributeDescriptor> attributeDescriptors = new ArrayList<>();
         scanAttributeDescriptors(attributeDescriptors, schema, null);
 
         // build the flattened feature type

@@ -31,14 +31,12 @@ public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifier
 
         add(
                 (authority =
-                        new TextField<String>(
-                                "authority",
-                                new PropertyModel<String>(identifierModel, "authority"))));
+                        new TextField<>(
+                                "authority", new PropertyModel<>(identifierModel, "authority"))));
         add(
                 (identifier =
-                        new TextField<String>(
-                                "identifier",
-                                new PropertyModel<String>(identifierModel, "identifier"))));
+                        new TextField<>(
+                                "identifier", new PropertyModel<>(identifierModel, "identifier"))));
 
         add(
                 new IValidator<LayerIdentifierInfo>() {

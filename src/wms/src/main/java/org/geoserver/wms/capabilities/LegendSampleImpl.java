@@ -59,7 +59,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
 
     private GeoServerResourceLoader loader;
 
-    private Set<String> invalidated = new HashSet<String>();
+    private Set<String> invalidated = new HashSet<>();
 
     Resource baseDir;
 
@@ -92,7 +92,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
                 }
             }
         }
-        invalidated = new HashSet<String>();
+        invalidated = new HashSet<>();
     }
 
     /** Checks if the given SLD resource is newer than the given sample file. */

@@ -37,7 +37,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
      * A static map which tracks which fixture files can not be found. This prevents continually
      * looking up the file and reporting it not found to the user.
      */
-    protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
+    protected static Map<String, Boolean> found = new HashMap<>();
 
     // The type of database to use.
     public abstract JDBCDataStoreFactory createDataStoreFactory();

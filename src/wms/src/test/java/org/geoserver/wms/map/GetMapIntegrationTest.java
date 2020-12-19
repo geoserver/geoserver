@@ -282,7 +282,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     public void testOpenLayersProxy() throws Exception {
         NamespaceContext oldContext = XMLUnit.getXpathNamespaceContext();
         try {
-            Map<String, String> namespaces = new HashMap<String, String>();
+            Map<String, String> namespaces = new HashMap<>();
             namespaces.put("xhtml", "http://www.w3.org/1999/xhtml");
             registerNamespaces(namespaces);
             XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));

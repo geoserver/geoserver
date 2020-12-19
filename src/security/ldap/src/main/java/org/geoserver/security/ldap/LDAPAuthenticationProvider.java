@@ -60,7 +60,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
 
         if (auth == null) return null; // next provider
 
-        Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> roles = new HashSet<>();
         roles.addAll(auth.getAuthorities());
 
         // add geoserver roles

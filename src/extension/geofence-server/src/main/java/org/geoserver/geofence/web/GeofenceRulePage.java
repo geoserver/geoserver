@@ -106,9 +106,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         CatalogMode catalogMode;
 
-        Set<String> allowedStyles = new HashSet<String>();
+        Set<String> allowedStyles = new HashSet<>();
 
-        List<LayerAttribute> attributes = new ArrayList<LayerAttribute>();
+        List<LayerAttribute> attributes = new ArrayList<>();
     }
 
     private class RuleFormData implements Serializable {
@@ -155,10 +155,10 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             ruleFormData.layerDetails.attributes.addAll(layerDetails.getAttributes());
         }
 
-        ruleFormModel = new CompoundPropertyModel<RuleFormData>(ruleFormData);
+        ruleFormModel = new CompoundPropertyModel<>(ruleFormData);
 
         // build the form
-        form = new Form<RuleFormData>("form", ruleFormModel);
+        form = new Form<>("form", ruleFormModel);
         add(form);
 
         List<AbstractTab> tabs = new ArrayList<>();
@@ -218,8 +218,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                 layerDetails.setArea(
                                         parseAllowedArea(ruleFormData.layerDetails.allowedArea));
                                 layerDetails.setAttributes(
-                                        new HashSet<LayerAttribute>(
-                                                ruleFormData.layerDetails.attributes));
+                                        new HashSet<>(ruleFormData.layerDetails.attributes));
                                 layerDetails.setAllowedStyles(
                                         ruleFormData.layerDetails.allowedStyles);
                                 layerDetails.setCatalogMode(ruleFormData.layerDetails.catalogMode);
@@ -296,18 +295,18 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     /** Returns a sorted list of workspace names */
     protected List<String> getWorkspaceNames() {
 
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (WorkspaceInfo ws : getCatalog().getFacade().getWorkspaces()) {
             resultSet.add(ws.getName());
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     /**
      * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
      */
     protected List<String> getLayerNames(String workspaceName) {
-        List<String> resultSet = new ArrayList<String>();
+        List<String> resultSet = new ArrayList<>();
         if (workspaceName != null) {
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
@@ -333,7 +332,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
      */
     protected List<String> getLayerGroupNames(String workspaceName) {
-        List<String> resultSet = new ArrayList<String>();
+        List<String> resultSet = new ArrayList<>();
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
         CatalogFacade facade = getCatalog().getFacade();
         SortBy sort = ff.sort("name", SortOrder.ASCENDING);
@@ -357,11 +356,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Returns a sorted list of workspace names */
     protected List<String> getServiceNames() {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (Service ows : GeoServerExtensions.extensions(Service.class)) {
             resultSet.add(ows.getId().toUpperCase());
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     /**
@@ -369,7 +368,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * *)
      */
     protected List<String> getOperationNames(String serviceName) {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         boolean flag = true;
         if (serviceName != null) {
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
@@ -379,11 +378,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 }
             }
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected List<String> getRoleNames() {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         try {
             for (GeoServerRole role : securityManager().getRolesForAccessControl()) {
                 resultSet.add(role.getAuthority());
@@ -391,11 +390,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected List<String> getUserNames(String roleName) {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
 
         GeoServerSecurityManager securityManager = securityManager();
         try {
@@ -419,7 +418,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
 
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected GeoServerSecurityManager securityManager() {
@@ -768,8 +767,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     new Palette<String>(
                             "allowedStyles",
                             ruleFormModel.bind("layerDetails.allowedStyles"),
-                            new Model<ArrayList<String>>(getStyles()),
-                            new SimpleChoiceRenderer<String>(),
+                            new Model<>(getStyles()),
+                            new SimpleChoiceRenderer<>(),
                             10,
                             false) {
 
@@ -869,7 +868,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     }
 
     private ArrayList<String> getStyles() {
-        ArrayList<String> styleNames = new ArrayList<String>();
+        ArrayList<String> styleNames = new ArrayList<>();
         for (StyleInfo si : getCatalog().getStyles()) {
             styleNames.add(si.getName());
         }
@@ -948,7 +947,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         public DropDownChoiceWrapperPanel(
                 String id, IModel<T> model, List<? extends T> list, ChoiceRenderer<T> renderer) {
             super(id, model);
-            add(new DropDownChoice<T>("innerComponent", model, list, renderer).setRequired(true));
+            add(new DropDownChoice<>("innerComponent", model, list, renderer).setRequired(true));
         }
     }
 }

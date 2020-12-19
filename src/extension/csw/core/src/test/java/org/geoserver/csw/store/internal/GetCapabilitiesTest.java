@@ -25,7 +25,7 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         NamespaceContext nameSpaceContext = new SimpleNamespaceContext(prefixMap);

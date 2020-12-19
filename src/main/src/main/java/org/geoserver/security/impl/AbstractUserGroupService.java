@@ -27,8 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public abstract class AbstractUserGroupService extends AbstractGeoServerSecurityService
         implements GeoServerUserGroupService {
 
-    protected Set<UserGroupLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
     protected String passwordEncoderName, passwordValidatorName;
     protected UserGroupStoreHelper helper;
 

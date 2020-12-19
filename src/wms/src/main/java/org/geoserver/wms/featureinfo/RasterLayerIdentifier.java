@@ -406,7 +406,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(coverageName);
-        final Set<String> bandNames = new HashSet<String>();
+        final Set<String> bandNames = new HashSet<>();
         for (int i = 0; i < sampleDimensions.length; i++) {
             String name = descriptionToNcName(sampleDimensions[i].getDescription().toString());
             // GEOS-2518

@@ -422,7 +422,7 @@ public class CoverageView implements Serializable {
 
     /** Get the {@link CoverageBand}s related to the specified coverageName */
     public List<CoverageBand> getBands(final String coverageName) {
-        List<CoverageBand> bands = new ArrayList<CoverageBand>();
+        List<CoverageBand> bands = new ArrayList<>();
         for (CoverageBand coverageBand : coverageBands) {
             for (InputCoverageBand inputBand : coverageBand.getInputCoverageBands()) {
                 if (inputBand.getCoverageName().equalsIgnoreCase(coverageName)) {

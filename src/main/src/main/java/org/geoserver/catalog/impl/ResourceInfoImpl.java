@@ -39,7 +39,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected String nativeName;
 
-    protected List<String> alias = new ArrayList<String>();
+    protected List<String> alias = new ArrayList<>();
 
     protected NamespaceInfo namespace;
 
@@ -49,11 +49,11 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected String _abstract;
 
-    protected List<KeywordInfo> keywords = new ArrayList<KeywordInfo>();
+    protected List<KeywordInfo> keywords = new ArrayList<>();
 
-    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
+    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<>();
 
-    protected List<DataLinkInfo> dataLinks = new ArrayList<DataLinkInfo>();
+    protected List<DataLinkInfo> dataLinks = new ArrayList<>();
 
     protected CoordinateReferenceSystem nativeCRS;
 
@@ -179,7 +179,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     }
 
     public List<String> keywordValues() {
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (keywords != null) {
             for (KeywordInfo kw : keywords) {
                 values.add(kw.getValue());

@@ -33,7 +33,7 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         }
 
         // modified to deal with null copies that should be skipped
-        List<Symbolizer> symArray = new ArrayList<Symbolizer>();
+        List<Symbolizer> symArray = new ArrayList<>();
         for (Symbolizer sym : rule.symbolizers()) {
             Symbolizer symcopy = copy(sym);
             if (symcopy != null) symArray.add(symcopy);

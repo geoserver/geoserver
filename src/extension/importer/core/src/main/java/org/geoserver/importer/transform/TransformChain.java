@@ -31,7 +31,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
     protected List<T> transforms;
 
     public TransformChain() {
-        this(new ArrayList<T>(3));
+        this(new ArrayList<>(3));
     }
 
     public TransformChain(List<T> transforms) {
@@ -67,7 +67,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
 
     @SuppressWarnings("unchecked")
     public <X> List<X> getAll(Class<X> type) {
-        List<X> list = new ArrayList<X>();
+        List<X> list = new ArrayList<>();
         for (T tx : transforms) {
             if (type.isAssignableFrom(tx.getClass())) {
                 list.add((X) tx);
@@ -124,7 +124,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
 
     @SuppressWarnings("unchecked")
     protected <T> List<T> filter(List<? extends ImportTransform> transforms, Class<T> type) {
-        List<T> filtered = new ArrayList<T>();
+        List<T> filtered = new ArrayList<>();
         for (ImportTransform tx : transforms) {
             if (type.isInstance(tx)) {
                 filtered.add((T) tx);

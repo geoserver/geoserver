@@ -112,7 +112,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -266,7 +266,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl("http://localhost:8080/geoserver");
 
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>(layerNames.length);
+        List<MapLayerInfo> layers = new ArrayList<>(layerNames.length);
         List<Style> styles = new ArrayList<>();
 
         for (int i = 0; i < layerNames.length; i++) {
@@ -491,7 +491,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected int getRawTopLayerCount() {
         Catalog rawCatalog = (Catalog) GeoServerExtensions.bean("rawCatalog");
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(rawCatalog.getLayers());
+        List<LayerInfo> layers = new ArrayList<>(rawCatalog.getLayers());
         for (ListIterator<LayerInfo> it = layers.listIterator(); it.hasNext(); ) {
             LayerInfo next = it.next();
             if (!next.enabled() || next.getName().equals(MockData.GEOMETRYLESS.getLocalPart())) {

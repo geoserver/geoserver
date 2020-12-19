@@ -712,7 +712,7 @@ public class WMS implements ApplicationContextAware {
 
     /** Returns all allowed map output formats. */
     public Collection<GetMapOutputFormat> getAllowedMapFormats() {
-        List<GetMapOutputFormat> result = new ArrayList<GetMapOutputFormat>();
+        List<GetMapOutputFormat> result = new ArrayList<>();
         for (GetMapOutputFormat producer : WMSExtensions.findMapProducers(applicationContext)) {
             if (isAllowedGetMapFormat(producer)) {
                 result.add(producer);
@@ -736,7 +736,7 @@ public class WMS implements ApplicationContextAware {
 
         final Collection<GetMapOutputFormat> producers;
         producers = WMSExtensions.findMapProducers(applicationContext);
-        final Set<String> formats = new HashSet<String>();
+        final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
             formats.addAll(producer.getOutputFormatNames());
@@ -749,7 +749,7 @@ public class WMS implements ApplicationContextAware {
 
         final Collection<GetMapOutputFormat> producers;
         producers = WMSExtensions.findMapProducers(applicationContext);
-        final Set<String> formats = new HashSet<String>();
+        final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
             if (isAllowedGetMapFormat(producer) == false) {
@@ -801,7 +801,7 @@ public class WMS implements ApplicationContextAware {
         List<GetLegendGraphicOutputFormat> formats;
         formats = WMSExtensions.findLegendGraphicFormats(applicationContext);
 
-        Set<String> mimeTypes = new HashSet<String>();
+        Set<String> mimeTypes = new HashSet<>();
         for (GetLegendGraphicOutputFormat format : formats) {
             mimeTypes.add(format.getContentType());
         }
@@ -862,7 +862,7 @@ public class WMS implements ApplicationContextAware {
 
     /** @return a list of all getFeatureInfo content types */
     public List<String> getAvailableFeatureInfoFormats() {
-        List<String> mimeTypes = new ArrayList<String>();
+        List<String> mimeTypes = new ArrayList<>();
         for (GetFeatureInfoOutputFormat format :
                 WMSExtensions.findFeatureInfoFormats(applicationContext)) {
             mimeTypes.add(format.getContentType());
@@ -872,7 +872,7 @@ public class WMS implements ApplicationContextAware {
 
     /** @return a list of all allowed getFeature info content types */
     public List<String> getAllowedFeatureInfoFormats() {
-        List<String> mimeTypes = new ArrayList<String>();
+        List<String> mimeTypes = new ArrayList<>();
         for (GetFeatureInfoOutputFormat format :
                 WMSExtensions.findFeatureInfoFormats(applicationContext)) {
             if (isAllowedGetFeatureInfoFormat(format) == false) {
@@ -1079,13 +1079,12 @@ public class WMS implements ApplicationContextAware {
         final DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
         // add the descriptors for custom dimensions
         final List<GeneralParameterDescriptor> parameterDescriptors =
-                new ArrayList<GeneralParameterDescriptor>(
-                        readParametersDescriptor.getDescriptor().descriptors());
+                new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
         parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
             // handle "default"
-            List<Object> fixedTimes = new ArrayList<Object>(times);
+            List<Object> fixedTimes = new ArrayList<>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
                     fixedTimes.set(i, getDefaultTime(coverage));
@@ -1109,7 +1108,7 @@ public class WMS implements ApplicationContextAware {
                 metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
             // handle "default"
-            List<Object> fixedElevations = new ArrayList<Object>(elevations);
+            List<Object> fixedElevations = new ArrayList<>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
                     fixedElevations.set(i, getDefaultElevation(coverage));
@@ -1256,7 +1255,7 @@ public class WMS implements ApplicationContextAware {
     public TreeSet<Date> queryCoverageNearestMatchTimes(
             CoverageInfo coverage, List<Object> queryRanges) throws IOException {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        final TreeSet<Date> foundDates = new TreeSet<Date>();
+        final TreeSet<Date> foundDates = new TreeSet<>();
         if (time == null || !time.isEnabled()) {
             throw new ServiceException(
                     "Coverage " + coverage.prefixedName() + " does not have time support enabled");
@@ -1313,7 +1312,7 @@ public class WMS implements ApplicationContextAware {
 
         FeatureCollection collection = getDimensionCollection(typeInfo, time);
 
-        TreeSet<Date> result = new TreeSet<Date>();
+        TreeSet<Date> result = new TreeSet<>();
         if (time.getPresentation() == DimensionPresentation.LIST) {
             final UniqueVisitor visitor = new UniqueVisitor(time.getAttribute());
             collection.accepts(visitor, null);
@@ -1390,7 +1389,7 @@ public class WMS implements ApplicationContextAware {
 
         FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
 
-        TreeSet<Double> result = new TreeSet<Double>();
+        TreeSet<Double> result = new TreeSet<>();
         if (elevation.getPresentation() == DimensionPresentation.LIST
                 || (elevation.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL
                         && elevation.getResolution() == null)) {
@@ -1618,7 +1617,7 @@ public class WMS implements ApplicationContextAware {
 
         // handle elevation support
         if (elevationInfo != null && elevationInfo.isEnabled() && elevations != null) {
-            List<Object> defaultedElevations = new ArrayList<Object>(elevations.size());
+            List<Object> defaultedElevations = new ArrayList<>(elevations.size());
             for (Object elevation : elevations) {
                 if (elevation == null) {
                     // this is "default"

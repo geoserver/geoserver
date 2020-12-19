@@ -73,7 +73,7 @@ class CRSAreaOfValidityMapBuilder {
 
     private final int mapHeight;
 
-    private static Map<String, Style> STYLES = new WeakHashMap<String, Style>();
+    private static Map<String, Style> STYLES = new WeakHashMap<>();
 
     private static WeakReference<DataStore> LATLON = null;
 
@@ -86,9 +86,8 @@ class CRSAreaOfValidityMapBuilder {
         this.mapHeight = mapHeight;
     }
 
-    @SuppressWarnings("unchecked")
     private SimpleFeatureSource getFeatureSource(final URL shpfile) throws IOException {
-        Map params = new HashMap<String, String>();
+        Map<String, Object> params = new HashMap<>();
         params.put(ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX.key, "false");
         params.put(ShapefileDataStoreFactory.URLP.key, shpfile);
         DataStore ds = DataStoreFinder.getDataStore(params);
@@ -151,7 +150,7 @@ class CRSAreaOfValidityMapBuilder {
         final double dx = (eastBoundLongitude - westBoundLongitude) / numSteps;
         final double dy = (northBoundLatitude - southBoundLatitude) / numSteps;
 
-        List<Coordinate> coords = new ArrayList<Coordinate>(4 * numSteps + 1);
+        List<Coordinate> coords = new ArrayList<>(4 * numSteps + 1);
 
         double x = westBoundLongitude;
         for (int i = 0; i < numSteps; i++) {
@@ -310,7 +309,7 @@ class CRSAreaOfValidityMapBuilder {
             DataStore ds = LATLON == null ? null : LATLON.get();
             if (ds == null) {
                 ds = createLatLonDataStore();
-                LATLON = new WeakReference<DataStore>(ds);
+                LATLON = new WeakReference<>(ds);
             }
             return ds.getFeatureSource("latlon");
         } catch (Exception e) {

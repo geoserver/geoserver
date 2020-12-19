@@ -23,13 +23,13 @@ public class FormTestPage extends WebPage {
     public static final String FORM = "form";
 
     public FormTestPage(ComponentBuilder builder) {
-        Form<?> form = new Form<Object>(FORM);
+        Form<?> form = new Form<>(FORM);
         form.add(builder.buildComponent(PANEL));
         add(form);
     }
 
     public FormTestPage(ComponentBuilder builder, IModel<Object> formModel) {
-        Form<?> form = new Form<Object>(FORM, formModel);
+        Form<?> form = new Form<>(FORM, formModel);
         form.add(builder.buildComponent(PANEL));
         add(form);
     }

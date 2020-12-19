@@ -50,7 +50,7 @@ public abstract class ProcessParameterIO {
     static List<ProcessParameterIO> defaults;
 
     static {
-        defaults = new ArrayList<ProcessParameterIO>();
+        defaults = new ArrayList<>();
 
         // primitives
         defaults.add(new LiteralPPIO(BigInteger.class));
@@ -144,13 +144,13 @@ public abstract class ProcessParameterIO {
     public static List<ProcessParameterIO> findAll(Parameter<?> p, ApplicationContext context) {
         // enum special treatment
         if (p.type.isEnum()) {
-            List<ProcessParameterIO> result = new ArrayList<ProcessParameterIO>();
+            List<ProcessParameterIO> result = new ArrayList<>();
             result.add(new EnumPPIO(p.type));
             return result;
         }
 
         // load all extensions
-        List<ProcessParameterIO> l = new ArrayList<ProcessParameterIO>(defaults);
+        List<ProcessParameterIO> l = new ArrayList<>(defaults);
         if (context != null) {
             l.addAll(GeoServerExtensions.extensions(ProcessParameterIO.class, context));
         } else {
@@ -169,7 +169,7 @@ public abstract class ProcessParameterIO {
         }
 
         // find parameters that match
-        List<ProcessParameterIO> matches = new ArrayList<ProcessParameterIO>();
+        List<ProcessParameterIO> matches = new ArrayList<>();
 
         // do a two phase search, first try to match the identifier
         for (ProcessParameterIO ppio : l) {
@@ -202,7 +202,7 @@ public abstract class ProcessParameterIO {
      */
     private static List<ProcessParameterIO> findByDirection(
             Parameter<?> p, ApplicationContext context, PPIODirection direction) {
-        List<ProcessParameterIO> ppios = new ArrayList<ProcessParameterIO>();
+        List<ProcessParameterIO> ppios = new ArrayList<>();
         List<ProcessParameterIO> matches = findAll(p, context);
         for (ProcessParameterIO ppio : matches) {
             if (ppio.getDirection() == PPIODirection.BOTH || ppio.getDirection() == direction) {

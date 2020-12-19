@@ -76,7 +76,7 @@ public class ParamInfo implements Serializable {
         if (param.metadata != null) {
             List<Serializable> options = (List<Serializable>) param.metadata.get(Param.OPTIONS);
             if (options != null && options.size() > 0) {
-                this.options = new ArrayList<Serializable>(options);
+                this.options = new ArrayList<>(options);
                 if (Comparable.class.isAssignableFrom(this.binding)) {
                     Collections.sort((List) options);
                 }

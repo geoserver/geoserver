@@ -40,7 +40,7 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
     public void testStoreEditServerBusyPage() throws Exception {
         login();
 
-        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> l = new ArrayList<>();
         l.add(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
 
         final LockType type = LockType.WRITE;

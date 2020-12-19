@@ -30,8 +30,8 @@ public class UniqueProcessNamesTest extends WPSTestSupport {
 
     @Test
     public void testNamesUnique() throws Exception {
-        List<String> procs = new ArrayList<String>();
-        Set<String> uniqueProcs = new HashSet<String>();
+        List<String> procs = new ArrayList<>();
+        Set<String> uniqueProcs = new HashSet<>();
 
         for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
             for (Name name : pf.getNames()) {

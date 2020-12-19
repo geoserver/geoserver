@@ -507,14 +507,12 @@ public class CatalogLayerEventListenerTest {
         StyleInfo remainingStyle = mock(StyleInfo.class);
         when(remainingStyle.prefixedName()).thenReturn("remainingStyle");
 
-        final Set<StyleInfo> oldStyles =
-                new HashSet<StyleInfo>(Arrays.asList(remainingStyle, removedStyle));
+        final Set<StyleInfo> oldStyles = new HashSet<>(Arrays.asList(remainingStyle, removedStyle));
         when(mockLayerInfo.getStyles()).thenReturn(oldStyles);
 
         StyleInfo addedStyle = mock(StyleInfo.class);
         when(addedStyle.prefixedName()).thenReturn("addedStyleName");
-        final Set<StyleInfo> newStyles =
-                new HashSet<StyleInfo>(Arrays.asList(addedStyle, remainingStyle));
+        final Set<StyleInfo> newStyles = new HashSet<>(Arrays.asList(addedStyle, remainingStyle));
 
         CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
         when(modifyEvent.getSource()).thenReturn(mockLayerInfo);

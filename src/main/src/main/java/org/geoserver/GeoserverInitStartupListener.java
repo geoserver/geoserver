@@ -221,7 +221,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         CoverageAccessInfoImpl.DEFAULT_MaxPoolSize,
                         CoverageAccessInfoImpl.DEFAULT_KeepAliveTime,
                         TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>());
+                        new LinkedBlockingQueue<>());
         Hints.putSystemDefault(Hints.EXECUTOR_SERVICE, executor);
     }
 
@@ -260,7 +260,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // unload all of the jdbc drivers we have loaded. We need to store them and unregister
             // later to avoid concurrent modification exceptions
             Enumeration<Driver> drivers = DriverManager.getDrivers();
-            Set<Driver> driversToUnload = new HashSet<Driver>();
+            Set<Driver> driversToUnload = new HashSet<>();
             while (drivers.hasMoreElements()) {
                 Driver driver = drivers.nextElement();
                 try {

@@ -59,7 +59,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
 
         // make a big shuffled list of patterns to ensure caching of last pattern
         // doesn't cause any problems
-        List<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<>();
         patterns.addAll(
                 Collections2.transform(
                         Dates.patterns(false),

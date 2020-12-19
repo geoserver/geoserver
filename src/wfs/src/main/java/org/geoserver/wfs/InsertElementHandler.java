@@ -124,7 +124,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             // JD: change from list to map so that the map can later be
             // processed and we can report the fids back in the same order
             // as they were supplied
-            Map<String, List<FeatureId>> schema2fids = new HashMap<String, List<FeatureId>>();
+            Map<String, List<FeatureId>> schema2fids = new HashMap<>();
 
             for (Iterator c = schema2features.values().iterator(); c.hasNext(); ) {
                 SimpleFeatureCollection collection = (SimpleFeatureCollection) c.next();
@@ -186,7 +186,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     List<FeatureId> fids = schema2fids.get(schema.getTypeName());
 
                     if (fids == null) {
-                        fids = new LinkedList<FeatureId>();
+                        fids = new LinkedList<>();
                         schema2fids.put(schema.getTypeName(), fids);
                     }
 
@@ -204,7 +204,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
                     // fire post insert event
                     SimpleFeatureCollection features =
-                            store.getFeatures(filterFactory.id(new HashSet<FeatureId>(fids)));
+                            store.getFeatures(filterFactory.id(new HashSet<>(fids)));
                     event =
                             new TransactionEvent(
                                     TransactionEventType.POST_INSERT,

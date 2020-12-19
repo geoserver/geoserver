@@ -288,7 +288,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public static final String DEFAULT_FORMAT = "image/png";
 
     /** The featuretype(s) of the requested LAYER(s) */
-    private List<LegendRequest> legends = new ArrayList<LegendRequest>();
+    private List<LegendRequest> legends = new ArrayList<>();
 
     /**
      * should hold FEATURETYPE parameter value, though not used by now, since GeoServer WMS still
@@ -556,7 +556,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /** SLD replacement */
-    private Map<String, Object> env = new HashMap<String, Object>();
+    private Map<String, Object> env = new HashMap<>();
 
     /**
      * Map of strings that make up the SLD enviroment for variable substitution

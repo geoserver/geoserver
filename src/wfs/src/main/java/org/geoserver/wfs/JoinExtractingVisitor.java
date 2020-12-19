@@ -50,8 +50,8 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     boolean hadAliases;
 
-    List<Filter> joinFilters = new ArrayList<Filter>();
-    List<Filter> filters = new ArrayList<Filter>();
+    List<Filter> joinFilters = new ArrayList<>();
+    List<Filter> filters = new ArrayList<>();
     private List<QName> queriedTypes;
 
     public JoinExtractingVisitor(List<FeatureTypeInfo> featureTypes, List<String> aliases) {
@@ -61,7 +61,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         if (aliases == null || aliases.isEmpty()) {
             hadAliases = false;
             // assign prefixes
-            aliases = new ArrayList<String>();
+            aliases = new ArrayList<>();
             for (int j = 0, i = 0; i < featureTypes.size(); i++) {
                 String alias;
                 boolean conflictFound;

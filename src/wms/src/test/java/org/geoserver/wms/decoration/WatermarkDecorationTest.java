@@ -25,7 +25,7 @@ public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
     @Test
     public void testAbsolutePath() throws Exception {
         WatermarkDecoration d = new WatermarkDecoration();
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         File file = new File("src/test/resources/org/geoserver/wms/world.png");
         options.put(
                 "url", URLs.fileToUrl(file.getAbsoluteFile().getCanonicalFile()).toExternalForm());
@@ -40,7 +40,7 @@ public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
     @Test
     public void testRelativePath() throws Exception {
         WatermarkDecoration d = new WatermarkDecoration();
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         File file = new File("src/test/resources/org/geoserver/wms/world.png");
         File styles = getDataDirectory().findOrCreateDir("styles");
         File logoFile = new File(styles, "world.png").getAbsoluteFile();

@@ -38,8 +38,7 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
 
     @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        List<FeatureCollection<FeatureType, Feature>> filtered =
-                new ArrayList<FeatureCollection<FeatureType, Feature>>();
+        List<FeatureCollection<FeatureType, Feature>> filtered = new ArrayList<>();
         for (FeatureCollection<FeatureType, Feature> fc : filtered) {
             filtered.add(fc.subCollection(filter));
         }

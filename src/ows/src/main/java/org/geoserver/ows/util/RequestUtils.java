@@ -53,7 +53,7 @@ public class RequestUtils {
      */
     public static String getVersionPreOws(List<String> providedList, List<String> acceptedList) {
         // first figure out which versions are provided
-        TreeSet<Version> provided = new TreeSet<Version>();
+        TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
@@ -62,7 +62,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        TreeSet<Version> accepted = new TreeSet<Version>();
+        TreeSet<Version> accepted = new TreeSet<>();
         for (String v : acceptedList) {
             checkVersionNumber(v, null);
 
@@ -132,7 +132,7 @@ public class RequestUtils {
      */
     public static String getVersionOws11(List<String> providedList, List<String> acceptedList) {
         // first figure out which versions are provided
-        TreeSet<Version> provided = new TreeSet<Version>();
+        TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
@@ -141,7 +141,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        List<Version> accepted = new ArrayList<Version>();
+        List<Version> accepted = new ArrayList<>();
         for (String v : acceptedList) {
             checkVersionNumber(v, "AcceptVersions");
 

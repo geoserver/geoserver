@@ -106,7 +106,7 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
      */
     @Override
     public List<GridSet> getSelection() {
-        List<GridSet> selection = new ArrayList<GridSet>(super.getSelection());
+        List<GridSet> selection = new ArrayList<>(super.getSelection());
         for (Iterator<GridSet> it = selection.iterator(); it.hasNext(); ) {
             GridSet g = it.next();
             if (GWC.get().isInternalGridSet(g.getName())) {

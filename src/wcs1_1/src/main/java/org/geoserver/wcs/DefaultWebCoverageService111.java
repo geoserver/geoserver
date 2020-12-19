@@ -104,7 +104,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     @SuppressWarnings("unchecked") // EMF objects without generics
     public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
-        List<String> provided = new ArrayList<String>();
+        List<String> provided = new ArrayList<>();
         // provided.add("1.0.0");
         provided.add("1.1.0");
         provided.add("1.1.1");
@@ -228,7 +228,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             //
             // TIME Values
             //
-            final List<Date> timeValues = new LinkedList<Date>();
+            final List<Date> timeValues = new LinkedList<>();
 
             TimeSequenceType temporalSubset = request.getDomainSubset().getTemporalSubset();
 
@@ -381,7 +381,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     // of a
                     // key
                     List<CoverageDimensionInfo> dimensions = meta.getDimensions();
-                    Map<String, Integer> dimensionMap = new HashMap<String, Integer>();
+                    Map<String, Integer> dimensionMap = new HashMap<>();
                     for (int i = 0; i < dimensions.size(); i++) {
                         String keyName = dimensions.get(i).getName().replace(' ', '_');
                         dimensionMap.put(keyName, i);
@@ -995,7 +995,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         // avoid issues
         // with the kvp parsing of indentifiers that include spaces)
         List<CoverageDimensionInfo> dimensions = info.getDimensions();
-        Set<String> dimensionMap = new HashSet<String>();
+        Set<String> dimensionMap = new HashSet<>();
         for (int i = 0; i < dimensions.size(); i++) {
             String keyName = dimensions.get(i).getName().replace(' ', '_');
             dimensionMap.add(keyName);

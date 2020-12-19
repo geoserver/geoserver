@@ -38,7 +38,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     @BeforeClass
     public static void configureXMLUnit() throws Exception {
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("dc", DC.NAMESPACE);
         namespaces.put("dct", DCT.NAMESPACE);

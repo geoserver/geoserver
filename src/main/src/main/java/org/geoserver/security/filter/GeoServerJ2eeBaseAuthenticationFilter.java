@@ -36,7 +36,7 @@ public abstract class GeoServerJ2eeBaseAuthenticationFilter
     protected Collection<GeoServerRole> getRolesFromJ2EE(
             HttpServletRequest request, String principal) throws IOException {
 
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
         boolean useActiveService =
                 getRoleServiceName() == null || getRoleServiceName().trim().length() == 0;
 

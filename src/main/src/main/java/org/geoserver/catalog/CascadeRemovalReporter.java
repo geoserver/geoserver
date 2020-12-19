@@ -56,8 +56,8 @@ public class CascadeRemovalReporter implements CatalogVisitor {
 
     /** Resets the visitor so that it can be reused for another search */
     public void reset() {
-        this.objects = new HashMap<CatalogInfo, ModificationType>();
-        this.groups = new HashMap<LayerGroupInfo, Set<LayerInfo>>();
+        this.objects = new HashMap<>();
+        this.groups = new HashMap<>();
     }
 
     /**
@@ -71,7 +71,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
      *     type filtering is desired
      */
     public <T> List<T> getObjects(Class<T> catalogClass, ModificationType... modifications) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         List<ModificationType> mods =
                 (modifications == null || modifications.length == 0)
                         ? null
@@ -202,7 +202,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 // mark the layer as one that will be removed
                 Set<LayerInfo> layers = groups.get(group);
                 if (layers == null) {
-                    layers = new HashSet<LayerInfo>();
+                    layers = new HashSet<>();
                     groups.put(group, layers);
                 }
                 layers.add(layer);
@@ -210,7 +210,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 // a group can contain the same layer multiple times. We want to
                 // make sure to mark the group as removed if all the layers inside of
                 // it are going to be removed, just changed otherwise
-                if (layers.size() == new HashSet<PublishedInfo>(group.getLayers()).size()) {
+                if (layers.size() == new HashSet<>(group.getLayers()).size()) {
                     visit(group);
                 } else {
                     add(group, ModificationType.GROUP_CHANGED);

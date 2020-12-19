@@ -139,7 +139,7 @@ public class CatalogStyleChangeListenerTest {
     @Test
     public void testRenameAlternateStyle() throws Exception {
 
-        Set<ParameterFilter> params = new HashSet<ParameterFilter>();
+        Set<ParameterFilter> params = new HashSet<>();
         StyleParameterFilter newStyleFilter = new StyleParameterFilter();
         newStyleFilter.setStyles(ImmutableSet.of(STYLE_NAME));
         params.add(newStyleFilter);

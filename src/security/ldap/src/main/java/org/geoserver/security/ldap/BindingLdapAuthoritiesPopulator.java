@@ -154,7 +154,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             logger.debug("Getting authorities for user " + userDn);
         }
 
-        final List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
+        final List<GrantedAuthority> result = new ArrayList<>();
 
         // password included -> authenticate before search
         if (password != null) {
@@ -198,10 +198,10 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
     public Set<GrantedAuthority> getGroupMembershipRoles(
             Consumer<Consumer<DirContext>> ctxConsumer, String userDn, String username) {
         if (getGroupSearchBase() == null) {
-            return new HashSet<GrantedAuthority>();
+            return new HashSet<>();
         }
 
-        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
         if (logger.isDebugEnabled()) {
             logger.debug(

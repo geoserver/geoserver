@@ -73,9 +73,9 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         outputFormat = new TextFeatureInfoOutputFormat(getWMS());
 
         Request request = new Request();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         parameters.put("LAYER", "testLayer");
-        Map<String, String> env = new HashMap<String, String>();
+        Map<String, String> env = new HashMap<>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
@@ -91,7 +91,7 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         feature.add(featureType.getFeatureSource(null, null).getFeatures());
 
         // fake layer list
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);

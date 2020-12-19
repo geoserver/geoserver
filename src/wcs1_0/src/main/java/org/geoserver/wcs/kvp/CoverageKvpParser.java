@@ -36,7 +36,7 @@ public class CoverageKvpParser extends KvpParser {
     @SuppressWarnings("unchecked")
     @Override
     public Object parse(String value) throws Exception {
-        final List<String> coverages = new ArrayList<String>();
+        final List<String> coverages = new ArrayList<>();
         final List<String> identifiers = KvpUtils.readFlat(value);
         if (identifiers == null || identifiers.size() == 0) {
             throw new WcsException(

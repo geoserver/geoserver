@@ -20,7 +20,7 @@ public class ValidationResult {
         if (errors == null) {
             this.errorList = Collections.emptyList();
         } else {
-            this.errorList = Collections.unmodifiableList(new ArrayList<RuntimeException>(errors));
+            this.errorList = Collections.unmodifiableList(new ArrayList<>(errors));
         }
     }
 

@@ -96,7 +96,7 @@ public class FileRootsFinder implements Serializable {
 
     public FileRootsFinder(boolean hideFileSystem, boolean includeDataDir) {
         // build the roots
-        roots = new ArrayList<File>();
+        roots = new ArrayList<>();
         if (!hideFileSystem) {
             roots.addAll(Arrays.asList(File.listRoots()));
         }

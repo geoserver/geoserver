@@ -62,8 +62,7 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
         @Override
         public void customize(WebMarkupContainer nodeInfoContainer) {
             if (STYLE != null) {
-                nodeInfoContainer.add(
-                        new AttributeAppender("style", new Model<String>(STYLE), ";"));
+                nodeInfoContainer.add(new AttributeAppender("style", new Model<>(STYLE), ";"));
             }
         }
     }

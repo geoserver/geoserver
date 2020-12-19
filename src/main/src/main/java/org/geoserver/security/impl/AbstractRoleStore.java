@@ -149,7 +149,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
 
         // role hierarchy
         helper.role_parentMap.remove(role);
-        Set<GeoServerRole> toBeRemoved = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> toBeRemoved = new HashSet<>();
         for (Entry<GeoServerRole, GeoServerRole> entry : helper.role_parentMap.entrySet()) {
             if (role.equals(entry.getValue())) toBeRemoved.add(entry.getKey());
         }
@@ -202,7 +202,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
     public void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException {
         SortedSet<GeoServerRole> roles = helper.group_roleMap.get(groupname);
         if (roles == null) {
-            roles = new TreeSet<GeoServerRole>();
+            roles = new TreeSet<>();
             helper.group_roleMap.put(groupname, roles);
         }
         if (roles.contains(role) == false) { // something changed ?
@@ -217,7 +217,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
     public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
         SortedSet<GeoServerRole> roles = helper.user_roleMap.get(username);
         if (roles == null) {
-            roles = new TreeSet<GeoServerRole>();
+            roles = new TreeSet<>();
             helper.user_roleMap.put(username, roles);
         }
         if (roles.contains(role) == false) { // something changed

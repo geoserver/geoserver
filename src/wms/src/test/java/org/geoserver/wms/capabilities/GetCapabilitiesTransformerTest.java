@@ -136,7 +136,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         @Override
         public NumberRange<Double> overrideScaleDenominators(
                 PublishedInfo layer, NumberRange<Double> scaleDenominators) {
-            return new NumberRange<Double>(Double.class, 0d, 1000d);
+            return new NumberRange<>(Double.class, 0d, 1000d);
         }
     }
 
@@ -205,7 +205,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         XPATH = XMLUnit.newXpathEngine();

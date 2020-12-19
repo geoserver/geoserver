@@ -97,7 +97,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     protected void initializeVariables() {
 
         // group the dimensions to be added to the variable
-        List<Dimension> netCDFDimensions = new LinkedList<Dimension>();
+        List<Dimension> netCDFDimensions = new LinkedList<>();
         for (NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             netCDFDimensions.add(dimension.getNetCDFDimension());
         }

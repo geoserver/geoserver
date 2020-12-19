@@ -44,7 +44,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     private String contentType;
 
-    private HashMap<String, String> headers = new HashMap<String, String>();
+    private HashMap<String, String> headers = new HashMap<>();
 
     private List<Cookie> cookies;
 
@@ -61,7 +61,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     /** @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie) */
     public void addCookie(Cookie cookie) {
         if (cookies == null) {
-            cookies = new ArrayList<Cookie>(2);
+            cookies = new ArrayList<>(2);
         }
         cookies.add(cookie);
     }

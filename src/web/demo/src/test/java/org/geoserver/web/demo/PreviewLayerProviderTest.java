@@ -55,7 +55,7 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
 
         String wmsLink = pl.getWmsLink();
         String[] wmsParams = wmsLink.substring(wmsLink.indexOf("?") + 1).split("&");
-        Set<String> wmsKeys = new HashSet<String>();
+        Set<String> wmsKeys = new HashSet<>();
 
         for (int i = 0; i < wmsParams.length; i++) {
             String[] wmsParam = wmsParams[i].split("=");

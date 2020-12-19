@@ -143,7 +143,7 @@ public class GWCTransactionListenerTest {
     @Test
     public void testDataStoreChangeInsert() {
 
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         ReferencedEnvelope affectedBounds = new ReferencedEnvelope(-180, 0, 0, 90, WGS84);
 
         issueInsert(extendedProperties, affectedBounds);
@@ -166,7 +166,7 @@ public class GWCTransactionListenerTest {
 
     @Test
     public void testAfterTransactionCompoundCRS() throws Exception {
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         final CoordinateReferenceSystem compoundCrs = CRS.decode("EPSG:7415");
         ReferencedEnvelope3D transactionBounds =
                 new ReferencedEnvelope3D(142892, 470783, 142900, 470790, 16, 20, compoundCrs);
@@ -189,7 +189,7 @@ public class GWCTransactionListenerTest {
 
     @Test
     public void testAfterTransaction() throws Exception {
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         ReferencedEnvelope affectedBounds1 = new ReferencedEnvelope(-180, 0, 0, 90, WGS84);
         ReferencedEnvelope affectedBounds2 = new ReferencedEnvelope(0, 180, 0, 90, WGS84);
 

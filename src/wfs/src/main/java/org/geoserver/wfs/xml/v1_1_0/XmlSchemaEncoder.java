@@ -101,7 +101,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     public static class V20 extends XmlSchemaEncoder {
-        static Set<String> MIME_TYPES = new LinkedHashSet<String>();
+        static Set<String> MIME_TYPES = new LinkedHashSet<>();
 
         static {
             MIME_TYPES.add("application/gml+xml; version=3.2");

@@ -76,7 +76,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
     private static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private static final Map<String, String> METHOD_NAME_MAP = new HashMap<String, String>();
+    private static final Map<String, String> METHOD_NAME_MAP = new HashMap<>();
 
     private final boolean skipMisconfigured;
 
@@ -169,7 +169,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             } else {
                 skipMisconfiguredThisTime =
                         false; // NEVER skip layers when the user requested specific ones
-                coverages = new ArrayList<CoverageInfo>();
+                coverages = new ArrayList<>();
                 for (Iterator it = request.getCoverage().iterator(); it.hasNext(); ) {
                     String coverageId = (String) it.next();
                     // check the coverage is known
@@ -571,7 +571,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     TreeSet<Object> rawElevations = dimensions.getElevationDomain();
                     // we cannot expose ranges, so if we find them, we turn them into
                     // their mid point
-                    TreeSet<Double> elevations = new TreeSet<Double>();
+                    TreeSet<Double> elevations = new TreeSet<>();
                     for (Object raw : rawElevations) {
                         if (raw instanceof Double) {
                             elevations.add((Double) raw);
@@ -632,14 +632,14 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             attributes.addAttribute("", "nativeFormat", "nativeFormat", "", nativeFormat);
 
             // gather all the formats for this coverage
-            Set<String> formats = new HashSet<String>();
+            Set<String> formats = new HashSet<>();
             for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
                 String format = (String) it.next();
                 formats.add(format);
             }
             // sort them
             start("wcs:supportedFormats", attributes);
-            List<String> sortedFormats = new ArrayList<String>(formats);
+            List<String> sortedFormats = new ArrayList<>(formats);
             Collections.sort(sortedFormats);
             for (String format : sortedFormats) {
                 element("wcs:formats", format.equalsIgnoreCase("GEOTIFF") ? "GeoTIFF" : format);

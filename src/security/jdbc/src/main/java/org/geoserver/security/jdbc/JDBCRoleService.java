@@ -45,8 +45,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     static Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected String adminRoleName, groupAdminRoleName;
 
@@ -175,7 +174,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("roles.all", con);
@@ -206,7 +205,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
@@ -216,7 +215,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("roles.all", con);
@@ -244,7 +243,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
         ResultSet rs = null, rs2 = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("userroles.rolesForUser", con);
@@ -279,7 +278,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        TreeSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
@@ -289,7 +288,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
         ResultSet rs = null, rs2 = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("grouproles.rolesForGroup", con);
@@ -324,7 +323,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        TreeSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
@@ -406,7 +405,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         try {
             con = getConnection();
             ps = getDMLStatement("grouproles.groupsForRole", con);
@@ -433,7 +432,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         try {
             con = getConnection();
             ps = getDMLStatement("userroles.usersForRole", con);

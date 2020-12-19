@@ -257,7 +257,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     SecurityNamedServiceEditPage<T> editPage =
-                            new SecurityNamedServiceEditPage<T>(model);
+                            new SecurityNamedServiceEditPage<>(model);
 
                     editPage.setReturnPage(getPage());
                     setResponsePage(editPage);

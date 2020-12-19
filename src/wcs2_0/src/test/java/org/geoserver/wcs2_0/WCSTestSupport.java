@@ -78,7 +78,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema WCS20_SCHEMA;
 
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<>();
 
     protected static final String VERSION = WCS20Const.CUR_VERSION;
 
@@ -240,7 +240,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wcs", "http://www.opengis.net/wcs/2.0");
         namespaces.put("crs", "http://www.opengis.net/wcs/crs/1.0");
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");

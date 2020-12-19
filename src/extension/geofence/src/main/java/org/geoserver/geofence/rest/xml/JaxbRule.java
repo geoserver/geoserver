@@ -144,9 +144,9 @@ public class JaxbRule {
 
         private String catalogMode;
 
-        private Set<String> allowedStyles = new HashSet<String>();
+        private Set<String> allowedStyles = new HashSet<>();
 
-        private Set<LayerAttribute> layerAttributes = new HashSet<LayerAttribute>();
+        private Set<LayerAttribute> layerAttributes = new HashSet<>();
 
         @XmlElement
         public String getLayerType() {

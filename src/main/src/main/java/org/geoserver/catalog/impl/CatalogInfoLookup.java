@@ -137,7 +137,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
      * things going on)
      */
     <U extends CatalogInfo> List<U> list(Class<U> clazz, Predicate<U> predicate) {
-        ArrayList<U> result = new ArrayList<U>();
+        ArrayList<U> result = new ArrayList<>();
         for (Class<T> key : nameMultiMap.keySet()) {
             if (clazz.isAssignableFrom(key)) {
                 Map<Name, T> valueMap = nameMultiMap.get(key);

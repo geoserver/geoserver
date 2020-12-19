@@ -60,10 +60,9 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                 }
             };
 
-    static final Property<StoreInfo> WORKSPACE =
-            new BeanProperty<StoreInfo>("workspace", "workspace.name");
+    static final Property<StoreInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
-    static final Property<StoreInfo> NAME = new BeanProperty<StoreInfo>("name", "name");
+    static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
     final Property<StoreInfo> TYPE =
             new AbstractProperty<StoreInfo>("type") {
@@ -95,7 +94,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                 }
             };
 
-    static final Property<StoreInfo> ENABLED = new BeanProperty<StoreInfo>("enabled", "enabled");
+    static final Property<StoreInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final Property<StoreInfo> MODIFIED_TIMESTAMP =
             new BeanProperty<>("datemodfied", "dateModified");

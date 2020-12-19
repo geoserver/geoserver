@@ -250,10 +250,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONArray coords =
                 geom.getJSONArray("coordinates").getJSONArray(0).getJSONArray(0).getJSONArray(0);
         assertTrue(
-                new NumberRange<Double>(Double.class, 500525d, 500575d)
+                new NumberRange<>(Double.class, 500525d, 500575d)
                         .contains((Number) coords.getDouble(0)));
         assertTrue(
-                new NumberRange<Double>(Double.class, 500025d, 500050d)
+                new NumberRange<>(Double.class, 500025d, 500050d)
                         .contains((Number) coords.getDouble(1)));
     }
 
@@ -420,7 +420,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         queryLayers.add(mapLayerInfo);
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", mapLayerInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
@@ -504,7 +504,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         }
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", lgInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
@@ -590,7 +590,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         }
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", lgInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
@@ -676,7 +676,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         queryLayers.add(mapLayerInfo);
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", mapLayerInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);

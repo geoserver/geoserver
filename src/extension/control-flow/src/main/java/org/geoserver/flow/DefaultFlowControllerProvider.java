@@ -81,7 +81,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
     void reloadConfiguration() {
         try {
             List<FlowController> newControllers =
-                    new ArrayList<FlowController>(configurator.buildFlowControllers());
+                    new ArrayList<>(configurator.buildFlowControllers());
             Collections.sort(newControllers, new ControllerPriorityComparator());
             controllers = newControllers;
             int controllersCount = controllers.size();

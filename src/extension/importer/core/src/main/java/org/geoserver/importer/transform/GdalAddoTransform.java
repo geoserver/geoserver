@@ -25,7 +25,7 @@ public class GdalAddoTransform extends AbstractCommandLinePreTransform implement
 
     /** Checks if gdaladdo is available */
     public static boolean isAvailable() throws IOException {
-        return new GdalAddoTransform(new ArrayList<String>(), Arrays.asList(2)).checkAvailable();
+        return new GdalAddoTransform(new ArrayList<>(), Arrays.asList(2)).checkAvailable();
     }
 
     private List<Integer> levels;

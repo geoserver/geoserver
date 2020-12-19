@@ -77,7 +77,7 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         usergroupStore.addUser(theUser);
 
         GeoServerRole role = null;
-        Set<GeoServerRole> roles = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> roles = new HashSet<>();
 
         // no roles
         checkRoles(username, roles);

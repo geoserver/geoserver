@@ -131,7 +131,7 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
                 // filter out roles already used as parents
                 RoleHierarchyHelper helper = new RoleHierarchyHelper(parentMappings);
 
-                Set<String> parents = new HashSet<String>(parentMappings.keySet());
+                Set<String> parents = new HashSet<>(parentMappings.keySet());
                 parents.removeAll(helper.getDescendants(role.getAuthority()));
                 parents.remove(role.getAuthority());
                 return new ArrayList<>(parents);

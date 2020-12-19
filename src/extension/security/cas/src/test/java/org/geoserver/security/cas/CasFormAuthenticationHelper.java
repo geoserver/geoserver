@@ -48,7 +48,7 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         HttpCookie sessionCookie = getCookieNamed(cookies, "TGC");
         String sessionCookieSend = sessionCookie.toString();
 
-        Map<String, String> paramMap = new HashMap<String, String>();
+        Map<String, String> paramMap = new HashMap<>();
         paramMap.put("username", username);
         paramMap.put("password", password);
         paramMap.put("_eventId", "submit");

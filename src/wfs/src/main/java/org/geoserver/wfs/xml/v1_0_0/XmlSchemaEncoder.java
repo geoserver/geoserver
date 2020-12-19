@@ -207,7 +207,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         String namespace = catalog.getNamespaceByPrefix(prefix).getURI();
         retBuffer.append(namespace + "\"");
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("request", "DescribeFeatureType");
         params.put("service", "wfs");
         params.put("version", "1.0.0");

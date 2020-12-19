@@ -79,7 +79,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     private static final Set<String> ignoredParameters;
 
     static {
-        ignoredParameters = new HashSet<String>();
+        ignoredParameters = new HashSet<>();
         ignoredParameters.add("REQUEST");
         ignoredParameters.add("TILED");
         ignoredParameters.add("BBOX");
@@ -115,7 +115,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             // create the template
             String templateName = getTemplateName(mapContent);
             Template template = cfg.getTemplate(templateName);
-            HashMap<String, Object> map = new HashMap<String, Object>();
+            HashMap<String, Object> map = new HashMap<>();
             map.put("context", mapContent);
             boolean hasOnlyCoverages = hasOnlyCoverages(mapContent);
             map.put("pureCoverage", hasOnlyCoverages);

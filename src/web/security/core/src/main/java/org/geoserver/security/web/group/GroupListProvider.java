@@ -23,9 +23,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 public class GroupListProvider extends GeoServerDataProvider<GeoServerUserGroup> {
 
     public static final Property<GeoServerUserGroup> GROUPNAME =
-            new BeanProperty<GeoServerUserGroup>("groupname", "groupname");
+            new BeanProperty<>("groupname", "groupname");
     public static final Property<GeoServerUserGroup> ENABLED =
-            new BeanProperty<GeoServerUserGroup>("enabled", "enabled");
+            new BeanProperty<>("enabled", "enabled");
     protected String userGroupServiceName;
 
     public GroupListProvider(String userGroupServiceName) {
@@ -43,20 +43,19 @@ public class GroupListProvider extends GeoServerDataProvider<GeoServerUserGroup>
                                 .getSecurityManager()
                                 .loadUserGroupService(userGroupServiceName);
 
-            if (service == null) groups = new TreeSet<GeoServerUserGroup>();
+            if (service == null) groups = new TreeSet<>();
             else groups = service.getUserGroups();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        List<GeoServerUserGroup> groupList = new ArrayList<GeoServerUserGroup>();
+        List<GeoServerUserGroup> groupList = new ArrayList<>();
         groupList.addAll(groups);
         return groupList;
     }
 
     @Override
     protected List<Property<GeoServerUserGroup>> getProperties() {
-        List<Property<GeoServerUserGroup>> result =
-                new ArrayList<GeoServerDataProvider.Property<GeoServerUserGroup>>();
+        List<Property<GeoServerUserGroup>> result = new ArrayList<>();
         result.add(GROUPNAME);
         result.add(ENABLED);
         return result;

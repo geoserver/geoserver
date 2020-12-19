@@ -136,7 +136,7 @@ public class GeoJSONFormat extends VectorFormat {
             throws IOException {
 
         if (data instanceof Directory) {
-            List<ImportTask> tasks = new ArrayList<ImportTask>();
+            List<ImportTask> tasks = new ArrayList<>();
             for (FileData file : ((Directory) data).getFiles()) {
                 tasks.add(task(file, catalog));
             }

@@ -274,7 +274,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     private void rescaleRules(List<Rule> rules, FeatureInfoRequestParameters params) {
-        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Map<Object, Object> rendererParams = new HashMap<>();
         Integer requestedDpi = ((Integer) params.getGetMapRequest().getFormatOptions().get("dpi"));
         if (requestedDpi != null) {
             rendererParams.put(StreamingRenderer.DPI_KEY, requestedDpi);
@@ -317,25 +317,25 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             List<? extends Feature> features, CoordinateReferenceSystem targetcrs) {
         // group by feature type (rendering transformations might cause us to get more
         // than one type from the original layer)
-        Map<FeatureType, List<Feature>> map = new HashMap<FeatureType, List<Feature>>();
+        Map<FeatureType, List<Feature>> map = new HashMap<>();
         for (Feature f : features) {
             FeatureType type = f.getType();
             List<Feature> list = map.get(type);
             if (list == null) {
-                list = new ArrayList<Feature>();
+                list = new ArrayList<>();
                 map.put(type, list);
             }
             list.add(f);
         }
 
         // build a feature collection for each group
-        List<FeatureCollection> result = new ArrayList<FeatureCollection>();
+        List<FeatureCollection> result = new ArrayList<>();
         for (Map.Entry<FeatureType, List<Feature>> entry : map.entrySet()) {
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
             if (type instanceof SimpleFeatureType) {
                 @SuppressWarnings("unchecked")
-                List<SimpleFeature> sf = new ArrayList<SimpleFeature>((List) list);
+                List<SimpleFeature> sf = new ArrayList<>((List) list);
                 result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
@@ -458,7 +458,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // ok, so we have an estimate based on the static portion of the style,
             // let's extract the dynamic one
             DynamicSizeStyleExtractor extractor = new DynamicSizeStyleExtractor();
-            final List<Rule> dynamicRules = new ArrayList<Rule>();
+            final List<Rule> dynamicRules = new ArrayList<>();
             for (Rule rule : rules) {
                 rule.accept(extractor);
                 Rule copy = (Rule) extractor.getCopy();
@@ -554,7 +554,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         private Rectangle hitArea;
 
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
 
         String[] propertyNames;
 
@@ -746,9 +746,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Set<Key> hints = delegate.getSupportedHints();
             Set<Key> result;
             if (hints == null) {
-                result = new HashSet<RenderingHints.Key>();
+                result = new HashSet<>();
             } else {
-                result = new HashSet<RenderingHints.Key>(hints);
+                result = new HashSet<>(hints);
             }
             result.remove(Hints.FEATURE_DETACHED);
             result.add(Hints.SCREENMAP);

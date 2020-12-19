@@ -36,11 +36,11 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
 
     protected void initUI() {
 
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         PanelCachingTab statusTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Status")) {
+                        new AbstractTab(new Model<>("Status")) {
                             private static final long serialVersionUID = 9062803783143908814L;
 
                             public Panel getPanel(String id) {
@@ -49,7 +49,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                         });
         PanelCachingTab moduleStatusTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Modules")) {
+                        new AbstractTab(new Model<>("Modules")) {
                             private static final long serialVersionUID = -5301288750339244612L;
 
                             public Panel getPanel(String id) {

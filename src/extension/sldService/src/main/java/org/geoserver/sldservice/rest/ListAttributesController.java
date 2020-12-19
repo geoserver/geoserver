@@ -130,7 +130,7 @@ public class ListAttributesController extends AbstractCatalogController {
     public class LayerAttributesList {
         private String layerName;
 
-        private Map<String, String> attributes = new HashMap<String, String>();
+        private Map<String, String> attributes = new HashMap<>();
 
         public LayerAttributesList(final String layer) {
             layerName = layer;
@@ -141,7 +141,7 @@ public class ListAttributesController extends AbstractCatalogController {
         }
 
         public List<String> getAttributesNames() {
-            List<String> out = new ArrayList<String>();
+            List<String> out = new ArrayList<>();
 
             for (String key : attributes.keySet()) {
                 out.add(key);

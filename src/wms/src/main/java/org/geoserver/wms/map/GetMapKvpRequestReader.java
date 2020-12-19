@@ -99,7 +99,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private static Map<String, Integer> interpolationMethods;
 
     static {
-        interpolationMethods = new HashMap<String, Integer>();
+        interpolationMethods = new HashMap<>();
         interpolationMethods.put("NEAREST NEIGHBOR", Interpolation.INTERP_NEAREST);
         interpolationMethods.put("BILINEAR", Interpolation.INTERP_BILINEAR);
         interpolationMethods.put("BICUBIC", Interpolation.INTERP_BICUBIC);
@@ -309,7 +309,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("REMOTE_OWS_URL specified, but REMOTE_OWS_TYPE is missing");
         }
 
-        final List<Object> requestedLayerInfos = new ArrayList<Object>();
+        final List<Object> requestedLayerInfos = new ArrayList<>();
         // layers
         String layerParam = (String) rawKvp.get("LAYERS");
         if (layerParam != null) {
@@ -326,7 +326,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // raw styles parameter
         String stylesParam = (String) kvp.get("STYLES");
-        List<String> styleNameList = new ArrayList<String>();
+        List<String> styleNameList = new ArrayList<>();
         if (stylesParam != null) {
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
         } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
@@ -340,7 +340,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // raw interpolations parameter
         String interpolationParam = (String) kvp.get("INTERPOLATIONS");
-        List<String> interpolationList = new ArrayList<String>();
+        List<String> interpolationList = new ArrayList<>();
         if (interpolationParam != null) {
             interpolationList.addAll(KvpUtils.readFlat(interpolationParam));
         }
@@ -348,11 +348,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // raw filter and cql_filter parameters
         List<Filter> rawFilters =
                 ((getMap.getFilter() != null)
-                        ? new ArrayList<Filter>(getMap.getFilter())
+                        ? new ArrayList<>(getMap.getFilter())
                         : Collections.emptyList());
         List<Filter> cqlFilters =
                 ((getMap.getCQLFilter() != null)
-                        ? new ArrayList<Filter>(getMap.getCQLFilter())
+                        ? new ArrayList<>(getMap.getCQLFilter())
                         : Collections.emptyList());
         List<List<SortBy>> rawSortBy =
                 Optional.ofNullable(getMap.getSortBy()).orElse(Collections.emptyList());
@@ -509,7 +509,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         getMap.getStyles() != null
                                 ? new ArrayList<>(getMap.getStyles())
                                 : new ArrayList<>();
-                List<Style> newStyles = new ArrayList<Style>();
+                List<Style> newStyles = new ArrayList<>();
                 List<Filter> newFilters = filters == null ? null : new ArrayList<>();
                 List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
 
@@ -644,7 +644,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             // if we have just one replicate over all layers
             if (viewParams.size() == 1 && layerCount > 1) {
-                List<Map<String, String>> replacement = new ArrayList<Map<String, String>>();
+                List<Map<String, String>> replacement = new ArrayList<>();
                 for (int i = 0; i < layerCount; i++) {
                     replacement.add(viewParams.get(0));
                 }
@@ -798,7 +798,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     private List<Interpolation> parseInterpolations(
             List<Object> requestedLayers, List<String> interpolationList) {
-        List<Interpolation> interpolations = new ArrayList<Interpolation>();
+        List<Interpolation> interpolations = new ArrayList<>();
         for (int i = 0; i < requestedLayers.size(); i++) {
             // null interpolation means:
             // use the default WMS one
@@ -997,8 +997,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("SLD document contains no layers");
         }
 
-        final List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
-        final List<Style> styles = new ArrayList<Style>();
+        final List<MapLayerInfo> layers = new ArrayList<>();
+        final List<Style> styles = new ArrayList<>();
 
         MapLayerInfo currLayer = null;
         String styleName = null;
@@ -1303,11 +1303,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             final String remoteOwsType)
             throws Exception {
 
-        List<Object> layersOrGroups = new ArrayList<Object>();
+        List<Object> layersOrGroups = new ArrayList<>();
 
         // Grab remote OWS data store if needed
         DataStore remoteWFS = null;
-        final List<String> remoteTypeNames = new ArrayList<String>();
+        final List<String> remoteTypeNames = new ArrayList<>();
         if ("WFS".equals(remoteOwsType) && remoteOwsUrl != null) {
             remoteWFS = connectRemoteWFS(remoteOwsUrl);
             remoteTypeNames.addAll(Arrays.asList(remoteWFS.getTypeNames()));
@@ -1465,7 +1465,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     protected List<Style> parseStyles(List<String> styleNames, List<Object> requestedLayerInfos)
             throws Exception {
-        List<Style> styles = new ArrayList<Style>();
+        List<Style> styles = new ArrayList<>();
         for (int i = 0; i < styleNames.size(); i++) {
             String styleName = styleNames.get(i);
             if ("".equals(styleName)) {

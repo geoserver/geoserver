@@ -46,8 +46,8 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     public CaseNormalizerSubform(final String id, final IModel<CaseNormalizer> model) {
         super(id, model);
 
-        final IModel<Case> caseModel = new PropertyModel<Case>(model, "case");
-        final IModel<Locale> localeModel = new PropertyModel<Locale>(model, "configuredLocale");
+        final IModel<Case> caseModel = new PropertyModel<>(model, "case");
+        final IModel<Locale> localeModel = new PropertyModel<>(model, "configuredLocale");
 
         localeEntry =
                 new DropDownChoice<>(
@@ -72,7 +72,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         localeEntry.setNullValid(true);
 
         caseEntry =
-                new DropDownChoice<Case>(
+                new DropDownChoice<>(
                         "case",
                         caseModel,
                         Arrays.asList(Case.values()),

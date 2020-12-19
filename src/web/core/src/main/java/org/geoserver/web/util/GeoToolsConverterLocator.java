@@ -29,7 +29,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
     public <C> IConverter<C> getConverter(Class<C> type) {
         Set<ConverterFactory> factories = Converters.getConverterFactories(String.class, type);
         if (!factories.isEmpty()) {
-            return new GeoToolsConverter<C>(factories, type);
+            return new GeoToolsConverter<>(factories, type);
         }
 
         return null;

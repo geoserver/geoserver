@@ -169,14 +169,14 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                         protected void populateItem(final ListItem<AttributeRemapTransform> item) {
 
                             final DropDownChoice<String> attChoice =
-                                    new DropDownChoice<String>(
+                                    new DropDownChoice<>(
                                             "att",
                                             new PropertyModel<>(item.getModel(), "field"),
                                             atts);
                             item.add(attChoice);
 
                             final DropDownChoice<Class> typeChoice =
-                                    new DropDownChoice<Class>(
+                                    new DropDownChoice<>(
                                             "type",
                                             new PropertyModel<>(item.getModel(), "type"),
                                             types,
@@ -189,7 +189,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                             item.add(typeChoice);
 
                             final TextField<String> dateFormatTextField =
-                                    new TextField<String>("dateFormat", new Model<>());
+                                    new TextField<>("dateFormat", new Model<>());
                             dateFormatTextField.setOutputMarkupId(true);
                             item.add(dateFormatTextField);
 

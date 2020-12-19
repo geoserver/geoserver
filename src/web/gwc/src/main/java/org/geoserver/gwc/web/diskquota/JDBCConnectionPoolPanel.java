@@ -28,7 +28,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         super(id, model);
 
         TextField<String> driver =
-                new TextField<String>("jdbcDriver", new PropertyModel<String>(model, "driver"));
+                new TextField<>("jdbcDriver", new PropertyModel<>(model, "driver"));
         driver.setRequired(true);
         AutoCompleteSettings as = new AutoCompleteSettings();
         as.setPreselect(true).setShowListOnEmptyInput(true).setShowCompleteListOnFocusGain(true);
@@ -39,8 +39,7 @@ public class JDBCConnectionPoolPanel extends Panel {
                         "org.h2.Driver"));
         add(driver);
 
-        TextField<String> url =
-                new TextField<String>("jdbcUrl", new PropertyModel<String>(model, "url"));
+        TextField<String> url = new TextField<>("jdbcUrl", new PropertyModel<>(model, "url"));
         url.setRequired(true);
         url.add(
                 new ContainsAutoCompleteBehavior(
@@ -51,45 +50,42 @@ public class JDBCConnectionPoolPanel extends Panel {
         add(url);
 
         TextField<String> user =
-                new TextField<String>("jdbcUser", new PropertyModel<String>(model, "username"));
+                new TextField<>("jdbcUser", new PropertyModel<>(model, "username"));
         add(user);
 
         PasswordTextField password =
-                new PasswordTextField("jdbcPassword", new PropertyModel<String>(model, "password"));
+                new PasswordTextField("jdbcPassword", new PropertyModel<>(model, "password"));
         password.setResetPassword(false);
         add(password);
 
         TextField<Integer> minConnections =
-                new TextField<Integer>(
-                        "jdbcMinConnections", new PropertyModel<Integer>(model, "minConnections"));
+                new TextField<>("jdbcMinConnections", new PropertyModel<>(model, "minConnections"));
         minConnections.setRequired(true);
         minConnections.add(RangeValidator.minimum(0));
         add(minConnections);
 
         TextField<Integer> maxConnections =
-                new TextField<Integer>(
-                        "jdbcMaxConnections", new PropertyModel<Integer>(model, "maxConnections"));
+                new TextField<>("jdbcMaxConnections", new PropertyModel<>(model, "maxConnections"));
         maxConnections.setRequired(true);
         maxConnections.add(RangeValidator.minimum(1));
         add(maxConnections);
 
         TextField<Integer> connectionTimeout =
-                new TextField<Integer>(
-                        "jdbcConnectionTimeout",
-                        new PropertyModel<Integer>(model, "connectionTimeout"));
+                new TextField<>(
+                        "jdbcConnectionTimeout", new PropertyModel<>(model, "connectionTimeout"));
         connectionTimeout.setRequired(true);
         connectionTimeout.add(RangeValidator.minimum(1));
         add(connectionTimeout);
 
         TextField<String> validationQuery =
-                new TextField<String>(
-                        "jdbcValidationQuery", new PropertyModel<String>(model, "validationQuery"));
+                new TextField<>(
+                        "jdbcValidationQuery", new PropertyModel<>(model, "validationQuery"));
         add(validationQuery);
 
         TextField<Integer> maxOpenPreparedStatements =
-                new TextField<Integer>(
+                new TextField<>(
                         "jdbcMaxOpenPreparedStatements",
-                        new PropertyModel<Integer>(model, "maxOpenPreparedStatements"));
+                        new PropertyModel<>(model, "maxOpenPreparedStatements"));
         maxOpenPreparedStatements.setRequired(true);
         maxOpenPreparedStatements.add(RangeValidator.minimum(0));
         add(maxOpenPreparedStatements);
@@ -118,7 +114,7 @@ public class JDBCConnectionPoolPanel extends Panel {
             settings.setPreselect(true)
                     .setShowListOnEmptyInput(true)
                     .setShowCompleteListOnFocusGain(true);
-            this.choices = new ArrayList<String>(choices);
+            this.choices = new ArrayList<>(choices);
         }
 
         public ContainsAutoCompleteBehavior(String... choices) {
@@ -128,7 +124,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         @Override
         protected Iterator<String> getChoices(String input) {
             String ucInput = input.toUpperCase();
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             for (String choice : choices) {
                 if (choice.toUpperCase().contains(ucInput)) {
                     result.add(choice);

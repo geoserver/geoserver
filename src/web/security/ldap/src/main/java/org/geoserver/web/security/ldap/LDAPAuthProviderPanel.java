@@ -52,7 +52,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
         add(
-                new AjaxCheckBox("useLdapAuthorization", new Model<Boolean>(useLdapAuth)) {
+                new AjaxCheckBox("useLdapAuthorization", new Model<>(useLdapAuth)) {
 
                     private static final long serialVersionUID = 2060279075143716273L;
 
@@ -92,7 +92,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         private static final long serialVersionUID = -2021795762927385164L;
 
         public AuthorizationPanel(String id) {
-            super(id, new Model<HashMap<String, Object>>());
+            super(id, new Model<>());
         }
 
         public abstract void resetModel();
@@ -167,9 +167,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             nestedSearchFieldsContainer.setOutputMarkupId(true);
             nestedSearchFieldsContainer.setVisible(useNestedActivated);
             add(nestedSearchFieldsContainer);
-            final TextField<String> maxLevelField = new TextField<String>(MAX_GROUP_SEARCH_LEVEL);
+            final TextField<String> maxLevelField = new TextField<>(MAX_GROUP_SEARCH_LEVEL);
             final TextField<String> nestedGroupSearchFilterField =
-                    new TextField<String>(NESTED_GROUP_SEARCH_FILTER);
+                    new TextField<>(NESTED_GROUP_SEARCH_FILTER);
             final AjaxCheckBox useNestedCheckbox =
                     new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
                         private static final long serialVersionUID = 1L;
@@ -208,15 +208,12 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         private static final long serialVersionUID = 5433983389877706266L;
 
         public TestLDAPConnectionPanel(String id) {
-            super(id, new Model<HashMap<String, Object>>(new HashMap<String, Object>()));
+            super(id, new Model<>(new HashMap<>()));
 
-            add(
-                    new TextField<String>(
-                            "username", new MapModel<String>(getModel().getObject(), "username")));
+            add(new TextField<>("username", new MapModel<>(getModel().getObject(), "username")));
             add(
                     new PasswordTextField(
-                                    "password",
-                                    new MapModel<String>(getModel().getObject(), "password"))
+                                    "password", new MapModel<>(getModel().getObject(), "password"))
                             .setRequired(false));
             add(
                     new AjaxSubmitLink("test") {

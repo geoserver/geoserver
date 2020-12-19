@@ -167,7 +167,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
             // use a list of name instead of selection so its serializable, to be used in
             // showOkCancel, and so we don't fetch the selection again
-            final List<String> selectedNames = new ArrayList<String>();
+            final List<String> selectedNames = new ArrayList<>();
             for (TileLayer layer : selection) {
                 selectedNames.add(layer.getName());
             }

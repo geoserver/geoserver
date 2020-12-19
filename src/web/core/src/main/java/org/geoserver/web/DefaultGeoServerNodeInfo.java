@@ -41,8 +41,7 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
 
     @Override
     public void customize(WebMarkupContainer container) {
-        container.add(
-                new AttributeAppender("style", new Model<String>(NODE_DATA.getIdStyle()), ";"));
+        container.add(new AttributeAppender("style", new Model<>(NODE_DATA.getIdStyle()), ";"));
         container.setVisible(isNodeIdVisible(container));
     }
 

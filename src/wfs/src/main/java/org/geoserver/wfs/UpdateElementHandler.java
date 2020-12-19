@@ -298,7 +298,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             // region
             // for validation
             //
-            Set<FeatureId> fids = new HashSet<FeatureId>();
+            Set<FeatureId> fids = new HashSet<>();
             LOGGER.finer("Preprocess to remember modification as a set of fids");
 
             SimpleFeatureCollection features = store.getFeatures(filter);
@@ -347,7 +347,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             if (!fids.isEmpty()) {
                 LOGGER.finer("Post process update for boundary update and featureValidation");
 
-                Set<FeatureId> featureIds = new HashSet<FeatureId>();
+                Set<FeatureId> featureIds = new HashSet<>();
 
                 FilterFactory2 ff =
                         CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
@@ -363,7 +363,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 // grab final ids. Not using fetureIds as they may contain different version
                 // information after the update
-                Set<FeatureId> changedIds = new HashSet<FeatureId>();
+                Set<FeatureId> changedIds = new HashSet<>();
                 SimpleFeatureIterator iterator = changed.features();
                 try {
                     while (iterator.hasNext()) {

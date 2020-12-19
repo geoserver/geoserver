@@ -37,8 +37,8 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     protected boolean padWithZeros;
     protected boolean forcedDecimal;
 
-    protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
-    protected List<String> responseSRS = new ArrayList<String>();
+    protected List<AttributeTypeInfo> attributes = new ArrayList<>();
+    protected List<String> responseSRS = new ArrayList<>();
 
     boolean overridingServiceSRS;
     boolean skipNumberMatched = false;

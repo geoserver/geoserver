@@ -351,7 +351,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             super(id);
 
             final DropDownChoice<WorkspaceInfo> wsChoice =
-                    new DropDownChoice<WorkspaceInfo>(
+                    new DropDownChoice<>(
                             "workspace",
                             new ServiceFilteredWorkspacesModel(new WorkspacesModel()),
                             new WorkspaceChoiceRenderer());

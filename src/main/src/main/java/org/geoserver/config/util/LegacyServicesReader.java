@@ -209,7 +209,7 @@ public class LegacyServicesReader {
                     ReaderUtils.getChildElements(baseMapGroupsElement, "BaseMapGroup");
             for (int i = 0; i < baseMapGroupElements.length; i++) {
                 Element baseMapGroupElement = baseMapGroupElements[i];
-                HashMap<String, Object> baseMap = new HashMap<String, Object>();
+                HashMap<String, Object> baseMap = new HashMap<>();
                 baseMap.put(
                         "baseMapTitle",
                         ReaderUtils.getAttribute(baseMapGroupElement, "baseMapTitle", true));
@@ -289,7 +289,7 @@ public class LegacyServicesReader {
     }
 
     Map<String, Object> readService(Element serviceElement) throws Exception {
-        HashMap<String, Object> service = new HashMap<String, Object>();
+        HashMap<String, Object> service = new HashMap<>();
         service.put(
                 "enabled", ReaderUtils.getBooleanAttribute(serviceElement, "enabled", false, true));
 

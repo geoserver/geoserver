@@ -48,7 +48,7 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     GeoServerFacade facade;
 
     /** listeners */
-    List<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
+    List<ConfigurationListener> listeners = new ArrayList<>();
 
     public GeoServerImpl() {
         this.facade = new DefaultGeoServerFacade(this);

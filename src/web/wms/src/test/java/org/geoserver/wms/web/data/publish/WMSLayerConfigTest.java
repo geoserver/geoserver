@@ -155,7 +155,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
     @Test
     public void testInterpolationDropDown() {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(layer);
+        final Model<LayerInfo> layerModel = new Model<>(layer);
 
         FormTestPage page =
                 new FormTestPage(
@@ -212,7 +212,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
 
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+        final Model<LayerInfo> layerModel = new Model<>(gsLayer);
 
         FormTestPage page =
                 new FormTestPage(
@@ -231,7 +231,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remotestyles:remoteStylesDropDown", wmsLayer.getForcedRemoteStyle());
         tester.assertModelValue(
                 "form:panel:remotestyles:extraRemoteStyles",
-                new HashSet<String>(wmsLayer.remoteStyles()));
+                new HashSet<>(wmsLayer.remoteStyles()));
         // make sure remote styles on are not duplicated when loaded on page
         assertTrue(wmsLayer.remoteStyles().size() == remoteStyleCount);
         // asserting Remote Style UI fields
@@ -239,7 +239,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsPalette",
-                new HashSet<String>(wmsLayer.availableFormats()));
+                new HashSet<>(wmsLayer.availableFormats()));
         tester.assertVisible("form:panel:metaDataCheckBoxContainer");
 
         // min max scale UI fields
@@ -351,7 +351,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         LayerInfo gsLayer = cb.buildLayer(legacyWmsLayerInfo);
         getCatalog().add(gsLayer);
 
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+        final Model<LayerInfo> layerModel = new Model<>(gsLayer);
 
         FormTestPage page =
                 new FormTestPage(

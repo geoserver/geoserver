@@ -95,7 +95,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
         final InputStream is =
                 ml.getFeatureInfo(
                         bbox, width, height, x, y, "application/vnd.ogc.gml", maxFeatures);
-        List<FeatureCollection> results = new ArrayList<FeatureCollection>();
+        List<FeatureCollection> results = new ArrayList<>();
         try {
             Parser parser = new Parser(new WFSConfiguration_1_0());
             parser.setStrict(false);

@@ -50,7 +50,7 @@ public class VectorCustomDimensionsPanel extends Panel {
     public VectorCustomDimensionsPanel(String id, IModel<FeatureTypeInfo> typeInfoModel) {
         super(id, typeInfoModel);
         this.typeInfoModel = typeInfoModel;
-        this.metadata = new PropertyModel<MetadataMap>(typeInfoModel, "metadata");
+        this.metadata = new PropertyModel<>(typeInfoModel, "metadata");
 
         this.setOutputMarkupId(true);
 
@@ -71,8 +71,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
         addDimContainer.add(feedback);
         // add the name input
-        final TextField<String> nameInput =
-                new TextField<String>("nameInput", new Model<String>(""));
+        final TextField<String> nameInput = new TextField<>("nameInput", new Model<>(""));
         addDimContainer.add(nameInput);
         // add the ajax button
         final AjaxButton addButton =

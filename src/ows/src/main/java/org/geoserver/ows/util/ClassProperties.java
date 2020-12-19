@@ -69,7 +69,7 @@ public class ClassProperties {
      * @return A list of string.
      */
     public List<String> properties() {
-        ArrayList<String> properties = new ArrayList<String>();
+        ArrayList<String> properties = new ArrayList<>();
         for (String key : getters.keySet()) {
             if (key.equals("Resource")) {
                 properties.add(0, key);

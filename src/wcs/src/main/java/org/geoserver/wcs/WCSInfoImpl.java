@@ -21,7 +21,7 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     private static final long serialVersionUID = 3721044439071286273L;
 
-    List<String> srs = new ArrayList<String>();
+    List<String> srs = new ArrayList<>();
 
     boolean gmlPrefixing;
 

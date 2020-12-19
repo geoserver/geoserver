@@ -91,14 +91,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
      * The output formats we can generate using ogr2ogr. Using a concurrent one so that it can be
      * reconfigured while the output format is working
      */
-    static Map<String, Format> formats = new ConcurrentHashMap<String, Format>();
+    static Map<String, Format> formats = new ConcurrentHashMap<>();
 
     public Ogr2OgrOutputFormat(GeoServer gs, ToolWrapperFactory wrapperFactory) {
         // initialize with the key set of formats, so that it will change as
         // we register new formats
         super(gs, formats.keySet());
         this.ogrWrapperFactory = wrapperFactory;
-        this.environment = new HashMap<String, String>();
+        this.environment = new HashMap<>();
     }
 
     /** Returns the ogr2ogr executable full path */
@@ -209,7 +209,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
     /** Get a list of supported ogr formats */
     @Override
     public List<Format> getFormats() {
-        return new ArrayList<Format>(formats.values());
+        return new ArrayList<>(formats.values());
     }
 
     @Override

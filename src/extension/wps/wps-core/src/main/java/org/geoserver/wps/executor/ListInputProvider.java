@@ -28,7 +28,7 @@ class ListInputProvider implements InputProvider {
     int maxItems;
 
     public ListInputProvider(InputProvider provider, int maxItems) {
-        this.providers = new ArrayList<InputProvider>();
+        this.providers = new ArrayList<>();
         this.providers.add(provider);
         this.inputId = provider.getInputId();
         this.maxItems = maxItems;
@@ -47,7 +47,7 @@ class ListInputProvider implements InputProvider {
                         getInputId());
             }
 
-            value = new ArrayList<Object>();
+            value = new ArrayList<>();
             for (InputProvider provider : providers) {
                 float providerLongSteps = provider.longStepCount();
                 ProgressListener subListener;

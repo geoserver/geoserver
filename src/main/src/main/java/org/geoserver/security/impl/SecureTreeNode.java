@@ -37,7 +37,7 @@ public class SecureTreeNode {
     /** Depth of a resource specific rule */
     static int RESOURCE_DEPTH = 2;
 
-    Map<String, SecureTreeNode> children = new HashMap<String, SecureTreeNode>();
+    Map<String, SecureTreeNode> children = new HashMap<>();
 
     SecureTreeNode parent;
 
@@ -53,7 +53,7 @@ public class SecureTreeNode {
      *       in the set can access
      * </ul>
      */
-    Map<AccessMode, Set<String>> authorizedRoles = new HashMap<AccessMode, Set<String>>();
+    Map<AccessMode, Set<String>> authorizedRoles = new HashMap<>();
 
     /** Builds a child of the specified parent node */
     private SecureTreeNode(SecureTreeNode parent) {

@@ -72,7 +72,7 @@ public class ImportTransformController extends ImportBaseController {
                                 transforms.getTransforms().size() - 1)
                         .toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
+        return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 
     @GetMapping(path = {"/tasks/{taskId}/transforms", "/tasks/{taskId}/transforms/{transformId}"})
@@ -137,9 +137,9 @@ public class ImportTransformController extends ImportBaseController {
 
         if (result) {
             importer.changed(task);
-            return new ResponseEntity<String>("", HttpStatus.OK);
+            return new ResponseEntity<>("", HttpStatus.OK);
         } else {
-            return new ResponseEntity<String>("", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
         }
     }
 

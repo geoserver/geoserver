@@ -365,7 +365,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
     public void setStyles(List<Style> styles) {
         this.mandatoryParams.styles =
-                styles == null ? Collections.emptyList() : new ArrayList<Style>(styles);
+                styles == null ? Collections.emptyList() : new ArrayList<>(styles);
     }
 
     /** Sets interpolations methods for layers. */
@@ -484,18 +484,18 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
     /** Sets the time request parameter (a list of Date or DateRange objects) */
     public void setTime(List<Object> time) {
-        this.optionalParams.time = new ArrayList<Object>(time);
+        this.optionalParams.time = new ArrayList<>(time);
     }
 
     /** Sets the elevation request parameter. */
     public void setElevation(double elevation) {
-        this.optionalParams.elevation = new ArrayList<Object>();
+        this.optionalParams.elevation = new ArrayList<>();
         this.optionalParams.elevation.add(elevation);
     }
 
     /** Sets the elevation set as a request parameter. */
     public void setElevation(List<Object> elevation) {
-        this.optionalParams.elevation = new ArrayList<Object>(elevation);
+        this.optionalParams.elevation = new ArrayList<>(elevation);
     }
 
     /** Sets the feature version optional param */
@@ -799,7 +799,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
             Object value = getRawKvp().get(key);
             if (value instanceof String) {
                 String s = (String) value;
-                final ArrayList<String> values = new ArrayList<String>(1);
+                final ArrayList<String> values = new ArrayList<>(1);
                 if (s.indexOf(",") > 0) {
                     String[] elements = s.split("\\s*,\\s*");
                     values.addAll(Arrays.asList(elements));

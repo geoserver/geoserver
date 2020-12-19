@@ -108,7 +108,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         Set<String> supported = wrapper.getSupportedFormats();
         of.setExecutable(configuration.getExecutable());
         of.setEnvironment(configuration.getEnvironment());
-        List<Format> toBeAdded = new ArrayList<Format>();
+        List<Format> toBeAdded = new ArrayList<>();
         for (Format format : configuration.getFormats()) {
             if (supported.contains(format.getToolFormat())) {
                 toBeAdded.add(format);

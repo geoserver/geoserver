@@ -58,7 +58,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    protected static final Map<String, String> METHOD_NAME_MAP = new HashMap<String, String>();
+    protected static final Map<String, String> METHOD_NAME_MAP = new HashMap<>();
 
     static {
         METHOD_NAME_MAP.put("nearest neighbor", "nearest");
@@ -386,7 +386,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected void handleSupportedFormats(CoverageInfo ci) throws Exception {
             // gather all the formats for this coverage
-            Set<String> formats = new LinkedHashSet<String>();
+            Set<String> formats = new LinkedHashSet<>();
             for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
                 String format = (String) it.next();
                 // wcs 1.1 requires mime types, not format names

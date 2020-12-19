@@ -59,7 +59,7 @@ import org.springframework.context.ApplicationContextAware;
 public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         implements ApplicationContextAware, DisposableBean, ComplexFeatureAwareFormat {
 
-    static Map<String, String> formats = new ConcurrentHashMap<String, String>();
+    static Map<String, String> formats = new ConcurrentHashMap<>();
 
     ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -103,7 +103,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // find all the responses we could use as a source
         List<Response> all = GeoServerExtensions.extensions(Response.class, applicationContext);
-        responses = new ArrayList<Response>();
+        responses = new ArrayList<>();
         for (Response response : all) {
             if (response.getBinding().equals(FeatureCollectionResponse.class) && response != this) {
                 responses.add(response);
@@ -339,7 +339,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
 
     @SuppressWarnings("unchecked")
     private Set<FeatureType> getFeatureTypes(FeatureCollectionResponse collections) {
-        Set<FeatureType> result = new HashSet<FeatureType>();
+        Set<FeatureType> result = new HashSet<>();
         for (FeatureCollection fc : collections.getFeatures()) {
             result.add(fc.getSchema());
         }

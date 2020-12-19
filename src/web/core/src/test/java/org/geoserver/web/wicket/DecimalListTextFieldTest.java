@@ -47,8 +47,7 @@ public class DecimalListTextFieldTest {
                     @Override
                     protected Component newTextInput(String id) {
                         return new DecimalListTextField(
-                                id,
-                                new PropertyModel<List>(DecimalListTextFieldTest.this, "theList"));
+                                id, new PropertyModel<>(DecimalListTextFieldTest.this, "theList"));
                     }
                 });
     }

@@ -189,7 +189,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     static List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 
-        List<String[]> result = new ArrayList<String[]>();
+        List<String[]> result = new ArrayList<>();
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
             result.add(nextLine);

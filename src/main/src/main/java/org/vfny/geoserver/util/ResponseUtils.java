@@ -53,7 +53,7 @@ public final class ResponseUtils {
                     if (uri.getQuery() != null && !"".equals(uri.getQuery())) {
                         Map<String, Object> parsed =
                                 KvpUtils.parseQueryString("?" + uri.getQuery());
-                        kvp = new HashMap<String, String>();
+                        kvp = new HashMap<>();
                         for (Entry<String, Object> entry : parsed.entrySet()) {
                             kvp.put(entry.getKey(), (String) entry.getValue());
                         }

@@ -18,7 +18,7 @@ public class ConfirmationAjaxLinkTestPage extends WebPage {
         ConfirmationAjaxLink<String> link =
                 new ConfirmationAjaxLink<String>(
                         "confirmationLink",
-                        new Model<String>("model"),
+                        new Model<>("model"),
                         new Model<>("label"),
                         new Model<>("'confirmation'")) {
 

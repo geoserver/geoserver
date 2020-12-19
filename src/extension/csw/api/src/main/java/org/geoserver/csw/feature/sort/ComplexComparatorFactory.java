@@ -39,13 +39,13 @@ public class ComplexComparatorFactory {
         if (sortBy.length == 1) {
             return buildComparator(sortBy[0]);
         } else {
-            List<Comparator<Feature>> comparators = new ArrayList<Comparator<Feature>>();
+            List<Comparator<Feature>> comparators = new ArrayList<>();
             for (SortBy curr : sortBy) {
                 Comparator<Feature> comparator = buildComparator(curr);
                 comparators.add(comparator);
             }
 
-            return new CompositeComparator<Feature>(comparators);
+            return new CompositeComparator<>(comparators);
         }
     }
 
@@ -72,7 +72,7 @@ public class ComplexComparatorFactory {
         } else if (sortBy == SortBy.REVERSE_ORDER) {
             return new FidComparator(false);
         } else {
-            return new PropertyComparator<Feature>(
+            return new PropertyComparator<>(
                     sortBy.getPropertyName(), sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }

@@ -49,7 +49,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
     public void visit(Rule rule) {
         super.visit(rule);
         Rule copy = (Rule) pages.peek();
-        List<Symbolizer> nonNullCopies = new ArrayList<Symbolizer>();
+        List<Symbolizer> nonNullCopies = new ArrayList<>();
         for (Symbolizer s : copy.symbolizers()) {
             if (s != null) {
                 nonNullCopies.add(s);
@@ -80,7 +80,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
     public void visit(FeatureTypeStyle fts) {
         super.visit(fts);
         FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
-        List<Rule> nonNullCopies = new ArrayList<Rule>();
+        List<Rule> nonNullCopies = new ArrayList<>();
         for (Rule r : copy.rules()) {
             if (r != null) {
                 nonNullCopies.add(r);
@@ -100,7 +100,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
     public void visit(Style style) {
         super.visit(style);
         Style copy = (Style) pages.peek();
-        List<FeatureTypeStyle> nonNullCopies = new ArrayList<FeatureTypeStyle>();
+        List<FeatureTypeStyle> nonNullCopies = new ArrayList<>();
         for (FeatureTypeStyle ft : copy.featureTypeStyles()) {
             if (ft != null) {
                 nonNullCopies.add(ft);

@@ -1285,7 +1285,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         // System.out.println(csvContent);
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 
-        List<String[]> result = new ArrayList<String[]>();
+        List<String[]> result = new ArrayList<>();
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
             result.add(nextLine);

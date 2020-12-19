@@ -36,7 +36,7 @@ public class YsldHandler extends StyleHandler {
     public static final String FORMAT = "ysld";
     public static final String MIMETYPE = "application/vnd.geoserver.ysld+yaml";
 
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static final Map<StyleType, String> TEMPLATES = new HashMap<>();
 
     static {
         try {

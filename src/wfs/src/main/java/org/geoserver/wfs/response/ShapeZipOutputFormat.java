@@ -163,7 +163,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     public void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
-        List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
+        List<SimpleFeatureCollection> collections = new ArrayList<>();
         @SuppressWarnings("unchecked")
         List<SimpleFeatureCollection> features = (List) featureCollection.getFeature();
         collections.addAll(features);
@@ -495,7 +495,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                 } else {
                     timestamp = new Date();
                 }
-                Map<String, Object> context = new HashMap<String, Object>();
+                Map<String, Object> context = new HashMap<>();
                 context.put("typename", getTypeName(ftInfo));
                 context.put("workspace", ftInfo.getNamespace().getPrefix());
                 context.put("geometryType", geometryType == null ? "" : geometryType);

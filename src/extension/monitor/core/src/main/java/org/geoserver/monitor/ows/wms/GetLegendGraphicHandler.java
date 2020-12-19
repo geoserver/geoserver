@@ -23,7 +23,7 @@ public class GetLegendGraphicHandler extends RequestObjectHandler {
         @SuppressWarnings("unchecked")
         List<FeatureType> types = (List<FeatureType>) OwsUtils.get(request, "layers");
         if (types != null && types.size() > 0) {
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             for (FeatureType ft : types) {
                 result.add(ft.getName().toString());
             }

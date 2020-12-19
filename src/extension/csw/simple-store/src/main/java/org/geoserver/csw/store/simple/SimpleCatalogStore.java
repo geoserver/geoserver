@@ -78,7 +78,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
             CSWAnyExpander expander = new CSWAnyExpander();
             Filter expanded = (Filter) filter.accept(expander, null);
 
-            records = new FilteringFeatureCollection<FeatureType, Feature>(records, expanded);
+            records = new FilteringFeatureCollection<>(records, expanded);
         }
 
         // sorting
@@ -93,9 +93,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
 
         // max features
         if (q.getMaxFeatures() < Query.DEFAULT_MAX) {
-            records =
-                    new MaxFeaturesFeatureCollection<FeatureType, Feature>(
-                            records, q.getMaxFeatures());
+            records = new MaxFeaturesFeatureCollection<>(records, q.getMaxFeatures());
         }
 
         // reducing attributes

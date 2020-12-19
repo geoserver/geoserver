@@ -27,7 +27,7 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
     public ImporterConfigPage() {
         Importer importer = getGeoServerApplication().getBeanOfType(Importer.class);
         ImporterInfo info = importer.getConfiguration();
-        Model<ImporterInfo> model = new Model<ImporterInfo>(info);
+        Model<ImporterInfo> model = new Model<>(info);
 
         Form form = new Form<>("form", model);
         add(form);

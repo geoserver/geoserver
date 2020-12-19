@@ -44,7 +44,7 @@ public class GeoServerRoleConverterImplTest {
         assertEquals("r1_v2", r.getProperties().get("r1_p2"));
         assertEquals("testuser", r.getUserName());
 
-        List<GeoServerRole> list = new ArrayList<GeoServerRole>();
+        List<GeoServerRole> list = new ArrayList<>();
 
         list.add(r1);
         list.add(r2);

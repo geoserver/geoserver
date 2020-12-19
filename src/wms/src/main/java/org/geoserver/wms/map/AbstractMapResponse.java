@@ -36,7 +36,7 @@ public abstract class AbstractMapResponse extends Response {
                 responseBinding,
                 outputFormats == null
                         ? Collections.emptySet()
-                        : new HashSet<String>(Arrays.asList(outputFormats)));
+                        : new HashSet<>(Arrays.asList(outputFormats)));
     }
 
     protected AbstractMapResponse(
@@ -50,7 +50,7 @@ public abstract class AbstractMapResponse extends Response {
         if (outputFormats == null) {
             return Collections.emptySet();
         }
-        Set<String> caseInsensitiveFormats = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> caseInsensitiveFormats = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         caseInsensitiveFormats.addAll(outputFormats);
         return caseInsensitiveFormats;
     }

@@ -19,7 +19,7 @@ public class JaxbRoleList {
     public JaxbRoleList() {}
 
     public static JaxbRoleList fromGS(Collection<GeoServerRole> roles) {
-        List<String> roleNames = new ArrayList<String>();
+        List<String> roleNames = new ArrayList<>();
         for (GeoServerRole role : roles) {
             roleNames.add(role.getAuthority());
         }
@@ -27,7 +27,7 @@ public class JaxbRoleList {
     }
 
     public JaxbRoleList(Collection<String> roleNames) {
-        this.roleNames = new ArrayList<String>(roleNames);
+        this.roleNames = new ArrayList<>(roleNames);
     }
 
     @XmlElement(name = "role")

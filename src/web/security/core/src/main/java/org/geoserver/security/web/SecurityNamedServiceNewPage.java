@@ -70,7 +70,7 @@ public class SecurityNamedServiceNewPage<
 
         add(new WebMarkupContainer("servicesContainer").add(serviceLinks).setOutputMarkupId(true));
 
-        add(form = new Form<T>("form"));
+        add(form = new Form<>("form"));
 
         // add a container for the actual panel, since we will dynamically update it
         form.add(panelContainer = new WebMarkupContainer("panel"));
@@ -101,7 +101,7 @@ public class SecurityNamedServiceNewPage<
         config.setClassName(panelInfo.getServiceClass().getCanonicalName());
 
         // update the form model
-        form.setModel(new CompoundPropertyModel<T>(config));
+        form.setModel(new CompoundPropertyModel<>(config));
 
         // create the new panel
         panel = createPanel("content", panelInfo, new Model<>(config));

@@ -42,8 +42,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         contour.getValidators()
                 .put(
                         "levels",
-                        new NumberRangeValidator(
-                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasterGroup.getFilteredProcesses().add(contour);
 

@@ -98,7 +98,7 @@ public class VectorAccessLimits extends DataAccessLimits {
             return null;
         }
 
-        List<String> result = new ArrayList<String>(names.size());
+        List<String> result = new ArrayList<>(names.size());
         for (PropertyName name : names) {
             result.add(name.getPropertyName());
         }
@@ -156,7 +156,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         if (size == -1) {
             return null;
         } else {
-            List<PropertyName> properties = new ArrayList<PropertyName>();
+            List<PropertyName> properties = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 String name = (String) ois.readObject();
                 properties.add(FF.property(name));

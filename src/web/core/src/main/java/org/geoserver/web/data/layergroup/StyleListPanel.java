@@ -41,7 +41,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     private static final long serialVersionUID = -811883647153309626L;
 
-    static Property<StyleInfo> NAME = new BeanProperty<StyleInfo>("name", "name");
+    static Property<StyleInfo> NAME = new BeanProperty<>("name", "name");
 
     public StyleListPanel(String id, StyleListProvider styleProvider) {
         super(id, styleProvider);

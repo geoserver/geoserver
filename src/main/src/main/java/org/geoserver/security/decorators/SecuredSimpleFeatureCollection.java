@@ -43,7 +43,7 @@ public class SecuredSimpleFeatureCollection
             if (properties == null) {
                 this.readSchema = getSchema();
             } else {
-                List<String> names = new ArrayList<String>();
+                List<String> names = new ArrayList<>();
                 for (PropertyName property : properties) {
                     names.add(property.getPropertyName());
                 }

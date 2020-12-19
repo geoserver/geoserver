@@ -284,14 +284,14 @@ public class SimpleCatalogStoreTest {
 
         // check they were sorted
         final List<String> values = collectElement(records, "identifier");
-        List<String> sorted = new ArrayList<String>(values);
+        List<String> sorted = new ArrayList<>(values);
         Collections.sort(sorted);
         assertEquals(sorted, values);
     }
 
     private List<String> collectElement(FeatureCollection records, final String property)
             throws IOException {
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         records.accepts(
                 new FeatureVisitor() {
 
@@ -328,7 +328,7 @@ public class SimpleCatalogStoreTest {
         assertEquals(3, records.size());
 
         // check the properties and collect their identifier
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         records.accepts(
                 new FeatureVisitor() {
 

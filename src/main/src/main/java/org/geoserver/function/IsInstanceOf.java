@@ -42,7 +42,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
     private Literal fallback;
 
     public IsInstanceOf() {
-        this.parameters = new ArrayList<Expression>();
+        this.parameters = new ArrayList<>();
         this.fallback = null;
     }
 

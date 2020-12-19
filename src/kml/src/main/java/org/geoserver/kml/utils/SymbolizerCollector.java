@@ -21,8 +21,8 @@ public class SymbolizerCollector extends AbstractStyleVisitor {
 
     SimpleFeature sf;
 
-    List<Symbolizer> symbolizers = new ArrayList<Symbolizer>();
-    List<Symbolizer> elseSymbolizers = new ArrayList<Symbolizer>();
+    List<Symbolizer> symbolizers = new ArrayList<>();
+    List<Symbolizer> elseSymbolizers = new ArrayList<>();
 
     public SymbolizerCollector(SimpleFeature sf) {
         this.sf = sf;

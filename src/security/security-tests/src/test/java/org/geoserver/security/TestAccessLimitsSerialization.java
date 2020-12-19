@@ -61,7 +61,7 @@ public class TestAccessLimitsSerialization extends TestCase {
     }
 
     public void testVectorAccessLimits() throws Exception {
-        List<PropertyName> properties = new ArrayList<PropertyName>();
+        List<PropertyName> properties = new ArrayList<>();
         properties.add(ff.property("test"));
         VectorAccessLimits limits =
                 new VectorAccessLimits(CatalogMode.MIXED, properties, filter, properties, filter);
@@ -70,7 +70,7 @@ public class TestAccessLimitsSerialization extends TestCase {
     }
 
     public void testWMSAccessLimits() throws Exception {
-        List<PropertyName> properties = new ArrayList<PropertyName>();
+        List<PropertyName> properties = new ArrayList<>();
         properties.add(ff.property("test"));
         WMSAccessLimits limits = new WMSAccessLimits(CatalogMode.MIXED, filter, g, true);
 

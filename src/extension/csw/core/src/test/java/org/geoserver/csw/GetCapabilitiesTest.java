@@ -42,7 +42,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         prefixMap.put("gml", "http://www.opengis.net/gml");
@@ -54,7 +54,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReader() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("request", "GetCapabilities");
         raw.put("acceptVersions", "2.0.2,2.0.0,0.7.2");

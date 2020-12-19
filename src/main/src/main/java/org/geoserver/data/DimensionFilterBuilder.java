@@ -36,7 +36,7 @@ public class DimensionFilterBuilder {
             return;
         }
 
-        final List<Filter> timeFilters = new ArrayList<Filter>();
+        final List<Filter> timeFilters = new ArrayList<>();
         final PropertyName attribute = ff.property(startAttributeName);
         final PropertyName endAttribute =
                 endAttributeName == null ? null : ff.property(endAttributeName);

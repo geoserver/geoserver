@@ -77,7 +77,7 @@ public class DescribeProcess {
     static final Map<Class, Class> PRIMITIVE_TO_WRAPPER;
 
     static {
-        PRIMITIVE_TO_WRAPPER = new HashMap<Class, Class>();
+        PRIMITIVE_TO_WRAPPER = new HashMap<>();
         PRIMITIVE_TO_WRAPPER.put(byte.class, Byte.class);
         PRIMITIVE_TO_WRAPPER.put(short.class, Short.class);
         PRIMITIVE_TO_WRAPPER.put(int.class, Integer.class);

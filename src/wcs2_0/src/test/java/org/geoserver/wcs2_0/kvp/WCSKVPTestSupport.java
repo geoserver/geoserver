@@ -54,7 +54,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     protected Map<String, Object> getExtensionsMap(GetCoverageType gc) {
         // collect extensions
-        Map<String, Object> extensions = new HashMap<String, Object>();
+        Map<String, Object> extensions = new HashMap<>();
         for (ExtensionItemType item : gc.getExtension().getContents()) {
             Object value =
                     item.getSimpleContent() != null

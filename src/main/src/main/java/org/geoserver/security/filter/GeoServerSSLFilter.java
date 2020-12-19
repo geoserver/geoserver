@@ -55,7 +55,7 @@ public class GeoServerSSLFilter extends GeoServerSecurityFilter {
                 .append(httpRequest.getContextPath())
                 .append(httpRequest.getServletPath());
 
-        Map<String, String> kvp = new HashMap<String, String>();
+        Map<String, String> kvp = new HashMap<>();
         if (httpRequest.getQueryString() != null) {
             for (String kvpString : httpRequest.getQueryString().split("&")) {
                 String[] kvpArray = kvpString.split("=");

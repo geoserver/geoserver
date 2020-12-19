@@ -44,7 +44,7 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
         addWcs11Coverages(testData);
         testData.addRasterLayer(DEM, "sfdem.tiff", TIFF, null, getClass(), getCatalog());
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(
                 LayerProperty.ENVELOPE,
                 new ReferencedEnvelope(
@@ -98,7 +98,7 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
 
         // real work
         final DataStoreFactorySpi dataStoreFactory = new ShapefileDataStoreFactory();
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("url", destination.toURI().toURL());
         params.put("create spatial index", Boolean.TRUE);
 

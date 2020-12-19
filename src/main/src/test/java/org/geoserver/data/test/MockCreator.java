@@ -221,7 +221,7 @@ public class MockCreator implements Callback {
                 .andReturn(MasterPasswordProvider.DEFAULT_NAME)
                 .anyTimes();
         expect(secMgr.listMasterPasswordProviders())
-                .andReturn(new TreeSet<String>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME)))
                 .anyTimes();
 
         final File mrPwdFolder = new File(testData.getDataDirectoryRoot(), "master-pwd");
@@ -245,7 +245,7 @@ public class MockCreator implements Callback {
                 .anyTimes();
         expect(secMgr.listPasswordValidators())
                 .andReturn(
-                        new TreeSet<String>(
+                        new TreeSet<>(
                                 Arrays.asList(
                                         PasswordValidator.DEFAULT_NAME,
                                         PasswordValidator.MASTERPASSWORD_NAME)))
@@ -256,7 +256,7 @@ public class MockCreator implements Callback {
         GeoServerUserGroupStore ugStore =
                 createUserGroupStore(XMLUserGroupService.DEFAULT_NAME, secMgr);
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList(XMLUserGroupService.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(XMLUserGroupService.DEFAULT_NAME)))
                 .anyTimes();
 
         SecurityUserGroupServiceConfig ugConfig =
@@ -272,7 +272,7 @@ public class MockCreator implements Callback {
         // default role store
         GeoServerRoleStore roleStore = createRoleStore(XMLRoleService.DEFAULT_NAME, secMgr);
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList(XMLRoleService.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(XMLRoleService.DEFAULT_NAME)))
                 .anyTimes();
         expect(secMgr.getActiveRoleService()).andReturn(roleStore).anyTimes();
 
@@ -301,8 +301,7 @@ public class MockCreator implements Callback {
                 .anyTimes();
         expect(secMgr.listAuthenticationProviders())
                 .andReturn(
-                        new TreeSet<String>(
-                                Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
+                        new TreeSet<>(Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
                 .anyTimes();
         expect(secMgr.getAuthenticationProviders())
                 .andReturn(Arrays.asList(authProvider))

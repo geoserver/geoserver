@@ -86,8 +86,8 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
                                 coverageAccess.getKeepAliveTime(),
                                 TimeUnit.MILLISECONDS,
                                 coverageAccess.getQueueType() == QueueType.UNBOUNDED
-                                        ? new LinkedBlockingQueue<Runnable>()
-                                        : new SynchronousQueue<Runnable>());
+                                        ? new LinkedBlockingQueue<>()
+                                        : new SynchronousQueue<>());
                 coverageAccess.setThreadPoolExecutor(executor);
             } else {
 
@@ -123,8 +123,8 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
                                     coverageAccess.getKeepAliveTime(),
                                     TimeUnit.MILLISECONDS,
                                     coverageAccess.getQueueType() == QueueType.DIRECT
-                                            ? new SynchronousQueue<Runnable>()
-                                            : new LinkedBlockingQueue<Runnable>());
+                                            ? new SynchronousQueue<>()
+                                            : new LinkedBlockingQueue<>());
                     coverageAccess.setThreadPoolExecutor(executor);
                 }
             }

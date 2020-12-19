@@ -240,7 +240,7 @@ public class ResourcePool {
         sldCache = createSldCache();
         styleCache = createStyleCache();
 
-        listeners = new CopyOnWriteArrayList<Listener>();
+        listeners = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -278,7 +278,7 @@ public class ResourcePool {
     }
 
     protected Map<String, CoordinateReferenceSystem> createCrsCache() {
-        return new HashMap<String, CoordinateReferenceSystem>();
+        return new HashMap<>();
     }
 
     /**
@@ -360,7 +360,7 @@ public class ResourcePool {
     }
 
     protected Map<StyleInfo, StyledLayerDescriptor> createSldCache() {
-        return new HashMap<StyleInfo, StyledLayerDescriptor>();
+        return new HashMap<>();
     }
 
     /**
@@ -373,7 +373,7 @@ public class ResourcePool {
     }
 
     protected Map<StyleInfo, Style> createStyleCache() {
-        return new HashMap<StyleInfo, Style>();
+        return new HashMap<>();
     }
 
     /**
@@ -688,7 +688,7 @@ public class ResourcePool {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> getParams(Map<K, V> m, GeoServerResourceLoader loader) {
         @SuppressWarnings("unchecked")
-        Map<K, V> params = Collections.synchronizedMap(new HashMap<K, V>(m));
+        Map<K, V> params = Collections.synchronizedMap(new HashMap<>(m));
 
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
@@ -1664,8 +1664,7 @@ public class ResourcePool {
     /** Clears any cached readers for the coverage. */
     public void clear(CoverageStoreInfo info) {
         String storeId = info.getId();
-        HashSet<CoverageHintReaderKey> keys =
-                new HashSet<CoverageHintReaderKey>(hintCoverageReaderCache.keySet());
+        HashSet<CoverageHintReaderKey> keys = new HashSet<>(hintCoverageReaderCache.keySet());
         for (CoverageHintReaderKey key : keys) {
             if (key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);

@@ -162,11 +162,11 @@ public abstract class FileDataView extends Panel {
         fileContent.add(fileTable);
 
         table.add(fileContent);
-        table.add(new OrderByBorder<String>("nameHeader", FileProvider.NAME, fileProvider));
+        table.add(new OrderByBorder<>("nameHeader", FileProvider.NAME, fileProvider));
         table.add(
-                new OrderByBorder<String>(
+                new OrderByBorder<>(
                         "lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
-        table.add(new OrderByBorder<String>("sizeHeader", FileProvider.SIZE, fileProvider));
+        table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));
     }
 
     protected abstract void linkNameClicked(File file, AjaxRequestTarget target);

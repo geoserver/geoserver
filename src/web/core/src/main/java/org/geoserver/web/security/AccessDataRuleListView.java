@@ -26,7 +26,7 @@ public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
         this.isWs = isWs;
         if (checkBoxes == null) {
             int checkBoxesTypes = isWs ? 3 : 2;
-            checkBoxes = new ArrayList<CheckBox>(model.getObject().size() * checkBoxesTypes);
+            checkBoxes = new ArrayList<>(model.getObject().size() * checkBoxesTypes);
         }
     }
 

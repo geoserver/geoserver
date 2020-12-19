@@ -124,7 +124,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         // list of images to be rendered for the layers (more than one if
         // a layer group is given)
         setup(request);
-        List<RenderedImage> layersImages = new ArrayList<RenderedImage>();
+        List<RenderedImage> layersImages = new ArrayList<>();
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
 
@@ -221,7 +221,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                  * A legend graphic is produced for each applicable rule. They're being held here
                  * until the process is done and then painted on a "stack" like legend.
                  */
-                final List<RenderedImage> legendsStack = new ArrayList<RenderedImage>(ruleCount);
+                final List<RenderedImage> legendsStack = new ArrayList<>(ruleCount);
 
                 final SLDStyleFactory styleFactory = new SLDStyleFactory();
 
@@ -320,8 +320,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         for (int i = 0; i < ruleCount; i++) {
 
             final RenderedImage image = ImageUtils.createImage(w, h, null, transparent);
-            final Map<RenderingHints.Key, Object> hintsMap =
-                    new HashMap<RenderingHints.Key, Object>();
+            final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
             final Graphics2D graphics =
                     ImageUtils.prepareTransparency(
                             transparent, LegendUtils.getBackgroundColor(request), image, hintsMap);

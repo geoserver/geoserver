@@ -261,8 +261,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
         private List<de.micromata.opengis.kml.v_2_2_0.Coordinate> dumpCoordinateSequence(
                 CoordinateSequence cs) {
-            List<de.micromata.opengis.kml.v_2_2_0.Coordinate> result =
-                    new ArrayList<de.micromata.opengis.kml.v_2_2_0.Coordinate>(cs.size());
+            List<de.micromata.opengis.kml.v_2_2_0.Coordinate> result = new ArrayList<>(cs.size());
             for (int i = 0; i < cs.size(); i++) {
                 double x = cs.getOrdinate(i, 0);
                 double y = cs.getOrdinate(i, 1);

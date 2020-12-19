@@ -573,7 +573,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
     protected Authentication createAuthentication() {
         GeoServerUser anonymous = GeoServerUser.createAnonymous();
-        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> roles = new ArrayList<>();
         roles.addAll(anonymous.getAuthorities());
         AnonymousAuthenticationToken auth =
                 new AnonymousAuthenticationToken("geoserver", anonymous.getUsername(), roles);

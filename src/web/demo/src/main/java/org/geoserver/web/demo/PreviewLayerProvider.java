@@ -64,8 +64,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         fullSizeCaller = new FullSizeCallable();
     }
 
-    public static final Property<PreviewLayer> TYPE =
-            new BeanProperty<PreviewLayer>("type", "type");
+    public static final Property<PreviewLayer> TYPE = new BeanProperty<>("type", "type");
 
     public static final AbstractProperty<PreviewLayer> NAME =
             new AbstractProperty<PreviewLayer>("name") {
@@ -81,20 +80,17 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
                 }
             };
 
-    public static final Property<PreviewLayer> TITLE =
-            new BeanProperty<PreviewLayer>("title", "title");
+    public static final Property<PreviewLayer> TITLE = new BeanProperty<>("title", "title");
 
     public static final Property<PreviewLayer> ABSTRACT =
-            new BeanProperty<PreviewLayer>("abstract", "abstract", false);
+            new BeanProperty<>("abstract", "abstract", false);
 
     public static final Property<PreviewLayer> KEYWORDS =
-            new BeanProperty<PreviewLayer>("keywords", "keywords", false);
+            new BeanProperty<>("keywords", "keywords", false);
 
-    public static final Property<PreviewLayer> COMMON =
-            new PropertyPlaceholder<PreviewLayer>("commonFormats");
+    public static final Property<PreviewLayer> COMMON = new PropertyPlaceholder<>("commonFormats");
 
-    public static final Property<PreviewLayer> ALL =
-            new PropertyPlaceholder<PreviewLayer>("allFormats");
+    public static final Property<PreviewLayer> ALL = new PropertyPlaceholder<>("allFormats");
 
     public static final List<Property<PreviewLayer>> PROPERTIES =
             Arrays.asList(TYPE, TITLE, NAME, ABSTRACT, KEYWORDS, COMMON, ALL);

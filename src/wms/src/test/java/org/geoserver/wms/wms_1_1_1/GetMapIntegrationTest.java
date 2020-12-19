@@ -300,7 +300,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 new CoverageBand(
                         Collections.singletonList(ib2), "mosaic@0", 2, CompositionType.BAND_SELECT);
 
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(3);
+        final List<CoverageBand> coverageBands = new ArrayList<>(3);
         coverageBands.add(b0);
         coverageBands.add(b1);
         coverageBands.add(b2);

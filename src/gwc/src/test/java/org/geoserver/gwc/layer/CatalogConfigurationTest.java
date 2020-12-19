@@ -236,7 +236,7 @@ public class CatalogConfigurationTest {
 
         Set<GeoServerTileLayerInfo> expected =
                 ImmutableSet.of(layerInfo1, layerInfo2, groupInfo1, groupInfo2);
-        Set<GeoServerTileLayerInfo> actual = new HashSet<GeoServerTileLayerInfo>();
+        Set<GeoServerTileLayerInfo> actual = new HashSet<>();
 
         for (TileLayer layer : layers) {
             actual.add(((GeoServerTileLayer) layer).getInfo());

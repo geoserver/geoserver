@@ -56,28 +56,14 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
     void initComponents() {
         updateFields();
 
-        final RangeValidator<Integer> validator = new RangeValidator<Integer>(0, Integer.MAX_VALUE);
-        add(
-                new TextField<Integer>("years", new PropertyModel<Integer>(this, "years"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("months", new PropertyModel<Integer>(this, "months"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("weeks", new PropertyModel<Integer>(this, "weeks"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("days", new PropertyModel<Integer>(this, "days"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("hours", new PropertyModel<Integer>(this, "hours"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("minutes", new PropertyModel<Integer>(this, "minutes"))
-                        .add(validator));
-        add(
-                new TextField<Integer>("seconds", new PropertyModel<Integer>(this, "seconds"))
-                        .add(validator));
+        final RangeValidator<Integer> validator = new RangeValidator<>(0, Integer.MAX_VALUE);
+        add(new TextField<>("years", new PropertyModel<>(this, "years")).add(validator));
+        add(new TextField<>("months", new PropertyModel<>(this, "months")).add(validator));
+        add(new TextField<>("weeks", new PropertyModel<>(this, "weeks")).add(validator));
+        add(new TextField<>("days", new PropertyModel<>(this, "days")).add(validator));
+        add(new TextField<>("hours", new PropertyModel<>(this, "hours")).add(validator));
+        add(new TextField<>("minutes", new PropertyModel<>(this, "minutes")).add(validator));
+        add(new TextField<>("seconds", new PropertyModel<>(this, "seconds")).add(validator));
     }
 
     @Override

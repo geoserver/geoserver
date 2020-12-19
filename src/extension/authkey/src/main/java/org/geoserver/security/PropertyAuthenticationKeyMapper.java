@@ -121,7 +121,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
             }
         }
 
-        Map<Object, Object> reverseMap = new HashMap<Object, Object>();
+        Map<Object, Object> reverseMap = new HashMap<>();
         for (Entry<Object, Object> entry : oldProps.entrySet()) {
             reverseMap.put(entry.getValue(), entry.getKey());
         }

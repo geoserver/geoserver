@@ -18,7 +18,7 @@ public class ProcessInfoImpl implements ProcessInfo {
 
     private Boolean enabled;
 
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
     private Name name;
 

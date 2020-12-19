@@ -53,8 +53,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         final LayerInfo layer = model.getObject();
         final ResourceInfo resource = layer.getResource();
 
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "resource.metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "resource.metadata");
 
         // time
         IModel<DimensionInfo> time =
@@ -73,8 +72,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         add(new DimensionEditor("elevation", elevation, resource, Number.class));
 
         // handle raster data custom dimensions
-        final List<RasterDimensionModel> customDimensionModels =
-                new ArrayList<RasterDimensionModel>();
+        final List<RasterDimensionModel> customDimensionModels = new ArrayList<>();
         if (resource instanceof CoverageInfo) {
             CoverageInfo ci = (CoverageInfo) resource;
             try {
@@ -139,7 +137,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         // vector custom dimensions panel
         if (resource instanceof FeatureTypeInfo) {
             final PropertyModel<FeatureTypeInfo> typeInfoModel =
-                    new PropertyModel<FeatureTypeInfo>(model, "resource");
+                    new PropertyModel<>(model, "resource");
             vectorCustomDimPanel =
                     new VectorCustomDimensionsPanel("vectorCustomDimPanel", typeInfoModel);
         } else {

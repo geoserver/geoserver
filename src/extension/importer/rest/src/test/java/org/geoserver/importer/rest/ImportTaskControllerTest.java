@@ -75,7 +75,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     // some rest calls now require admin permissions
     private void doLogin() throws Exception {
         SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> l = new ArrayList<>();
         l.add(new GeoServerRole("ROLE_ADMINISTRATOR"));
         SecurityContextHolder.getContext()
                 .setAuthentication(
@@ -145,7 +145,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         MockHttpServletRequest req =
                 createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/");
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<String, Object>(1);
+        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>(1);
         form.add("url", new File(zip).getAbsoluteFile().toURI().toString());
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
         final HttpHeaders headers = new HttpHeaders();

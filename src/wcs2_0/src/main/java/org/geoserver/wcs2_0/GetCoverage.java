@@ -136,7 +136,7 @@ public class GetCoverage {
 
     static {
         // TODO: This one should be pluggable through Extensions
-        mdFormats = new HashSet<String>();
+        mdFormats = new HashSet<>();
         mdFormats.add("application/x-netcdf");
         mdFormats.add("application/x-netcdf4");
     }
@@ -719,7 +719,7 @@ public class GetCoverage {
     }
 
     private GridSampleDimension[] collectDimensions(List<GridCoverage2D> coverages) {
-        List<GridSampleDimension> dimensions = new ArrayList<GridSampleDimension>();
+        List<GridSampleDimension> dimensions = new ArrayList<>();
         for (GridCoverage2D coverage : coverages) {
             if (coverage instanceof GridCoverageWrapper) {
                 for (GridSampleDimension dimension : coverage.getSampleDimensions()) {
@@ -1024,8 +1024,8 @@ public class GetCoverage {
         // get source crs
         final CoordinateReferenceSystem coverageCRS = reader.getCoordinateReferenceSystem();
         WCSEnvelope subset = request.getSpatialSubset();
-        List<GridCoverage2D> result = new ArrayList<GridCoverage2D>();
-        List<GeneralEnvelope> readEnvelopes = new ArrayList<GeneralEnvelope>();
+        List<GridCoverage2D> result = new ArrayList<>();
+        List<GeneralEnvelope> readEnvelopes = new ArrayList<>();
         if (subset.isCrossingDateline()) {
             GeneralEnvelope[] envelopes = subset.getNormalizedEnvelopes();
             addEnvelopes(envelopes[0], readEnvelopes, coverageCRS);
@@ -1193,7 +1193,7 @@ public class GetCoverage {
         if (request.getTemporalSubset() != null) {
             List<GeneralParameterDescriptor> descriptors =
                     readParametersDescriptor.getDescriptor().descriptors();
-            List<Object> times = new ArrayList<Object>();
+            List<Object> times = new ArrayList<>();
             times.add(request.getTemporalSubset());
             readParameters =
                     CoverageUtils.mergeParameter(
@@ -1204,7 +1204,7 @@ public class GetCoverage {
         if (request.getElevationSubset() != null) {
             List<GeneralParameterDescriptor> descriptors =
                     readParametersDescriptor.getDescriptor().descriptors();
-            List<Object> elevations = new ArrayList<Object>();
+            List<Object> elevations = new ArrayList<>();
             elevations.add(request.getElevationSubset());
             readParameters =
                     CoverageUtils.mergeParameter(
@@ -1244,8 +1244,7 @@ public class GetCoverage {
         // Dimension descriptors and set filter queries
         if (request.getDimensionsSubset() != null && !request.getDimensionsSubset().isEmpty()) {
             final List<GeneralParameterDescriptor> descriptors =
-                    new ArrayList<GeneralParameterDescriptor>(
-                            readParametersDescriptor.getDescriptor().descriptors());
+                    new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
             Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
             descriptors.addAll(dynamicParameters);
 
@@ -1538,8 +1537,7 @@ public class GetCoverage {
         final ExtensionType extension = request.getExtension();
 
         // look for the various extensions
-        final Map<String, ExtensionItemType> parsedExtensions =
-                new HashMap<String, ExtensionItemType>();
+        final Map<String, ExtensionItemType> parsedExtensions = new HashMap<>();
         // no extensions?
         if (extension != null) {
             final EList<ExtensionItemType> extensions = extension.getContents();
@@ -1594,8 +1592,7 @@ public class GetCoverage {
     private Map<String, InterpolationPolicy> extractInterpolation(
             GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         // preparation
-        final Map<String, InterpolationPolicy> returnValue =
-                new HashMap<String, InterpolationPolicy>();
+        final Map<String, InterpolationPolicy> returnValue = new HashMap<>();
         final Envelope envelope = reader.getOriginalEnvelope();
         final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
         for (String axisName : axesNames) {
@@ -1626,7 +1623,7 @@ public class GetCoverage {
 
         } else if (interpolationType.getInterpolationAxes() != null) {
             // make sure we don't set things twice
-            final List<String> foundAxes = new ArrayList<String>();
+            final List<String> foundAxes = new ArrayList<>();
 
             final InterpolationAxesType axes = interpolationType.getInterpolationAxes();
             for (InterpolationAxisType axisInterpolation : axes.getInterpolationAxis()) {
@@ -1731,7 +1728,7 @@ public class GetCoverage {
     private GridCoverage2D handleRangeSubsettingExtension(
             GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Hints hints) {
         // preparation
-        final List<String> returnValue = new ArrayList<String>();
+        final List<String> returnValue = new ArrayList<>();
 
         // look for rangeSubset extension
         if (extensions == null
@@ -1742,7 +1739,7 @@ public class GetCoverage {
         }
         // get original bands
         final GridSampleDimension[] bands = coverage.getSampleDimensions();
-        final List<String> bandsNames = new ArrayList<String>();
+        final List<String> bandsNames = new ArrayList<>();
         for (GridSampleDimension band : bands) {
             bandsNames.add(band.getDescription().toString());
         }
@@ -1846,7 +1843,7 @@ public class GetCoverage {
     private List<GridCoverage2D> handleSubsettingExtension(
             GridCoverage2D coverage, WCSEnvelope subset, Hints hints) {
 
-        List<GridCoverage2D> result = new ArrayList<GridCoverage2D>();
+        List<GridCoverage2D> result = new ArrayList<>();
         if (subset != null) {
             if (subset.isCrossingDateline()) {
                 Envelope2D coverageEnvelope = coverage.getEnvelope2D();

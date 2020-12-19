@@ -222,7 +222,7 @@ public class Ogr2OgrFormatTest {
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(bos.toByteArray()));
 
         // we should get two files at least, a .mif and a .mid
-        Set<String> fileNames = new HashSet<String>();
+        Set<String> fileNames = new HashSet<>();
         ZipEntry entry = null;
         while ((entry = zis.getNextEntry()) != null) {
             fileNames.add(entry.getName());

@@ -306,7 +306,7 @@ class CoverageViewHandler {
                 throw new IllegalArgumentException(
                         "The coverage metadataNames should have the same size");
             } else {
-                final Set<String> metadataSet = new HashSet<String>(Arrays.asList(metadataNames));
+                final Set<String> metadataSet = new HashSet<>(Arrays.asList(metadataNames));
                 for (String metadataName : this.metadataNames) {
                     if (!metadataSet.contains(metadataName)) {
                         throw new IllegalArgumentException("The coverage metadata are different");

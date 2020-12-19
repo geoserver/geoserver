@@ -253,7 +253,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers = new ArrayList<FeatureType>();
+        List<FeatureType> layers = new ArrayList<>();
         req.getLegends().clear();
         layers.add(ftInfo.getFeatureType());
 
@@ -663,7 +663,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     public void testInternationalizedLabels() throws Exception {
         GetLegendGraphicRequest req = getRequest();
 
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         options.put("forceLabels", "on");
         req.setLegendOptions(options);
         req.setFormat(JSONFormat);

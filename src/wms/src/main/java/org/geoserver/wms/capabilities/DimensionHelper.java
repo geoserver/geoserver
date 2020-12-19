@@ -240,7 +240,7 @@ abstract class DimensionHelper {
 
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
-        Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> customDimensions = new HashMap<>();
         GridCoverage2DReader reader = null;
 
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {

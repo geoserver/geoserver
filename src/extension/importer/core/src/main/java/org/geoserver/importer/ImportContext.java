@@ -75,7 +75,7 @@ public class ImportContext implements Serializable {
     StoreInfo targetStore;
 
     /** import tasks */
-    List<ImportTask> tasks = new ArrayList<ImportTask>();
+    List<ImportTask> tasks = new ArrayList<>();
 
     /** The default transformations that will be applied on task creation */
     List<ImportTransform> defaultTransforms = new ArrayList<>();

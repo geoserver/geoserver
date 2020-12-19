@@ -553,7 +553,7 @@ public class LegendUtils {
             final FeatureTypeStyle[] ftStyles, double scaleDenominator) {
         ensureNotNull(ftStyles, "FeatureTypeStyle array ");
         /** Holds both the rules that apply and the ElseRule's if any, in the order they appear */
-        final List<Rule> ruleList = new ArrayList<Rule>();
+        final List<Rule> ruleList = new ArrayList<>();
 
         // get applicable rules at the current scale
         for (int i = 0; i < ftStyles.length; i++) {
@@ -617,7 +617,7 @@ public class LegendUtils {
             // this is a label WITH line-breaks...we need to figure out it's height *and*
             // width, and then adjust the legend size accordingly
             Rectangle2D bounds = new Rectangle2D.Double(0, 0, 0, 0);
-            ArrayList<Integer> lineHeight = new ArrayList<Integer>();
+            ArrayList<Integer> lineHeight = new ArrayList<>();
             // four backslashes... "\\" -> '\', so "\\\\n" -> '\' + '\' + 'n'
             final String realLabel = label.replaceAll("\\\\n", "\n");
             StringTokenizer st = new StringTokenizer(realLabel, "\n\r\f");

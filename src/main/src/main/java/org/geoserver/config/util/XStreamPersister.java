@@ -257,9 +257,9 @@ public class XStreamPersister {
     boolean referenceByName = false;
 
     /** The type map used in {@link BreifMapConverter} to handle complex objects */
-    Map<String, Class<?>> forwardBreifMap = new HashMap<String, Class<?>>();
+    Map<String, Class<?>> forwardBreifMap = new HashMap<>();
 
-    Map<Class<?>, String> backwardBreifMap = new HashMap<Class<?>, String>();
+    Map<Class<?>, String> backwardBreifMap = new HashMap<>();
 
     private Level forceLevel = LOGGER.getLevel() == null ? Level.INFO : LOGGER.getLevel();
 
@@ -2041,7 +2041,7 @@ public class XStreamPersister {
                 String serialized = metadata.get("authorityURLs", String.class);
                 List<AuthorityURLInfo> authorities;
                 if (serialized == null) {
-                    authorities = new ArrayList<AuthorityURLInfo>(1);
+                    authorities = new ArrayList<>(1);
                 } else {
                     authorities = AuthorityURLInfoInfoListConverter.fromString(serialized);
                 }
@@ -2051,7 +2051,7 @@ public class XStreamPersister {
                 String serialized = metadata.get("identifiers", String.class);
                 List<LayerIdentifierInfo> identifiers;
                 if (serialized == null) {
-                    identifiers = new ArrayList<LayerIdentifierInfo>(1);
+                    identifiers = new ArrayList<>(1);
                 } else {
                     identifiers = LayerIdentifierInfoListConverter.fromString(serialized);
                 }
@@ -2116,7 +2116,7 @@ public class XStreamPersister {
                 String serialized = metadata.get("authorityURLs", String.class);
                 List<AuthorityURLInfo> authorities;
                 if (serialized == null) {
-                    authorities = new ArrayList<AuthorityURLInfo>(1);
+                    authorities = new ArrayList<>(1);
                 } else {
                     authorities = AuthorityURLInfoInfoListConverter.fromString(serialized);
                 }
@@ -2126,7 +2126,7 @@ public class XStreamPersister {
                 String serialized = metadata.get("identifiers", String.class);
                 List<LayerIdentifierInfo> identifiers;
                 if (serialized == null) {
-                    identifiers = new ArrayList<LayerIdentifierInfo>(1);
+                    identifiers = new ArrayList<>(1);
                 } else {
                     identifiers = LayerIdentifierInfoListConverter.fromString(serialized);
                 }
@@ -2235,11 +2235,11 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = null;
             String sql = null;
-            List<String> primaryKeys = new ArrayList<String>();
-            List<VirtualTableParameter> params = new ArrayList<VirtualTableParameter>();
-            List<String> geomNames = new ArrayList<String>();
+            List<String> primaryKeys = new ArrayList<>();
+            List<VirtualTableParameter> params = new ArrayList<>();
+            List<String> geomNames = new ArrayList<>();
             List<Class<? extends Geometry>> types = new ArrayList<>();
-            List<Integer> srids = new ArrayList<Integer>();
+            List<Integer> srids = new ArrayList<>();
 
             Boolean escapeSql = false;
             while (reader.hasMoreChildren()) {
@@ -2433,7 +2433,7 @@ public class XStreamPersister {
                 obj.setContact(new ContactInfoImpl());
             }
             if (obj.getClientProperties() == null) {
-                obj.setClientProperties(new HashMap<Object, Object>());
+                obj.setClientProperties(new HashMap<>());
             }
             return obj;
         }
@@ -2544,11 +2544,11 @@ public class XStreamPersister {
             // setting the minimal defaults and clean object with no NULL values
             if (obj.getPreferredFormat() == null) {
                 obj.setPreferredFormat(WMSLayerInfoImpl.DEFAULT_FORMAT);
-                obj.setSelectedRemoteFormats(new ArrayList<String>());
+                obj.setSelectedRemoteFormats(new ArrayList<>());
             }
             if (obj.getForcedRemoteStyle() == null) {
                 obj.setForcedRemoteStyle(WMSLayerInfoImpl.DEFAULT_ON_REMOTE.getName());
-                obj.setSelectedRemoteStyles(new ArrayList<String>());
+                obj.setSelectedRemoteStyles(new ArrayList<>());
             }
             return obj;
         }

@@ -626,7 +626,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     configuredNoDataValues != null && configuredNoDataValues.length > 0;
             // custom categories
             int numCategories = 0;
-            List<Category> customCategories = new ArrayList<Category>(numCategories);
+            List<Category> customCategories = new ArrayList<>(numCategories);
             if (categories != null && (numCategories = categories.size()) > 0) {
                 Category wrapped = null;
                 for (Category category : categories) {

@@ -67,7 +67,7 @@ public class AuthFilterChainPalette extends Palette<String> {
 
         @Override
         public List<String> getObject() {
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             try {
                 result.addAll(
                         chain.listFilterCandidates(

@@ -308,7 +308,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      */
     protected Map<String, SQLException> checkSQLStatements(Properties props) throws IOException {
 
-        Map<String, SQLException> reportMap = new HashMap<String, SQLException>();
+        Map<String, SQLException> reportMap = new HashMap<>();
         Connection con = null;
         try {
             con = getConnection();

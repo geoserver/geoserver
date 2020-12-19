@@ -125,8 +125,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected CatalogInfoLookup<StoreInfo> stores = new CatalogInfoLookup<>(STORE_NAME_MAPPER);
 
     /** The default store keyed by workspace id */
-    protected Map<String, DataStoreInfo> defaultStores =
-            new ConcurrentHashMap<String, DataStoreInfo>();
+    protected Map<String, DataStoreInfo> defaultStores = new ConcurrentHashMap<>();
 
     /** resources */
     protected CatalogInfoLookup<ResourceInfo> resources =
@@ -150,7 +149,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected LayerInfoLookup layers = new LayerInfoLookup();
 
     /** maps */
-    protected List<MapInfo> maps = new CopyOnWriteArrayList<MapInfo>();
+    protected List<MapInfo> maps = new CopyOnWriteArrayList<>();
 
     /** layer groups */
     protected CatalogInfoLookup<LayerGroupInfo> layerGroups =
@@ -949,7 +948,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         // maps
         if (maps == null) {
-            maps = new ArrayList<MapInfo>();
+            maps = new ArrayList<>();
         }
         for (MapInfo m : maps) {
             resolve(m);
@@ -1083,7 +1082,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         Iterator<T> iterator = iterable.iterator();
 
-        return new CloseableIteratorAdapter<T>(iterator);
+        return new CloseableIteratorAdapter<>(iterator);
     }
 
     @SuppressWarnings("unchecked")

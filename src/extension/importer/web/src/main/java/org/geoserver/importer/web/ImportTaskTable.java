@@ -428,7 +428,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             LayerInfo layer = model.getObject().getLayer();
             PreviewLayer preview = new PreviewLayer(layer);
 
-            List<PreviewLink> links = new ArrayList<PreviewLink>();
+            List<PreviewLink> links = new ArrayList<>();
             links.add(
                     new PreviewLink(
                             "layerPreview",
@@ -437,7 +437,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             links.add(new PreviewLink("googleearth", "../wms/kml?layers=" + layer.getName()));
 
             add(
-                    new DropDownChoice<PreviewLink>(
+                    new DropDownChoice<>(
                                     "links",
                                     new Model<>(links.get(0)),
                                     links,

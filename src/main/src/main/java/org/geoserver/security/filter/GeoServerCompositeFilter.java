@@ -76,7 +76,7 @@ public class GeoServerCompositeFilter extends GeoServerSecurityFilter {
         }
     }
 
-    protected List<Filter> nestedFilters = new ArrayList<Filter>();
+    protected List<Filter> nestedFilters = new ArrayList<>();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

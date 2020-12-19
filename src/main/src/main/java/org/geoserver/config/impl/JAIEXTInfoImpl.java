@@ -15,12 +15,12 @@ import org.geotools.image.ImageWorker;
 public class JAIEXTInfoImpl implements JAIEXTInfo {
 
     /** Available JAI operations */
-    public static final Set<String> JAI_OPS = new TreeSet<String>();
+    public static final Set<String> JAI_OPS = new TreeSet<>();
 
     private Set<String> jaiOperations = JAI_OPS;
 
     /** Available JAIEXT operations */
-    public static final TreeSet<String> JAIEXT_OPS = new TreeSet<String>();
+    public static final TreeSet<String> JAIEXT_OPS = new TreeSet<>();
 
     private Set<String> jaiExtOperations = JAIEXT_OPS;
 
@@ -51,7 +51,7 @@ public class JAIEXTInfoImpl implements JAIEXTInfo {
 
     @Override
     public void setJAIOperations(Set<String> operations) {
-        this.jaiOperations = new TreeSet<String>(operations);
+        this.jaiOperations = new TreeSet<>(operations);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class JAIEXTInfoImpl implements JAIEXTInfo {
 
     @Override
     public void setJAIEXTOperations(Set<String> operations) {
-        this.jaiExtOperations = new TreeSet<String>(operations);
+        this.jaiExtOperations = new TreeSet<>(operations);
     }
 
     private static void populateOperations(Set<String> jaiExtOp) {

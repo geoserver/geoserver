@@ -296,8 +296,8 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
         @Override
         protected List<GeoServerRole> load() {
-            List<GeoServerRole> tmp = new ArrayList<GeoServerRole>();
-            List<GeoServerRole> result = new ArrayList<GeoServerRole>();
+            List<GeoServerRole> tmp = new ArrayList<>();
+            List<GeoServerRole> result = new ArrayList<>();
             try {
                 GeoServerUserGroupService ugService =
                         getSecurityManager().loadUserGroupService(ugServiceName);

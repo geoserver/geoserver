@@ -35,7 +35,7 @@ public class Ogr2OgrPPIOFactory implements PPIOFactory {
      */
     @Override
     public List<ProcessParameterIO> getProcessParameterIO() {
-        List<ProcessParameterIO> ogrParams = new ArrayList<ProcessParameterIO>();
+        List<ProcessParameterIO> ogrParams = new ArrayList<>();
         for (Format of : this.ogr2OgrOutputFormat.getFormats()) {
             ProcessParameterIO ppio = null;
             GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();

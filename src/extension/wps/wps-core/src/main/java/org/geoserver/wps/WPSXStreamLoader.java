@@ -138,17 +138,17 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         } else {
             for (ProcessGroupInfo pg : service.getProcessGroups()) {
                 if (pg.getRoles() == null) {
-                    pg.setRoles(new ArrayList<String>());
+                    pg.setRoles(new ArrayList<>());
                 }
                 if (pg.getMetadata() == null) {
                     ((ProcessGroupInfoImpl) pg).setMetadata(new MetadataMap());
                 }
                 if (pg.getFilteredProcesses() == null) {
-                    ((ProcessGroupInfoImpl) pg).setFilteredProcesses(new ArrayList<ProcessInfo>());
+                    ((ProcessGroupInfoImpl) pg).setFilteredProcesses(new ArrayList<>());
                 } else {
                     for (ProcessInfo pi : pg.getFilteredProcesses()) {
                         if (pi.getRoles() == null) {
-                            ((ProcessInfoImpl) pi).setRoles(new ArrayList<String>());
+                            ((ProcessInfoImpl) pi).setRoles(new ArrayList<>());
                         }
                         if (pi.getValidators() == null) {
                             Multimap<String, WPSInputValidator> validators =
@@ -220,7 +220,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                         (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
 
                 if (converted.getFilteredProcesses() != null) {
-                    List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
+                    List<ProcessInfo> newFilteredProcesses = new ArrayList<>();
                     for (Object fp : converted.getFilteredProcesses()) {
                         if (fp instanceof NameImpl) {
                             NameImpl ni = (NameImpl) fp;

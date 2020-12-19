@@ -64,9 +64,9 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         private String currentValue;
         private String roleName;
         private boolean inSecRoleRef, inAuthConstraint, inSecRole;
-        private Map<String, String> inSecRoleRefRoles = new HashMap<String, String>();
-        private List<String> inAuthConstraintRoles = new ArrayList<String>();
-        private List<String> inSecRoleRoles = new ArrayList<String>();
+        private Map<String, String> inSecRoleRefRoles = new HashMap<>();
+        private List<String> inAuthConstraintRoles = new ArrayList<>();
+        private List<String> inSecRoleRoles = new ArrayList<>();
 
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
@@ -156,13 +156,12 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     protected HashMap<String, GeoServerRole> roleMap;
     protected SortedSet<GeoServerRole> roleSet;
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected GeoServerJ2eeRoleService() throws IOException {
-        emptySet = Collections.unmodifiableSortedSet(new TreeSet<GeoServerRole>());
-        emptyStringSet = Collections.unmodifiableSortedSet(new TreeSet<String>());
-        parentMappings = new HashMap<String, String>();
+        emptySet = Collections.unmodifiableSortedSet(new TreeSet<>());
+        emptyStringSet = Collections.unmodifiableSortedSet(new TreeSet<>());
+        parentMappings = new HashMap<>();
         load();
     }
 
@@ -239,13 +238,13 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         LOGGER.info("Extracting roles from: " + webXML.getCanonicalPath());
 
         Set<String> roles = parseWebXML(webXML);
-        roleMap = new HashMap<String, GeoServerRole>();
+        roleMap = new HashMap<>();
 
         for (String role : roles) {
             roleMap.put(role, createRoleObject(role));
             parentMappings.put(role, null);
         }
-        roleSet = new TreeSet<GeoServerRole>();
+        roleSet = new TreeSet<>();
         roleSet.addAll(roleMap.values());
 
         LOGGER.info("Reloading roles successful for service named " + getName());
@@ -255,7 +254,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     protected Set<String> parseWebXML(File file) throws IOException {
 
         WebXMLContentHandler handler = new WebXMLContentHandler();
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
         try {
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();

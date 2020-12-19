@@ -99,8 +99,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
                                             "parameterMappingType",
                                             CascadedWFSStoredQueryAbstractPage.this);
 
-                            ArrayList<ParameterMappingType> choices =
-                                    new ArrayList<ParameterMappingType>();
+                            ArrayList<ParameterMappingType> choices = new ArrayList<>();
                             for (ParameterMappingType pmt : ParameterMappingType.values()) {
                                 choices.add(pmt);
                             }
@@ -382,15 +381,15 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
             String storedQueryId, ParameterExpressionType pet, StoredQueryParameterAttribute attr);
 
     public static Property<StoredQueryParameterAttribute> ATTR_NAME =
-            new BeanProperty<StoredQueryParameterAttribute>("parameterName", "parameterName");
+            new BeanProperty<>("parameterName", "parameterName");
     public static Property<StoredQueryParameterAttribute> ATTR_TITLE =
-            new BeanProperty<StoredQueryParameterAttribute>("title", "title");
+            new BeanProperty<>("title", "title");
     public static Property<StoredQueryParameterAttribute> ATTR_TYPE =
-            new BeanProperty<StoredQueryParameterAttribute>("type", "type");
+            new BeanProperty<>("type", "type");
     public static Property<StoredQueryParameterAttribute> ATTR_MAPTYPE =
-            new BeanProperty<StoredQueryParameterAttribute>("mappingType", "mappingType");
+            new BeanProperty<>("mappingType", "mappingType");
     public static Property<StoredQueryParameterAttribute> ATTR_VALUE =
-            new BeanProperty<StoredQueryParameterAttribute>("value", "value");
+            new BeanProperty<>("value", "value");
 
     public enum ParameterMappingType {
         NONE,
@@ -424,8 +423,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         /** serialVersionUID */
         private static final long serialVersionUID = 5295091510256421604L;
 
-        private List<StoredQueryParameterAttribute> items =
-                new ArrayList<StoredQueryParameterAttribute>();
+        private List<StoredQueryParameterAttribute> items = new ArrayList<>();
 
         public void refreshItems(String storedQueryId) {
             items.clear();

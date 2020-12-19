@@ -273,7 +273,7 @@ public class ComplexInputPanel extends Panel {
     List<String> getVectorLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof FeatureTypeInfo) {
                 result.add(li.getResource().prefixedName());
@@ -285,7 +285,7 @@ public class ComplexInputPanel extends Panel {
     List<String> getRasterLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof CoverageInfo) {
                 result.add(li.getResource().prefixedName());

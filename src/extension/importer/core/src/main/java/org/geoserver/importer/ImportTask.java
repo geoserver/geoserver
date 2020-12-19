@@ -89,7 +89,7 @@ public class ImportTask implements Serializable {
     TransformChain<? extends ImportTransform> transform;
 
     /** messages logged during proessing */
-    List<LogRecord> messages = new ArrayList<LogRecord>();
+    List<LogRecord> messages = new ArrayList<>();
 
     /** various metadata */
     transient Map<Object, Object> metadata;
@@ -201,7 +201,7 @@ public class ImportTask implements Serializable {
      */
     public Map<Object, Object> getMetadata() {
         if (metadata == null) {
-            metadata = new HashMap<Object, Object>();
+            metadata = new HashMap<>();
         }
         return metadata;
     }
@@ -214,7 +214,7 @@ public class ImportTask implements Serializable {
 
     public void addMessage(Level level, String msg) {
         if (messages == null) {
-            messages = new ArrayList<LogRecord>();
+            messages = new ArrayList<>();
         }
         messages.add(new LogRecord(level, msg));
     }

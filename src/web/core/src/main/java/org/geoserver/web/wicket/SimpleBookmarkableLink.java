@@ -52,7 +52,7 @@ public class SimpleBookmarkableLink extends Panel {
             String id, Class<C> pageClass, IModel<?> labelModel, PageParameters params) {
         super(id, labelModel);
 
-        add(link = new BookmarkablePageLink<Object>("link", pageClass, params));
+        add(link = new BookmarkablePageLink<>("link", pageClass, params));
         link.add(label = new Label("label", labelModel));
     }
 

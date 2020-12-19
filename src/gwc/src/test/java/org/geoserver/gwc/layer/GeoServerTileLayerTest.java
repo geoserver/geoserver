@@ -208,7 +208,7 @@ public class GeoServerTileLayerTest {
         StyleInfo alternateStyle2 = new StyleInfoImpl(catalog);
         alternateStyle2.setName("alternateStyle-2");
         Set<StyleInfo> alternateStyles =
-                new HashSet<StyleInfo>(Arrays.asList(alternateStyle1, alternateStyle2));
+                new HashSet<>(Arrays.asList(alternateStyle1, alternateStyle2));
         LegendInfo legendInfo = new LegendInfoImpl();
         legendInfo.setWidth(150);
         legendInfo.setHeight(200);
@@ -365,7 +365,7 @@ public class GeoServerTileLayerTest {
         assertEquals(0, modifiedParams.size());
 
         for (String legalStyle : legalValues) {
-            requestParams = new HashMap<String, String>();
+            requestParams = new HashMap<>();
             requestParams.put("sTyLeS", legalStyle);
             modifiedParams = layerInfoTileLayer.getModifiableParameters(requestParams, "UTF-8");
             if (legalStyle.equals(stylesParamFilter.getDefaultValue())) {
@@ -696,7 +696,7 @@ public class GeoServerTileLayerTest {
     public void testTileExpirationList() {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
 
-        List<ExpirationRule> list = new ArrayList<ExpirationRule>();
+        List<ExpirationRule> list = new ArrayList<>();
         list.add(new ExpirationRule(0, 10));
         list.add(new ExpirationRule(10, 20));
 

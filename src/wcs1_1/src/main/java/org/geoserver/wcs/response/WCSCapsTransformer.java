@@ -172,7 +172,7 @@ public class WCSCapsTransformer extends TransformerBase {
                 allSections = sections.contains("All");
             }
             final Set<String> knownSections =
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     "ServiceIdentification",
                                     "ServiceProvider",
@@ -387,7 +387,7 @@ public class WCSCapsTransformer extends TransformerBase {
             start("wcs:Contents");
 
             List<CoverageInfo> coverages =
-                    new ArrayList<CoverageInfo>(wcs.getGeoServer().getCatalog().getCoverages());
+                    new ArrayList<>(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages
             for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext(); ) {

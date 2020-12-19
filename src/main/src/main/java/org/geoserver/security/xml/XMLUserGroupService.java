@@ -197,7 +197,7 @@ public class XMLUserGroupService extends AbstractUserGroupService {
                     user.getProperties().put(key, userProps.get(key));
                     SortedSet<GeoServerUser> propUsers = helper.propertyMap.get(key);
                     if (propUsers == null) {
-                        propUsers = new TreeSet<GeoServerUser>();
+                        propUsers = new TreeSet<>();
                         helper.propertyMap.put((String) key, propUsers);
                     }
                     propUsers.add(user);
@@ -227,14 +227,14 @@ public class XMLUserGroupService extends AbstractUserGroupService {
 
                     SortedSet<GeoServerUser> members = helper.group_userMap.get(group);
                     if (members == null) {
-                        members = new TreeSet<GeoServerUser>();
+                        members = new TreeSet<>();
                         helper.group_userMap.put(group, members);
                     }
                     members.add(member);
 
                     SortedSet<GeoServerUserGroup> userGroups = helper.user_groupMap.get(member);
                     if (userGroups == null) {
-                        userGroups = new TreeSet<GeoServerUserGroup>();
+                        userGroups = new TreeSet<>();
                         helper.user_groupMap.put(member, userGroups);
                     }
                     userGroups.add(group);

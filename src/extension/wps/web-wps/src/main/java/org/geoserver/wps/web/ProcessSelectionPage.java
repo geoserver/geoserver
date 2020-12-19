@@ -49,7 +49,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
     private String title;
     private GeoServerTablePanel<FilteredProcess> processSelector;
     private ProcessGroupInfo pfi;
-    private List<String> availableRoles = new ArrayList<String>();
+    private List<String> availableRoles = new ArrayList<>();
 
     public ProcessSelectionPage(
             final WPSAccessRulePage wpsAccessRulePage, final ProcessGroupInfo pfi) {
@@ -198,7 +198,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
 
     protected Collection<? extends Name> getFilteredProcesses() {
         ProcessFactory pf = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false);
-        List<Name> disabled = new ArrayList<Name>(pf.getNames());
+        List<Name> disabled = new ArrayList<>(pf.getNames());
         for (FilteredProcess fp : processSelector.getSelection()) {
             disabled.remove(fp.getName());
         }

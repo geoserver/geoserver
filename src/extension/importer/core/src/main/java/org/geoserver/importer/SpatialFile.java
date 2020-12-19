@@ -43,7 +43,7 @@ public class SpatialFile extends FileData {
     File styleFile;
 
     /** supplementary files, like indexes, etc... */
-    List<File> suppFiles = new ArrayList<File>();
+    List<File> suppFiles = new ArrayList<>();
 
     /**
      * Create from file system
@@ -73,7 +73,7 @@ public class SpatialFile extends FileData {
     }
 
     public List<File> allFiles() {
-        ArrayList<File> all = new ArrayList<File>();
+        ArrayList<File> all = new ArrayList<>();
         all.add(file);
         if (prjFile != null) {
             all.add(prjFile);
@@ -228,7 +228,7 @@ public class SpatialFile extends FileData {
     }
 
     protected Object readResolve() {
-        suppFiles = suppFiles == null ? new ArrayList<File>() : suppFiles;
+        suppFiles = suppFiles == null ? new ArrayList<>() : suppFiles;
         return this;
     }
 

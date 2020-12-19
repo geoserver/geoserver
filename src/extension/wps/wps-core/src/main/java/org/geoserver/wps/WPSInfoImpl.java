@@ -51,7 +51,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     Integer maxAsynchronousProcesses = DEFAULT_MAX_ASYNCH;
 
     /** List of process groups/factories. */
-    List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
+    List<ProcessGroupInfo> processGroups = new ArrayList<>();
 
     /** Where to store the WPS artifacts (inputs, outputs, and so on) */
     String storageDirectory;

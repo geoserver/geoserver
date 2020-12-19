@@ -109,9 +109,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             gridsetInfo = getInfo(null);
         }
 
-        IModel<GridSetInfo> model = new Model<GridSetInfo>(gridsetInfo);
+        IModel<GridSetInfo> model = new Model<>(gridsetInfo);
 
-        form = new Form<GridSetInfo>("gridSetForm", model);
+        form = new Form<>("gridSetForm", model);
         feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
         form.add(feedback);
@@ -119,8 +119,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(name = name(model));
         form.add(
                 description =
-                        new TextArea<String>(
-                                "description", new PropertyModel<String>(model, "description")));
+                        new TextArea<>("description", new PropertyModel<>(model, "description")));
         form.add(crs = crs(model));
         form.add(bounds = bounds(model));
         form.add(computeBoundsLink = computeBoundsLink(form));
@@ -271,7 +270,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         PropertyModel<ReferencedEnvelope> boundsModel;
-        boundsModel = new PropertyModel<ReferencedEnvelope>(model, "bounds");
+        boundsModel = new PropertyModel<>(model, "bounds");
 
         EnvelopePanel panel = new UpdatingEnvelopePanel("bounds", boundsModel);
         panel.setRequired(true);
@@ -284,10 +283,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         TextParamPanel<Integer> panel =
                 new TextParamPanel<>(
                         "tileHeight",
-                        new PropertyModel<Integer>(model, "tileHeight"),
+                        new PropertyModel<>(model, "tileHeight"),
                         new StringResourceModel("AbstractGridSetPage.tileHeight"),
                         true,
-                        new RangeValidator<Integer>(16, 2048));
+                        new RangeValidator<>(16, 2048));
         return panel;
     }
 
@@ -295,10 +294,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         TextParamPanel<Integer> panel =
                 new TextParamPanel<>(
                         "tileWidth",
-                        new PropertyModel<Integer>(model, "tileWidth"),
+                        new PropertyModel<>(model, "tileWidth"),
                         new StringResourceModel("AbstractGridSetPage.tileWidth"),
                         true,
-                        new RangeValidator<Integer>(16, 2048));
+                        new RangeValidator<>(16, 2048));
         return panel;
     }
 
@@ -350,7 +349,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         private IModel<GridSetInfo> infoModel;
 
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
-            super(id, new PropertyModel<CoordinateReferenceSystem>(model, "crs"));
+            super(id, new PropertyModel<>(model, "crs"));
             this.infoModel = model;
             units = new Label("units", new Model<String>());
             metersPerUnit = new Label("metersPerUnit", new Model<String>());
@@ -436,7 +435,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         TextParamPanel<String> namePanel =
                 new TextParamPanel<>(
                         "name",
-                        new PropertyModel<String>(model, "name"),
+                        new PropertyModel<>(model, "name"),
                         new StringResourceModel("AbstractGridSetPage.name"),
                         true,
                         new UniqueNameValidator(model.getObject().getName()));

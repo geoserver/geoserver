@@ -21,7 +21,6 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.util.ErrorHandler;
 import org.geoserver.util.ReaderUtils;
 import org.geoserver.wfs.CapabilitiesTransformer;
-import org.geoserver.wfs.WFSExtendedCapabilitiesProvider;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.junit.Test;
@@ -42,10 +41,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
         GetCapabilitiesType request = request();
         CapabilitiesTransformer tx =
                 new CapabilitiesTransformer.WFS1_1(
-                        getWFS(),
-                        request.getBaseUrl(),
-                        getCatalog(),
-                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+                        getWFS(), request.getBaseUrl(), getCatalog(), Collections.emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 
@@ -71,10 +67,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
         GetCapabilitiesType request = request();
         CapabilitiesTransformer tx =
                 new CapabilitiesTransformer.WFS1_1(
-                        getWFS(),
-                        request.getBaseUrl(),
-                        getCatalog(),
-                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+                        getWFS(), request.getBaseUrl(), getCatalog(), Collections.emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 
@@ -109,10 +102,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
         GetCapabilitiesType request = request();
         CapabilitiesTransformer tx =
                 new CapabilitiesTransformer.WFS1_1(
-                        getWFS(),
-                        request.getBaseUrl(),
-                        getCatalog(),
-                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+                        getWFS(), request.getBaseUrl(), getCatalog(), Collections.emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 

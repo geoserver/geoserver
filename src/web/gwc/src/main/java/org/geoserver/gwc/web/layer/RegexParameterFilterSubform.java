@@ -52,14 +52,12 @@ public class RegexParameterFilterSubform
 
         final Component defaultValue;
 
-        defaultValue =
-                new TextField<String>(
-                        "defaultValue", new PropertyModel<String>(model, "defaultValue"));
+        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final TextField<String> regex;
 
-        regex = new TextField<String>("regex", new PropertyModel<String>(model, "regex"));
+        regex = new TextField<>("regex", new PropertyModel<>(model, "regex"));
 
         regex.add(REGEXP_VALIDATOR);
 

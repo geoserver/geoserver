@@ -19,10 +19,9 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.util.ImageUtilities;
 
 public class RasterCleaner extends AbstractDispatcherCallback {
-    static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<List<RenderedImage>>();
+    static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<>();
 
-    static final ThreadLocal<List<GridCoverage2D>> coverages =
-            new ThreadLocal<List<GridCoverage2D>>();
+    static final ThreadLocal<List<GridCoverage2D>> coverages = new ThreadLocal<>();
 
     /** Schedules a RenderedImage for cleanup at the end of the request */
     public static void addImage(RenderedImage image) {
@@ -32,7 +31,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
         List<RenderedImage> list = images.get();
         if (list == null) {
-            list = new ArrayList<RenderedImage>();
+            list = new ArrayList<>();
             images.set(list);
         }
         list.add(image);
@@ -46,7 +45,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
         List<GridCoverage2D> list = coverages.get();
         if (list == null) {
-            list = new ArrayList<GridCoverage2D>();
+            list = new ArrayList<>();
             coverages.set(list);
         }
         list.add(coverage);

@@ -63,7 +63,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     FeatureType featureType;
 
-    List<RasterSymbolizer> symbolizers = new ArrayList<RasterSymbolizer>();
+    List<RasterSymbolizer> symbolizers = new ArrayList<>();
 
     boolean otherSymbolizers = false;
 

@@ -22,7 +22,7 @@ public class WPSObjectEncodingResponse extends XmlObjectEncodingResponse {
 
     @Override
     protected Map<String, String> getSchemaLocations() {
-        Map<String, String> locations = new HashMap<String, String>();
+        Map<String, String> locations = new HashMap<>();
         locations.put(
                 "http://www.opengis.net/wps/1.0.0",
                 "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd");

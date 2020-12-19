@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
 public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKeyMapper {
 
     /** Thread local holding the current response */
-    public static final ThreadLocal<String> RECORDED_RESPONSE = new ThreadLocal<String>();
+    public static final ThreadLocal<String> RECORDED_RESPONSE = new ThreadLocal<>();
 
     public static final String AUTH_KEY_WEBSERVICE_PLACEHOLDER_REQUIRED =
             "AUTH_KEY_WEBSERVICE_PLACEHOLDER_REQUIRED";

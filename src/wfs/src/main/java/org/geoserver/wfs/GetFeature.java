@@ -378,7 +378,7 @@ public class GetFeature {
 
         List<FeatureCollection<? extends FeatureType, ? extends Feature>> results =
                 new ArrayList<>();
-        final List<CountExecutor> totalCountExecutors = new ArrayList<CountExecutor>();
+        final List<CountExecutor> totalCountExecutors = new ArrayList<>();
         try {
             for (int i = 0; (i < queries.size()) && (count < maxFeatures); i++) {
 
@@ -504,7 +504,7 @@ public class GetFeature {
                         List<PropertyName> metaAllPropNames = null;
                         if (!propertyNames.isEmpty()) {
 
-                            metaPropNames = new ArrayList<PropertyName>();
+                            metaPropNames = new ArrayList<>();
 
                             for (Iterator iter = propertyNames.iterator(); iter.hasNext(); ) {
                                 PropertyName propName =
@@ -1731,7 +1731,7 @@ public class GetFeature {
         List<AttributeTypeInfo> atts = meta.attributes();
         Iterator ii = atts.iterator();
 
-        List<PropertyName> properties = new ArrayList<PropertyName>(oldProperties);
+        List<PropertyName> properties = new ArrayList<>(oldProperties);
 
         while (ii.hasNext()) {
             AttributeTypeInfo ati = (AttributeTypeInfo) ii.next();

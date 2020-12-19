@@ -24,7 +24,7 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
     NumberRange<? extends Number> range;
 
-    List<Double> nullValues = new ArrayList<Double>();
+    List<Double> nullValues = new ArrayList<>();
 
     String unit;
 

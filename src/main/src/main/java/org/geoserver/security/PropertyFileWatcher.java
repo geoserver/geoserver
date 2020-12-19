@@ -56,7 +56,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
 
         private static final long serialVersionUID = 1L;
 
-        private Map<Object, Object> linkMap = new LinkedHashMap<Object, Object>();
+        private Map<Object, Object> linkMap = new LinkedHashMap<>();
 
         public LinkedProperties() {}
 

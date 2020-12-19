@@ -48,7 +48,7 @@ public class DownloadLinkHandler {
     static final Logger LOGGER = Logging.getLogger(DownloadLinkHandler.class);
 
     static {
-        STANDARD_DOMAINS = new HashSet<String>();
+        STANDARD_DOMAINS = new HashSet<>();
         STANDARD_DOMAINS.add(Utils.TIME_DOMAIN);
         STANDARD_DOMAINS.add(Utils.ELEVATION_DOMAIN);
         STANDARD_DOMAINS.add(Utils.BBOX);

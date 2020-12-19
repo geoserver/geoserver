@@ -138,7 +138,7 @@ public class RequestData implements Serializable {
     private String subOperation;
 
     /** The requested resources */
-    private List<String> resources = new ArrayList<String>(1);
+    private List<String> resources = new ArrayList<>(1);
 
     /** The HTTP response length, in bytes */
     private long responseLength;

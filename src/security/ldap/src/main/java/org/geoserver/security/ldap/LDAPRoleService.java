@@ -44,13 +44,12 @@ import org.springframework.util.Assert;
 public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServerRoleService {
 
     private static final SortedSet<String> emptyStringSet =
-            Collections.unmodifiableSortedSet(new TreeSet<String>());
+            Collections.unmodifiableSortedSet(new TreeSet<>());
 
     private static final Map<String, String> emptyMap = Collections.emptyMap();
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security.ldap");
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     private String rolePrefix = "ROLE_";
     private boolean convertToUpperCase = true;
@@ -105,7 +104,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     @Override
     public SortedSet<String> getUserNamesForRole(final GeoServerRole role) throws IOException {
-        final SortedSet<String> users = new TreeSet<String>();
+        final SortedSet<String> users = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -135,7 +134,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     private SortedSet<String> getUserNamesForRoleNested(
             GeoServerRole role, final Set<GeoServerRole> navigatedRoles, int depth)
             throws IOException {
-        final SortedSet<String> users = new TreeSet<String>();
+        final SortedSet<String> users = new TreeSet<>();
         if (isOutOfDepthBounds(depth)) return users;
 
         authenticateIfNeeded(
@@ -165,7 +164,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     @Override
     public SortedSet<GeoServerRole> getRolesForUser(final String username) throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
         final String userDn = lookupDn(username);
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -178,7 +177,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                 });
 
         if (useNestedGroups) {
-            final SortedSet<GeoServerRole> parentRoles = new TreeSet<GeoServerRole>(roles);
+            final SortedSet<GeoServerRole> parentRoles = new TreeSet<>(roles);
             for (GeoServerRole erole : parentRoles) {
                 searchNestedParentRoles(erole, roles, 1);
             }
@@ -200,7 +199,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     /** Assume role name = group name */
     @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
-        SortedSet<GeoServerRole> set = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> set = new TreeSet<>();
         GeoServerRole role = getRoleByName(groupname);
         if (role != null) {
             set.add(role);
@@ -211,7 +210,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
         try {
             authenticateIfNeeded(
                     new AuthenticatedLdapEntryContextCallback() {
@@ -324,7 +323,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
             role = role.substring(5);
         }
         final String roleName = role;
-        final SortedSet<String> roles = new TreeSet<String>();
+        final SortedSet<String> roles = new TreeSet<>();
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
 
@@ -472,7 +471,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     private String getRoleDn(GeoServerRole role) {
         String roleName = normalizeGroupName(role.getAuthority());
-        final MutableObject<String> roleDnReference = new MutableObject<String>(null);
+        final MutableObject<String> roleDnReference = new MutableObject<>(null);
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
                     @Override

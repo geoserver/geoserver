@@ -84,7 +84,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
         }
         if (namespaces != null) {
             List<QName> typeNames = req.getTypeNames();
-            List<QName> newList = new ArrayList<QName>(typeNames.size());
+            List<QName> newList = new ArrayList<>(typeNames.size());
             for (QName name : typeNames) {
                 String localPart = name.getLocalPart();
                 String prefix = name.getPrefix();

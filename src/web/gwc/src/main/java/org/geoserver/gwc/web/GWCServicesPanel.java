@@ -20,15 +20,13 @@ public class GWCServicesPanel extends Panel {
         super(id, gwcConfigModel);
 
         final IModel<Boolean> wmsIntegrationEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "directWMSIntegrationEnabled");
+                new PropertyModel<>(gwcConfigModel, "directWMSIntegrationEnabled");
         final IModel<Boolean> requiredTiledParamEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "requireTiledParameter");
-        final IModel<Boolean> wmsCEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "WMSCEnabled");
-        final IModel<Boolean> tmsEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "TMSEnabled");
+                new PropertyModel<>(gwcConfigModel, "requireTiledParameter");
+        final IModel<Boolean> wmsCEnabledModel = new PropertyModel<>(gwcConfigModel, "WMSCEnabled");
+        final IModel<Boolean> tmsEnabledModel = new PropertyModel<>(gwcConfigModel, "TMSEnabled");
         final IModel<Boolean> securityEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "securityEnabled");
+                new PropertyModel<>(gwcConfigModel, "securityEnabled");
 
         add(
                 checkbox(

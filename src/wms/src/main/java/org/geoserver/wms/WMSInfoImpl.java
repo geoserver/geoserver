@@ -19,7 +19,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     public static final int DEFAULT_REMOTE_STYLE_MAX_REQUEST_TIME = 60000;
     public static final int DEFAULT_REMOTE_STYLE_TIMEOUT = 30000;
 
-    List<String> srs = new ArrayList<String>();
+    List<String> srs = new ArrayList<>();
 
     Boolean bboxForEachCRS;
 
@@ -28,10 +28,10 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     WMSInterpolation interpolation = WMSInterpolation.Nearest;
 
     boolean getFeatureInfoMimeTypeCheckingEnabled;
-    Set<String> getFeatureInfoMimeTypes = new HashSet<String>();
+    Set<String> getFeatureInfoMimeTypes = new HashSet<>();
 
     boolean getMapMimeTypeCheckingEnabled;
-    Set<String> getMapMimeTypes = new HashSet<String>();
+    Set<String> getMapMimeTypes = new HashSet<>();
 
     boolean dynamicStylingDisabled;
 
@@ -44,7 +44,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
      *
      * @since 2.1.3
      */
-    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(2);
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -52,7 +52,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
      *
      * @since 2.1.3
      */
-    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<>(2);
 
     int maxBuffer;
 
@@ -74,8 +74,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private Integer remoteStyleTimeout;
 
     public WMSInfoImpl() {
-        authorityURLs = new ArrayList<AuthorityURLInfo>(2);
-        identifiers = new ArrayList<LayerIdentifierInfo>(2);
+        authorityURLs = new ArrayList<>(2);
+        identifiers = new ArrayList<>(2);
     }
 
     public int getMaxRequestMemory() {

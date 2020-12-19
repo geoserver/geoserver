@@ -69,7 +69,7 @@ public class LegacyCoverageInfoReader {
     }
 
     public Map<String, String> metadataLink() {
-        HashMap<String, String> ml = new HashMap<String, String>();
+        HashMap<String, String> ml = new HashMap<>();
         ml.put("about", ReaderUtils.getChildAttribute(coverage, "metadataLink", "about"));
         ml.put(
                 "metadataType",
@@ -97,7 +97,7 @@ public class LegacyCoverageInfoReader {
     public List<String> styles() throws Exception {
         Element styleRoot = ReaderUtils.getChildElement(coverage, "styles");
         if (styleRoot != null) {
-            List<String> styleNames = new ArrayList<String>();
+            List<String> styleNames = new ArrayList<>();
             Element[] styles = ReaderUtils.getChildElements(styleRoot, "style");
             for (Element style : styles) {
                 styleNames.add(style.getTextContent().trim());
@@ -110,7 +110,7 @@ public class LegacyCoverageInfoReader {
 
     public Map<String, Object> envelope() throws Exception {
         Element envelopeElement = ReaderUtils.getChildElement(coverage, "envelope");
-        HashMap<String, Object> e = new HashMap<String, Object>();
+        HashMap<String, Object> e = new HashMap<>();
 
         String nativeCrsWkt = ReaderUtils.getAttribute(envelopeElement, "crs", false);
         nativeCrsWkt = nativeCrsWkt.replaceAll("'", "\"");
@@ -136,7 +136,7 @@ public class LegacyCoverageInfoReader {
             return null;
         }
 
-        HashMap<String, Object> grid = new HashMap<String, Object>();
+        HashMap<String, Object> grid = new HashMap<>();
 
         grid.put(
                 "dimension",
@@ -167,7 +167,7 @@ public class LegacyCoverageInfoReader {
 
         Element geoTransformElement = ReaderUtils.getChildElement(gridElement, "geoTransform");
         if (geoTransformElement != null) {
-            Map<String, Double> geoTransform = new HashMap<String, Double>();
+            Map<String, Double> geoTransform = new HashMap<>();
             String scaleX = ReaderUtils.getChildText(geoTransformElement, "scaleX");
             String scaleY = ReaderUtils.getChildText(geoTransformElement, "scaleY");
             String shearX = ReaderUtils.getChildText(geoTransformElement, "shearX");
@@ -250,7 +250,7 @@ public class LegacyCoverageInfoReader {
             return Collections.emptyMap();
         }
 
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         Element[] parameter = ReaderUtils.getChildElements(parameters, "parameter");
         for (int i = 0; i < parameter.length; i++) {
             String name = parameter[i].getAttribute("name");

@@ -91,8 +91,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 parameters = limitParams;
             } else if (limitParams != null) {
                 // scan the input params, add and overwrite with the limits params as needed
-                List<GeneralParameterValue> params =
-                        new ArrayList<GeneralParameterValue>(Arrays.asList(parameters));
+                List<GeneralParameterValue> params = new ArrayList<>(Arrays.asList(parameters));
                 for (GeneralParameterValue lparam : limitParams) {
                     // remove the overwritten param, if any
                     for (Iterator it = params.iterator(); it.hasNext(); ) {

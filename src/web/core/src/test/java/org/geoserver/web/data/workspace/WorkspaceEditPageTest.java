@@ -409,7 +409,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
             Set<DataAccessRule> news = new HashSet<>();
             news.add(ruleLayer);
             news.add(ruleWS);
-            ruleMan.saveRules(new HashSet<DataAccessRule>(), news);
+            ruleMan.saveRules(new HashSet<>(), news);
             assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
             tester.clickLink("form:tabs:tabs-container:tabs:1:link");
             CheckBox checkboxFalse =

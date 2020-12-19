@@ -347,7 +347,7 @@ public class TransformRepositoryTest {
     }
 
     private Set<String> getConfigurationNames(List<TransformInfo> configs) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (TransformInfo ti : configs) {
             result.add(ti.getName());
         }

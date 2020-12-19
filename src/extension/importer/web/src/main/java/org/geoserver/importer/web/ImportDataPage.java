@@ -156,7 +156,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
         // store chooser
         WorkspaceInfo ws = workspace.getObject();
-        store = new StoreModel<StoreInfo>(ws != null ? catalog.getDefaultDataStore(ws) : null);
+        store = new StoreModel<>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
                 new DropDownChoice<StoreInfo>(
                         "store",
@@ -286,7 +286,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                 });
 
         form.add(
-                new AjaxLink<Long>("cancel", new Model<Long>()) {
+                new AjaxLink<Long>("cancel", new Model<>()) {
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
                         ImporterWebUtils.disableLink(tag);

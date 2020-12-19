@@ -1113,7 +1113,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         if (url.indexOf('?') > 0) {
             url = url.substring(url.indexOf('?') + 1);
         }
-        Map<String, String> kvpMap = new HashMap<String, String>();
+        Map<String, String> kvpMap = new HashMap<>();
 
         String[] tuples = url.split("&");
         for (String tuple : tuples) {

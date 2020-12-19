@@ -40,7 +40,7 @@ public class XSLTOutputFormatUpdater extends TimerTask {
     public void run() {
         try {
             List<TransformInfo> infos = this.repository.getAllTransforms();
-            Set<String> formats = new HashSet<String>();
+            Set<String> formats = new HashSet<>();
             for (TransformInfo tx : infos) {
                 formats.add(tx.getOutputFormat());
             }

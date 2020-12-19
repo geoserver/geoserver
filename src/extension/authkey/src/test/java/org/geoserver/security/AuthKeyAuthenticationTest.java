@@ -154,7 +154,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName(authKeyUrlParam);
         config.setAuthKeyMapperName("fakeMapper");
 
-        Map<String, String> mapperParams = new HashMap<String, String>();
+        Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("param1", "value1");
         mapperParams.put("param2", "value2");
         config.setMapperParameters(mapperParams);
@@ -186,7 +186,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         System.setProperty("authkey_param1", "value1");
         System.setProperty("authkey_param2", "value2");
         try {
-            Map<String, String> mapperParams = new HashMap<String, String>();
+            Map<String, String> mapperParams = new HashMap<>();
             mapperParams.put("param1", "${authkey_param1}");
             mapperParams.put("param2", "${authkey_param2}");
             config.setMapperParameters(mapperParams);
@@ -218,7 +218,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName("authkey");
         config.setAuthKeyMapperName("fakeMapper");
 
-        Map<String, String> mapperParams = new HashMap<String, String>();
+        Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("param1", "value1");
         mapperParams.put("param2", "value2");
 

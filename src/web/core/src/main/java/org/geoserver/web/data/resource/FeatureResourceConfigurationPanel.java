@@ -70,8 +70,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         CheckBox circularArcs = new CheckBox("circularArcPresent");
         add(circularArcs);
 
-        TextField<Measure> tolerance =
-                new TextField<Measure>("linearizationTolerance", Measure.class);
+        TextField<Measure> tolerance = new TextField<>("linearizationTolerance", Measure.class);
         add(tolerance);
 
         attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
@@ -133,7 +132,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 };
         attributePanel.add(attributes);
 
-        TextArea<String> cqlFilter = new TextArea<String>("cqlFilter");
+        TextArea<String> cqlFilter = new TextArea<>("cqlFilter");
         cqlFilter.add(new CqlFilterValidator(model));
         add(cqlFilter);
 

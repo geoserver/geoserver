@@ -136,7 +136,7 @@ public class ReaderUtils {
      */
     public static Element[] getChildElements(Element root, String name, boolean mandatory)
             throws Exception {
-        final List<Element> elements = new ArrayList<Element>();
+        final List<Element> elements = new ArrayList<>();
         Node child = root.getFirstChild();
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {

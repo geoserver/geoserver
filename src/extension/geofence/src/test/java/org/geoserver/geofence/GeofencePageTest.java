@@ -96,7 +96,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         @SuppressWarnings("unchecked")
         TextField<String> servicesUrl =
                 ((TextField<String>) tester.getComponentFromLastRenderedPage("form:servicesUrl"));
-        servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
+        servicesUrl.setDefaultModel(new Model<>("fakeurl"));
 
         tester.clickLink("form:test", true);
 

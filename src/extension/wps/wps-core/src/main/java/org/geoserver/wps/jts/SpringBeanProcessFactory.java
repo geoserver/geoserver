@@ -94,8 +94,8 @@ public class SpringBeanProcessFactory
         // loads all of the beans implementing the marker interface
         String[] beanNames = applicationContext.getBeanNamesForType(markerInterface, true, true);
         // build a name to class and name to bean name maps
-        classMap = new HashMap<String, Class>();
-        beanMap = new HashMap<String, String>();
+        classMap = new HashMap<>();
+        beanMap = new HashMap<>();
         for (String beanName : beanNames) {
             Class c = applicationContext.getType(beanName);
             if (c != null) {
@@ -141,8 +141,8 @@ public class SpringBeanProcessFactory
     }
 
     public Set<Name> getNames() {
-        Set<Name> result = new LinkedHashSet<Name>();
-        List<String> names = new ArrayList<String>(classMap.keySet());
+        Set<Name> result = new LinkedHashSet<>();
+        List<String> names = new ArrayList<>(classMap.keySet());
         Collections.sort(names);
         for (String name : names) {
             result.add(new NameImpl(namespace, name));

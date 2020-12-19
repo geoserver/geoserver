@@ -161,7 +161,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 // + pkey
                 int size = schema.getAttributeCount() + 1;
                 String[] fieldNames = new String[size];
-                List<String> createParams = new ArrayList<String>();
+                List<String> createParams = new ArrayList<>();
                 int j = 0;
                 String type;
                 String field;

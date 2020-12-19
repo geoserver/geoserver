@@ -81,9 +81,9 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                                             InputLimit>>
                             getProperties() {
                         List<Property<InputLimit>> result = new ArrayList<>();
-                        result.add(new BeanProperty<InputLimit>("name", "name"));
+                        result.add(new BeanProperty<>("name", "name"));
                         result.add(new PropertyPlaceholder<>("type"));
-                        result.add(new BeanProperty<InputLimit>("editor", "validator"));
+                        result.add(new BeanProperty<>("editor", "validator"));
                         return result;
                     }
 
@@ -121,7 +121,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                                 PropertyModel<Integer> maxSizeModel =
                                         new PropertyModel<>(itemModel, "validator.maxSizeMB");
                                 TextField<Integer> text =
-                                        new TextField<Integer>("text", maxSizeModel, Integer.class);
+                                        new TextField<>("text", maxSizeModel, Integer.class);
                                 f.add(text);
                                 return f;
                             } else if (validator instanceof MultiplicityValidator) {
@@ -129,7 +129,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                                 PropertyModel<Integer> maxMultiplicityModel =
                                         new PropertyModel<>(itemModel, "validator.maxInstances");
                                 TextField<Integer> text =
-                                        new TextField<Integer>(
+                                        new TextField<>(
                                                 "text", maxMultiplicityModel, Integer.class);
                                 f.add(text);
                                 return f;

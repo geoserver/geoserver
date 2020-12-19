@@ -192,7 +192,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
     }
 
     protected String[] getAvailableOutputFormatNames(String first, Version wfsVersion) {
-        List<String> oflist = new ArrayList<String>();
+        List<String> oflist = new ArrayList<>();
         Collection featureProducers =
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
         for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
@@ -928,11 +928,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         public static final Version VERSION_11 = new Version("1.1.0");
 
         static final Set<String> VALID_LINKS_METADATATYPES =
-                new HashSet<String>(Arrays.asList("TC211", "FGDC", "19115", "13139"));
+                new HashSet<>(Arrays.asList("TC211", "FGDC", "19115", "13139"));
 
         static final Set<String> VALID_LINKS_FORMATS =
-                new HashSet<String>(
-                        Arrays.asList("text/xml", "text/html", "text/sgml", "text/plain"));
+                new HashSet<>(Arrays.asList("text/xml", "text/html", "text/sgml", "text/plain"));
 
         protected final boolean skipMisconfigured;
         protected final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;

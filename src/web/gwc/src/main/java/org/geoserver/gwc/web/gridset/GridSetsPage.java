@@ -82,12 +82,12 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     new SimpleBookmarkableLink(
                             id,
                             GridSetEditPage.class,
-                            new Model<String>(gridSetName),
+                            new Model<>(gridSetName),
                             AbstractGridSetPage.GRIDSET_NAME,
                             gridSetName);
 
             if (isInternal) {
-                link.add(new AttributeModifier("style", new Model<String>("font-style: italic;")));
+                link.add(new AttributeModifier("style", new Model<>("font-style: italic;")));
                 link.add(
                         new AttributeModifier(
                                 "title", new ResourceModel("nameLink.titleInternalGridSet")));
@@ -173,7 +173,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                 return;
             }
 
-            final Set<String> selectedGridsetIds = new HashSet<String>();
+            final Set<String> selectedGridsetIds = new HashSet<>();
             for (GridSet gset : selection) {
                 selectedGridsetIds.add(gset.getName());
             }

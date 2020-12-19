@@ -57,7 +57,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
                         @Override
                         protected List<Property<T>> load() {
-                            List result = new ArrayList<Property<T>>(properties.getObject());
+                            List result = new ArrayList<>(properties.getObject());
                             result.add(0, POSITION);
                             result.add(0, RENDERING_ORDER);
                             return result;
@@ -80,13 +80,13 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
      * Cannot declare these non static, because they would be initialized too late, and as static,
      * they cannot have the right type argument
      */
-    static Property<?> POSITION = new PropertyPlaceholder<Object>("position");
+    static Property<?> POSITION = new PropertyPlaceholder<>("position");
 
-    static Property<?> RENDERING_ORDER = new PropertyPlaceholder<Object>("order");
+    static Property<?> RENDERING_ORDER = new PropertyPlaceholder<>("order");
 
     @SuppressWarnings("serial")
     public ReorderableTablePanel(String id, List<T> items, IModel<List<Property<T>>> properties) {
-        super(id, new ReorderableDataProvider<T>(items, properties));
+        super(id, new ReorderableDataProvider<>(items, properties));
         this.setOutputMarkupId(true);
         this.add(new WebTheme());
         this.add(new DragSource(Operation.MOVE).drag("tr"));
@@ -145,7 +145,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                             ParamResourceModel downTitle =
                                     new ParamResourceModel("moveToBottom", this);
                             component =
-                                    new UpDownPanel<T>(
+                                    new UpDownPanel<>(
                                             "component",
                                             itemModel.getObject(),
                                             dataProvider.getItems(),
@@ -192,7 +192,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             Label label = (Label) item.iterator().next();
             @SuppressWarnings("unchecked")
             OddEvenItem<T> rowContainer = (OddEvenItem<T>) item.getParent().getParent();
-            label.setDefaultModel(new Model<Integer>(rowContainer.getIndex() + 1));
+            label.setDefaultModel(new Model<>(rowContainer.getIndex() + 1));
             item.add(
                     new Behavior() {
 

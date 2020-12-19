@@ -203,7 +203,7 @@ public class KMLFeatureAccessor {
 
         // Google earth likes to make requests that go beyond 180 when zoomed out
         // fix them
-        List<ReferencedEnvelope> envelopes = new ArrayList<ReferencedEnvelope>();
+        List<ReferencedEnvelope> envelopes = new ArrayList<>();
         if (KmlEncodingContext.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
             envelopes.add(aoi);
         } else {
@@ -226,7 +226,7 @@ public class KMLFeatureAccessor {
             }
         }
 
-        List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<ReferencedEnvelope>();
+        List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<>();
         CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
         if ((sourceCrs != null)
                 && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
@@ -260,7 +260,7 @@ public class KMLFeatureAccessor {
                     null);
         } else {
             // we have to OR the multiple source envelopes
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
             for (ReferencedEnvelope se : sourceEnvelopes) {
                 filters.add(
                         filterFactory.bbox(

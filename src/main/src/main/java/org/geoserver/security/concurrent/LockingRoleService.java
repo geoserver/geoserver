@@ -29,8 +29,7 @@ import org.geoserver.security.impl.GeoServerRole;
 public class LockingRoleService extends AbstractLockingService
         implements GeoServerRoleService, RoleLoadedListener {
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     /** Constructor for the locking wrapper */
     public LockingRoleService(GeoServerRoleService service) {

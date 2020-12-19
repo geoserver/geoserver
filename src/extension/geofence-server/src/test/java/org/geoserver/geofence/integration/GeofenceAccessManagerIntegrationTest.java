@@ -317,7 +317,7 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
     protected Authentication getUser(String username, String password, String... roles) {
 
-        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> l = new ArrayList<>();
         for (String role : roles) {
             l.add(new SimpleGrantedAuthority(role));
         }

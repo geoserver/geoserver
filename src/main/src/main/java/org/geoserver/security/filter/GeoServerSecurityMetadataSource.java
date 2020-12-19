@@ -69,21 +69,20 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
     static LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
     static {
-        requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
+        requestMap = new LinkedHashMap<>();
 
         // the login page is a public resource
-        requestMap.put(new LoginPageRequestMatcher(), new ArrayList<ConfigAttribute>());
+        requestMap.put(new LoginPageRequestMatcher(), new ArrayList<>());
         // images,java script,... are public resources
-        requestMap.put(
-                new AntPathRequestMatcher("/web/resources/**"), new ArrayList<ConfigAttribute>());
+        requestMap.put(new AntPathRequestMatcher("/web/resources/**"), new ArrayList<>());
 
         RequestMatcher matcher = new AntPathRequestMatcher("/config/**");
-        List<ConfigAttribute> list = new ArrayList<ConfigAttribute>();
+        List<ConfigAttribute> list = new ArrayList<>();
         list.add(new SecurityConfig(GeoServerRole.ADMIN_ROLE.getAuthority()));
         requestMap.put(matcher, list);
 
         matcher = new AntPathRequestMatcher("/**");
-        list = new ArrayList<ConfigAttribute>();
+        list = new ArrayList<>();
         list.add(new SecurityConfig("IS_AUTHENTICATED_ANONYMOUSLY"));
         requestMap.put(matcher, list);
     };

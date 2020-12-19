@@ -40,7 +40,7 @@ public class OraclePanel extends AbstractDbPanel {
 
     @Override
     protected LinkedHashMap<String, Component> buildParamPanels() {
-        LinkedHashMap<String, Component> result = new LinkedHashMap<String, Component>();
+        LinkedHashMap<String, Component> result = new LinkedHashMap<>();
 
         // basic panel
         basicParamPanel = new BasicDbParamPanel("01", "localhost", 1521, true);

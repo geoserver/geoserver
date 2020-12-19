@@ -76,8 +76,7 @@ public class SecuredSimpleFeatureLocking
             ((SimpleFeatureStore) storeDelegate).modifyFeatures(names, values, mixed.getFilter());
         } else {
             // get the writable attribute set
-            Set<String> queryNames =
-                    new HashSet<String>(Arrays.asList(writeQuery.getPropertyNames()));
+            Set<String> queryNames = new HashSet<>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
             for (int i = 0; i < names.length; i++) {

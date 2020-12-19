@@ -102,8 +102,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
             int counter = 0;
             String line;
 
-            List<RESTfulDefinitionSourceMapping> mappings =
-                    new ArrayList<RESTfulDefinitionSourceMapping>();
+            List<RESTfulDefinitionSourceMapping> mappings = new ArrayList<>();
 
             while (true) {
                 counter++;
@@ -288,7 +287,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     // ++++++++++++++++++++++++
     public static class RESTfulDefinitionSourceMapping {
         private String url = null;
-        private Collection<ConfigAttribute> configAttributes = new ArrayList<ConfigAttribute>();
+        private Collection<ConfigAttribute> configAttributes = new ArrayList<>();
         private String[] httpMethods = null;
 
         public void setHttpMethods(String[] httpMethods) {

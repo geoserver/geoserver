@@ -47,7 +47,7 @@ public class ReprojectionTest extends WFSTestSupport {
 
         dataDirectory.addVectorLayer(
                 NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
-        Map<LayerProperty, Object> extra = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> extra = new HashMap<>();
         extra.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         extra.put(LayerProperty.SRS, 900913);
         dataDirectory.addVectorLayer(GOOGLE, extra, getClass(), getCatalog());

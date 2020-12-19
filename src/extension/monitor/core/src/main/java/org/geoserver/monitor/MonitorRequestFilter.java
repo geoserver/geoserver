@@ -29,7 +29,7 @@ public class MonitorRequestFilter {
     List<Filter> filters;
 
     public MonitorRequestFilter() {
-        filters = new ArrayList<Filter>();
+        filters = new ArrayList<>();
     }
 
     public MonitorRequestFilter(GeoServerResourceLoader loader) throws IOException {
@@ -37,7 +37,7 @@ public class MonitorRequestFilter {
         if (configFile.getType() == Type.UNDEFINED) {
             IOUtils.copy(getClass().getResourceAsStream("filter.properties"), configFile.out());
         }
-        filters = new ArrayList<Filter>();
+        filters = new ArrayList<>();
         watcher = new FilterPropertyFileWatcher(configFile);
     }
 
@@ -74,7 +74,7 @@ public class MonitorRequestFilter {
 
         @Override
         protected List<Filter> parseFileContents(InputStream in) throws IOException {
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
 
             BufferedReader r = new BufferedReader(new InputStreamReader(in));
             String line = null;

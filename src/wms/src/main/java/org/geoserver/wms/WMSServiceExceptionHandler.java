@@ -78,8 +78,7 @@ import org.geotools.util.Version;
 public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
     static final Set<String> FORMATS =
-            new HashSet<String>(
-                    Arrays.asList("image/png", "image/png8", "image/gif", "image/jpeg"));
+            new HashSet<>(Arrays.asList("image/png", "image/png8", "image/gif", "image/jpeg"));
 
     /** Map from content type to ImageIO format name for {@link ImageIO#write} */
     static final Map<String, String> IMAGEIO_FORMATS =

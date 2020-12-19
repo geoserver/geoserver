@@ -32,7 +32,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 public class Monitor implements ApplicationListener<ApplicationEvent> {
 
     /** thread local request object. */
-    static ThreadLocal<RequestData> REQUEST = new ThreadLocal<RequestData>();
+    static ThreadLocal<RequestData> REQUEST = new ThreadLocal<>();
 
     /** default page size when executing queries */
     static long PAGE_SIZE = 1000;
@@ -46,7 +46,7 @@ public class Monitor implements ApplicationListener<ApplicationEvent> {
     GeoServer server;
 
     /** The set of listeners for the monitor */
-    List<RequestDataListener> listeners = new ArrayList<RequestDataListener>();
+    List<RequestDataListener> listeners = new ArrayList<>();
 
     public Monitor(MonitorConfig config) {
         this.config = config;

@@ -113,7 +113,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
     }
 
     public TileMatrixSetEditor(final String id, final IModel<GridSetInfo> info) {
-        super(id, new PropertyModel<List<Grid>>(info, "levels"));
+        super(id, new PropertyModel<>(info, "levels"));
         add(new TileMatrixSetValidator());
 
         final IModel<List<Grid>> list = getModel();
@@ -128,16 +128,15 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         add(container);
 
         final IModel<Boolean> preserveesolutionsModel =
-                new PropertyModel<Boolean>(info, "resolutionsPreserved");
+                new PropertyModel<>(info, "resolutionsPreserved");
 
         final RadioGroup<Boolean> resolutionsOrScales =
-                new RadioGroup<Boolean>("useResolutionsOrScalesGroup", preserveesolutionsModel);
+                new RadioGroup<>("useResolutionsOrScalesGroup", preserveesolutionsModel);
         container.add(resolutionsOrScales);
 
         Radio<Boolean> preserveResolutions =
-                new Radio<Boolean>("preserveResolutions", new Model<Boolean>(Boolean.TRUE));
-        Radio<Boolean> preserveScales =
-                new Radio<Boolean>("preserveScales", new Model<Boolean>(Boolean.FALSE));
+                new Radio<>("preserveResolutions", new Model<>(Boolean.TRUE));
+        Radio<Boolean> preserveScales = new Radio<>("preserveScales", new Model<>(Boolean.FALSE));
 
         resolutionsOrScales.add(preserveResolutions);
         resolutionsOrScales.add(preserveScales);
@@ -178,7 +177,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         container.add(table);
 
         grids =
-                new ListView<Grid>("gridLevels", new ArrayList<Grid>(list.getObject())) {
+                new ListView<Grid>("gridLevels", new ArrayList<>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -206,20 +205,20 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                         resolution =
                                 new DecimalTextField(
                                         "resolution",
-                                        new PropertyModel<Double>(item.getModel(), "resolution"));
+                                        new PropertyModel<>(item.getModel(), "resolution"));
                         resolution.setOutputMarkupId(true);
                         item.add(resolution);
 
                         scale =
                                 new DecimalTextField(
                                         "scale",
-                                        new PropertyModel<Double>(item.getModel(), "scaleDenom"));
+                                        new PropertyModel<>(item.getModel(), "scaleDenom"));
                         scale.setOutputMarkupId(true);
                         item.add(scale);
 
                         name =
-                                new TextField<String>(
-                                        "name", new PropertyModel<String>(item.getModel(), "name"));
+                                new TextField<>(
+                                        "name", new PropertyModel<>(item.getModel(), "name"));
                         item.add(name);
 
                         IModel<String> tilesModel =
@@ -293,7 +292,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
                                             List<Grid> list =
-                                                    new ArrayList<Grid>(grids.getModelObject());
+                                                    new ArrayList<>(grids.getModelObject());
                                             int index =
                                                     ((Integer) getDefaultModelObject()).intValue();
                                             list.remove(index);
@@ -301,7 +300,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                                             target.add(container);
                                         }
                                     };
-                            removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
+                            removeLink.setDefaultModel(new Model<>(Integer.valueOf(index)));
                             removeLink.add(
                                     new AttributeModifier(
                                             "title",
@@ -383,7 +382,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
     public void convertInput() {
         List<Grid> info = grids.getModelObject();
         if (info == null || info.size() == 0) {
-            setConvertedInput(new ArrayList<Grid>(2));
+            setConvertedInput(new ArrayList<>(2));
             return;
         }
 

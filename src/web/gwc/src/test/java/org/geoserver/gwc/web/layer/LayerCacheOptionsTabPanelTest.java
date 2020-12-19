@@ -54,7 +54,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertTrue(CatalogConfiguration.isLayerExposable(layerInfo));
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
         tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
         // clean up fake format added during tests
         tileLayer.getInfo().getMimeFormats().remove("foo/bar");
@@ -88,7 +88,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertFalse(CatalogConfiguration.isLayerExposable(geometryless));
         assertNull(GWC.get().getTileLayer(geometryless));
 
-        layerModel = new Model<LayerInfo>(geometryless);
+        layerModel = new Model<>(geometryless);
         final GWCConfig saneDefaults = GWC.get().getConfig().saneConfig();
         GeoServerTileLayerInfoImpl tileLayerInfo =
                 TileLayerInfoUtil.loadOrCreate(geometryless, saneDefaults);
@@ -248,7 +248,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
         tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
 
         GWC mediator = GWC.get();

@@ -91,7 +91,7 @@ public class CoverageUtils {
 
     public static GeneralParameterValue[] getParameters(
             ParameterValueGroup params, Map values, boolean readGeom) {
-        final List<ParameterValue<?>> parameters = new ArrayList<ParameterValue<?>>();
+        final List<ParameterValue<?>> parameters = new ArrayList<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (params.values().size() > 0)) {
@@ -399,7 +399,7 @@ public class CoverageUtils {
             Object value,
             String... parameterAliases) {
         // setup a param name alias set
-        Set<String> aliases = new HashSet<String>(Arrays.asList(parameterAliases));
+        Set<String> aliases = new HashSet<>(Arrays.asList(parameterAliases));
 
         // scan all the params looking for the one we want to add
         for (GeneralParameterDescriptor pd : parameterDescriptors) {

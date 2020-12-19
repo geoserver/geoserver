@@ -31,7 +31,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
     @Before
     public void setUpInternal() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
         Set<String> roles = manager.getAvailableRoles();
         String wsName = layerModel.getObject().getResource().getStore().getWorkspace().getName();
         String layerName = layerModel.getObject().getName();
-        List<DataAccessRuleInfo> rules = new ArrayList<DataAccessRuleInfo>();
+        List<DataAccessRuleInfo> rules = new ArrayList<>();
         roles.forEach(
                 r -> {
                     DataAccessRuleInfo rule = new DataAccessRuleInfo(r, layerName, wsName);
@@ -72,7 +72,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                     rules.add(rule);
                 });
         Set<DataAccessRule> newRules = manager.mapFrom(rules, roles, wsName, layerName, false);
-        manager.saveRules(new HashSet<DataAccessRule>(), newRules);
+        manager.saveRules(new HashSet<>(), newRules);
         try {
             ListModel<DataAccessRuleInfo> own = info.createOwnModel(layerModel, false);
             tester.startPage(

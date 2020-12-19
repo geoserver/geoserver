@@ -153,7 +153,7 @@ public class LocalWorkspaceCatalogTest {
         // return back the first one without a namespace prefix
         expect(cat.getLayerByName("lc")).andReturn(lc1).anyTimes();
 
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(2);
+        List<LayerInfo> layers = new ArrayList<>(2);
         layers.add(l1);
         layers.add(l2);
         layers.add(lc1);
@@ -162,7 +162,7 @@ public class LocalWorkspaceCatalogTest {
         List<LayerInfo> layers2 = new ArrayList<>(layers);
         layers2.add(null);
         expect(cat.list(LayerInfo.class, Filter.INCLUDE, null, null, null))
-                .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers2.iterator()))
+                .andReturn(new CloseableIteratorAdapter<>(layers2.iterator()))
                 .anyTimes();
         replay(cat);
 

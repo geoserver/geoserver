@@ -278,7 +278,7 @@ public class RasterizerController extends BaseSLDServiceController {
             }
             colorRamp.setNumClasses(classes);
 
-            List<Color> realColorRamp = new ArrayList<Color>();
+            List<Color> realColorRamp = new ArrayList<>();
             realColorRamp.add(Color.BLACK);
             realColorRamp.addAll(colorRamp.getRamp());
 

@@ -34,7 +34,7 @@ public class SecureCatalogImplFilterTest {
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
         try {
-            LinkedList<T> list = new LinkedList<T>();
+            LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }
@@ -87,7 +87,7 @@ public class SecureCatalogImplFilterTest {
 
         final Capture<Filter> filterCapture = Capture.newInstance(CaptureType.LAST);
 
-        final List<FeatureTypeInfo> source = new ArrayList<FeatureTypeInfo>();
+        final List<FeatureTypeInfo> source = new ArrayList<>();
 
         WorkspaceInfo mockWSInfo = createMock(WorkspaceInfo.class);
         expect(manager.getAccessLimits(eq(anonymous), eq(mockWSInfo)))

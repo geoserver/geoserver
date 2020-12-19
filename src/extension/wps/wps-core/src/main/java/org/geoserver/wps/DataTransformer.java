@@ -47,8 +47,8 @@ import org.opengis.feature.type.Name;
  * @author Lucas Reed, Refractions Research Inc
  */
 public class DataTransformer {
-    private List<Transmuter> transmuters = new ArrayList<Transmuter>();
-    private Map<Class<?>, Transmuter> defaultTransmuters = new HashMap<Class<?>, Transmuter>();
+    private List<Transmuter> transmuters = new ArrayList<>();
+    private Map<Class<?>, Transmuter> defaultTransmuters = new HashMap<>();
     private Map<String, Parameter<?>> inputParameters;
     private String urlBase = null;
 
@@ -79,7 +79,7 @@ public class DataTransformer {
     @SuppressWarnings("unchecked")
     public Map<String, Object> decodeInputs(
             final List<InputType> inputs, final Map<String, Parameter<?>> parameters) {
-        Map<String, Object> inputMap = new HashMap<String, Object>();
+        Map<String, Object> inputMap = new HashMap<>();
 
         this.inputParameters = parameters;
 
@@ -103,7 +103,7 @@ public class DataTransformer {
                     List<Object> list = (List<Object>) inputMap.get(identifier);
                     list.add(decoded);
                 } else {
-                    List<Object> list = new ArrayList<Object>();
+                    List<Object> list = new ArrayList<>();
                     list.add(inputMap.get(identifier));
                     inputMap.put(identifier, list);
                 }

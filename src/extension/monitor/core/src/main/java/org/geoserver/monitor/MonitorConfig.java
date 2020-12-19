@@ -139,7 +139,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
 
         if (list == null || list.isEmpty()) return Collections.emptySet();
 
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(list.split(","))));
+        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(list.split(","))));
     }
 
     public boolean isEnabled() {

@@ -63,7 +63,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     private static final Logger LOGGER = Logging.getLogger(DXFOutputFormat.class);
 
-    public static final Set<String> formats = new HashSet<String>();
+    public static final Set<String> formats = new HashSet<>();
 
     static {
         // list of supported output formats
@@ -110,7 +110,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
             return request.getHandle();
         }
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Query query : request.getQueries()) {
             addLayerNames(names, query, false);
         }
@@ -276,7 +276,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     /** Gets a list of names for layers, one for each query. */
     private String[] getLayerNames(List<Query> queries) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Query query : queries) {
             addLayerNames(names, query, true);
         }

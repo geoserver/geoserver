@@ -77,7 +77,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
                         "User {0} authenticated: {1}",
                         new Object[] {username, authUser});
 
-                List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+                List<GrantedAuthority> roles = new ArrayList<>();
                 roles.addAll(inTok.getAuthorities());
                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
                 if (authUser.getRole() == AuthUser.Role.ADMIN) {

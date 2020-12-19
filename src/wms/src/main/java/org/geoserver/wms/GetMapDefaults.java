@@ -42,7 +42,7 @@ public class GetMapDefaults {
             // this
             // into the GetMapKvpRequestReader
             if ((getMap.getLayers() != null) && (getMap.getLayers().size() > 0)) {
-                ArrayList<Style> styles = new ArrayList<Style>(getMap.getLayers().size());
+                ArrayList<Style> styles = new ArrayList<>(getMap.getLayers().size());
 
                 for (int i = 0; i < getMap.getLayers().size(); i++) {
                     styles.add(getMap.getLayers().get(i).getDefaultStyle());

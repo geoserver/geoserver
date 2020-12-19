@@ -176,6 +176,6 @@ public class AuthenticationKeyFilterPanel
                 return mapper.getMapperConfiguration();
             }
         }
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 }

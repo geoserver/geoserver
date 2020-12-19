@@ -67,8 +67,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
 
             if (ft instanceof SimpleFeatureType) {
                 SimpleFeatureType sft = (SimpleFeatureType) ft;
-                Set<String> properties =
-                        new HashSet<String>(Arrays.asList(query.getPropertyNames()));
+                Set<String> properties = new HashSet<>(Arrays.asList(query.getPropertyNames()));
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(sft);
                 for (AttributeDescriptor at : sft.getAttributeDescriptors()) {

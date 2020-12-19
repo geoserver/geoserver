@@ -47,7 +47,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
 
     @Override
     public RecordDescriptor[] getRecordDescriptors() throws IOException {
-        ArrayList<RecordDescriptor> ft = new ArrayList<RecordDescriptor>(descriptorByType.values());
+        ArrayList<RecordDescriptor> ft = new ArrayList<>(descriptorByType.values());
         return ft.toArray(new RecordDescriptor[ft.size()]);
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         final PropertyName property = rd.translateProperty(attributeName);
         AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
         if (ad == null) {
-            return new CloseableIteratorAdapter<String>(new ArrayList<String>().iterator());
+            return new CloseableIteratorAdapter<>(new ArrayList<String>().iterator());
         }
 
         // build the query against csw:record
@@ -73,7 +73,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         q.setProperties(Arrays.asList(translateProperty(rd, attributeName)));
 
         // collect the values without duplicates
-        final Set<String> values = new HashSet<String>();
+        final Set<String> values = new HashSet<>();
         getRecords(q, Transaction.AUTO_COMMIT, rd)
                 .accepts(
                         new FeatureVisitor() {
@@ -98,7 +98,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         // sort and return
         List<String> result = new ArrayList<>(values);
         Collections.sort(result);
-        return new CloseableIteratorAdapter<String>(result.iterator());
+        return new CloseableIteratorAdapter<>(result.iterator());
     }
 
     @Override

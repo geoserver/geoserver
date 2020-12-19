@@ -86,7 +86,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         public static final Set<String> names;
 
         static {
-            Set<String> tmp = new HashSet<String>();
+            Set<String> tmp = new HashSet<>();
             for (SECTIONS section : SECTIONS.values()) {
                 tmp.add(section.name());
             }
@@ -272,7 +272,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     || ct.getAcceptVersions().getVersion() == null
                     || ct.getAcceptVersions().getVersion().isEmpty()
                     || ct.getAcceptVersions().getVersion().contains("2.0.1")) {
-                Set<String> formats = new TreeSet<String>();
+                Set<String> formats = new TreeSet<>();
                 for (String format : responseFactory.getOutputFormats()) {
                     CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
                     String mime = delegate.getMimeType(format);
@@ -575,8 +575,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("wcs:Contents");
 
             @SuppressWarnings("unchecked")
-            final Set<CoverageInfo> coverages =
-                    new TreeSet<CoverageInfo>(new CoverageInfoLabelComparator());
+            final Set<CoverageInfo> coverages = new TreeSet<>(new CoverageInfoLabelComparator());
             coverages.addAll(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages
@@ -615,7 +614,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {
                         provider.encodeExtendedContents(
-                                translator, wcs, new ArrayList<CoverageInfo>(coverages), request);
+                                translator, wcs, new ArrayList<>(coverages), request);
                     }
                 } catch (Exception e) {
                     throw new ServiceException("Extended capabilities provider threw error", e);

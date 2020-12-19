@@ -1464,7 +1464,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         try {
             // collect all the layer names that are in the CITE workspace
-            List<String> layerNames = new ArrayList<String>();
+            List<String> layerNames = new ArrayList<>();
             for (LayerInfo layer : catalog.getLayers()) {
                 if (wsName.equals(layer.getResource().getStore().getWorkspace().getName())) {
                     String prefixedName = layer.prefixedName();

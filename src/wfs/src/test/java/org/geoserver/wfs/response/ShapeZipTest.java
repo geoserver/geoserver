@@ -792,7 +792,7 @@ public class ShapeZipTest extends WFSTestSupport {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(featureType);
         fb.add("point1");
         fb.add(gf.createPoint(new CoordinateXYZM(1, 2, 3, 4)));
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
         features.add(fb.buildFeature("1"));
         SimpleFeatureCollection featureCollection = DataUtilities.collection(features);
         // write the zip shapefile bytes
@@ -825,7 +825,7 @@ public class ShapeZipTest extends WFSTestSupport {
                             gf.createPoint(new CoordinateXYZM(1, 2, 3, 4)),
                             gf.createPoint(new CoordinateXYZM(5, 6, 7, 8))
                         }));
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
         features.add(fb.buildFeature("1"));
         SimpleFeatureCollection featureCollection = DataUtilities.collection(features);
         // write the zip shapefile bytes
@@ -861,7 +861,7 @@ public class ShapeZipTest extends WFSTestSupport {
                                         new CoordinateXYZM(5, 6, 7, 8)
                                     })
                         }));
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
         features.add(fb.buildFeature("1"));
         SimpleFeatureCollection featureCollection = DataUtilities.collection(features);
         // write the zip shapefile bytes
@@ -899,7 +899,7 @@ public class ShapeZipTest extends WFSTestSupport {
                                         new CoordinateXYZM(0, 0, 3, 1)
                                     })
                         }));
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
         features.add(fb.buildFeature("1"));
         SimpleFeatureCollection featureCollection = DataUtilities.collection(features);
         // write the zip shapefile bytes

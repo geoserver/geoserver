@@ -99,10 +99,8 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                     @Override
                     public String[] getTypeNames() throws IOException {
                         // Populate local hashmaps with new values.
-                        Map<String, FeatureTypeMap> forwardMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
-                        Map<String, FeatureTypeMap> backwardsMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
+                        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+                        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
                         forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
                         backwardsMapLocal.put(typeMap.getName(), typeMap);

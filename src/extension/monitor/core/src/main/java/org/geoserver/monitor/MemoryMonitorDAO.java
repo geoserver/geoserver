@@ -23,8 +23,8 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
     public static final String NAME = "memory";
 
-    Queue<RequestData> live = new ConcurrentLinkedQueue<RequestData>();
-    Queue<RequestData> history = new ConcurrentLinkedQueue<RequestData>();
+    Queue<RequestData> live = new ConcurrentLinkedQueue<>();
+    Queue<RequestData> history = new ConcurrentLinkedQueue<>();
 
     AtomicLong REQUEST_ID_GEN = new AtomicLong(1);
 

@@ -24,7 +24,7 @@ public class PanelUpload extends Panel {
         super(id);
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("directory", new Model<String>(directory)));
+        add(new TextField<>("directory", new Model<>(directory)));
         add(new FileUploadField("file"));
     }
 

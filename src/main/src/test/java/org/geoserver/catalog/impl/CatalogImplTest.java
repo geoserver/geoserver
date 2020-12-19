@@ -1723,9 +1723,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         s2.setWorkspace(ws);
         catalog.add(s2);
 
-        assertFalse(
-                new HashSet<StyleInfo>(currStyles)
-                        .equals(new HashSet<StyleInfo>(catalog.getStyles())));
+        assertFalse(new HashSet<>(currStyles).equals(new HashSet<>(catalog.getStyles())));
 
         StyleInfo s3 = catalog.getFactory().createStyle();
         s3.setName(s2.getName());
@@ -1999,7 +1997,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
             assertTrue(true);
         }
 
-        styles = new ArrayList<StyleInfo>(styles);
+        styles = new ArrayList<>(styles);
         Collections.sort(styles, comparator);
 
         assertEquals("a" + s.getName(), styles.get(0).getName());
@@ -2088,7 +2086,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
                 new CountDownLatch(GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT + 1);
         CountDownLatch done = new CountDownLatch(GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT);
 
-        List<RunnerBase> runners = new ArrayList<RunnerBase>();
+        List<RunnerBase> runners = new ArrayList<>();
         for (int i = 0; i < GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT; i++) {
             RunnerBase runner = new LayerAddRunner(ready, done, i);
             new Thread(runner).start();
@@ -2968,7 +2966,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        strValues = new ArrayList<String>();
+        strValues = new ArrayList<>();
         strValues.add("ft1");
         strValues.add("ft2");
         filter =
@@ -2981,7 +2979,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        strValues = new ArrayList<String>();
+        strValues = new ArrayList<>();
         strValues.add("ft1");
         strValues.add("ft1");
         strValues.add("ft2");
@@ -3117,8 +3115,8 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         CatalogPropertyAccessor pe = new CatalogPropertyAccessor();
 
-        List<Object> props = new ArrayList<Object>();
-        List<Object> actual = new ArrayList<Object>();
+        List<Object> props = new ArrayList<>();
+        List<Object> actual = new ArrayList<>();
         String sortProperty = sortOrder.getPropertyName().getPropertyName();
         for (T info : expected) {
             Object pval = pe.getProperty(info, sortProperty);

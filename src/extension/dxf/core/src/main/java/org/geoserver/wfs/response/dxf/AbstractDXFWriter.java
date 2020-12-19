@@ -84,7 +84,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     // assigned names (id -> name), used to reference layers
     // in different steps of the dxf writing
-    private Map<String, String> cachedNames = new HashMap<String, String>();
+    private Map<String, String> cachedNames = new HashMap<>();
 
     // cached global envelope
     private ReferencedEnvelope e = null;
@@ -93,7 +93,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // each type of object needs a separate handle space, to
     // avoid conflicts, so we mantain a set of counters
     // for different kink of objects
-    Map<String, Integer> handles = new HashMap<String, Integer>();
+    Map<String, Integer> handles = new HashMap<>();
 
     /** Create a new instance of the writer, using the given underlying writer. */
     public abstract DXFWriter newInstance(Writer writer);

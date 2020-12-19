@@ -120,7 +120,7 @@ public class ApplicationSchemaXSD extends XSD {
         }
 
         // set up type mapping profiles
-        Set<Schema> profiles = new LinkedHashSet<Schema>();
+        Set<Schema> profiles = new LinkedHashSet<>();
         for (XSD xsd : wfs.getAllDependencies()) {
             profiles.add(xsd.getTypeMappingProfile());
         }
@@ -180,7 +180,7 @@ public class ApplicationSchemaXSD extends XSD {
                 // build for all namespaces
                 buildSchemaImports(catalog.getNamespaces(), schema, factory);
             } else {
-                Set<NamespaceInfo> namespaces = new HashSet<NamespaceInfo>();
+                Set<NamespaceInfo> namespaces = new HashSet<>();
                 for (FeatureTypeInfo type : types) {
                     namespaces.add(type.getNamespace());
                 }

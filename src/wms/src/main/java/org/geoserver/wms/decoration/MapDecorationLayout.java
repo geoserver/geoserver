@@ -235,7 +235,7 @@ public class MapDecorationLayout {
 
     /** Create a new MapDecorationLayout with no decorations in it yet. */
     public MapDecorationLayout() {
-        this.blocks = new ArrayList<Block>();
+        this.blocks = new ArrayList<>();
     }
 
     /**
@@ -278,7 +278,7 @@ public class MapDecorationLayout {
     private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile)
             throws Exception {
         for (Element e : confFile.getRootElement().getChildren("decoration")) {
-            Map<String, String> m = new HashMap<String, String>();
+            Map<String, String> m = new HashMap<>();
             for (Element option : e.getChildren("option")) {
                 String value = option.getAttributeValue("value");
                 if (value == null) {

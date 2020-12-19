@@ -52,7 +52,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
     private final WMS wms;
     private Map<String, String> options;
-    private ThreadLocal<List<LayerLegend>> legends = new ThreadLocal<List<LayerLegend>>();
+    private ThreadLocal<List<LayerLegend>> legends = new ThreadLocal<>();
     private List<String> layers;
     private boolean useSldTitle;
 
@@ -61,7 +61,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
     public LegendDecoration(WMS wms) {
         this.wms = wms;
-        this.layers = new ArrayList<String>();
+        this.layers = new ArrayList<>();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
         String legendOptions = this.options.remove("legend_options");
         if (legendOptions != null && !legendOptions.isEmpty()) {
-            legendOptionsMap = new HashMap<String, String>();
+            legendOptionsMap = new HashMap<>();
             String[] splittedLegendOptions = legendOptions.split(";");
             for (String lop : splittedLegendOptions) {
                 String[] kvp = lop.split(":");
@@ -191,7 +191,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                             false,
                             LegendUtils.getBackgroundColor(legend.request),
                             finalLegend,
-                            new HashMap<RenderingHints.Key, Object>());
+                            new HashMap<>());
 
             // title
             int titleHeightOffset = 0;

@@ -55,9 +55,9 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
     String roleFilterName;
 
     public RequestFilterChain(String... patterns) {
-        this.patterns = new ArrayList<String>(Arrays.asList((patterns)));
-        filterNames = new ArrayList<String>();
-        httpMethods = new TreeSet<HTTPMethod>();
+        this.patterns = new ArrayList<>(Arrays.asList((patterns)));
+        filterNames = new ArrayList<>();
+        httpMethods = new TreeSet<>();
     }
 
     public void setName(String name) {
@@ -79,7 +79,7 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
     public abstract boolean isConstant();
 
     public void setFilterNames(String... filterNames) {
-        setFilterNames(new ArrayList<String>(Arrays.asList(filterNames)));
+        setFilterNames(new ArrayList<>(Arrays.asList(filterNames)));
     }
 
     public void setFilterNames(List<String> filterNames) {
@@ -146,9 +146,9 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         RequestFilterChain chain = (RequestFilterChain) super.clone();
-        chain.setFilterNames(new ArrayList<String>(filterNames));
-        chain.patterns = new ArrayList<String>(patterns);
-        chain.httpMethods = new TreeSet<HTTPMethod>(httpMethods);
+        chain.setFilterNames(new ArrayList<>(filterNames));
+        chain.patterns = new ArrayList<>(patterns);
+        chain.httpMethods = new TreeSet<>(httpMethods);
         return chain;
     }
 
@@ -163,7 +163,7 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
     public List<String> getCompiledFilterNames() {
         if (isDisabled() == true) return Collections.emptyList();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         if (isRequireSSL()) result.add(GeoServerSecurityFilterChain.SSL_FILTER);
 

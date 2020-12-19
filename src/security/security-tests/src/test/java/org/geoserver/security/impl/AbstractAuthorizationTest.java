@@ -399,7 +399,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 .anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
         expect(layerGroup.getLayers())
-                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .andReturn(new ArrayList<>(Arrays.asList(contents)))
                 .anyTimes();
         expect(layerGroup.getStyles()).andReturn(buildUniqueStylesForLayers(contents)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
@@ -446,7 +446,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layerGroup.getMode()).andReturn(Mode.EO).anyTimes();
         expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
         expect(layerGroup.getLayers())
-                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .andReturn(new ArrayList<>(Arrays.asList(contents)))
                 .anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
@@ -608,7 +608,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                             Filter f = (Filter) EasyMock.getCurrentArguments()[1];
                             Iterator<LayerGroupInfo> it =
                                     groups.stream().filter(lg -> f.evaluate(lg)).iterator();
-                            return new CloseableIteratorAdapter<LayerGroupInfo>(it);
+                            return new CloseableIteratorAdapter<>(it);
                         })
                 .anyTimes();
         replay(catalog);

@@ -54,8 +54,8 @@ public class Util {
                 new GeoServerMultiplexingPasswordEncoder(store.getSecurityManager(), service);
 
         store.clear();
-        Map<String, GeoServerUser> newUserDict = new HashMap<String, GeoServerUser>();
-        Map<String, GeoServerUserGroup> newGroupDict = new HashMap<String, GeoServerUserGroup>();
+        Map<String, GeoServerUser> newUserDict = new HashMap<>();
+        Map<String, GeoServerUserGroup> newGroupDict = new HashMap<>();
 
         for (GeoServerUser user : service.getUsers()) {
 
@@ -100,7 +100,7 @@ public class Util {
     public static void copyFrom(GeoServerRoleService service, GeoServerRoleStore store)
             throws IOException {
         store.clear();
-        Map<String, GeoServerRole> newRoleDict = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> newRoleDict = new HashMap<>();
 
         for (GeoServerRole role : service.getRoles()) {
             GeoServerRole newRole = store.createRoleObject(role.getAuthority());

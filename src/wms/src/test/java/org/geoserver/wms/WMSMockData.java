@@ -244,7 +244,7 @@ public class WMSMockData {
         } catch (IOException e) {
             throw new RuntimeException("shouldn't happen", e);
         }
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
         request.setBaseUrl("http://example.geoserver.org/geoserver");
 
         return request;

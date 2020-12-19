@@ -96,7 +96,7 @@ class SVGWriter extends OutputStreamWriter {
     }
 
     private void initWriters() {
-        writers = new HashMap<Class<? extends Geometry>, SVGFeatureWriter>();
+        writers = new HashMap<>();
         writers.put(Point.class, new PointWriter());
         writers.put(LineString.class, new LineStringWriter());
         writers.put(LinearRing.class, new LineStringWriter());

@@ -127,7 +127,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
 
     /** Initializes every type of writer (one for every kind of geometry). */
     private void initWriters() {
-        writers = new HashMap<Class<?>, HTMLImageMapFeatureWriter>();
+        writers = new HashMap<>();
         writers.put(Point.class, new PointWriter());
         writers.put(LineString.class, new LineStringWriter());
         writers.put(LinearRing.class, new LineStringWriter());
@@ -210,7 +210,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * @param feature The feature being filtered against.
      */
     List<Rule> filterRules(FeatureTypeStyle featureTypeStyle, SimpleFeature feature) {
-        List<Rule> filtered = new ArrayList<Rule>();
+        List<Rule> filtered = new ArrayList<>();
 
         // process the rules, keep track of the need to apply an else filters
         boolean match = false;
@@ -274,7 +274,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
     private abstract class HTMLImageMapFeatureWriter {
 
         // stores a series of attributes to append to the feature tag definition
-        Map<String, String> extraAttributes = new HashMap<String, String>();
+        Map<String, String> extraAttributes = new HashMap<>();
 
         StringBuffer buffer = new StringBuffer();
 
@@ -460,7 +460,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param ft current feature to encode
          */
         protected void reset(SimpleFeature ft) {
-            extraAttributes = new HashMap<String, String>();
+            extraAttributes = new HashMap<>();
             buffer = new StringBuffer();
         }
 

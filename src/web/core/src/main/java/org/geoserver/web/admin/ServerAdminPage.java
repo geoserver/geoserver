@@ -50,7 +50,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // modificationproxy does not count it as a change.
 
         JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
-        return new Model<JAIInfo>(currJaiInfo);
+        return new Model<>(currJaiInfo);
     }
 
     public IModel<CoverageAccessInfo> getCoverageAccessModel() {
@@ -67,7 +67,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
         CoverageAccessInfo currCoverageAccessInfo =
                 getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
-        return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
+        return new Model<>(currCoverageAccessInfo);
     }
 
     public IModel<ContactInfo> getContactInfoModel() {

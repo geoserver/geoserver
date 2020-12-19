@@ -22,13 +22,10 @@ import java.util.TreeSet;
  * @author christian
  */
 public class RoleStoreHelper {
-    public TreeMap<String, GeoServerRole> roleMap = new TreeMap<String, GeoServerRole>();
-    public TreeMap<String, SortedSet<GeoServerRole>> group_roleMap =
-            new TreeMap<String, SortedSet<GeoServerRole>>();
-    public TreeMap<String, SortedSet<GeoServerRole>> user_roleMap =
-            new TreeMap<String, SortedSet<GeoServerRole>>();
-    public HashMap<GeoServerRole, GeoServerRole> role_parentMap =
-            new HashMap<GeoServerRole, GeoServerRole>();
+    public TreeMap<String, GeoServerRole> roleMap = new TreeMap<>();
+    public TreeMap<String, SortedSet<GeoServerRole>> group_roleMap = new TreeMap<>();
+    public TreeMap<String, SortedSet<GeoServerRole>> user_roleMap = new TreeMap<>();
+    public HashMap<GeoServerRole, GeoServerRole> role_parentMap = new HashMap<>();
 
     public void clearMaps() {
         roleMap.clear();
@@ -38,7 +35,7 @@ public class RoleStoreHelper {
     }
 
     public Map<String, String> getParentMappings() throws IOException {
-        Map<String, String> parentMap = new HashMap<String, String>();
+        Map<String, String> parentMap = new HashMap<>();
         for (GeoServerRole role : roleMap.values()) {
             GeoServerRole parentRole = role_parentMap.get(role);
             parentMap.put(
@@ -48,20 +45,20 @@ public class RoleStoreHelper {
     }
 
     public SortedSet<GeoServerRole> getRoles() throws IOException {
-        SortedSet<GeoServerRole> result = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> result = new TreeSet<>();
         result.addAll(roleMap.values());
         return Collections.unmodifiableSortedSet(result);
     }
 
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
         SortedSet<GeoServerRole> roles = user_roleMap.get(username);
-        if (roles == null) roles = new TreeSet<GeoServerRole>();
+        if (roles == null) roles = new TreeSet<>();
         return Collections.unmodifiableSortedSet(roles);
     }
 
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
         SortedSet<GeoServerRole> roles = group_roleMap.get(groupname);
-        if (roles == null) roles = new TreeSet<GeoServerRole>();
+        if (roles == null) roles = new TreeSet<>();
         return Collections.unmodifiableSortedSet(roles);
     }
 
@@ -74,7 +71,7 @@ public class RoleStoreHelper {
     }
 
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         for (Entry<String, SortedSet<GeoServerRole>> entry : group_roleMap.entrySet()) {
             if (entry.getValue().contains(role)) result.add(entry.getKey());
         }
@@ -82,7 +79,7 @@ public class RoleStoreHelper {
     }
 
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         for (Entry<String, SortedSet<GeoServerRole>> entry : user_roleMap.entrySet()) {
             if (entry.getValue().contains(role)) result.add(entry.getKey());
         }

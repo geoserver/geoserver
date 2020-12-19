@@ -174,7 +174,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         if (style != null) {
             layers = catalog.getLayers(style);
             if (layers.size() > 0) {
-                layerModel = new Model<LayerInfo>(layers.get(0));
+                layerModel = new Model<>(layers.get(0));
                 return;
             }
         }
@@ -189,7 +189,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 for (ResourceInfo resource : resources) {
                     layers = catalog.getLayers(resource);
                     if (layers.size() > 0) {
-                        layerModel = new Model<LayerInfo>(layers.get(0));
+                        layerModel = new Model<>(layers.get(0));
                         return;
                     }
                 }
@@ -199,26 +199,25 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // Try getting the first layer returned by the catalog
         layers = catalog.getLayers();
         if (layers.size() > 0) {
-            layerModel = new Model<LayerInfo>(layers.get(0));
+            layerModel = new Model<>(layers.get(0));
             return;
         }
 
         // If none of these succeeded, return an empty model
-        layerModel = new Model<LayerInfo>(new LayerInfoImpl());
+        layerModel = new Model<>(new LayerInfoImpl());
     }
 
     protected void initUI(StyleInfo style) {
         /* init model */
         if (style == null) {
-            styleModel =
-                    new CompoundPropertyModel<StyleInfo>(getCatalog().getFactory().createStyle());
+            styleModel = new CompoundPropertyModel<>(getCatalog().getFactory().createStyle());
             styleModel.getObject().setName("");
             styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
         } else {
             if (style.getLegend() == null) {
                 style.setLegend(getCatalog().getFactory().createLegend());
             }
-            styleModel = new CompoundPropertyModel<StyleInfo>(style);
+            styleModel = new CompoundPropertyModel<>(style);
         }
 
         /* init main form */
@@ -237,12 +236,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         popup = new ModalWindow("popup");
         styleForm.add(popup);
         /* init tabs */
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         // Well known tabs
         PanelCachingTab dataTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Data")) {
+                        new AbstractTab(new Model<>("Data")) {
 
                             public Panel getPanel(String id) {
                                 return new StyleAdminPanel(id, AbstractStylePage.this);
@@ -251,7 +250,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab publishingTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Publishing")) {
+                        new AbstractTab(new Model<>("Publishing")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
                             public Panel getPanel(String id) {
@@ -261,7 +260,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab previewTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Layer Preview")) {
+                        new AbstractTab(new Model<>("Layer Preview")) {
 
                             public Panel getPanel(String id) {
                                 return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
@@ -270,7 +269,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab attributeTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Layer Attributes")) {
+                        new AbstractTab(new Model<>("Layer Attributes")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
                             public Panel getPanel(String id) {
@@ -313,8 +312,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 if (titleKey != null) {
                     titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
                 } else {
-                    titleModel =
-                            new Model<String>(tabPanelInfo.getComponentClass().getSimpleName());
+                    titleModel = new Model<>(tabPanelInfo.getComponentClass().getSimpleName());
                 }
 
                 final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
@@ -402,7 +400,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         new CodeMirrorEditor(
                                 "styleEditor",
                                 styleHandler().getCodeMirrorEditMode(),
-                                new PropertyModel<String>(this, "rawStyle")));
+                                new PropertyModel<>(this, "rawStyle")));
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
         editor.setMarkupId("style-editor");

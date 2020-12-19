@@ -29,10 +29,10 @@ public class GeoJsonTileBuilderTest {
         Rectangle screenSize = new Rectangle(256, 256);
         ReferencedEnvelope mapArea = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
         Geometry point = geom("POINT(1 10)");
-        Map<String, Object> pointProps = ImmutableMap.<String, Object>of("name", "point1");
+        Map<String, Object> pointProps = ImmutableMap.of("name", "point1");
 
         Geometry line = geom("LINESTRING(0 0, 1 1, 2 2)");
-        Map<String, Object> lineProps = ImmutableMap.<String, Object>of("name", "line1");
+        Map<String, Object> lineProps = ImmutableMap.of("name", "line1");
 
         GeoJsonWMSBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);
 

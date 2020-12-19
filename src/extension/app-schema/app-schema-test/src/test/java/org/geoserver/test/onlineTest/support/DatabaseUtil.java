@@ -39,7 +39,7 @@ public class DatabaseUtil {
 
         StringBuilder contents = new StringBuilder();
 
-        ArrayList<String> statements = new ArrayList<String>();
+        ArrayList<String> statements = new ArrayList<>();
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
@@ -122,7 +122,7 @@ public class DatabaseUtil {
         Hashtable<String, Boolean> open;
 
         PostgisIgnoreOperator() {
-            open = new Hashtable<String, Boolean>();
+            open = new Hashtable<>();
             for (String s : operators) {
                 open.put(s, Boolean.FALSE);
             }
@@ -202,7 +202,7 @@ public class DatabaseUtil {
 
         StringBuilder contents = new StringBuilder();
 
-        ArrayList<String> statements = new ArrayList<String>();
+        ArrayList<String> statements = new ArrayList<>();
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!

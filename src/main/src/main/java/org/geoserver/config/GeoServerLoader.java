@@ -398,7 +398,7 @@ public abstract class GeoServerLoader {
         catalog.removeListeners(ResourcePool.CacheClearingListener.class);
         catalog.removeListeners(GeoServerConfigPersister.class);
         catalog.removeListeners(GeoServerResourcePersister.class);
-        List<CatalogListener> listeners = new ArrayList<CatalogListener>(catalog.getListeners());
+        List<CatalogListener> listeners = new ArrayList<>(catalog.getListeners());
 
         // look for catalog.xml, if it exists assume we are dealing with
         // an old data directory

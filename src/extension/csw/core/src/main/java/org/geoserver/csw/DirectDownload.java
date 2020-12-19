@@ -135,7 +135,7 @@ public class DirectDownload {
 
     /** Prepare the list of files to be downloaded from the current request. */
     public List<File> run(DirectDownloadType request) {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         String resourceId = request.getResourceId();
         String fileId = request.getFile();
 

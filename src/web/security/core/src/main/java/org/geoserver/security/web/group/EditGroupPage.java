@@ -54,7 +54,7 @@ public class EditGroupPage extends AbstractGroupPage {
                                                                 EditGroupPage.this
                                                                         .userGroupServiceName);
                                                 try {
-                                                    return new ArrayList<GeoServerUser>(
+                                                    return new ArrayList<>(
                                                             ugService.getUsersForGroup(group));
                                                 } catch (IOException e) {
                                                     throw new WicketRuntimeException(e);
@@ -91,8 +91,8 @@ public class EditGroupPage extends AbstractGroupPage {
                 gaStore = new RoleStoreValidationWrapper(gaStore);
 
                 Set<GeoServerRole> orig = gaStore.getRolesForGroup(group.getGroupname());
-                Set<GeoServerRole> add = new HashSet<GeoServerRole>();
-                Set<GeoServerRole> remove = new HashSet<GeoServerRole>();
+                Set<GeoServerRole> add = new HashSet<>();
+                Set<GeoServerRole> remove = new HashSet<>();
                 rolePalette.diff(orig, add, remove);
 
                 for (GeoServerRole role : add)

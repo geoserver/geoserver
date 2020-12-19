@@ -78,7 +78,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
      */
     public List<R> getRules() {
         checkPropertyFile(false);
-        return new ArrayList<R>(rules);
+        return new ArrayList<>(rules);
     }
 
     /**
@@ -149,7 +149,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
             if (rules == null || force) {
                 // no security folder, let's work against an empty properties then
                 if (securityDir == null || securityDir.getType() == Type.UNDEFINED) {
-                    this.rules = new TreeSet<R>();
+                    this.rules = new TreeSet<>();
                 } else {
                     // no security config, let's work against an empty properties then
                     Resource layers = securityDir.get(propertyFileName);
@@ -164,7 +164,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                     }
 
                     if (layers.getType() == Type.UNDEFINED) {
-                        this.rules = new TreeSet<R>();
+                        this.rules = new TreeSet<>();
                     } else {
                         // ok, something is there, let's load it
                         watcher = new PropertyFileWatcher(layers);
@@ -204,7 +204,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         // regexp: treat extra spaces as separators, ignore extra commas
         // "a,,b, ,, c" --> ["a","b","c"]
         String[] rolesArray = roleCsv.split("[\\s,]+");
-        Set<String> roles = new HashSet<String>(rolesArray.length);
+        Set<String> roles = new HashSet<>(rolesArray.length);
         roles.addAll(Arrays.asList(rolesArray));
 
         // if any of the roles is * we just remove all of the others

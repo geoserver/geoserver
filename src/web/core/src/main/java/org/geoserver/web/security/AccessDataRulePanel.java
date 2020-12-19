@@ -77,8 +77,7 @@ public class AccessDataRulePanel extends Panel {
 
     CheckBox selectAllCheckbox() {
         CheckBox sa =
-                new CheckBox(
-                        "selectAll", new PropertyModel<Boolean>(this, "dataAccessView.selectAll"));
+                new CheckBox("selectAll", new PropertyModel<>(this, "dataAccessView.selectAll"));
         sa.setOutputMarkupId(true);
         sa.add(
                 new AjaxFormComponentUpdatingBehavior("click") {

@@ -198,7 +198,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 allSections = (section.get("/").equals(section));
             }
             final Set<String> knownSections =
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     "/",
                                     "/WCS_Capabilities/Service",

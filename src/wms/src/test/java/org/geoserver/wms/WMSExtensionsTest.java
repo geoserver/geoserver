@@ -104,7 +104,7 @@ public class WMSExtensionsTest {
 
         // end of unpleasant block
 
-        Set<String> testFormatNames = new HashSet<String>();
+        Set<String> testFormatNames = new HashSet<>();
         testFormatNames.add("image/fakeformat");
         testFormatNames.add("image/dummy");
 

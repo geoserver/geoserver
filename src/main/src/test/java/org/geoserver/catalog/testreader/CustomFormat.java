@@ -42,7 +42,7 @@ public final class CustomFormat extends AbstractGridFormat {
                     false);
 
     public CustomFormat() {
-        this.mInfo = new HashMap<String, String>();
+        this.mInfo = new HashMap<>();
         this.mInfo.put("name", TYPE_NAME);
         this.mInfo.put(
                 "description",

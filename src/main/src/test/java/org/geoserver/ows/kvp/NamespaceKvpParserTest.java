@@ -91,7 +91,7 @@ public class NamespaceKvpParserTest {
     @SuppressWarnings("unchecked")
     private List<String> getPrefixes(NamespaceSupport ctx) {
         Enumeration<String> prefixes = ctx.getPrefixes();
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         while (prefixes.hasMoreElements()) {
             l.add(prefixes.nextElement());
         }

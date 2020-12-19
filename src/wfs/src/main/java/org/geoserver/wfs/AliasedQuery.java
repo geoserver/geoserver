@@ -289,7 +289,7 @@ class AliasedQuery extends Query {
 
     private Map<String, String> buildRenameMap(
             List<String> originalAliases, List<String> newAliases) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (int i = 0; i < originalAliases.size(); i++) {
             String a1 = originalAliases.get(i);
             String a2 = newAliases.get(i);

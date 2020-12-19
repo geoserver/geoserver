@@ -195,7 +195,7 @@ public class GeoServerNodeData {
      * key1:value1;key2=value2;..., using backslash as the escape char if needed
      */
     private static Map<String, String> parseProperties(String property) {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         List<String> kvps = KvpUtils.escapedTokens(property, ';');
 
         for (String kvp : kvps) {

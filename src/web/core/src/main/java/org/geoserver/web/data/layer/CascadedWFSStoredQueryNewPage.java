@@ -154,7 +154,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
         @Override
         protected List<StoredQuery> load() {
-            List<StoredQuery> ret = new ArrayList<StoredQuery>();
+            List<StoredQuery> ret = new ArrayList<>();
 
             for (StoredQueryListItemType sqlit : listStoredQueries()) {
                 StoredQuery item = new StoredQuery();

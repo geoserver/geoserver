@@ -705,8 +705,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 layerGroups = Lists.newArrayList(lgIter);
                 layers = Lists.newArrayList(iter);
             }
-            Set<LayerInfo> layersAlreadyProcessed =
-                    getLayersInGroups(new ArrayList<LayerGroupInfo>(layerGroups));
+            Set<LayerInfo> layersAlreadyProcessed = getLayersInGroups(new ArrayList<>(layerGroups));
 
             if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
                 start("Layer");
@@ -748,7 +747,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             } else {
                 if (layerGroups.size() > 0) {
                     try {
-                        handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups), true);
+                        handleLayerGroups(new ArrayList<>(layerGroups), true);
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
@@ -762,7 +761,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         private Set<String> getServiceSRSList() {
             List<String> srsList = serviceInfo.getSRS();
-            Set<String> srs = new LinkedHashSet<String>();
+            Set<String> srs = new LinkedHashSet<>();
             if (srsList != null) {
                 srs.addAll(srsList);
             }
@@ -845,7 +844,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             final Set<String> capabilitiesCrsIdentifiers;
             if (epsgCodes.isEmpty()) {
                 comment("All supported EPSG projections:");
-                capabilitiesCrsIdentifiers = new LinkedHashSet<String>();
+                capabilitiesCrsIdentifiers = new LinkedHashSet<>();
                 for (String code : CRS.getSupportedCodes("AUTO")) {
                     if ("WGS84(DD)".equals(code)) continue;
                     capabilitiesCrsIdentifiers.add("AUTO:" + code);
@@ -853,7 +852,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 capabilitiesCrsIdentifiers.addAll(CRS.getSupportedCodes("EPSG"));
             } else {
                 comment("Limited list of EPSG projections:");
-                capabilitiesCrsIdentifiers = new LinkedHashSet<String>(epsgCodes);
+                capabilitiesCrsIdentifiers = new LinkedHashSet<>(epsgCodes);
             }
 
             try {
@@ -988,7 +987,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         /** @param layerTree */
         private void handleLayerTree(final LayerTree layerTree, boolean isRoot) {
-            final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
+            final List<LayerInfo> data = new ArrayList<>(layerTree.getData());
             final Collection<LayerTree> children = layerTree.getChildrens();
 
             Collections.sort(
@@ -1255,7 +1254,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         protected Set<LayerInfo> getLayersInGroups(List<LayerGroupInfo> layerGroups) {
-            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<>();
 
             if (layerGroups == null || layerGroups.size() == 0) {
                 return layersAlreadyProcessed;
@@ -1339,7 +1338,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * layer groups
          */
         private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
-            LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);
+            LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<>(allGroups);
             for (LayerGroupInfo group : allGroups) {
                 for (PublishedInfo pi : group.getLayers()) {
                     if (pi instanceof LayerGroupInfo) {
@@ -1348,7 +1347,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
             }
 
-            return new ArrayList<LayerGroupInfo>(result);
+            return new ArrayList<>(result);
         }
 
         protected void handleLayerGroup(LayerGroupInfo layerGroup, boolean isRoot)
@@ -1428,7 +1427,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Collection<MetadataLinkInfo> metadataLinks = layerGroup.getMetadataLinks();
             if (metadataLinks == null || metadataLinks.isEmpty()) {
                 // Aggregated metadata links (see GEOS-4500)
-                Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
+                Set<MetadataLinkInfo> aggregatedLinks = new HashSet<>();
                 for (LayerInfo layer : Iterables.filter(layerGroup.getLayers(), LayerInfo.class)) {
                     List<MetadataLinkInfo> metadataLinksLayer =
                             layer.getResource().getMetadataLinks();

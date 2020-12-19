@@ -162,7 +162,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         setupRasterDimension(
                 TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
-        Map<LayerProperty, Object> properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(
@@ -188,7 +188,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 GetFeatureInfoTest.class,
                 catalog);
 
-        properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(

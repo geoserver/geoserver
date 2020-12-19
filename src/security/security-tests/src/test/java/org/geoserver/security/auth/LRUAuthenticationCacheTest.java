@@ -13,7 +13,7 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     @Test
     public void testLRUCache() {
 
-        LRUCache<String, String> cache = new LRUCache<String, String>(3);
+        LRUCache<String, String> cache = new LRUCache<>(3);
         cache.put("key1", "value1");
         cache.put("key2", "value2");
         cache.put("key3", "value3");

@@ -96,11 +96,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     "version");
 
         // do the version negotiation dance
-        List<String> provided = new ArrayList<String>();
+        List<String> provided = new ArrayList<>();
         provided.add(Wcs10GetCoverageRequestReader.VERSION);
         List<String> accepted = null;
         if (getCoverage.getVersion() != null) {
-            accepted = new ArrayList<String>();
+            accepted = new ArrayList<>();
             accepted.add(getCoverage.getVersion());
         }
         String version = RequestUtils.getVersionPreOws(provided, accepted);

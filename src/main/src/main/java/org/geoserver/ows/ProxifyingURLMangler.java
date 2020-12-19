@@ -60,7 +60,7 @@ public class ProxifyingURLMangler implements URLMangler {
     public static String TEMPLATE_PREFIX = "${";
     public static String TEMPLATE_POSTFIX = "}";
 
-    public static Map<String, Pattern> FORWARDED_PATTERNS = new HashMap<String, Pattern>();
+    public static Map<String, Pattern> FORWARDED_PATTERNS = new HashMap<>();
 
     {
         Arrays.asList(ForwardedComponents.values())

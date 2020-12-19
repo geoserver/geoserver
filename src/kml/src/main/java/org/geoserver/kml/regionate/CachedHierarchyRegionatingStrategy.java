@@ -164,7 +164,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
             throw new HttpErrorCodeException(204);
         } else {
             FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-            Set<FeatureId> ids = new HashSet<FeatureId>();
+            Set<FeatureId> ids = new HashSet<>();
             for (String fid : featuresInTile) {
                 ids.add(ff.featureId(fid));
             }
@@ -320,7 +320,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
     private Set<String> computeFids(Tile tile, Connection conn) throws Exception {
         Tile parent = tile.getParent();
         Set<String> parentFids = getUpwardFids(parent, conn);
-        Set<String> currFids = new HashSet<String>();
+        Set<String> currFids = new HashSet<>();
         FeatureIterator fi = null;
         try {
             // grab the features
@@ -466,7 +466,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
                 if (fid == null) {
                     return Collections.emptySet();
                 } else {
-                    fids = new HashSet<String>();
+                    fids = new HashSet<>();
                     fids.add(fid);
                 }
             }

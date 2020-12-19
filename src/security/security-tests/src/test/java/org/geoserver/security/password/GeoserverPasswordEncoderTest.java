@@ -240,7 +240,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
     }
 
     protected List<GeoServerPasswordEncoder> getConfigPBEEncoders() {
-        List<GeoServerPasswordEncoder> result = new ArrayList<GeoServerPasswordEncoder>();
+        List<GeoServerPasswordEncoder> result = new ArrayList<>();
         result.add(getPBEPasswordEncoder());
         if (getSecurityManager().isStrongEncryptionAvailable()) {
             result.add(getStrongPBEPasswordEncoder());
@@ -311,7 +311,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
     }
 
     protected List<GeoServerPBEPasswordEncoder> getPBEEncoders() {
-        List<GeoServerPBEPasswordEncoder> result = new ArrayList<GeoServerPBEPasswordEncoder>();
+        List<GeoServerPBEPasswordEncoder> result = new ArrayList<>();
         result.add(getPBEPasswordEncoder());
         if (getSecurityManager().isStrongEncryptionAvailable()) {
             result.add(getStrongPBEPasswordEncoder());

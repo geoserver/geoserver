@@ -48,9 +48,9 @@ public class GenericRecordBuilder implements RecordBuilder {
     private static final Pattern PATTERN_ATT_WITH_INDEX = Pattern.compile("([^\\[]*)\\[(.*)\\]");
 
     protected ComplexFeatureBuilder fb;
-    protected List<ReferencedEnvelope> boxes = new ArrayList<ReferencedEnvelope>();
+    protected List<ReferencedEnvelope> boxes = new ArrayList<>();
     protected RecordDescriptor recordDescriptor;
-    protected Map<Name, Name> substitutionMap = new HashMap<Name, Name>();
+    protected Map<Name, Name> substitutionMap = new HashMap<>();
 
     /**
      * A tree structure is built initially before the feature is built, so that all data for the
@@ -76,7 +76,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             TreeLeaf leaf = new TreeLeaf();
             leaf.value = value;
             if (userData != null) {
-                leaf.userData = new HashMap<Object, Object>();
+                leaf.userData = new HashMap<>();
                 leaf.userData.putAll(userData);
             }
             leaf.descriptor = descriptor;
@@ -85,13 +85,13 @@ public class GenericRecordBuilder implements RecordBuilder {
     }
 
     protected static class TreeBranch extends TreeNode {
-        public Map<String, List<TreeNode>> children = new HashMap<String, List<TreeNode>>();
+        public Map<String, List<TreeNode>> children = new HashMap<>();
 
         @Override
         public TreeBranch clone() {
             TreeBranch branch = new TreeBranch();
             for (Map.Entry<String, List<TreeNode>> pair : children.entrySet()) {
-                List<TreeNode> list = new ArrayList<TreeNode>();
+                List<TreeNode> list = new ArrayList<>();
                 for (TreeNode node : pair.getValue()) {
                     list.add(node.clone());
                 }
@@ -168,7 +168,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         List<TreeNode> treenodes = branch.children.get(path[index]);
 
         if (treenodes == null) {
-            treenodes = new ArrayList<TreeNode>();
+            treenodes = new ArrayList<>();
             branch.children.put(path[index], treenodes);
         }
 
@@ -378,8 +378,7 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         if (recordDescriptor.getBoundingBoxPropertyName() != null) {
             Map<Object, Object> userData =
-                    Collections.singletonMap(
-                            ORIGINAL_BBOXES, new ArrayList<ReferencedEnvelope>(boxes));
+                    Collections.singletonMap(ORIGINAL_BBOXES, new ArrayList<>(boxes));
             addElement(
                     recordDescriptor.getBoundingBoxPropertyName(),
                     Collections.singletonList(geom),
@@ -424,7 +423,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         } else if (node instanceof TreeBranch) {
 
             ab.setDescriptor(node.descriptor);
-            List<Attribute> list = new ArrayList<Attribute>();
+            List<Attribute> list = new ArrayList<>();
             for (List<TreeNode> nodes : ((TreeBranch) node).children.values()) {
                 for (TreeNode child : nodes) {
                     list.add(buildNode(child));

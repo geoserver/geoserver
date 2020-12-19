@@ -73,7 +73,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     public List<String> getVendorSpecificCapabilitiesChildDecls(
             final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
-            List<String> wmscElements = new ArrayList<String>();
+            List<String> wmscElements = new ArrayList<>();
             wmscElements.add(
                     "<!ELEMENT TileSet (SRS, BoundingBox?, Resolutions, Width, Height, Format, Layers*, Styles*) >");
             wmscElements.add("<!ELEMENT Resolutions (#PCDATA) >");

@@ -1234,7 +1234,7 @@ public class CatalogBuilder {
     List<CoverageDimensionInfo> getCoverageDimensions(GridSampleDimension[] sampleDimensions) {
 
         final int length = sampleDimensions.length;
-        List<CoverageDimensionInfo> dims = new ArrayList<CoverageDimensionInfo>();
+        List<CoverageDimensionInfo> dims = new ArrayList<>();
 
         for (int i = 0; i < length; i++) {
             CoverageDimensionInfo dim = catalog.getFactory().createCoverageDimension();
@@ -1793,7 +1793,7 @@ public class CatalogBuilder {
      * @param info The optional feature type info from which all the attributes belong to
      */
     public List<AttributeTypeInfo> getAttributes(FeatureType ft, FeatureTypeInfo info) {
-        List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
+        List<AttributeTypeInfo> attributes = new ArrayList<>();
         for (PropertyDescriptor pd : ft.getDescriptors()) {
             AttributeTypeInfo att = catalog.getFactory().createAttribute();
             att.setFeatureType(info);

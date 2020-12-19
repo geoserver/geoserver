@@ -114,9 +114,9 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the version chooser
         final DropDownChoice<Version> version =
-                new DropDownChoice<Version>(
+                new DropDownChoice<>(
                         "version",
-                        new PropertyModel<Version>(getCoverage, "version"),
+                        new PropertyModel<>(getCoverage, "version"),
                         Arrays.asList(Version.values()));
         add(version);
 
@@ -149,9 +149,9 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the coverage id chooser
         coverage =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "coverage",
-                        new PropertyModel<String>(getCoverage, "coverage"),
+                        new PropertyModel<>(getCoverage, "coverage"),
                         new CoverageNamesModel());
         add(coverage);
 
@@ -200,7 +200,7 @@ public class WCSRequestBuilderPanel extends Panel {
                 (CoverageResponseDelegateFinder)
                         GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
         formats =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "format",
                         new PropertyModel<>(getCoverage, "outputFormat"),
                         responseFactory.getOutputFormats());
@@ -300,7 +300,7 @@ public class WCSRequestBuilderPanel extends Panel {
         targetlayoutContainer.setVisible(false);
 
         targetLayoutChooser =
-                new DropDownChoice<TargetLayout>(
+                new DropDownChoice<>(
                         "targetLayout",
                         new Model<>(TargetLayout.Automatic),
                         Arrays.asList(TargetLayout.values()),

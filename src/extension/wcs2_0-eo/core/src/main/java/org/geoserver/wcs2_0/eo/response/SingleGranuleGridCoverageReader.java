@@ -60,7 +60,7 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
             List<DimensionDescriptor> dimensionDescriptors) {
         this.reader = reader;
         this.feature = feature;
-        this.dimensionDescriptors = new HashMap<String, DimensionDescriptor>();
+        this.dimensionDescriptors = new HashMap<>();
         for (DimensionDescriptor descriptor : dimensionDescriptors) {
             this.dimensionDescriptors.put(descriptor.getName().toUpperCase(), descriptor);
         }

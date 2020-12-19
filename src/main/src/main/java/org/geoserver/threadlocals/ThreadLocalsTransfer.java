@@ -29,7 +29,7 @@ import org.geoserver.platform.GeoServerExtensions;
  */
 public class ThreadLocalsTransfer {
 
-    Map<String, Object> storage = new HashMap<String, Object>();
+    Map<String, Object> storage = new HashMap<>();
 
     private List<ThreadLocalTransfer> transfers;
 

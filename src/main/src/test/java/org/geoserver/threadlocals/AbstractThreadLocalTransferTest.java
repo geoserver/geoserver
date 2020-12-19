@@ -49,7 +49,7 @@ public abstract class AbstractThreadLocalTransferTest {
 
         ThreadLocalTransfer transfer;
 
-        Map<String, Object> storage = new HashMap<String, Object>();
+        Map<String, Object> storage = new HashMap<>();
 
         public ThreadLocalTransferCallable(ThreadLocalTransfer transfer) {
             this.originalThread = Thread.currentThread();

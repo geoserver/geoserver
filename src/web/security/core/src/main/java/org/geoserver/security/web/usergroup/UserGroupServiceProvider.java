@@ -27,8 +27,7 @@ public class UserGroupServiceProvider
 
     @Override
     protected List<SecurityUserGroupServiceConfig> getItems() {
-        List<SecurityUserGroupServiceConfig> result =
-                new ArrayList<SecurityUserGroupServiceConfig>();
+        List<SecurityUserGroupServiceConfig> result = new ArrayList<>();
         try {
             for (String name : getSecurityManager().listUserGroupServices()) {
                 result.add(getSecurityManager().loadUserGroupServiceConfig(name));

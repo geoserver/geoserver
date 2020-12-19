@@ -250,7 +250,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 return properties;
             }
 
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
         }
 
         return properties;
@@ -266,7 +266,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 return oldCollectionValues;
             }
 
-            oldCollectionValues = new HashMap<String, Object>();
+            oldCollectionValues = new HashMap<>();
         }
 
         return oldCollectionValues;
@@ -303,7 +303,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     List<String> getDirtyProperties() {
-        List<String> propertyNames = new ArrayList<String>();
+        List<String> propertyNames = new ArrayList<>();
 
         for (String propertyName : properties().keySet()) {
             // in the case this property is another proxy, check that it is actually dirty
@@ -344,7 +344,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
     /** Returns the old values of any changed properties. */
     public List<Object> getOldValues() {
-        List<Object> oldValues = new ArrayList<Object>();
+        List<Object> oldValues = new ArrayList<>();
         for (String propertyName : getDirtyProperties()) {
             if (oldCollectionValues().containsKey(propertyName)) {
                 oldValues.add(oldCollectionValues.get(propertyName));
@@ -578,11 +578,10 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             // Copy the old state onto the new proxy
             ModificationProxy newHandler = handler(newProxy);
             if (Objects.nonNull(oldHandler.oldCollectionValues)) {
-                newHandler.oldCollectionValues =
-                        new HashMap<String, Object>(oldHandler.oldCollectionValues);
+                newHandler.oldCollectionValues = new HashMap<>(oldHandler.oldCollectionValues);
             }
             if (Objects.nonNull(oldHandler.properties)) {
-                newHandler.properties = new HashMap<String, Object>(oldHandler.properties);
+                newHandler.properties = new HashMap<>(oldHandler.properties);
             }
 
             return newProxy;

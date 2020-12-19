@@ -126,12 +126,12 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
         IModel<String> nameBinding = styleModel.bind("name");
 
-        add(nameTextField = new TextField<String>("name", nameBinding));
+        add(nameTextField = new TextField<>("name", nameBinding));
         nameTextField.setRequired(true);
 
         IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
         wsChoice =
-                new Select2DropDownChoice<WorkspaceInfo>(
+                new Select2DropDownChoice<>(
                         "workspace",
                         wsBinding,
                         new WorkspacesModel(),
@@ -237,9 +237,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
         // style generation functionality
         templates =
-                new Select2DropDownChoice<StyleType>(
+                new Select2DropDownChoice<>(
                         "templates",
-                        new Model<StyleType>(),
+                        new Model<>(),
                         new StyleTypeModel(),
                         new StyleTypeChoiceRenderer());
         templates.setOutputMarkupId(true);
@@ -291,7 +291,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
         fileUploadField = new FileUploadField("filename");
         // Explicitly set model so this doesn't use the form model
-        fileUploadField.setDefaultModel(new Model<String>(""));
+        fileUploadField.setDefaultModel(new Model<>(""));
         add(fileUploadField);
 
         add(previewLink());

@@ -31,10 +31,10 @@ public class RenderTimeStatistics implements RenderListener {
 
     public RenderTimeStatistics() {
         this.layers = new LinkedList<>();
-        this.startRenderingLayersTimes = new HashMap<Integer, Long>();
-        this.endRenderingLayersTimes = new HashMap<Integer, Long>();
-        this.renderingLayersTimes = new HashMap<Integer, Long>();
-        this.renderingLayersIdxs = new ArrayList<Integer>();
+        this.startRenderingLayersTimes = new HashMap<>();
+        this.endRenderingLayersTimes = new HashMap<>();
+        this.renderingLayersTimes = new HashMap<>();
+        this.renderingLayersIdxs = new ArrayList<>();
     }
 
     @Override

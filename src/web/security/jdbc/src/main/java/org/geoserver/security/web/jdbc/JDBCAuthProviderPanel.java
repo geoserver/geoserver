@@ -42,13 +42,13 @@ public class JDBCAuthProviderPanel
         add(new JDBCDriverChoice("driverClassName"));
         add(new TextField<String>("connectURL"));
 
-        TextField<String> userNameField = new TextField<String>("username");
-        userNameField.setModel(new PropertyModel<String>(this, "username"));
+        TextField<String> userNameField = new TextField<>("username");
+        userNameField.setModel(new PropertyModel<>(this, "username"));
         userNameField.setRequired(false);
         add(userNameField);
 
         PasswordTextField pwdField = new PasswordTextField("password");
-        pwdField.setModel(new PropertyModel<String>(this, "password"));
+        pwdField.setModel(new PropertyModel<>(this, "password"));
         pwdField.setRequired(false);
         pwdField.setResetPassword(true);
         add(pwdField);

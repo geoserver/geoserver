@@ -165,7 +165,7 @@ public class PreviewLayer {
 
     /** Expands the specified name into a list of layer info names */
     private List<MapLayerInfo> expandLayers(Catalog catalog) {
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> layers = new ArrayList<>();
 
         if (layerInfo != null) {
             layers.add(new MapLayerInfo(layerInfo));

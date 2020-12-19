@@ -98,7 +98,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
         // optimized data loading was not here, but yet it seems sensible to
         // have it...
-        Map<String, Object> rendererParams = new HashMap<String, Object>();
+        Map<String, Object> rendererParams = new HashMap<>();
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         // we need the renderer to draw everything on the batik provided graphics object
         rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);

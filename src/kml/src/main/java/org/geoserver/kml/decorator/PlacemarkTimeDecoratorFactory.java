@@ -44,11 +44,11 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
      * list of formats which correspond to the default formats in which freemarker outputs dates
      * when a user calls the ?datetime(),?date(),?time() fuctions.
      */
-    List<DateFormat> dtformats = new ArrayList<DateFormat>();
+    List<DateFormat> dtformats = new ArrayList<>();
 
-    List<DateFormat> dformats = new ArrayList<DateFormat>();
+    List<DateFormat> dformats = new ArrayList<>();
 
-    List<DateFormat> tformats = new ArrayList<DateFormat>();
+    List<DateFormat> tformats = new ArrayList<>();
 
     public PlacemarkTimeDecoratorFactory() {
         // add default freemarker ones first since they are likely to be used

@@ -150,7 +150,7 @@ public class LegacyFeatureTypeInfoReader {
     public List<String> styles() throws Exception {
         Element styleRoot = ReaderUtils.getChildElement(featureType, "styles");
         if (styleRoot != null) {
-            List<String> styleNames = new ArrayList<String>();
+            List<String> styleNames = new ArrayList<>();
             Element[] styles = ReaderUtils.getChildElements(styleRoot, "style");
             for (Element style : styles) {
                 styleNames.add(style.getTextContent().trim());

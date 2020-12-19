@@ -29,7 +29,7 @@ public class ScaleLineDecoration implements MapDecoration {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
-    private static Map<String, Double> INCHES_PER_UNIT = new HashMap<String, Double>();
+    private static Map<String, Double> INCHES_PER_UNIT = new HashMap<>();
 
     static {
         INCHES_PER_UNIT.put("inches", 1.0);

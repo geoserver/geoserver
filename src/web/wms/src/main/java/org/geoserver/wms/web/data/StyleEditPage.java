@@ -55,11 +55,9 @@ public class StyleEditPage extends AbstractStylePage {
             if (si.getWorkspace() == null) {
                 styleForm.setEnabled(false);
 
-                editor.add(new AttributeAppender("class", new Model<String>("disabled"), " "));
+                editor.add(new AttributeAppender("class", new Model<>("disabled"), " "));
                 get("validate")
-                        .add(
-                                new AttributeAppender(
-                                        "style", new Model<String>("display:none;"), " "));
+                        .add(new AttributeAppender("style", new Model<>("display:none;"), " "));
                 add(
                         new Behavior() {
 

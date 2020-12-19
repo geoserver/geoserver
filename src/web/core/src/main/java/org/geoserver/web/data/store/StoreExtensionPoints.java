@@ -185,7 +185,7 @@ public class StoreExtensionPoints {
 
         final List<DataStorePanelInfo> providers = app.getBeansOfType(DataStorePanelInfo.class);
 
-        List<DataStorePanelInfo> fallbacks = new ArrayList<DataStorePanelInfo>();
+        List<DataStorePanelInfo> fallbacks = new ArrayList<>();
         for (DataStorePanelInfo provider : providers) {
             Class<?> providerFactoryClass = provider.getFactoryClass();
             if (providerFactoryClass == null) {

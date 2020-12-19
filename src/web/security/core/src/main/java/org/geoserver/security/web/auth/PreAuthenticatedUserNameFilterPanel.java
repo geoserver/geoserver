@@ -75,7 +75,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
     }
 
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
-        return new DropDownChoice<RoleSource>(
+        return new DropDownChoice<>(
                 "roleSource",
                 Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
                 new RoleSourceChoiceRenderer());

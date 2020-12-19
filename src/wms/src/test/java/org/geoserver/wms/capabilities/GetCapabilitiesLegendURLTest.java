@@ -135,7 +135,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                 "Population.sld",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);
-        Map<LayerProperty, Object> properties = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "states");
         LocalWorkspace.set(workspaceInfo);
         testData.addVectorLayer(
@@ -147,7 +147,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         LocalWorkspace.set(null);
 
         testData.addStyle("temperature", "temperature.sld", WMSTestSupport.class, catalog);
-        properties = new HashMap<LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WORLD, "world.tiff", null, properties, SystemTestData.class, catalog);
@@ -183,7 +183,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                         getClass().getResourceAsStream("/legendURL/Bridges.png"),
                         LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");

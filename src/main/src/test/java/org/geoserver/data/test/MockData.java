@@ -263,7 +263,7 @@ public class MockData implements TestData {
             };
 
     /** map of qname to srs */
-    public static HashMap<QName, Integer> SRS = new HashMap<QName, Integer>();
+    public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
         for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
@@ -679,7 +679,7 @@ public class MockData implements TestData {
         String prefix = name.getPrefix();
 
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_ALIAS, null);
 

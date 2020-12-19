@@ -144,7 +144,7 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
             LOGGER.fine("AuthenticationCache removing all entries for " + filterName);
             LOGGER.fine("Cache entries #: " + cache.size());
         }
-        Set<AuthenticationCacheKey> toBeRemoved = new HashSet<AuthenticationCacheKey>();
+        Set<AuthenticationCacheKey> toBeRemoved = new HashSet<>();
         for (AuthenticationCacheKey key : cache.asMap().keySet()) {
             if (filterName.equals(key.getFilterName())) toBeRemoved.add(key);
         }

@@ -95,8 +95,7 @@ public class KMLTest extends WMSTestSupport {
         testData.addVectorLayer(
                 STORM_OBS, Collections.emptyMap(), "storm_obs.properties", getClass(), catalog);
 
-        Map<SystemTestData.LayerProperty, Object> properties =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(-105.336, -105.112, 39.9, 40.116, CRS.decode("EPSG:4326")));

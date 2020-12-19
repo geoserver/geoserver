@@ -130,14 +130,14 @@ public class PagedUniqueProcess implements GeoServerProcess {
                 };
 
         Integer listSize = 0;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         try {
             // counts total elements
             features.accepts(visitor, null);
             if (visitor.getResult() == null || visitorAsList(visitor) == null) {
                 listSize = 0;
-                list = new ArrayList<String>(0);
+                list = new ArrayList<>(0);
             } else {
                 listSize = visitorAsList(visitor).size();
                 if (maxFeatures == null || maxFeatures > listSize) {

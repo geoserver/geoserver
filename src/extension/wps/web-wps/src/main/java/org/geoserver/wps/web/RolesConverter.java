@@ -25,7 +25,7 @@ public class RolesConverter implements IConverter {
 
     @Override
     public Object convertToObject(String value, Locale locale) {
-        List<String> checkedRoles = new ArrayList<String>();
+        List<String> checkedRoles = new ArrayList<>();
         if (value != null && !value.isEmpty()) {
             String[] selectedRoles = value.split(";");
             // Check roles string

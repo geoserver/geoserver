@@ -85,7 +85,7 @@ public class WCSDimensionsHelper {
                 new ReaderDimensionsAccessor(
                         (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
 
-        Map<String, DimensionInfo> dimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> dimensions = new HashMap<>();
         for (Map.Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
             if (entry.getValue() instanceof DimensionInfo) {
                 dimensions.put(entry.getKey(), (DimensionInfo) entry.getValue());
@@ -131,7 +131,7 @@ public class WCSDimensionsHelper {
     /** Initialize dimensions */
     private void initDimensions(Map<String, DimensionInfo> dimensions) {
         Utilities.ensureNonNull("dimensions", dimensions);
-        Map<String, DimensionInfo> updatedDimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> updatedDimensions = new HashMap<>();
         updatedDimensions.putAll(dimensions);
 
         // Initialize Time dimensions
@@ -288,7 +288,7 @@ public class WCSDimensionsHelper {
      * return a dimensions Map. Return an empty map if no dimensions are found.
      */
     public static Map<String, DimensionInfo> getDimensionsFromMetadata(MetadataMap metadata) {
-        Map<String, DimensionInfo> dimensionsMap = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> dimensionsMap = new HashMap<>();
         if (metadata != null && !metadata.isEmpty()) {
             final Set<String> metadataKeys = metadata.keySet();
             final Iterator<String> metadataIterator = metadataKeys.iterator();

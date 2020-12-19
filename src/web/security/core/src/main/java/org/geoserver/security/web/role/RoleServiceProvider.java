@@ -23,7 +23,7 @@ public class RoleServiceProvider extends SecurityNamedServiceProvider<SecurityRo
 
     @Override
     protected List<SecurityRoleServiceConfig> getItems() {
-        List<SecurityRoleServiceConfig> result = new ArrayList<SecurityRoleServiceConfig>();
+        List<SecurityRoleServiceConfig> result = new ArrayList<>();
         try {
             for (String name : getSecurityManager().listRoleServices()) {
                 result.add(getSecurityManager().loadRoleServiceConfig(name));

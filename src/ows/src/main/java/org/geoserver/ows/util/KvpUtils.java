@@ -313,7 +313,7 @@ public class KvpUtils {
                 // we use a set so that mere value repetition (a common error for which the OWS spec
                 // leaves the server up to decide what to do) does not cause the result to be a
                 // String[]
-                LinkedHashSet<String> normalized = new LinkedHashSet<String>();
+                LinkedHashSet<String> normalized = new LinkedHashSet<>();
                 for (String v : values) {
                     v = trim(v);
                     if (v != null) {
@@ -420,7 +420,7 @@ public class KvpUtils {
                         parsed = parser.parse(value);
                     } else {
                         String[] values = (String[]) entry.getValue();
-                        List<Object> result = new ArrayList<Object>();
+                        List<Object> result = new ArrayList<>();
                         for (String v : values) {
                             result.add(parser.parse(v));
                         }
@@ -610,7 +610,7 @@ public class KvpUtils {
 
         String queryString = path.substring(index + 1);
         StringTokenizer st = new StringTokenizer(queryString, "&");
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             String[] keyValuePair;
@@ -693,7 +693,7 @@ public class KvpUtils {
         if (maxTokens <= 0) {
             maxTokens = Integer.MAX_VALUE;
         }
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         boolean escaped = false;
         int tokenCount = 1;

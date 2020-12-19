@@ -33,7 +33,7 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
         // make sure non-feature types don't appear in FeatureTypeList
         assertXpathCount(1, "//wfs:FeatureType", doc);
-        ArrayList<String> featureTypeNames = new ArrayList<String>(1);
+        ArrayList<String> featureTypeNames = new ArrayList<>(1);
         featureTypeNames.add(evaluate("//wfs:FeatureType[1]/wfs:Name", doc));
         // ERM
         assertTrue(featureTypeNames.contains("ex:ERM"));

@@ -38,7 +38,7 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
             kvp.put("elementsetname", esnt);
         }
 
-        List<URI> idsuri = new ArrayList<URI>();
+        List<URI> idsuri = new ArrayList<>();
         String rawId = (String) kvp.get("id");
         if (rawId == null) {
             throw new ServiceException(

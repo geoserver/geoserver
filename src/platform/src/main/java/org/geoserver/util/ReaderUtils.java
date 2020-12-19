@@ -150,7 +150,7 @@ public class ReaderUtils {
      */
     public static Element[] getChildElements(Element root, String name, boolean mandatory)
             throws Exception {
-        final List<Element> elements = new ArrayList<Element>();
+        final List<Element> elements = new ArrayList<>();
         Node child = root.getFirstChild();
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
@@ -674,7 +674,7 @@ public class ReaderUtils {
         // corresponding list.
         //
         /////
-        final List<String> elements = new ArrayList<String>();
+        final List<String> elements = new ArrayList<>();
         int index = -1;
         while ((index = keywords.indexOf(delimiter)) >= 0) {
             if (index > 0) elements.add(keywords.substring(0, index));

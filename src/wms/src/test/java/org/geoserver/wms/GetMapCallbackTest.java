@@ -195,17 +195,17 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
 
     private class TestCallback implements GetMapCallback {
 
-        private List<GetMapRequest> requests = new ArrayList<GetMapRequest>();
+        private List<GetMapRequest> requests = new ArrayList<>();
 
-        private List<WMSMapContent> mapContentsInited = new ArrayList<WMSMapContent>();
+        private List<WMSMapContent> mapContentsInited = new ArrayList<>();
 
-        private List<Layer> layers = new ArrayList<Layer>();
+        private List<Layer> layers = new ArrayList<>();
 
-        private List<WMSMapContent> mapContents = new ArrayList<WMSMapContent>();
+        private List<WMSMapContent> mapContents = new ArrayList<>();
 
-        private List<WebMap> maps = new ArrayList<WebMap>();
+        private List<WebMap> maps = new ArrayList<>();
 
-        private List<Throwable> exceptions = new ArrayList<Throwable>();
+        private List<Throwable> exceptions = new ArrayList<>();
 
         @Override
         public synchronized GetMapRequest initRequest(GetMapRequest request) {

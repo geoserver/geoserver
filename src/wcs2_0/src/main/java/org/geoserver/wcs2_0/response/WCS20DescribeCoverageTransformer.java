@@ -111,9 +111,9 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             this.request = (DescribeCoverageType) o;
 
             // collect coverages
-            List<CoverageInfo> coverages = new ArrayList<CoverageInfo>();
+            List<CoverageInfo> coverages = new ArrayList<>();
 
-            List<String> covIds = new ArrayList<String>();
+            List<String> covIds = new ArrayList<>();
             for (String encodedCoverageId : request.getCoverageId()) {
                 String newCoverageID = encodedCoverageId;
                 // Extension point for encoding the coverageId

@@ -136,7 +136,7 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
 
         // max concurrent connections
         final PropertyModel<Boolean> useHttpConnectionPoolModel =
-                new PropertyModel<Boolean>(model, "useConnectionPooling");
+                new PropertyModel<>(model, "useConnectionPooling");
         CheckBoxParamPanel useConnectionPooling =
                 new CheckBoxParamPanel(
                         "useConnectionPoolingPanel",
@@ -150,7 +150,7 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                         new PropertyModel<>(model, "maxConnections"),
                         new ResourceModel("AbstractWMTSStorePage.maxConnections"),
                         true,
-                        new RangeValidator<Integer>(1, 128));
+                        new RangeValidator<>(1, 128));
         maxConnections.setOutputMarkupId(true);
         maxConnections.setEnabled(useHttpConnectionPoolModel.getObject());
         form.add(maxConnections);
@@ -175,7 +175,7 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                         new PropertyModel<>(model, "connectTimeout"),
                         new ResourceModel("AbstractWMTSStorePage.connectTimeout"),
                         true,
-                        new RangeValidator<Integer>(1, 240)));
+                        new RangeValidator<>(1, 240)));
 
         // read timeout
         form.add(
@@ -184,7 +184,7 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                         new PropertyModel<>(model, "readTimeout"),
                         new ResourceModel("AbstractWMTSStorePage.readTimeout"),
                         true,
-                        new RangeValidator<Integer>(1, 360)));
+                        new RangeValidator<>(1, 360)));
 
         // cancel/submit buttons
         form.add(new BookmarkablePageLink<>("cancel", StorePage.class));

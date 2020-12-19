@@ -117,7 +117,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
         // max concurrent connections
         final PropertyModel<Boolean> useHttpConnectionPoolModel =
-                new PropertyModel<Boolean>(model, "useConnectionPooling");
+                new PropertyModel<>(model, "useConnectionPooling");
         CheckBoxParamPanel useConnectionPooling =
                 new CheckBoxParamPanel(
                         "useConnectionPoolingPanel",
@@ -132,7 +132,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                         connectionsModel,
                         new ResourceModel("AbstractWMSStorePage.maxConnections"),
                         true,
-                        new RangeValidator<Integer>(1, 128));
+                        new RangeValidator<>(1, 128));
         maxConnections.setOutputMarkupId(true);
         maxConnections.setEnabled(useHttpConnectionPoolModel.getObject());
         form.add(maxConnections);
@@ -151,25 +151,24 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                         });
 
         // connect timeout
-        PropertyModel<Integer> connectTimeoutModel =
-                new PropertyModel<Integer>(model, "connectTimeout");
+        PropertyModel<Integer> connectTimeoutModel = new PropertyModel<>(model, "connectTimeout");
         form.add(
                 new TextParamPanel<>(
                         "connectTimeoutPanel",
                         connectTimeoutModel,
                         new ResourceModel("AbstractWMSStorePage.connectTimeout"),
                         true,
-                        new RangeValidator<Integer>(1, 240)));
+                        new RangeValidator<>(1, 240)));
 
         // read timeout
-        PropertyModel<Integer> readTimeoutModel = new PropertyModel<Integer>(model, "readTimeout");
+        PropertyModel<Integer> readTimeoutModel = new PropertyModel<>(model, "readTimeout");
         form.add(
                 new TextParamPanel<>(
                         "readTimeoutPanel",
                         readTimeoutModel,
                         new ResourceModel("AbstractWMSStorePage.readTimeout"),
                         true,
-                        new RangeValidator<Integer>(1, 360)));
+                        new RangeValidator<>(1, 360)));
 
         // cancel/submit buttons
         form.add(new BookmarkablePageLink<>("cancel", StorePage.class));

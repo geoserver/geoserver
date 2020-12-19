@@ -204,7 +204,7 @@ public class WMSMapContent extends MapContent {
 
     @Override
     public int addLayers(Collection<? extends Layer> layers) {
-        List<Layer> filtered = new ArrayList<Layer>(layers.size());
+        List<Layer> filtered = new ArrayList<>(layers.size());
         for (Layer layer : layers) {
             layer = fireLayerCallbacks(layer);
             if (layer != null) {

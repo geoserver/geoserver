@@ -112,11 +112,9 @@ public class CatalogLayerEventListener implements CatalogListener {
      * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
      * necessary to perform any action on the cache based on the changed properties
      */
-    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT =
-            new ThreadLocal<CatalogModifyEvent>();
+    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT = new ThreadLocal<>();
 
-    private static ThreadLocal<GeoServerTileLayerInfo> PRE_MODIFY_TILELAYER =
-            new ThreadLocal<GeoServerTileLayerInfo>();
+    private static ThreadLocal<GeoServerTileLayerInfo> PRE_MODIFY_TILELAYER = new ThreadLocal<>();
 
     public CatalogLayerEventListener(final GWC mediator, Catalog catalog) {
         this.mediator = mediator;
@@ -382,7 +380,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         }
 
         if (tileLayerInfo.isAutoCacheStyles()) {
-            Set<String> styles = new HashSet<String>();
+            Set<String> styles = new HashSet<>();
             for (StyleInfo s : li.getStyles()) {
                 styles.add(s.prefixedName());
             }

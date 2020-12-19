@@ -489,7 +489,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                             Integer offset,
                             Integer count,
                             SortBy sortBy) {
-                        return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
+                        return new CloseableIteratorAdapter<>((Iterator<T>) layers.iterator());
                     }
                 };
         this.catalog = withLayers;
@@ -667,8 +667,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         expect(eoCatalog.getLayerGroups())
                 .andReturn(Arrays.asList(eoRoadsLayerGroup, eoStatesLayerGroup));
         expect(eoCatalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class)))
-                .andReturn(
-                        new CloseableIteratorAdapter<LayerGroupInfo>(Collections.emptyIterator()))
+                .andReturn(new CloseableIteratorAdapter<>(Collections.emptyIterator()))
                 .anyTimes();
         replay(eoCatalog);
         this.catalog = eoCatalog;
@@ -1394,7 +1393,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
         try {
-            LinkedList<T> list = new LinkedList<T>();
+            LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }

@@ -120,7 +120,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             // to actually update the ID's
 
             // load all the existing features into memory
-            Map<String, SimpleFeature> oldFeatures = new LinkedHashMap<String, SimpleFeature>();
+            Map<String, SimpleFeature> oldFeatures = new LinkedHashMap<>();
 
             SimpleFeatureIterator it = features.features();
             try {

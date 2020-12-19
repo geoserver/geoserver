@@ -21,7 +21,7 @@ public class MasterPasswordProviderProvider
 
     @Override
     protected List<MasterPasswordProviderConfig> getItems() {
-        List<MasterPasswordProviderConfig> configs = new ArrayList<MasterPasswordProviderConfig>();
+        List<MasterPasswordProviderConfig> configs = new ArrayList<>();
         try {
             for (String name : getSecurityManager().listMasterPasswordProviders()) {
                 configs.add(getSecurityManager().loadMasterPassswordProviderConfig(name));

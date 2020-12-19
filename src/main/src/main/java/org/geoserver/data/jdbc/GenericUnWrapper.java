@@ -53,7 +53,7 @@ public class GenericUnWrapper implements UnWrapper {
     static final Map<Class<?>, Method> CONNECTION_METHODS;
 
     static {
-        CONNECTION_METHODS = new ConcurrentHashMap<Class<?>, Method>();
+        CONNECTION_METHODS = new ConcurrentHashMap<>();
 
         // if the environment does not contain the classes ... skip
         methodSearch(
@@ -81,7 +81,7 @@ public class GenericUnWrapper implements UnWrapper {
     static final Map<Class<?>, Method> STATEMENT_METHODS;
 
     static {
-        STATEMENT_METHODS = new ConcurrentHashMap<Class<?>, Method>();
+        STATEMENT_METHODS = new ConcurrentHashMap<>();
         methodSearch(
                 "JBoss Resource Adapter",
                 STATEMENT_METHODS,

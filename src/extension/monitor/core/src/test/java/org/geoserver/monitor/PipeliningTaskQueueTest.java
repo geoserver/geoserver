@@ -44,7 +44,7 @@ public class PipeliningTaskQueueTest {
     @Test
     public void test() throws Exception {
 
-        ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<Worker>();
+        ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<>();
         int groups = 5;
         List<List<Worker>> workers = new ArrayList<>();
         for (int i = 0; i < groups; i++) {

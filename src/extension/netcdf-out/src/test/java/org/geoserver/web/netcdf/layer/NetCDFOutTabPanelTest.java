@@ -45,9 +45,9 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
     public void setUpInternal() throws Exception {
         // Creatign models
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.TASMANIA_DEM));
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
         ResourceInfo resource = layerInfo.getResource();
-        resourceModel = new Model<CoverageInfo>((CoverageInfo) resource);
+        resourceModel = new Model<>((CoverageInfo) resource);
         // Add Element to MetadataMap
         MetadataMap metadata = resource.getMetadata();
         if (!metadata.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {

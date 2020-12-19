@@ -74,7 +74,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     });
 
     static final List<String> DISPOSAL_METHODS =
-            new ArrayList<String>(Arrays.asList(WMS.DISPOSAL_METHODS));
+            new ArrayList<>(Arrays.asList(WMS.DISPOSAL_METHODS));
 
     ModalWindow modal;
     MimeTypesFormComponent getMapMimeTypesComponent, getFeatureInfoMimeTypesComponent;
@@ -171,22 +171,22 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         Arrays.asList(WMSInfo.WMSInterpolation.values()),
                         new InterpolationRenderer()));
         // resource limits
-        TextField<Integer> maxMemory = new TextField<Integer>("maxRequestMemory");
+        TextField<Integer> maxMemory = new TextField<>("maxRequestMemory");
         maxMemory.add(RangeValidator.minimum(0));
         form.add(maxMemory);
-        TextField<Integer> maxTime = new TextField<Integer>("maxRenderingTime");
+        TextField<Integer> maxTime = new TextField<>("maxRenderingTime");
         maxTime.add(RangeValidator.minimum(0));
         form.add(maxTime);
-        TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
+        TextField<Integer> maxErrors = new TextField<>("maxRenderingErrors");
         maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
         // max buffer
-        TextField<Integer> maxBuffer = new TextField<Integer>("maxBuffer");
+        TextField<Integer> maxBuffer = new TextField<>("maxBuffer");
         maxBuffer.add(RangeValidator.minimum(0));
         form.add(maxBuffer);
         // max dimension values
         TextField<Integer> maxRequestedDimensionValues =
-                new TextField<Integer>("maxRequestedDimensionValues");
+                new TextField<>("maxRequestedDimensionValues");
         maxRequestedDimensionValues.add(RangeValidator.minimum(0));
         form.add(maxRequestedDimensionValues);
         // watermark
@@ -194,7 +194,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField watermarkUrlField =
                 new TextField(
                         "watermark.uRL",
-                        new FileModel(new PropertyModel<String>(form.getModel(), "watermark.URL")));
+                        new FileModel(new PropertyModel<>(form.getModel(), "watermark.URL")));
         watermarkUrlField.add(new FileExistsValidator(true));
         watermarkUrlField.setOutputMarkupId(true);
         form.add(watermarkUrlField);
@@ -203,8 +203,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         "chooser",
                         new ParamResourceModel("chooseWatermark", this).getString(),
                         watermarkUrlField));
-        TextField<Integer> transparency = new TextField<Integer>("watermark.transparency");
-        transparency.add(new RangeValidator<Integer>(0, 100));
+        TextField<Integer> transparency = new TextField<>("watermark.transparency");
+        transparency.add(new RangeValidator<>(0, 100));
         form.add(transparency);
         form.add(
                 new DropDownChoice(
@@ -223,15 +223,15 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         MapModel pngCompression =
                 defaultedModel(metadataModel, WMS.PNG_COMPRESSION, WMS.PNG_COMPRESSION_DEFAULT);
         TextField<Integer> pngCompressionField =
-                new TextField<Integer>("png.compression", pngCompression, Integer.class);
-        pngCompressionField.add(new RangeValidator<Integer>(0, 100));
+                new TextField<>("png.compression", pngCompression, Integer.class);
+        pngCompressionField.add(new RangeValidator<>(0, 100));
         form.add(pngCompressionField);
         // jpeg compression levels
         MapModel jpegCompression =
                 defaultedModel(metadataModel, WMS.JPEG_COMPRESSION, WMS.JPEG_COMPRESSION_DEFAULT);
         TextField<Integer> jpegCompressionField =
-                new TextField<Integer>("jpeg.compression", jpegCompression, Integer.class);
-        jpegCompressionField.add(new RangeValidator<Integer>(0, 100));
+                new TextField<>("jpeg.compression", jpegCompression, Integer.class);
+        jpegCompressionField.add(new RangeValidator<>(0, 100));
         form.add(jpegCompressionField);
         // GIF animated
         // MAX_ALLOWED_FRAMES
@@ -239,25 +239,25 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 defaultedModel(
                         metadataModel, WMS.MAX_ALLOWED_FRAMES, WMS.MAX_ALLOWED_FRAMES_DEFAULT);
         TextField<Integer> maxAllowedFramesField =
-                new TextField<Integer>("anim.maxallowedframes", maxAllowedFrames, Integer.class);
-        maxAllowedFramesField.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE));
+                new TextField<>("anim.maxallowedframes", maxAllowedFrames, Integer.class);
+        maxAllowedFramesField.add(new RangeValidator<>(0, Integer.MAX_VALUE));
         form.add(maxAllowedFramesField);
         // MAX_RENDERING_TIME
         MapModel maxRenderingTime = defaultedModel(metadataModel, WMS.MAX_RENDERING_TIME, null);
         TextField<Integer> maxRenderingTimeField =
-                new TextField<Integer>("anim.maxrenderingtime", maxRenderingTime, Integer.class);
+                new TextField<>("anim.maxrenderingtime", maxRenderingTime, Integer.class);
         form.add(maxRenderingTimeField);
         // MAX_RENDERING_SIZE
         MapModel maxRenderingSize = defaultedModel(metadataModel, WMS.MAX_RENDERING_SIZE, null);
         TextField<Integer> maxRenderingSizeField =
-                new TextField<Integer>("anim.maxrenderingsize", maxRenderingSize, Integer.class);
+                new TextField<>("anim.maxrenderingsize", maxRenderingSize, Integer.class);
         form.add(maxRenderingSizeField);
         // FRAMES_DELAY
         MapModel framesDelay =
                 defaultedModel(metadataModel, WMS.FRAMES_DELAY, WMS.FRAMES_DELAY_DEFAULT);
         TextField<Integer> framesDelayField =
-                new TextField<Integer>("anim.framesdelay", framesDelay, Integer.class);
-        framesDelayField.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE));
+                new TextField<>("anim.framesdelay", framesDelay, Integer.class);
+        framesDelayField.add(new RangeValidator<>(0, Integer.MAX_VALUE));
         form.add(framesDelayField);
         // DISPOSAL_METHOD
         MapModel disposalMethod =
@@ -299,9 +299,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                                 WMS.KML_KMLPLACEMARK_DEFAULT)));
 
         MapModel kmScore = defaultedModel(metadataModel, WMS.KML_KMSCORE, WMS.KML_KMSCORE_DEFAULT);
-        TextField<Integer> kmScoreField =
-                new TextField<Integer>("kml.kmscore", kmScore, Integer.class);
-        kmScoreField.add(new RangeValidator<Integer>(0, 100));
+        TextField<Integer> kmScoreField = new TextField<>("kml.kmscore", kmScore, Integer.class);
+        kmScoreField.add(new RangeValidator<>(0, 100));
         form.add(kmScoreField);
 
         // scalehint
@@ -314,44 +313,44 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                                 WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
 
         // mime types for GetMap
-        getMapAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        getMapAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
             getMapAvailable.add(format.getMimeType());
         }
 
-        List<String> getMapSelected = new ArrayList<String>();
+        List<String> getMapSelected = new ArrayList<>();
         getMapSelected.addAll(new PropertyModel<Set<String>>(info, "getMapMimeTypes").getObject());
-        List<String> getMapChoices = new ArrayList<String>();
+        List<String> getMapChoices = new ArrayList<>();
         getMapChoices.addAll(getMapAvailable);
 
         form.add(
                 getMapMimeTypesComponent =
                         new MimeTypesFormComponent(
                                 "getMapMimeTypes",
-                                new ListModel<String>(getMapSelected),
-                                new CollectionModel<String>(getMapChoices),
+                                new ListModel<>(getMapSelected),
+                                new CollectionModel<>(getMapChoices),
                                 new PropertyModel<Boolean>(info, "getMapMimeTypeCheckingEnabled")
                                         .getObject()));
 
         // mime types for GetFeatueInfo
-        getFeatureInfoAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        getFeatureInfoAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (GetFeatureInfoOutputFormat format :
                 GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
             getFeatureInfoAvailable.add(format.getContentType());
         }
 
-        List<String> getFeatureInfoSelected = new ArrayList<String>();
+        List<String> getFeatureInfoSelected = new ArrayList<>();
         getFeatureInfoSelected.addAll(
                 new PropertyModel<Set<String>>(info, "getFeatureInfoMimeTypes").getObject());
-        List<String> getFeatureInfoChoices = new ArrayList<String>();
+        List<String> getFeatureInfoChoices = new ArrayList<>();
         getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
 
         form.add(
                 getFeatureInfoMimeTypesComponent =
                         new MimeTypesFormComponent(
                                 "getFeatureInfoMimeTypes",
-                                new ListModel<String>(getFeatureInfoSelected),
-                                new CollectionModel<String>(getFeatureInfoChoices),
+                                new ListModel<>(getFeatureInfoSelected),
+                                new CollectionModel<>(getFeatureInfoChoices),
                                 new PropertyModel<Boolean>(
                                                 info, "getFeatureInfoMimeTypeCheckingEnabled")
                                         .getObject()));
@@ -360,30 +359,29 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(
                 new CheckBox(
                         "dynamicStyling.disabled",
-                        new PropertyModel<Boolean>(info, WMS.DYNAMIC_STYLING_DISABLED)));
+                        new PropertyModel<>(info, WMS.DYNAMIC_STYLING_DISABLED)));
 
         // disable the reprojection of GetFeatureInfo results
         form.add(
                 new CheckBox(
                         "disableFeaturesReproject",
                         new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
-        TextField<Integer> cacheMaxExtries =
-                new TextField<Integer>("cacheConfiguration.maxEntries");
+        TextField<Integer> cacheMaxExtries = new TextField<>("cacheConfiguration.maxEntries");
         cacheMaxExtries.add(RangeValidator.minimum(1));
         form.add(cacheMaxExtries);
 
-        TextField<Long> cacheEntrySize = new TextField<Long>("cacheConfiguration.maxEntrySize");
-        cacheEntrySize.add(new RangeValidator<Long>(1L, Long.MAX_VALUE));
+        TextField<Long> cacheEntrySize = new TextField<>("cacheConfiguration.maxEntrySize");
+        cacheEntrySize.add(new RangeValidator<>(1L, Long.MAX_VALUE));
         form.add(cacheEntrySize);
 
         form.add(new CheckBox("cacheConfiguration.enabled"));
 
         // Remote style time settings
-        TextField<Integer> remoteStylesTimeout = new TextField<Integer>("remoteStyleTimeout");
+        TextField<Integer> remoteStylesTimeout = new TextField<>("remoteStyleTimeout");
         remoteStylesTimeout.add(RangeValidator.minimum(1));
         form.add(remoteStylesTimeout);
         TextField<Integer> remoteStylesMaxRequestTime =
-                new TextField<Integer>("remoteStyleMaxRequestTime");
+                new TextField<>("remoteStyleMaxRequestTime");
         remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
         form.add(remoteStylesMaxRequestTime);
     }

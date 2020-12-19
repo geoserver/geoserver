@@ -67,9 +67,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         // build the GUI
-        form =
-                new Form<WMTSLayerImporterPage>(
-                        "form", new CompoundPropertyModel<WMTSLayerImporterPage>(this));
+        form = new Form<>("form", new CompoundPropertyModel<>(this));
         form.setOutputMarkupId(true);
         add(form);
         layers =

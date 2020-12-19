@@ -230,7 +230,7 @@ public class GetMap {
         int maxAllowedFrames = wms.getMaxAllowedFrames();
         if ((numTimes > 1 || singleTimeRange) && isMultivaluedSupported) {
             WebMap map = null;
-            List<RenderedImage> images = new ArrayList<RenderedImage>();
+            List<RenderedImage> images = new ArrayList<>();
             if (singleTimeRange) {
                 List<Object> expandTimeList =
                         expandTimeList((DateRange) times.get(0), request, maxAllowedFrames);
@@ -261,7 +261,7 @@ public class GetMap {
             return new RenderedImageMap(mapContent, imageList, map.getMimeType());
         } else if ((numElevations > 1 || singleElevationRange) && isMultivaluedSupported) {
             WebMap map = null;
-            List<RenderedImage> images = new ArrayList<RenderedImage>();
+            List<RenderedImage> images = new ArrayList<>();
             if (singleElevationRange) {
                 List<Object> expandElevationList =
                         expandElevationList(
@@ -949,7 +949,7 @@ public class GetMap {
 
                 FeatureTypeConstraint[] featureTypeConstraints = layer.getLayerFeatureConstraints();
                 if (featureTypeConstraints != null) {
-                    List<Filter> filters = new ArrayList<Filter>();
+                    List<Filter> filters = new ArrayList<>();
                     for (int j = 0; j < featureTypeConstraints.length; j++) {
                         FeatureTypeConstraint featureTypeConstraint = featureTypeConstraints[j];
                         filters.add(featureTypeConstraint.getFilter());

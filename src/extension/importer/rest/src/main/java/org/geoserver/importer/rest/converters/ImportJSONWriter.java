@@ -396,10 +396,7 @@ public class ImportJSONWriter {
         json.key("type").value(txChain instanceof VectorTransformChain ? "vector" : "raster");
 
         transforms(
-                json,
-                task,
-                expand,
-                txChain != null ? txChain.getTransforms() : new ArrayList<ImportTransform>());
+                json, task, expand, txChain != null ? txChain.getTransforms() : new ArrayList<>());
         json.endObject();
 
         if (top) {

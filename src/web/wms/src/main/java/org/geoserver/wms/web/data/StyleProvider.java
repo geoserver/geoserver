@@ -31,10 +31,9 @@ import org.opengis.filter.sort.SortBy;
 @SuppressWarnings("serial")
 public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
 
-    public static Property<StyleInfo> NAME = new BeanProperty<StyleInfo>("name", "name");
+    public static Property<StyleInfo> NAME = new BeanProperty<>("name", "name");
 
-    public static Property<StyleInfo> WORKSPACE =
-            new BeanProperty<StyleInfo>("workspace", "workspace.name");
+    public static Property<StyleInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
     static final Property<StyleInfo> MODIFIED_TIMESTAMP =
             new BeanProperty<>("datemodfied", "dateModified");
@@ -45,7 +44,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
 
     public StyleProvider() {
-        setSort(new SortParam<Object>(NAME.getName(), true));
+        setSort(new SortParam<>(NAME.getName(), true));
     }
 
     @Override

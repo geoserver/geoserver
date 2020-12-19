@@ -233,9 +233,9 @@ class ModificationProxyCloner {
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             // we'll just pick something
             if (source instanceof Set) {
-                copy = new HashSet<T>();
+                copy = new HashSet<>();
             } else {
-                copy = new ArrayList<T>();
+                copy = new ArrayList<>();
             }
         }
         if (deepCopy) {

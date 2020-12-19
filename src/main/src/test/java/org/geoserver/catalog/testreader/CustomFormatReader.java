@@ -78,7 +78,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     @Override
     public GridCoverage2D read(GeneralParameterValue[] params) throws IOException {
         boolean haveDimension = false;
-        final List<GridCoverage2D> returnValues = new ArrayList<GridCoverage2D>();
+        final List<GridCoverage2D> returnValues = new ArrayList<>();
         for (GeneralParameterValue p : params) {
             if (p.getDescriptor()
                     .getName()
@@ -154,7 +154,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
 
     private String dimensionValueList() {
-        final TreeSet<String> elements = new TreeSet<String>();
+        final TreeSet<String> elements = new TreeSet<>();
         for (String filename : this.dataDirectory.list()) {
             if (isDataFile(filename)) {
                 elements.add(getDimensionValue(filename));
@@ -249,7 +249,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         GridSampleDimension[] bands;
         bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);
-        final Map<String, Object> properties = new HashMap<String, Object>();
+        final Map<String, Object> properties = new HashMap<>();
         CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
         return this.coverageFactory.create(
                 name, image, this.originalEnvelope, bands, null, properties);

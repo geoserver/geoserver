@@ -199,7 +199,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
     protected boolean assertContainsPaths(Collection<TreeNode<Resource>> nodes, String... paths) {
         assertEquals(paths.length, nodes.size());
-        Set<String> pathset = new HashSet<String>(Arrays.asList(paths));
+        Set<String> pathset = new HashSet<>(Arrays.asList(paths));
         for (TreeNode<Resource> node : nodes) {
             assertTrue(pathset.remove(node.getObject().path()));
         }

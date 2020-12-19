@@ -32,8 +32,8 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
 
         protected int data;
         protected MockNode parent;
-        protected List<MockNode> children = new ArrayList<MockNode>();
-        protected IModel<Boolean> expanded = new Model<Boolean>(false);
+        protected List<MockNode> children = new ArrayList<>();
+        protected IModel<Boolean> expanded = new Model<>(false);
 
         public MockNode(int data, MockNode parent) {
             this.data = data;
@@ -78,7 +78,7 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
 
     @Before
     public void initialize() {
-        treeView = new TreeView<Integer>("treeView", one);
+        treeView = new TreeView<>("treeView", one);
     }
 
     @Test

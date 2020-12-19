@@ -35,7 +35,7 @@ public abstract class RegionatingTestSupport extends GeoServerSystemTestSupport 
         super.setUpTestData(data);
 
         // register some basic namespaces for xmlunit tests
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");

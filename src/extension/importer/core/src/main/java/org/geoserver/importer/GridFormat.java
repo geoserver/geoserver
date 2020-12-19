@@ -81,7 +81,7 @@ public class GridFormat extends RasterFormat {
         try {
             reader = gridReader(data);
 
-            List<ImportTask> tasks = new ArrayList<ImportTask>();
+            List<ImportTask> tasks = new ArrayList<>();
             if (reader != null) {
                 CatalogBuilder cb = new CatalogBuilder(catalog);
 

@@ -172,9 +172,9 @@ public class ImageUtils {
         // fill the background with no antialiasing
         Map<RenderingHints.Key, Object> hintsMap;
         if (extraHints == null) {
-            hintsMap = new HashMap<RenderingHints.Key, Object>();
+            hintsMap = new HashMap<>();
         } else {
-            hintsMap = new HashMap<RenderingHints.Key, Object>(extraHints);
+            hintsMap = new HashMap<>(extraHints);
         }
         hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphic.setRenderingHints(hintsMap);

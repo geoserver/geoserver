@@ -82,7 +82,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
 
         // Change layer link
         PropertyModel<String> layerNameModel =
-                new PropertyModel<String>(parent.getLayerModel(), "prefixedName");
+                new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
                 new SimpleAjaxLink<String>("change.layer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
@@ -92,7 +92,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);
-                        popup.setTitle(new Model<String>("Choose layer to preview"));
+                        popup.setTitle(new Model<>("Choose layer to preview"));
                         popup.setContent(new LayerChooser(popup.getContentId(), parent));
                         popup.show(target);
                     }
@@ -102,9 +102,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         setOutputMarkupId(true);
 
         CheckBox previewStyleGroup =
-                new CheckBox(
-                        "previewStyleGroup",
-                        new PropertyModel<Boolean>(this, "isPreviewStyleGroup"));
+                new CheckBox("previewStyleGroup", new PropertyModel<>(this, "isPreviewStyleGroup"));
 
         previewStyleGroup.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
@@ -163,7 +161,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     private void renderHeaderCss(IHeaderResponse header) throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("id", olPreview.getMarkupId());
         Template template = templates.getTemplate("ol-style.ftl");
         StringWriter css = new java.io.StringWriter();
@@ -172,7 +170,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     private void renderHeaderScript(IHeaderResponse header) throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         ReferencedEnvelope bbox =
                 getStylePage().getLayerInfo().getResource().getLatLonBoundingBox();
         WorkspaceInfo workspace = getStylePage().getStyleInfo().getWorkspace();
@@ -254,7 +252,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     public String getUpdateCommand() throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("id", olPreview.getMarkupId());
         context.put("cachebuster", rand.nextInt());
 

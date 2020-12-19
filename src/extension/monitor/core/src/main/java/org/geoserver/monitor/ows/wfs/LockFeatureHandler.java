@@ -27,7 +27,7 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
             return null;
         }
 
-        List<String> layers = new ArrayList<String>();
+        List<String> layers = new ArrayList<>();
         for (Object lock : locks) {
             layers.add(toString(EMFUtils.get((EObject) lock, "typeName")));
         }

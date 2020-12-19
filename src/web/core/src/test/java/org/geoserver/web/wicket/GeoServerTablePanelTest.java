@@ -222,7 +222,7 @@ public class GeoServerTablePanelTest {
 
         @Override
         protected List<Integer> getItems() {
-            List<Integer> result = new ArrayList<Integer>();
+            List<Integer> result = new ArrayList<>();
             for (int i = 0; i < TOTAL_ITEMS; i++) {
                 result.add(i);
             }

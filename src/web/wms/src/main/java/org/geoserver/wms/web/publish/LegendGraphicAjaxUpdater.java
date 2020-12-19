@@ -36,7 +36,7 @@ class LegendGraphicAjaxUpdater implements Serializable {
         this.wmsURL = wmsURL;
         this.image = image;
         this.styleInfoModel = styleInfoModel;
-        this.urlModel = new Model<String>(wmsURL);
+        this.urlModel = new Model<>(wmsURL);
         this.image.add(new AttributeModifier("src", urlModel));
         updateStyleImage(null);
     }

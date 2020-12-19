@@ -154,7 +154,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
         // list of layers to render in the legend (we can have more
         // than one if a layergroup is requested)
-        List<LegendRequest> layers = new ArrayList<LegendRequest>();
+        List<LegendRequest> layers = new ArrayList<>();
         if (layer != null) {
             try {
                 LayerInfo layerInfo = wms.getLayerByName(layer);
@@ -471,7 +471,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             LOGGER.fine(new StringBuffer("looking for styles ").append(listOfStyles).toString());
         }
 
-        List<Style> sldStyles = new ArrayList<Style>();
+        List<Style> sldStyles = new ArrayList<>();
 
         if (sldUrl != null) {
             if (LOGGER.isLoggable(Level.FINER)) {

@@ -31,7 +31,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
 
     static {
         String[] FORMATS = {MIME_TYPE, "atom", "application/atom xml"};
-        Set<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         names.addAll(Arrays.asList(FORMATS));
         FORMAT_NAMES = Collections.unmodifiableSet(names);
     }

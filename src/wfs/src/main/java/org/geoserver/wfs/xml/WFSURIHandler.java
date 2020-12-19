@@ -56,9 +56,9 @@ public class WFSURIHandler extends URIHandlerImpl {
         DISABLED = Boolean.getBoolean(WFSURIHandler.class.getName() + ".disabled");
     }
 
-    static final List<InetAddress> ADDRESSES = new ArrayList<InetAddress>();
+    static final List<InetAddress> ADDRESSES = new ArrayList<>();
 
-    static final Set<String> ADDITIONAL_HOSTNAMES = new HashSet<String>();
+    static final Set<String> ADDITIONAL_HOSTNAMES = new HashSet<>();
 
     public static void addToParser(GeoServer geoServer, Parser parser) {
         parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));

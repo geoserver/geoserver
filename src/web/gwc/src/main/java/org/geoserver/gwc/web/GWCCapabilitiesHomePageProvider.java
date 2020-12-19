@@ -48,7 +48,7 @@ public class GWCCapabilitiesHomePageProvider implements CapabilitiesHomePageLink
      */
     public Component getCapabilitiesComponent(final String id) {
 
-        List<CapsInfo> gwcCaps = new ArrayList<CapsInfo>();
+        List<CapsInfo> gwcCaps = new ArrayList<>();
 
         final GeoServerApplication app = GeoServerApplication.get();
         final GWCConfig gwcConfig = gwcFacade.getConfig();

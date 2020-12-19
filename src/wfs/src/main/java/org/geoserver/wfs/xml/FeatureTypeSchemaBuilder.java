@@ -215,15 +215,14 @@ public abstract class FeatureTypeSchemaBuilder {
                     // should always be a Map.. set in AppSchemaDataAccessConfigurator
                     // impose iteration order
                     @SuppressWarnings("unchecked")
-                    Map<String, String> schemaURIs =
-                            new TreeMap<String, String>((Map<String, String>) schemaUri);
+                    Map<String, String> schemaURIs = new TreeMap<>((Map<String, String>) schemaUri);
                     // schema is supplied by the user.. just include the top level schema instead of
                     // building the type
                     if (!findTypeInSchema(featureTypeInfos[0], schema, factory)) {
                         // map of namespace to schemaLocation used to prevent duplicate imports
-                        Map<String, String> imports = new HashMap<String, String>();
+                        Map<String, String> imports = new HashMap<>();
                         // set of schemaLocations used to prevent duplicate includes
-                        Set<String> includes = new HashSet<String>();
+                        Set<String> includes = new HashSet<>();
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(
                                     schema,
@@ -280,9 +279,9 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             // map of namespace to schemaLocation used to prevent duplicate imports
-            Map<String, String> imports = new HashMap<String, String>();
+            Map<String, String> imports = new HashMap<>();
             // set of schemaLocations used to prevent duplicate includes
-            Set<String> includes = new HashSet<String>();
+            Set<String> includes = new HashSet<>();
             for (Iterator i = ns2featureTypeInfos.entrySet().iterator(); i.hasNext(); ) {
                 Map.Entry entry = (Map.Entry) i.next();
                 String prefix = (String) entry.getKey();
@@ -298,7 +297,7 @@ public abstract class FeatureTypeSchemaBuilder {
                         // impose iteration order
                         @SuppressWarnings("unchecked")
                         Map<String, String> schemaURIs =
-                                new TreeMap<String, String>((Map<String, String>) schemaUri);
+                                new TreeMap<>((Map<String, String>) schemaUri);
                         // schema is supplied by the user.. just import the specified location
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(
@@ -317,8 +316,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     typeNames.setLength(typeNames.length() - 1);
 
                     // schema not found, encode describe feature type URL
-                    Map<String, String> params =
-                            new LinkedHashMap<String, String>(describeFeatureTypeParams);
+                    Map<String, String> params = new LinkedHashMap<>(describeFeatureTypeParams);
                     params.put("typeName", typeNames.toString().trim());
 
                     String schemaLocation = buildURL(baseUrl, "wfs", params, URLType.RESOURCE);
@@ -730,8 +728,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     }
 
                     // find the type of the element
-                    List<XSDComplexTypeDefinition> candidates =
-                            new ArrayList<XSDComplexTypeDefinition>();
+                    List<XSDComplexTypeDefinition> candidates = new ArrayList<>();
                     for (Iterator t = ftSchema.getTypeDefinitions().iterator(); t.hasNext(); ) {
                         XSDTypeDefinition type = (XSDTypeDefinition) t.next();
                         if (type instanceof XSDComplexTypeDefinition) {

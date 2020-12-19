@@ -129,11 +129,10 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         nsModel = new NamespaceDetachableModel(ns);
 
-        Form form =
-                new Form<NamespaceInfo>("form", new CompoundPropertyModel<NamespaceInfo>(nsModel));
-        List<ITab> tabs = new ArrayList<ITab>();
+        Form form = new Form<>("form", new CompoundPropertyModel<>(nsModel));
+        List<ITab> tabs = new ArrayList<>();
         tabs.add(
-                new AbstractTab(new Model<String>("Basic Info")) {
+                new AbstractTab(new Model<>("Basic Info")) {
 
                     private static final long serialVersionUID = 5216769765556937554L;
 
@@ -150,7 +149,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 });
         if (AccessDataRuleInfoManager.canAccess()) {
             tabs.add(
-                    new AbstractTab(new Model<String>("Security")) {
+                    new AbstractTab(new Model<>("Security")) {
 
                         private static final long serialVersionUID = 5216769765556937554L;
 
@@ -381,21 +380,18 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             // check for full admin, we don't allow workspace admins to change all settings
             boolean isFullAdmin = isAuthenticatedAsAdmin();
 
-            TextField<String> name =
-                    new TextField<String>("name", new PropertyModel<String>(wsModel, "name"));
+            TextField<String> name = new TextField<>("name", new PropertyModel<>(wsModel, "name"));
             name.setRequired(true);
             name.setEnabled(isFullAdmin);
 
             name.add(new XMLNameValidator());
             add(name);
             TextField<String> uri =
-                    new TextField<String>(
-                            "uri", new PropertyModel<String>(nsModel, "uRI"), String.class);
+                    new TextField<>("uri", new PropertyModel<>(nsModel, "uRI"), String.class);
             uri.setRequired(true);
             uri.add(new URIValidator());
             add(uri);
-            CheckBox defaultChk =
-                    new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+            CheckBox defaultChk = new CheckBox("default", new PropertyModel<>(this, "defaultWs"));
             add(defaultChk);
             defaultChk.setEnabled(isFullAdmin);
 
@@ -438,7 +434,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                             : new NewSettingsModel(wsModel);
 
             add(
-                    new CheckBox("enabled", new PropertyModel<Boolean>(set, "enabled"))
+                    new CheckBox("enabled", new PropertyModel<>(set, "enabled"))
                             .add(
                                     new AjaxFormComponentUpdatingBehavior("click") {
                                         private static final long serialVersionUID =
@@ -459,8 +455,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             contactPanel =
                     new ContactPanel(
                             "contact",
-                            new CompoundPropertyModel<ContactInfo>(
-                                    new PropertyModel<ContactInfo>(set.model, "contact")));
+                            new CompoundPropertyModel<>(new PropertyModel<>(set.model, "contact")));
             contactPanel.setOutputMarkupId(true);
             contactPanel.setVisible(set.enabled);
             settingsContainer.add(contactPanel);
@@ -475,7 +470,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.add(
                     new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
             otherSettingsPanel.add(
-                    new DropDownChoice<String>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
+                    new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
 
             // Addition of pluggable extension points
@@ -581,7 +576,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                             Service service = item.getModelObject();
 
                             final Link<Service> link =
-                                    new Link<Service>("link", new Model<Service>(service)) {
+                                    new Link<Service>("link", new Model<>(service)) {
                                         private static final long serialVersionUID =
                                                 1111536301891090436L;
 
@@ -633,8 +628,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                             AjaxCheckBox enabled =
                                     new AjaxCheckBox(
-                                            "enabled",
-                                            new PropertyModel<Boolean>(service, "enabled")) {
+                                            "enabled", new PropertyModel<>(service, "enabled")) {
                                         private static final long serialVersionUID =
                                                 6369730006169869310L;
 
@@ -686,7 +680,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
 
         List<Service> services(IModel<WorkspaceInfo> wsModel) {
-            List<Service> services = new ArrayList<Service>();
+            List<Service> services = new ArrayList<>();
 
             for (ServiceMenuPageInfo page :
                     getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {

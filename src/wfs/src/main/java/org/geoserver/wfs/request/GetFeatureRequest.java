@@ -109,7 +109,7 @@ public abstract class GetFeatureRequest extends RequestObject {
             // TODO: instead of creating a new list we should wrap the existing on in case the
             // client
             // code needs to modify
-            List<Query> list = new ArrayList<Query>();
+            List<Query> list = new ArrayList<>();
             for (Object o : getAdaptedQueries()) {
                 list.add(new Query.WFS11((EObject) o));
             }
@@ -206,7 +206,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         public static List<Query> getQueries(List<?> adaptedQueries) {
-            List<Query> list = new ArrayList<Query>();
+            List<Query> list = new ArrayList<>();
             for (Object o : adaptedQueries) {
                 list.add(new Query.WFS20((EObject) o));
             }

@@ -33,7 +33,7 @@ import org.geoserver.platform.ServiceException;
 
 public class MonitorCallback implements DispatcherCallback {
 
-    List<RequestObjectHandler> handlers = new ArrayList<RequestObjectHandler>();
+    List<RequestObjectHandler> handlers = new ArrayList<>();
 
     Monitor monitor;
 

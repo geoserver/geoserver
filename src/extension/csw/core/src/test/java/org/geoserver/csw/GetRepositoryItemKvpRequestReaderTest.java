@@ -48,7 +48,7 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
     }
 
     private GetRepositoryItemType getRequest(Map<String, Object> rawKvp) throws Exception {
-        return getRequest(rawKvp, new HashMap<String, Object>(rawKvp));
+        return getRequest(rawKvp, new HashMap<>(rawKvp));
     }
 
     private GetRepositoryItemType getRequest(Map<String, Object> rawKvp, Map<String, Object> kvp)

@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockServletContext;
 public class FilePublisherTest {
 
     static FilePublisher publisher;
-    static List<String[]> paths = new ArrayList<String[]>();
+    static List<String[]> paths = new ArrayList<>();
 
     @BeforeClass
     public static void create() throws Exception {

@@ -18,7 +18,7 @@ import org.geotools.util.logging.Logging;
 public class ReverseDNSPostProcessor implements RequestPostProcessor {
     static final Logger LOGGER = Logging.getLogger(ReverseDNSPostProcessor.class);
 
-    static Map<String, String> reverseLookupCache = new SoftValueHashMap<String, String>(100);
+    static Map<String, String> reverseLookupCache = new SoftValueHashMap<>(100);
 
     static final String PROCESSOR_NAME = "reverseDNS";
 

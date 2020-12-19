@@ -79,7 +79,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");

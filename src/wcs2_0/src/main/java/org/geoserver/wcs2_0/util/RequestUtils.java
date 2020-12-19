@@ -74,7 +74,7 @@ public class RequestUtils {
     public static String getVersionOws20(List<String> providedList, List<String> acceptedList) {
 
         // first figure out which versions are provided
-        TreeSet<Version> provided = new TreeSet<Version>();
+        TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
@@ -83,7 +83,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        List<Version> accepted = new ArrayList<Version>();
+        List<Version> accepted = new ArrayList<>();
         for (String v : acceptedList) {
             checkVersionNumber20(v, "AcceptVersions");
 
@@ -227,7 +227,7 @@ public class RequestUtils {
                     || !foundOverviewPolicy) { // || !(foundBgColor && bgColor != null)) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
-                List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+                List<GeneralParameterValue> paramList = new ArrayList<>();
                 paramList.addAll(Arrays.asList(readParams));
                 if (!foundGG) {
                     paramList.add(readGGParam);

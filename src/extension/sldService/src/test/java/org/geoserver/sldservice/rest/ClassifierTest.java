@@ -753,7 +753,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[0], "#690000", PropertyIsEqualTo.class);
         checkRule(rules[1], "#B40000", PropertyIsEqualTo.class);
         checkRule(rules[2], "#FF0000", PropertyIsEqualTo.class);
-        TreeSet<String> orderedRules = new TreeSet<String>();
+        TreeSet<String> orderedRules = new TreeSet<>();
         orderedRules.add(rules[0].getDescription().getTitle().toString());
         orderedRules.add(rules[1].getDescription().getTitle().toString());
         orderedRules.add(rules[2].getDescription().getTitle().toString());

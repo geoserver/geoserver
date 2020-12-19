@@ -59,7 +59,7 @@ public abstract class AbstractRecordDescriptor implements RecordDescriptor {
      * @return the List of Names
      */
     protected static List<Name> createNameList(NamespaceSupport ns, String... names) {
-        List<Name> result = new LinkedList<Name>();
+        List<Name> result = new LinkedList<>();
         for (String name : names) {
             String[] splitted = name.split(":");
             String uri, localName;

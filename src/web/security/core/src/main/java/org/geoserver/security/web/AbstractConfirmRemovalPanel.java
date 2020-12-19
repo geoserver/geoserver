@@ -84,8 +84,8 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     void setRootObjectsAndProblems(List<T> rootObjects) {
-        roots = new ArrayList<T>();
-        problems = new ArrayList<IModel<String>>();
+        roots = new ArrayList<>();
+        problems = new ArrayList<>();
         for (T obj : rootObjects) {
             IModel<String> model = canRemove(obj);
             if (model == null) roots.add(obj);
@@ -94,7 +94,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     List<String> problems(List<IModel<String>> objects) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (IModel<String> m : objects) {
             l.add(m.getObject());
         }
@@ -102,7 +102,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     List<String> names(List<T> objects) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (T obj : objects) {
             l.add(name(obj));
         }

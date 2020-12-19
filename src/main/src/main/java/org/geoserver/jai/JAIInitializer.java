@@ -71,7 +71,7 @@ public class JAIInitializer implements GeoServerInitializer {
                     }
                 }
                 if (jaiExtOperations != null && !jaiExtOperations.isEmpty()) {
-                    Set<String> newJai = new TreeSet<String>(jaiExtOperations);
+                    Set<String> newJai = new TreeSet<>(jaiExtOperations);
                     if (jaiOperations != null && !jaiOperations.isEmpty()) {
                         newJai.removeAll(jaiOperations);
                     }

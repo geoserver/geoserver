@@ -1792,7 +1792,7 @@ public class CatalogImpl implements Catalog {
         facade.resolve();
 
         if (listeners == null) {
-            listeners = new ArrayList<CatalogListener>();
+            listeners = new ArrayList<>();
         }
 
         if (resourcePool == null) {
@@ -1845,7 +1845,7 @@ public class CatalogImpl implements Catalog {
         if (c.getDimensions() != null) {
             for (CoverageDimensionInfo dim : c.getDimensions()) {
                 if (dim.getNullValues() == null) {
-                    ((CoverageDimensionImpl) dim).setNullValues(new ArrayList<Double>());
+                    ((CoverageDimensionImpl) dim).setNullValues(new ArrayList<>());
                 }
             }
         }
@@ -1912,7 +1912,7 @@ public class CatalogImpl implements Catalog {
     }
 
     protected ValidationResult postValidate(CatalogInfo info, boolean isNew) {
-        List<RuntimeException> errors = new ArrayList<RuntimeException>();
+        List<RuntimeException> errors = new ArrayList<>();
 
         if (!extendedValidation) {
             return new ValidationResult(null);

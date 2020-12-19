@@ -112,27 +112,27 @@ public class GeoServerFileChooser extends Panel {
             // and switch back to the data directory
             if (selectionRoot == null) {
                 selectionRoot = dataDirectory;
-                file = new Model<File>(selectionRoot);
+                file = new Model<>(selectionRoot);
             } else {
                 if (!selection.isDirectory()) {
-                    file = new Model<File>(selection.getParentFile());
+                    file = new Model<>(selection.getParentFile());
                 } else {
-                    file = new Model<File>(selection);
+                    file = new Model<>(selection);
                 }
             }
         } else {
             selectionRoot = dataDirectory;
-            file = new Model<File>(selectionRoot);
+            file = new Model<>(selectionRoot);
         }
         this.file = file;
         setDefaultModel(file);
 
         // the root chooser
         final DropDownChoice<File> choice =
-                new DropDownChoice<File>(
+                new DropDownChoice<>(
                         "roots",
-                        new Model<File>(selectionRoot),
-                        new Model<ArrayList<File>>(roots),
+                        new Model<>(selectionRoot),
+                        new Model<>(roots),
                         new FileRootsRenderer(this));
         choice.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
@@ -151,7 +151,7 @@ public class GeoServerFileChooser extends Panel {
 
         // the breadcrumbs
         breadcrumbs =
-                new FileBreadcrumbs("breadcrumbs", new Model<File>(selectionRoot), file) {
+                new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot), file) {
 
                     private static final long serialVersionUID = -6995769189316700797L;
 
@@ -198,7 +198,7 @@ public class GeoServerFileChooser extends Panel {
     protected void directoryClicked(File file, AjaxRequestTarget target) {
         // explicitly change the root model, inform the other components the model has changed
         this.file.setObject(file);
-        fileTable.getProvider().setDirectory(new Model<File>(file));
+        fileTable.getProvider().setDirectory(new Model<>(file));
         breadcrumbs.setSelection(file);
 
         target.add(fileTable);

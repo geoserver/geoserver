@@ -69,7 +69,7 @@ public class CatalogRepository implements Repository, Serializable {
     }
 
     public List<DataStore> getDataStores() {
-        List<DataStore> dataStores = new ArrayList<DataStore>();
+        List<DataStore> dataStores = new ArrayList<>();
         for (DataStoreInfo ds : getCatalog().getDataStores()) {
             if (!ds.isEnabled()) {
                 continue;

@@ -593,7 +593,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** Filters a set of component descriptors based on the current authenticated user. */
     protected <T extends ComponentInfo> List<T> filterByAuth(List<T> list) {
         Authentication user = getSession().getAuthentication();
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T component : list) {
             if (component.getAuthorizer() == null) {
                 continue;

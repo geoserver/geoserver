@@ -34,7 +34,7 @@ public class OgrFormat extends Format {
         setMimeType(mimeType);
         setType(type);
         if (options != null) {
-            setOptions(new ArrayList<String>(Arrays.asList(options)));
+            setOptions(new ArrayList<>(Arrays.asList(options)));
         }
         if (type == null) {
             setType(OutputType.BINARY);

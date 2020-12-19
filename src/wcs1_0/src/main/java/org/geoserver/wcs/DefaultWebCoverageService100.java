@@ -113,11 +113,11 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     /** */
     public Wcs10CapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
-        List<String> provided = new ArrayList<String>();
+        List<String> provided = new ArrayList<>();
         provided.add("1.0.0");
         List<String> accepted = null;
         if (request.getVersion() != null) {
-            accepted = new ArrayList<String>();
+            accepted = new ArrayList<>();
             accepted.add(request.getVersion());
         }
         String version = RequestUtils.getVersionPreOws(provided, accepted);
@@ -153,7 +153,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
         CoverageInfo meta = null;
         GridCoverage2D coverage = null;
-        final List<GridCoverage> coverageResults = new ArrayList<GridCoverage>();
+        final List<GridCoverage> coverageResults = new ArrayList<>();
         try {
 
             // acquire coverage info
@@ -307,7 +307,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                 null);
             // NOTICE that we always have to respect the provided envelope
             final ParameterValue<GeneralGridGeometry> requestedGridGeometryParam =
-                    new DefaultParameterDescriptor<GeneralGridGeometry>(
+                    new DefaultParameterDescriptor<>(
                                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                                     GeneralGridGeometry.class,
                                     null,
@@ -324,8 +324,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
              * exception is thrown, we have nothing to do.
              */
             final List<GeneralParameterDescriptor> parameterDescriptors =
-                    new ArrayList<GeneralParameterDescriptor>(
-                            readParametersDescriptor.getDescriptor().descriptors());
+                    new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
             Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
             parameterDescriptors.addAll(dynamicParameters);
 
@@ -336,7 +335,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             DimensionInfo timeDimension =
                     meta.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
             if (timeDimension != null && timeDimension.isEnabled() && dimensions.hasTime()) {
-                final List<Object> timeValues = new ArrayList<Object>();
+                final List<Object> timeValues = new ArrayList<>();
                 if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
                     // grab the time positions
                     final EList timePosition = temporalSubset.getTimePosition();
@@ -386,7 +385,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (elevationDimension != null
                     && elevationDimension.isEnabled()
                     && dimensions.hasElevation()) {
-                List<Object> elevations = new ArrayList<Object>();
+                List<Object> elevations = new ArrayList<>();
                 // extract elevation values
                 List axisSubset = null;
                 if (request.getRangeSubset() != null) {
@@ -450,7 +449,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
                             if (valueCount > 0) {
-                                List<Object> dimValues = new ArrayList<Object>(valueCount);
+                                List<Object> dimValues = new ArrayList<>(valueCount);
                                 for (int s = 0; s < valueCount; s++) {
                                     dimValues.addAll(
                                             dimensions.convertDimensionValue(

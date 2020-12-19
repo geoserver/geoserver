@@ -89,7 +89,7 @@ public class CoveragePPIOTest {
     public void testEncodeQuality() throws Exception {
         GridCoverage2D coverage = getCoverage();
         JPEGPPIO ppio = new JPEGPPIO();
-        Map<String, Object> encodingParams = new HashMap<String, Object>();
+        Map<String, Object> encodingParams = new HashMap<>();
 
         File highQualityFile = new File("./target/outputHiQ.jpg");
         encodingParams.put(CoveragePPIO.QUALITY_KEY, "0.99");

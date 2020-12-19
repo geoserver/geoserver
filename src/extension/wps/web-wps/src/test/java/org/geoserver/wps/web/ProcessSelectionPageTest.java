@@ -44,11 +44,11 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         buffer.getValidators()
                 .put(
                         "distance",
-                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, 0d, 100d)));
         buffer.getValidators()
                 .put(
                         "quadrantSegments",
-                        new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
+                        new NumberRangeValidator(new NumberRange<>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // save

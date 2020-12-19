@@ -20,7 +20,7 @@ import org.opengis.feature.type.Name;
 /** Filters processes and process factories based on the configuration in WPSInfo */
 public class DisabledProcessesSelector extends ProcessSelector implements GeoServerInitializer {
 
-    Set<Name> disabledProcesses = new HashSet<Name>();
+    Set<Name> disabledProcesses = new HashSet<>();
 
     public DisabledProcessesSelector() {}
 

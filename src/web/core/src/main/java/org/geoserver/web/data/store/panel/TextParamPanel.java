@@ -44,7 +44,7 @@ public class TextParamPanel<T> extends Panel implements ParamPanel<T> {
         add(label);
 
         // the text field, with a decorator for validations
-        textField = new TextField<T>("paramValue", paramValue);
+        textField = new TextField<>("paramValue", paramValue);
         textField.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"

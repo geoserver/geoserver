@@ -70,12 +70,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class BufferedImageLegendGraphicOutputFormatTest
         extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
+
     @Before
     public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder();
 
         service = new GetLegendGraphic(getWMS());
     }
+
     /**
      * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
      * has more than one rule, and one of them is requested by the RULE parameter.
@@ -201,6 +203,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         // was the legend painted?
         assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
     }
+
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
@@ -1364,12 +1367,10 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertEquals(66, image.getWidth());
         assertEquals(66, image.getHeight());
 
-
         // and when we do it again this must not change the image size
         this.legendProducer.resizeForDPI(req, sldStype);
         assertEquals(66, this.legendProducer.w);
         assertEquals(66, this.legendProducer.h);
-
     }
 
     /** */

@@ -1090,7 +1090,7 @@
    <dependency>
      <groupId>com.fasterxml.jackson.core</groupId>
      <artifactId>jackson-databind</artifactId>
-     <version>${jackson2.version}</version>
+     <version>${jackson2.databind.version}</version>
    </dependency>
 
    <dependency>
@@ -1996,7 +1996,8 @@
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <eclipse.emf.version>2.15.0</eclipse.emf.version>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.10.1</jackson2.version>
+  <jackson2.version>2.10.5</jackson2.version>
+  <jackson2.databind.version>2.10.5</jackson2.databind.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.9.3</marlin.version>
   <postgresql.jdbc.version>42.2.18</postgresql.jdbc.version>

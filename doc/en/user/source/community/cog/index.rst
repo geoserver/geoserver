@@ -132,8 +132,3 @@ So, the value for Maximum HTTP requests can be specified by setting either a ``I
 
 By default, when accessing a COG, a first chunk of 16 KB is read in attempt to parset the header so that the reader will know offset and length of the available tiles. When dealing with files hosting many tiles, it might happen that the whole header won't fit in the first chunk. In this case additional reads (chunks of the same size) will be progressively made to complete loading the header.
 A ``it.geosolutions.cog.default.header.length`` system propery can be configured to set the length (in bytes) of the reading chunk. Tuning this so that the header is read with few extra requests can help improve performance. A value too large can cause memory comsumption issues and will reduce efficiency, as un-necessary data will be read.
-
-Current Limitations
--------------------
-
-* At the moment, COG ImageMosaic doesn't support neither harvesting nor automatic index creation. Therefore, make sure to have an index already defined on a database, containing the COG granules URLs and set the ``UseExistingSchema=true`` flag on the mosaic/indexer.properties file. In case the mosaic folder containing indexer and datastore properties files has different naming with respect to the table in the database, make sure to also set ``Name`` and ``TypeName`` properties in indexer.properties, matching the actual table name. See :ref:`mosaic_datastore_properties` for details on index stored on a database.

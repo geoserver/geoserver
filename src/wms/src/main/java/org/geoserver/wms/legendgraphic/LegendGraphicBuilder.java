@@ -153,8 +153,8 @@ public abstract class LegendGraphicBuilder {
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         if (dpi != standardDpi) {
             double scaleFactor = dpi / standardDpi;
-            w = ((int) Math.round(w * scaleFactor));
-            h = ((int) Math.round(h * scaleFactor));
+            w = ((int) Math.round(request.getWidth() * scaleFactor));
+            h = ((int) Math.round(request.getHeight() * scaleFactor));
             DpiRescaleStyleVisitor dpiVisitor = new DpiRescaleStyleVisitor(scaleFactor);
             dpiVisitor.visit(gt2Style);
             gt2Style = (Style) dpiVisitor.getCopy();

@@ -1330,6 +1330,48 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertColorSimilar(Color.WHITE, colorOutsideCenter, 20);
     }
 
+    /** Tests that rescale due to dpi is done correctly. */
+    @org.junit.Test
+    public void testScaleDPI() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        ;
+        req.setWidth(20);
+        req.setHeight(20);
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        Style sldStype = readSLD("line.sld");
+        req.setStyle(sldStype);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertEquals(20, this.legendProducer.w);
+        assertEquals(20, this.legendProducer.h);
+        assertEquals(20, image.getWidth());
+        assertEquals(20, image.getHeight());
+
+        // set dpi
+        HashMap<String, Object> legendOptions = new HashMap<>();
+        legendOptions.put("dpi", 300);
+        req.setLegendOptions(legendOptions);
+        image = this.legendProducer.buildLegendGraphic(req);
+        assertEquals(66, this.legendProducer.w);
+        assertEquals(66, this.legendProducer.h);
+        assertEquals(66, image.getWidth());
+        assertEquals(66, image.getHeight());
+
+
+        // and when we do it again this must not change the image size
+        this.legendProducer.resizeForDPI(req, sldStype);
+        assertEquals(66, this.legendProducer.w);
+        assertEquals(66, this.legendProducer.h);
+
+    }
+
     /** */
     private Style readSLD(String sldName) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);

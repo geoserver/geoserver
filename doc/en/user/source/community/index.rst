@@ -62,3 +62,4 @@ officially part of the GeoServer releases. They are however built along with the
    ogc-api/index
    gsr/index
    imagemosaic-jdbc/index
+   cog/index

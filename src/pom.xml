@@ -2214,7 +2214,7 @@
       </build>
     </profile>
 
-    <!-- Dependency version checks -->
+    <!-- Dependency vulnerability checks -->
     <profile>
       <id>dependencycheck</id>
       <build>
@@ -2222,7 +2222,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>3.2.1</version>
+            <version>6.0.3</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
               <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>

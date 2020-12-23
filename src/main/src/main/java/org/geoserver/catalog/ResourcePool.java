@@ -81,6 +81,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.Repository;
+import org.geotools.data.ows.ControlledHttpClientFactory;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -1925,6 +1926,7 @@ public class ResourcePool {
         if (TestHttpClientProvider.testModeEnabled()
                 && capabilitiesURL.startsWith(TestHttpClientProvider.MOCKSERVER)) {
             HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
+            if (info.isUseURLVerificationCheks()) client = ControlledHttpClientFactory.wrap(client);
             return client;
         }
 
@@ -1939,6 +1941,7 @@ public class ResourcePool {
         } else {
             client = new SimpleHttpClient();
         }
+        if (info.isUseURLVerificationCheks()) client = ControlledHttpClientFactory.wrap(client);
         String username = info.getUsername();
         String password = info.getPassword();
         int connectTimeout = info.getConnectTimeout();
@@ -2847,6 +2850,7 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
+        target.setUseSecuredHttp(source.isUseURLVerificationCheks());
     }
 
     /** */
@@ -2858,6 +2862,7 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
+        target.setUseSecuredHttp(source.isUseURLVerificationCheks());
     }
 
     /**

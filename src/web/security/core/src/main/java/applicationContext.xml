@@ -93,6 +93,17 @@
 		<property name="category" ref="securityCategory" />
 		<property name="order" value="300" />
 	</bean>
+	
+	<!-- Control HTTP page -->
+	<bean id="controlPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.control" />
+        <property name="titleKey" value="security.control.title" />
+        <property name="descriptionKey" value="security.control.description" />
+        <property name="componentClass" value="org.geoserver.security.web.control.ControlPage" />
+        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="210" />
+    </bean>
 
     <!-- password policy panel infos -->
     <bean id="passwordPolicyPanelInfo" class="org.geoserver.security.web.passwd.PasswordPolicyPanelInfo">

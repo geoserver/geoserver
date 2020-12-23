@@ -210,4 +210,14 @@ public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo>
     public void setDateModified(Date dateModified) {
         delegate.setDateModified(dateModified);
     }
+
+    @Override
+    public boolean isUseURLVerificationCheks() {
+        return delegate.isEnabled();
+    }
+
+    @Override
+    public void setUseSecuredHttp(boolean useSecuredHttp) {
+        delegate.setUseSecuredHttp(useSecuredHttp);
+    }
 }

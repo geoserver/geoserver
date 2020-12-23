@@ -1,0 +1,17 @@
+<coverage>
+  <name>modisvi</name>
+  <nativeName>modisvi</nativeName>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="time">
+      <dimensionInfo>
+         <enabled>true</enabled>
+         <presentation>LIST</presentation>
+         <units>ISO8601</units>
+         <defaultValue>
+           <strategy>MAXIMUM</strategy>
+         </defaultValue>
+      </dimensionInfo>
+    </entry>
+  </metadata>
+</coverage>

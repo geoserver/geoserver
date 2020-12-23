@@ -4,7 +4,6 @@
  */
 package org.geoserver.rest.catalog;
 
-import com.google.common.io.Files;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -584,7 +584,7 @@ public class StyleController extends AbstractCatalogController {
      * @throws IOException if there was an error extracting the archive
      */
     private File unzipSldPackage(InputStream object) throws IOException {
-        File tempDir = Files.createTempDir();
+        File tempDir = Files.createTempDirectory("_sld").toFile();
 
         org.geoserver.util.IOUtils.decompress(object, tempDir);
 

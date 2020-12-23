@@ -2675,4 +2675,75 @@ public class ClassifierTest extends SLDServiceBaseTest {
         }
         assertEquals(100d, percentagesSum, 0d);
     }
+
+    @Test
+    public void testStddevDem() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation&intervals=5&ramp=jet&fullSLD=true&continuous=false";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length);
+        assertEntry(entries[0], Double.NEGATIVE_INFINITY, null, "#000000", 0);
+        assertEntry(entries[1], -214.2998914263162, " < -214.299891", "#0000FF", 1);
+        assertEntry(entries[2], 72.93636150736975, ">= -214.299891 AND < 72.936362", "#FFFF00", 1);
+        assertEntry(entries[3], 360.17261444105577, ">= 72.936362 AND < 360.172614", "#FFAA00", 1);
+        assertEntry(entries[4], 647.4088673747417, ">= 360.172614 AND < 647.408867", "#FF5500", 1);
+        assertEntry(entries[5], Double.POSITIVE_INFINITY, ">= 647.408867", "#FF0000", 1);
+    }
+
+    @Test
+    public void testStddevDemContinuos() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], Double.NEGATIVE_INFINITY, "-Infinity", "#0000FF", 1);
+        assertEntry(entries[1], -214.2998914263162, "-214.299891", "#FFFF00", 1);
+        assertEntry(entries[2], 72.93636150736975, "72.936362", "#FFAA00", 1);
+        assertEntry(entries[3], 360.17261444105577, "360.172614", "#FF5500", 1);
+        assertEntry(entries[4], Double.POSITIVE_INFINITY, "Infinity", "#FF0000", 1);
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterStddev() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation"
+                        + "&ramp=jet&fullSLD=true&intervals=6&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(7, entries.length);
+        double percentagesSum = 0d;
+        for (ColorMapEntry e : entries) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
+                Matcher matcher = rgx.matcher(e.getLabel());
+                assertTrue(matcher.find());
+            }
+        }
+        assertEquals(percentagesSum, 100d, 10E-14);
+    }
 }

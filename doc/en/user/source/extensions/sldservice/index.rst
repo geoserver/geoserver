@@ -139,7 +139,7 @@ The parameters usable to customize the ColorMap are:
      - No default for vectors, "1" for rasters
    * - method
      - Classification method
-     - equalInterval, uniqueInterval, quantile, jenks, equalArea, standardDeviation (intervals above and below the mean of one standard deviation, available for vectors only)
+     - equalInterval, uniqueInterval, quantile, jenks, equalArea, standardDeviation (intervals above and below the mean of one standard deviation)
      - equalInterval
    * - open
      - open or closed ranges

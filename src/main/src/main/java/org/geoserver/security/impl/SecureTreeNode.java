@@ -148,8 +148,8 @@ public class SecureTreeNode {
     public SecureTreeNode getDeepestNode(String... pathElements) {
         SecureTreeNode curr = this;
         SecureTreeNode result = this;
-        for (int i = 0; i < pathElements.length; i++) {
-            final SecureTreeNode next = curr.getChild(pathElements[i]);
+        for (String pathElement : pathElements) {
+            final SecureTreeNode next = curr.getChild(pathElement);
             if (next == null) {
                 return result;
             } else {
@@ -170,8 +170,8 @@ public class SecureTreeNode {
      */
     public SecureTreeNode getNode(String... pathElements) {
         SecureTreeNode curr = this;
-        for (int i = 0; i < pathElements.length; i++) {
-            final SecureTreeNode next = curr.getChild(pathElements[i]);
+        for (String pathElement : pathElements) {
+            final SecureTreeNode next = curr.getChild(pathElement);
             if (next == null) {
                 return null;
             } else {

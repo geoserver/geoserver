@@ -151,9 +151,7 @@ public class RequestUtils {
         // from the specification "The server, upon receiving a GetCapabilities request, shall scan
         // through this list and find the first version number that it supports"
         Version negotiated = null;
-        for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
-            Version version = v.next();
-
+        for (Version version : accepted) {
             if (provided.contains(version)) {
                 negotiated = version;
                 break;

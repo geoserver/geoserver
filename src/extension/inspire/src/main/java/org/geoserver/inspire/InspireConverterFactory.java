@@ -44,8 +44,7 @@ public class InspireConverterFactory implements ConverterFactory {
             if (source instanceof String && UniqueResourceIdentifiers.class.equals(target)) {
                 UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
                 String[] values = ((String) source).split("\\s*;\\s*");
-                for (int i = 0; i < values.length; i++) {
-                    String value = values[i];
+                for (String value : values) {
                     String[] elements = value.split("\\s*,\\s*");
                     if (elements.length == 0) {
                         continue;

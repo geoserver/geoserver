@@ -190,12 +190,12 @@ public class LegacyCoverageInfoReader {
     public List<Map<String, Object>> coverageDimensions() throws Exception {
         Element[] cdElements = ReaderUtils.getChildElements(coverage, "CoverageDimension");
         List<Map<String, Object>> cds = new ArrayList<>();
-        for (int i = 0; i < cdElements.length; i++) {
+        for (Element cdElement : cdElements) {
             Map<String, Object> cd = new HashMap<>();
-            cd.put("name", ReaderUtils.getChildText(cdElements[i], "name"));
-            cd.put("description", ReaderUtils.getChildText(cdElements[i], "description"));
+            cd.put("name", ReaderUtils.getChildText(cdElement, "name"));
+            cd.put("description", ReaderUtils.getChildText(cdElement, "description"));
 
-            Element intervalElement = ReaderUtils.getChildElement(cdElements[i], "interval");
+            Element intervalElement = ReaderUtils.getChildElement(cdElement, "interval");
             double min = Double.parseDouble(ReaderUtils.getChildText(intervalElement, "min"));
             double max = Double.parseDouble(ReaderUtils.getChildText(intervalElement, "max"));
 
@@ -252,9 +252,9 @@ public class LegacyCoverageInfoReader {
 
         HashMap<String, Serializable> map = new HashMap<>();
         Element[] parameter = ReaderUtils.getChildElements(parameters, "parameter");
-        for (int i = 0; i < parameter.length; i++) {
-            String name = parameter[i].getAttribute("name");
-            String value = parameter[i].getAttribute("value");
+        for (Element element : parameter) {
+            String name = element.getAttribute("name");
+            String value = element.getAttribute("value");
 
             map.put(name, value);
         }

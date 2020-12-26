@@ -150,8 +150,8 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         String srsStr = grid.getSRS().toString();
         StringBuilder resolutionsStr = new StringBuilder();
         double[] res = grid.getResolutions();
-        for (int i = 0; i < res.length; i++) {
-            resolutionsStr.append(Double.toString(res[i]) + " ");
+        for (double re : res) {
+            resolutionsStr.append(Double.toString(re) + " ");
         }
 
         String[] bs = boundsPrep(grid.getCoverageBestFitBounds());

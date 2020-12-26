@@ -509,9 +509,9 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         int actualStartIndex = -1;
         int actualCount = -1;
 
-        for (int i = 0; i < kvp.length; i++) {
-            String k = kvp[i].split("=")[0];
-            String v = kvp[i].split("=")[1];
+        for (String value : kvp) {
+            String k = value.split("=")[0];
+            String v = value.split("=")[1];
             if ("startIndex".equalsIgnoreCase(k)) {
                 actualStartIndex = Integer.parseInt(v);
             }

@@ -265,16 +265,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             propNames = props.toArray(new String[props.size()]);
         } else {
             String[] queriedAtts = query.getPropertyNames();
-            int queriedAttCount = queriedAtts.length;
             List<String> allowedAtts = new LinkedList<>();
-
-            for (int i = 0; i < queriedAttCount; i++) {
-                if (schema.getDescriptor(queriedAtts[i]) != null) {
-                    allowedAtts.add(queriedAtts[i]);
+            for (String queriedAtt : queriedAtts) {
+                if (schema.getDescriptor(queriedAtt) != null) {
+                    allowedAtts.add(queriedAtt);
                 } else {
                     LOGGER.info(
                             "queried a not allowed property: "
-                                    + queriedAtts[i]
+                                    + queriedAtt
                                     + ". Ommitting it from query");
                 }
             }

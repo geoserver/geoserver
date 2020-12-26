@@ -58,8 +58,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
 
     public URL getFinalURL() {
         // scan and check the layers
-        for (int i = 0; i < queryLayers.size(); i++) {
-            Layer layer = queryLayers.get(i);
+        for (Layer layer : queryLayers) {
             if (layer instanceof SecuredWMSLayer) {
                 SecuredWMSLayer secured = (SecuredWMSLayer) layer;
                 final WrapperPolicy policy = secured.getPolicy();

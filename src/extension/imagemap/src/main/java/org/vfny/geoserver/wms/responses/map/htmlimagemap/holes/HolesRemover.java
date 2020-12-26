@@ -134,8 +134,7 @@ public class HolesRemover {
 
         // find the hole vertex with the largest X value
         Vertex rightMostHoleVertex = holePolygon.get(0);
-        for (int count = 0; count < holePolygon.size(); count++) {
-            Vertex v = holePolygon.get(count);
+        for (Vertex v : holePolygon) {
             if (v.getPosition().x > rightMostHoleVertex.getPosition().x) rightMostHoleVertex = v;
         }
         // construct a list of all line segments where at least one vertex
@@ -159,8 +158,7 @@ public class HolesRemover {
         // our hole vertex.
         Float closestPoint = null;
         LineSegment closestSegment = new LineSegment();
-        for (int count = 0; count < segmentsToTest.size(); count++) {
-            LineSegment segment = segmentsToTest.get(count);
+        for (LineSegment segment : segmentsToTest) {
             Float intersection =
                     segment.intersectsWithRay(
                             rightMostHoleVertex.getPosition(), new Coordinate(1.0, 0.0));
@@ -191,8 +189,7 @@ public class HolesRemover {
         Triangle mip = new Triangle(rightMostHoleVertex, new Vertex(I, 1), P);
         // see if any of the reflex vertices lie inside of the MIP triangle
         List<Vertex> interiorReflexVertices = new ArrayList<>();
-        for (int count = 0; count < reflexVertices.size(); count++) {
-            Vertex v = reflexVertices.get(count);
+        for (Vertex v : reflexVertices) {
             if (mip.ContainsPoint(v)) interiorReflexVertices.add(v);
         }
 
@@ -200,8 +197,7 @@ public class HolesRemover {
         // to our rightMostHoleVertex, forms the line closest to Vector2.UnitX
         if (interiorReflexVertices.size() > 0) {
             float closestDot = -1f;
-            for (int count = 0; count < interiorReflexVertices.size(); count++) {
-                Vertex v = interiorReflexVertices.get(count);
+            for (Vertex v : interiorReflexVertices) {
                 GVector n = new GVector(new double[] {v.getPosition().x, v.getPosition().y});
                 n.sub(
                         new GVector(
@@ -242,9 +238,7 @@ public class HolesRemover {
     }
 
     private void findConvexAndReflexVertices() {
-        for (int i = 0; i < polygonVertices.size(); i++) {
-            Vertex v = polygonVertices.get(i);
-
+        for (Vertex v : polygonVertices) {
             if (isConvex(v)) {
                 convexVertices.add(v);
             } else {

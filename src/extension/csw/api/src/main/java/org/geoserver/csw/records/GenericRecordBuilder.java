@@ -134,9 +134,8 @@ public class GenericRecordBuilder implements RecordBuilder {
             List<AttributeDescriptor> substitutionGroup =
                     (List<AttributeDescriptor>) descriptor.getUserData().get("substitutionGroup");
             if (substitutionGroup != null) {
-                for (Iterator<AttributeDescriptor> it = substitutionGroup.iterator();
-                        it.hasNext(); ) {
-                    substitutionMap.put(it.next().getName(), descriptor.getName());
+                for (AttributeDescriptor attributeDescriptor : substitutionGroup) {
+                    substitutionMap.put(attributeDescriptor.getName(), descriptor.getName());
                 }
             }
             substitutionMap.put(descriptor.getName(), descriptor.getName());
@@ -174,20 +173,7 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         if (index == path.length - 1) {
             if (descriptor.getType() instanceof ComplexType) {
-                if (treenodes.isEmpty()) {
-                    for (int i = 0; i < value.size(); i++) {
-                        TreeNode child = new TreeBranch();
-                        child.descriptor = descriptor;
-                        treenodes.add(child);
-                    }
-                } else if (treenodes.size() == 1) {
-                    for (int i = 1; i < value.size(); i++) {
-                        treenodes.add(treenodes.get(0).clone());
-                    }
-                } else if (value.size() != 1 && treenodes.size() != value.size()) {
-                    throw new IllegalArgumentException(
-                            "Error in mapping: Number of values not matching.");
-                }
+                fillTreeNodes(value, descriptor, (List<TreeNode>) treenodes);
                 // wrap simple content in complex attribute
                 AttributeType simpleType =
                         new AttributeTypeImpl(
@@ -242,9 +228,9 @@ public class GenericRecordBuilder implements RecordBuilder {
                     child.descriptor = descriptor;
                     treenodes.add(child);
                 }
-                for (int i = 0; i < treenodes.size(); i++) {
+                for (TreeNode treenode : treenodes) {
                     createAttribute(
-                            (TreeBranch) treenodes.get(i),
+                            (TreeBranch) treenode,
                             index + 1,
                             (ComplexType) descriptor.getType(),
                             path,
@@ -253,20 +239,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                             splitIndex);
                 }
             } else {
-                if (treenodes.isEmpty()) {
-                    for (int i = 0; i < value.size(); i++) {
-                        TreeNode child = new TreeBranch();
-                        child.descriptor = descriptor;
-                        treenodes.add(child);
-                    }
-                } else if (treenodes.size() == 1) {
-                    for (int i = 1; i < value.size(); i++) {
-                        treenodes.add(treenodes.get(0).clone());
-                    }
-                } else if (value.size() != 1 && treenodes.size() != value.size()) {
-                    throw new IllegalArgumentException(
-                            "Error in mapping: Number of values not matching.");
-                }
+                fillTreeNodes(value, descriptor, treenodes);
 
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
                     Object item = value.size() == 1 ? value.get(0) : value.get(i);
@@ -284,6 +257,24 @@ public class GenericRecordBuilder implements RecordBuilder {
                     }
                 }
             }
+        }
+    }
+
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
+    private void fillTreeNodes(
+            List<Object> value, AttributeDescriptor descriptor, List<TreeNode> treenodes) {
+        if (treenodes.isEmpty()) {
+            for (int i = 0; i < value.size(); i++) {
+                TreeNode child = new TreeBranch();
+                child.descriptor = descriptor;
+                treenodes.add(child);
+            }
+        } else if (treenodes.size() == 1) {
+            for (int i = 1; i < value.size(); i++) {
+                treenodes.add(treenodes.get(0).clone());
+            }
+        } else if (value.size() != 1 && treenodes.size() != value.size()) {
+            throw new IllegalArgumentException("Error in mapping: Number of values not matching.");
         }
     }
 

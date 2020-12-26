@@ -140,8 +140,8 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             boolean matchedMethods = true;
             if (methodList != null) {
                 matchedMethods = false;
-                for (int ii = 0; ii < methodList.length; ii++) {
-                    if (methodList[ii].equals(httpMethod)) {
+                for (String s : methodList) {
+                    if (s.equals(httpMethod)) {
                         matchedMethods = true;
                         break;
                     }

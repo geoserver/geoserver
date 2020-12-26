@@ -34,10 +34,9 @@ public class DirectoryTest extends TestCase {
         // all types of junk!
         String[] aux = new String[] {"aux", "rrd", "xml", "tif.aux.xml", "tfw"};
         File[] tifs = unpack.listFiles();
-        for (int i = 0; i < tifs.length; i++) {
-            File file = tifs[i];
-            for (int j = 0; j < aux.length; j++) {
-                new File(unpack, file.getName().replace("tif", aux[j])).createNewFile();
+        for (File file : tifs) {
+            for (String s : aux) {
+                new File(unpack, file.getName().replace("tif", s)).createNewFile();
             }
         }
 

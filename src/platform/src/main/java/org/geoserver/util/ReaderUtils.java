@@ -484,7 +484,7 @@ public class ReaderUtils {
 
         List<Object> ss = new ArrayList<>(s.length);
 
-        for (int i = 0; i < s.length; i++) ss.add(s[i]);
+        for (Object o : s) ss.add(o);
 
         return ss;
     }

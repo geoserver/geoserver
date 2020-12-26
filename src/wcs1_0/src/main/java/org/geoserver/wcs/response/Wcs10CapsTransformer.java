@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -311,8 +310,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
             start("wcs:keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                    element("wcs:keyword", it.next().toString());
+                for (Object kword : kwords) {
+                    element("wcs:keyword", kword.toString());
                 }
             }
 
@@ -612,14 +611,17 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
                             // special handling for current keyword
                             if (value.equalsIgnoreCase("current")) return null;
-                            for (int i = 0; i < PATTERNS.length; i++) {
+                            for (String pattern : PATTERNS) {
                                 // rebuild formats at each parse, date formats are not thread safe
                                 SimpleDateFormat format =
-                                        new SimpleDateFormat(PATTERNS[i], Locale.CANADA);
+                                        new SimpleDateFormat(pattern, Locale.CANADA);
 
-                                /* We do not use the standard method DateFormat.parse(String), because if the parsing
-                                 * stops before the end of the string, the remaining characters are just ignored and
-                                 * no exception is thrown. So we have to ensure that the whole string is correct for
+                                /* We do not use the standard method DateFormat.parse(String),
+                                because if the parsing
+                                 * stops before the end of the string, the remaining characters
+                                 are just ignored and
+                                 * no exception is thrown. So we have to ensure that the whole
+                                 string is correct for
                                  * the format.
                                  */
                                 ParsePosition pos = new ParsePosition(0);

@@ -138,16 +138,16 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < pairs.length; i++) {
-            parsePair(pairs[i]);
+        for (String s : pairs) {
+            parsePair(s);
         }
 
         // we should also parse parameters that came into the request thought
         if (myWrappedRequest.getQueryString() != null) {
             pairs = myWrappedRequest.getQueryString().split("\\&");
 
-            for (int i = 0; i < pairs.length; i++) {
-                parsePair(pairs[i]);
+            for (String pair : pairs) {
+                parsePair(pair);
             }
         }
     }

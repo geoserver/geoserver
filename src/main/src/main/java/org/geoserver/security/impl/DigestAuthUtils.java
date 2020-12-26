@@ -163,13 +163,13 @@ public class DigestAuthUtils {
 
         Map<String, String> map = new HashMap<>();
 
-        for (int i = 0; i < array.length; i++) {
+        for (String s : array) {
             String postRemove;
 
             if (removeCharacters == null) {
-                postRemove = array[i];
+                postRemove = s;
             } else {
-                postRemove = StringUtils.replace(array[i], removeCharacters, "");
+                postRemove = StringUtils.replace(s, removeCharacters, "");
             }
 
             String[] splitThisArrayElement = split(postRemove, delimiter);

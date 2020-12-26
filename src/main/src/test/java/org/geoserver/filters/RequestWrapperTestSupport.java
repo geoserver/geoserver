@@ -50,11 +50,11 @@ public class RequestWrapperTestSupport {
     public static void compare(HttpServletRequest reqA, HttpServletRequest reqB) {
         Method[] methods = HttpServletRequest.class.getMethods();
 
-        for (int i = 0; i < methods.length; i++) {
+        for (Method method : methods) {
             try {
-                if (methods[i].getParameterTypes().length == 0) {
-                    Object resultA = methods[i].invoke(reqA);
-                    Object resultB = methods[i].invoke(reqB);
+                if (method.getParameterTypes().length == 0) {
+                    Object resultA = method.invoke(reqA);
+                    Object resultB = method.invoke(reqB);
                     assertEquals(resultA, resultB);
                 }
             } catch (Exception e) {

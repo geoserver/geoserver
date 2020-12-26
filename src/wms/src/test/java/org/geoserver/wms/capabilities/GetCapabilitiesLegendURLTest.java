@@ -461,8 +461,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         } else {
 
             String[] list = file.list();
-            for (int i = 0; i < list.length; i++) {
-                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + list[i]));
+            for (String s : list) {
+                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + s));
             }
 
             file.delete();

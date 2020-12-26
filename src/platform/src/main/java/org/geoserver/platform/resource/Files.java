@@ -510,13 +510,12 @@ public final class Files {
         boolean allClean = true;
         File[] files = directory.listFiles();
         if (files != null) {
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    allClean &= delete(files[i]);
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    allClean &= delete(file);
                 } else {
-                    if (!files[i].delete()) {
-                        LOGGER.log(
-                                Level.WARNING, "Could not delete {0}", files[i].getAbsolutePath());
+                    if (!file.delete()) {
+                        LOGGER.log(Level.WARNING, "Could not delete {0}", file.getAbsolutePath());
                         allClean = false;
                     }
                 }

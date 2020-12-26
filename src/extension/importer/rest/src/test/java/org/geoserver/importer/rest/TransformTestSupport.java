@@ -58,11 +58,11 @@ public abstract class TransformTestSupport extends DataTestCase {
         ImportTransform transform2 = reader.transform(buffer.toString());
         PropertyDescriptor[] pd = BeanUtils.getPropertyDescriptors(transform.getClass());
 
-        for (int i = 0; i < pd.length; i++) {
+        for (PropertyDescriptor propertyDescriptor : pd) {
             assertEquals(
-                    "expected same value of " + pd[i].getName(),
-                    pd[i].getReadMethod().invoke(transform),
-                    pd[i].getReadMethod().invoke(transform2));
+                    "expected same value of " + propertyDescriptor.getName(),
+                    propertyDescriptor.getReadMethod().invoke(transform),
+                    propertyDescriptor.getReadMethod().invoke(transform2));
         }
         RequestContextHolder.setRequestAttributes(oldAttributes);
     }

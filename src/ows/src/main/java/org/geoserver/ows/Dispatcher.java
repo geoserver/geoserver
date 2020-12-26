@@ -784,9 +784,7 @@ public class Dispatcher extends AbstractController {
                     boolean found = false;
                     Version version = new Version(req.getVersion());
 
-                    for (Iterator s = loadServices().iterator(); s.hasNext(); ) {
-                        Service service = (Service) s.next();
-
+                    for (Service service : loadServices()) {
                         if (version.equals(service.getVersion())) {
                             found = true;
 
@@ -923,8 +921,8 @@ public class Dispatcher extends AbstractController {
                         && !outputFormats.contains(req.getOutputFormat())) {
 
                     // must do a case insensitive check
-                    for (Iterator of = outputFormats.iterator(); of.hasNext(); ) {
-                        String outputFormat = (String) of.next();
+                    for (Object format : outputFormats) {
+                        String outputFormat = (String) format;
                         if (req.getOutputFormat().equalsIgnoreCase(outputFormat)) {
                             continue O;
                         }
@@ -1082,14 +1080,14 @@ public class Dispatcher extends AbstractController {
         String[][] headers = response.getHeaders(result, opDescriptor);
         boolean contentDispositionProvided = false;
         if (headers != null) {
-            for (int i = 0; i < headers.length; i++) {
-                if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
+            for (String[] header : headers) {
+                if (header[0].equalsIgnoreCase("Content-Disposition")) {
                     contentDispositionProvided = true;
                     if (disposition == null) {
-                        req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
+                        req.getHttpResponse().addHeader(header[0], header[1]);
                     }
                 } else {
-                    req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
+                    req.getHttpResponse().addHeader(header[0], header[1]);
                 }
             }
         }
@@ -1160,9 +1158,7 @@ public class Dispatcher extends AbstractController {
         // first just match on service,request
         List<Service> matches = new ArrayList<>();
 
-        for (Iterator<Service> itr = services.iterator(); itr.hasNext(); ) {
-            Service sBean = itr.next();
-
+        for (Service sBean : services) {
             if (sBean.getId().equalsIgnoreCase(id)) {
                 matches.add(sBean);
             }
@@ -1254,9 +1250,7 @@ public class Dispatcher extends AbstractController {
 
         List<KvpRequestReader> matches = new ArrayList<>();
 
-        for (Iterator<KvpRequestReader> itr = kvpReaders.iterator(); itr.hasNext(); ) {
-            KvpRequestReader kvpReader = itr.next();
-
+        for (KvpRequestReader kvpReader : kvpReaders) {
             if (kvpReader.getRequestBean().isAssignableFrom(type)) {
                 matches.add(kvpReader);
             }
@@ -1325,8 +1319,7 @@ public class Dispatcher extends AbstractController {
         // first just match on namespace, element
         List<XmlRequestReader> matches = new ArrayList<>();
 
-        for (Iterator itr = xmlReaders.iterator(); itr.hasNext(); ) {
-            XmlRequestReader xmlReader = (XmlRequestReader) itr.next();
+        for (XmlRequestReader xmlReader : xmlReaders) {
             QName xmlElement = xmlReader.getElement();
 
             if (xmlElement.getLocalPart().equalsIgnoreCase(element)) {
@@ -1345,8 +1338,7 @@ public class Dispatcher extends AbstractController {
                                 + " xml reader by element name only";
                 logger.info(msg);
 
-                for (Iterator itr = xmlReaders.iterator(); itr.hasNext(); ) {
-                    XmlRequestReader xmlReader = (XmlRequestReader) itr.next();
+                for (XmlRequestReader xmlReader : xmlReaders) {
                     if (xmlReader.getElement().getLocalPart().equals(element)) {
                         matches.add(xmlReader);
                     }
@@ -1747,8 +1739,8 @@ public class Dispatcher extends AbstractController {
         if (service != null) {
             // look up the service exception handler
             Collection handlers = GeoServerExtensions.extensions(ServiceExceptionHandler.class);
-            for (Iterator h = handlers.iterator(); h.hasNext(); ) {
-                ServiceExceptionHandler seh = (ServiceExceptionHandler) h.next();
+            for (Object o : handlers) {
+                ServiceExceptionHandler seh = (ServiceExceptionHandler) o;
 
                 if (seh.getServices().contains(service)) {
                     // found one,

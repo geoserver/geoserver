@@ -10,7 +10,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.styling.AnchorPoint;
@@ -99,8 +98,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
         int[] cmap = new int[colors.size()];
         int i = 0;
-        for (Iterator<Color> it = colors.iterator(); it.hasNext(); ) {
-            Color color = it.next();
+        for (Color color : colors) {
             cmap[i++] =
                     (color.getAlpha() << 24)
                             | (color.getRed() << 16)
@@ -190,11 +188,11 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public void visit(StyledLayerDescriptor sld) {
         StyledLayer[] layers = sld.getStyledLayers();
 
-        for (int i = 0; i < layers.length; i++) {
-            if (layers[i] instanceof NamedLayer) {
-                ((NamedLayer) layers[i]).accept(this);
-            } else if (layers[i] instanceof UserLayer) {
-                ((UserLayer) layers[i]).accept(this);
+        for (StyledLayer layer : layers) {
+            if (layer instanceof NamedLayer) {
+                ((NamedLayer) layer).accept(this);
+            } else if (layer instanceof UserLayer) {
+                ((UserLayer) layer).accept(this);
             }
         }
     }
@@ -202,16 +200,16 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public void visit(NamedLayer layer) {
         Style[] styles = layer.getStyles();
 
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : styles) {
+            style.accept(this);
         }
     }
 
     public void visit(UserLayer layer) {
         Style[] styles = layer.getUserStyles();
 
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : styles) {
+            style.accept(this);
         }
     }
 

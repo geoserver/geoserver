@@ -10,7 +10,6 @@ import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -227,8 +226,8 @@ public class WCSUtils {
         }
 
         if ((params != null) && !params.isEmpty()) {
-            for (Iterator p = params.keySet().iterator(); p.hasNext(); ) {
-                final String param = (String) p.next();
+            for (Object o : params.keySet()) {
+                final String param = (String) o;
 
                 if (param.equalsIgnoreCase("BAND")) {
                     try {
@@ -249,8 +248,8 @@ public class WCSUtils {
                         } else {
                             final String[] bands = values.split(",");
 
-                            for (int v = 0; v < bands.length; v++) {
-                                final String key = param.toLowerCase() + bands[v];
+                            for (String band : bands) {
+                                final String key = param.toLowerCase() + band;
 
                                 if (dims.containsKey(key)) {
                                     selectedBands.add(dims.get(key));

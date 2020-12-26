@@ -821,8 +821,8 @@ public class XStreamPersister {
 
             GeoServerSecurityManager secMgr = encryptPasswordFields ? getSecurityManager() : null;
             Map map = (Map) source;
-            for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) iterator.next();
+            for (Object o : map.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
 
                 if (entry.getValue() == null) {
                     continue;

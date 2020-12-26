@@ -127,8 +127,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
         Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
-        for (int i = 0; i < names.length; i++) {
-            String original = names[i];
+        for (String original : names) {
             String transformedName = transformFeatureTypeName(original);
             if (transformedName != null) {
                 transformedNames.add(transformedName);

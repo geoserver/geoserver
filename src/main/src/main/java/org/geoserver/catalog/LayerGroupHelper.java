@@ -274,8 +274,8 @@ public class LayerGroupHelper {
         LayerInfo l = layers.get(0);
         ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
 
-        for (int i = 0; i < layers.size(); i++) {
-            l = layers.get(i);
+        for (LayerInfo layer : layers) {
+            l = layer;
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }
 

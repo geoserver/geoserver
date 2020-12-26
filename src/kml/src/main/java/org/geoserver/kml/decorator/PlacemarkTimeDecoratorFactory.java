@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.kml.KmlEncodingContext;
@@ -258,8 +257,8 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
 
         /** Parses a date as a string into a well-known format. */
         protected Date parseDate(List formats, String date) {
-            for (Iterator f = formats.iterator(); f.hasNext(); ) {
-                SimpleDateFormat format = (SimpleDateFormat) f.next();
+            for (Object o : formats) {
+                SimpleDateFormat format = (SimpleDateFormat) o;
                 Date d = null;
                 try {
                     d = format.parse(date);

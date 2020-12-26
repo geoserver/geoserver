@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.xml.v1_1_0;
 
-import java.util.Iterator;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.AllSomeType;
 import net.opengis.wfs.DeleteElementType;
@@ -152,8 +151,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
         //  &lt;xsd:element ref="wfs:Delete"/&gt;
         //  &lt;xsd:element ref="wfs:Native"/&gt;
         // &lt;/xsd:choice&gt;
-        for (Iterator itr = node.getChildren().iterator(); itr.hasNext(); ) {
-            Node child = (Node) itr.next();
+        for (Node child : node.getChildren()) {
             Object cv = child.getValue();
 
             if (cv instanceof InsertElementType) {

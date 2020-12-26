@@ -363,8 +363,7 @@ public class Directory extends FileData {
 
     private void logFormatMismatch() {
         StringBuilder buf = new StringBuilder("all files are not the same format:\n");
-        for (int i = 0; i < files.size(); i++) {
-            FileData f = files.get(i);
+        for (FileData f : files) {
             String format = "not recognized";
             if (f.getFormat() != null) {
                 format = f.getName();

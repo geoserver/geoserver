@@ -190,11 +190,10 @@ public abstract class LegendGraphicBuilder {
         double minSize = defaultMaxSize;
         double maxSize = defaultMinSize;
 
-        final int ruleCount = rules.length;
-        for (int i = 0; i < ruleCount; i++) {
-            Feature sample = getSampleFeatureForRule(featureType, feature, rules[i]);
+        for (Rule rule : rules) {
+            Feature sample = getSampleFeatureForRule(featureType, feature, rule);
             MetaBufferEstimator estimator = new MetaBufferEstimator(sample);
-            for (Symbolizer symbolizer : rules[i].symbolizers()) {
+            for (Symbolizer symbolizer : rule.symbolizers()) {
                 if (symbolizer instanceof PointSymbolizer || symbolizer instanceof LineSymbolizer) {
                     double size = getSymbolizerSize(estimator, symbolizer, defaultMaxSize);
                     // a line symbolizer is depicted as a line of the requested size, so don't go
@@ -486,8 +485,7 @@ public abstract class LegendGraphicBuilder {
         // Check for rendering transformation
 
         List<FeatureTypeStyle> ftsList = gt2Style.featureTypeStyles();
-        for (int i = 0; i < ftsList.size(); i++) {
-            FeatureTypeStyle fts = ftsList.get(i);
+        for (FeatureTypeStyle fts : ftsList) {
             Expression exp = fts.getTransformation();
             if (exp != null) {
                 ProcessFunction processFunction = (ProcessFunction) exp;

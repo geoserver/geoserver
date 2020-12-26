@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,9 +109,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             typeNames = getTypeNames(kvp);
             List<List<QName>> list = new ArrayList<>();
 
-            for (Iterator itr = typeNames.iterator(); itr.hasNext(); ) {
-                Object obj = itr.next();
-
+            for (Object obj : typeNames) {
                 // we might get a list of qname, or a list of list of qname
                 if (obj instanceof QName) {
                     QName qName = (QName) obj;
@@ -144,8 +141,8 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 featureId = featureId != null ? featureId : (List) kvp.get("resourceId");
 
                 Set<List<QName>> hTypeNames = new HashSet<>();
-                for (int i = 0; i < featureId.size(); i++) {
-                    QName typeName = getTypeNameFromFeatureId((String) featureId.get(i));
+                for (Object o : featureId) {
+                    QName typeName = getTypeNameFromFeatureId((String) o);
                     if (typeName != null) {
                         hTypeNames.add(Arrays.asList(typeName));
                     }
@@ -186,8 +183,8 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             featureIdList = isFeatureId ? featureIdList : (List) kvp.get("resourceId");
             Set<FeatureId> ids = new HashSet<>();
 
-            for (Iterator i = featureIdList.iterator(); i.hasNext(); ) {
-                String fid = (String) i.next();
+            for (Object o : featureIdList) {
+                String fid = (String) o;
                 // check consistency between resourceId and typeName (per WFS 2.0 CITE tests)
                 if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
                     QName qName = getTypeNameFromFeatureId(fid);
@@ -250,16 +247,14 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         List<Query> queries = getQueries(eObject);
         List<Filter> filters = new ArrayList<>();
 
-        for (Iterator<Query> it = queries.iterator(); it.hasNext(); ) {
-            Query q = it.next();
-
+        for (Query q : queries) {
             List typeName = q.getTypeNames();
             Filter filter;
-            if (typeName.size() > 1) {
+            int typeNameSize = typeName.size();
+            if (typeNameSize > 1) {
                 // TODO: not sure what to do here, just going to and them up
-                List<Filter> and = new ArrayList<>(typeName.size());
-
-                for (Iterator t = typeName.iterator(); t.hasNext(); ) {
+                List<Filter> and = new ArrayList<>(typeNameSize);
+                for (int i = 0; i < typeNameSize; i++) {
                     and.add(bboxFilter(bbox));
                 }
 

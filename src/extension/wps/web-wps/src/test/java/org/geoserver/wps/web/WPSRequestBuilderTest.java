@@ -37,8 +37,8 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage("form:requestBuilder:process");
         int index = -1;
         final List choices = choice.getChoices();
-        for (int i = 0; i < choices.size(); i++) {
-            if (choices.get(i).equals("JTS:area")) {
+        for (Object o : choices) {
+            if (o.equals("JTS:area")) {
                 index = 0;
                 break;
             }

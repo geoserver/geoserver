@@ -564,8 +564,8 @@ public class WMSRequests {
             return;
         }
 
-        for (Iterator e = formatOptions.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
+        for (Object value : formatOptions.entrySet()) {
+            Map.Entry entry = (Map.Entry) value;
             String key = (String) entry.getKey();
             Object val = entry.getValue();
 

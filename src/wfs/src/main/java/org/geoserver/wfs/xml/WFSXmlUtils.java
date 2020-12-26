@@ -7,7 +7,6 @@ package org.geoserver.wfs.xml;
 
 import java.io.Reader;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
@@ -83,8 +82,7 @@ public class WFSXmlUtils {
                 WFSException exception =
                         new WFSException("Invalid request", "InvalidParameterValue");
 
-                for (Iterator e = parser.getValidationErrors().iterator(); e.hasNext(); ) {
-                    Exception error = (Exception) e.next();
+                for (Exception error : parser.getValidationErrors()) {
                     exception.getExceptionText().add(error.getLocalizedMessage());
                 }
 
@@ -102,8 +100,8 @@ public class WFSXmlUtils {
         FeatureTypeCache featureTypeCache = new FeatureTypeCache();
 
         Collection featureTypes = gs.getCatalog().getFeatureTypes();
-        for (Iterator f = featureTypes.iterator(); f.hasNext(); ) {
-            FeatureTypeInfo meta = (FeatureTypeInfo) f.next();
+        for (Object type : featureTypes) {
+            FeatureTypeInfo meta = (FeatureTypeInfo) type;
             if (!meta.enabled()) {
                 continue;
             }

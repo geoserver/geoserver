@@ -436,9 +436,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         FontRenderContext frc = g.getFontRenderContext();
 
         // scan over the
-        for (int i = 0; i < lines.length; i++) {
-            final String line = lines[i];
-
+        for (final String line : lines) {
             if ("".equals(line)) {
                 cursor.y += lineHeight;
             } else {

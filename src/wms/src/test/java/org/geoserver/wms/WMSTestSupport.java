@@ -27,7 +27,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -269,8 +268,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         List<MapLayerInfo> layers = new ArrayList<>(layerNames.length);
         List<Style> styles = new ArrayList<>();
 
-        for (int i = 0; i < layerNames.length; i++) {
-            LayerInfo layerInfo = getCatalog().getLayerByName(layerNames[i].getLocalPart());
+        for (QName layerName : layerNames) {
+            LayerInfo layerInfo = getCatalog().getLayerByName(layerName.getLocalPart());
             try {
                 styles.add(layerInfo.getDefaultStyle().getStyle());
             } catch (IOException e) {
@@ -518,8 +517,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
                 System.out.println(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }

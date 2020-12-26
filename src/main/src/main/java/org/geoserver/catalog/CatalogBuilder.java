@@ -10,7 +10,6 @@ import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1105,8 +1104,8 @@ public class CatalogBuilder {
 
         // supported formats
         final List formats = CoverageStoreUtils.listDataFormats();
-        for (Iterator i = formats.iterator(); i.hasNext(); ) {
-            final Format fTmp = (Format) i.next();
+        for (Object o : formats) {
+            final Format fTmp = (Format) o;
             final String fName = fTmp.getName();
 
             if (fName.equalsIgnoreCase("WorldImage")) {
@@ -1233,12 +1232,11 @@ public class CatalogBuilder {
 
     List<CoverageDimensionInfo> getCoverageDimensions(GridSampleDimension[] sampleDimensions) {
 
-        final int length = sampleDimensions.length;
         List<CoverageDimensionInfo> dims = new ArrayList<>();
 
-        for (int i = 0; i < length; i++) {
+        for (GridSampleDimension sampleDimension : sampleDimensions) {
             CoverageDimensionInfo dim = catalog.getFactory().createCoverageDimension();
-            GridSampleDimension sd = sampleDimensions[i];
+            GridSampleDimension sd = sampleDimension;
             String name = sd.getDescription().toString(Locale.getDefault());
             dim.setName(name);
 

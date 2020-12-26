@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -170,8 +169,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 skipMisconfiguredThisTime =
                         false; // NEVER skip layers when the user requested specific ones
                 coverages = new ArrayList<>();
-                for (Iterator it = request.getCoverage().iterator(); it.hasNext(); ) {
-                    String coverageId = (String) it.next();
+                for (Object value : request.getCoverage()) {
+                    String coverageId = (String) value;
                     // check the coverage is known
                     LayerInfo layer = catalog.getLayerByName(coverageId);
                     if (layer == null || layer.getType() != PublishedType.RASTER) {
@@ -183,8 +182,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     coverages.add(catalog.getCoverageByName(coverageId));
                 }
             }
-            for (Iterator it = coverages.iterator(); it.hasNext(); ) {
-                CoverageInfo coverage = (CoverageInfo) it.next();
+            for (CoverageInfo coverage : coverages) {
                 try {
                     mark();
                     handleCoverageOffering(coverage);
@@ -313,8 +311,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             start("wcs:keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                    element("wcs:keyword", it.next().toString());
+                for (Object kword : kwords) {
+                    element("wcs:keyword", kword.toString());
                 }
             }
 
@@ -633,8 +631,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
             // gather all the formats for this coverage
             Set<String> formats = new HashSet<>();
-            for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
-                String format = (String) it.next();
+            for (String format : ci.getSupportedFormats()) {
                 formats.add(format);
             }
             // sort them
@@ -659,8 +656,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 start("wcs:supportedInterpolations");
             }
 
-            for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext(); ) {
-                String method = (String) it.next();
+            for (String method : ci.getInterpolationMethods()) {
                 if (method != null) element("wcs:interpolationMethod", method);
             }
             end("wcs:supportedInterpolations");

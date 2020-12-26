@@ -59,9 +59,8 @@ public class FlatKvpParser extends KvpParser {
     public final Object parse(String value) throws Exception {
         List tokens = KvpUtils.readFlat(value, delimiter);
         List<Object> parsed = new ArrayList<>(tokens.size());
-        final int size = tokens.size();
-        for (int i = 0; i < size; i++) {
-            String token = (String) tokens.get(i);
+        for (Object o : tokens) {
+            String token = (String) o;
             parsed.add(parseToken(token));
         }
 

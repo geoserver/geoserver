@@ -110,14 +110,11 @@ public class EncodeHTMLImageMap extends WebMap {
 
             final List<Filter> filtersToDS = new ArrayList<>();
 
-            final int stylesLength = styles.length;
-
             FeatureTypeStyle style;
-
-            for (int t = 0; t < stylesLength; t++) // look at each
+            // look at each
             // featuretypestyle
-            {
-                style = styles[t];
+            for (FeatureTypeStyle featureTypeStyle : styles) {
+                style = featureTypeStyle;
 
                 for (Rule r : style.rules()) {
                     if (r.getFilter() == null) return null; // uh-oh has no filter (want all rows)

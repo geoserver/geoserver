@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -223,10 +222,10 @@ public class GeoServerUserDao implements UserDetailsService {
         TreeMap<String, User> users = new TreeMap<>();
         UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-        for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
+        for (Object o : props.keySet()) {
             // the attribute editors parses the list of strings into password, username and enabled
             // flag
-            String username = (String) iter.next();
+            String username = (String) o;
             configAttribEd.setAsText(props.getProperty(username));
 
             // if the parsing succeeded turn that into a user object

@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -378,8 +377,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     public List<T> getSelection() {
         List<T> result = new ArrayList<>();
         int i = 0;
-        for (Iterator<Component> it = dataView.iterator(); it.hasNext(); ) {
-            Component item = it.next();
+        for (Component item : dataView) {
             if (selection[i]) {
                 result.add((T) item.getDefaultModelObject());
             }
@@ -459,9 +457,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Selects a single item by object. */
     public void selectObject(T object) {
         int i = 0;
-        for (Iterator<Component> it = dataView.iterator(); it.hasNext(); ) {
+        for (Component component : dataView) {
             @SuppressWarnings("unchecked")
-            Item<T> item = (Item<T>) it.next();
+            Item<T> item = (Item<T>) component;
             if (object.equals(item.getModelObject())) {
                 selection[i] = true;
                 return;

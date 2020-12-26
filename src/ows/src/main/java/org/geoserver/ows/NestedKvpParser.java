@@ -49,12 +49,10 @@ public class NestedKvpParser extends KvpParser {
         List<List<String>> nestedTokens = KvpUtils.readNested(value);
         List<Object> result = new ArrayList<>();
 
-        for (int i = 0; i < nestedTokens.size(); i++) {
-            List<String> tokens = nestedTokens.get(i);
+        for (List<String> tokens : nestedTokens) {
             List<Object> parsed = new ArrayList<>(tokens.size());
 
-            for (int j = 0; j < tokens.size(); j++) {
-                String token = tokens.get(j);
+            for (String token : tokens) {
                 parsed.add(parseToken(token));
             }
 

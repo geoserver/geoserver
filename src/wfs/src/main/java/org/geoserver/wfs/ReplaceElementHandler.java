@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +53,8 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
 
         List features = replace.getFeatures();
         if (!features.isEmpty()) {
-            for (Iterator f = features.iterator(); f.hasNext(); ) {
-                SimpleFeature feature = (SimpleFeature) f.next();
+            for (Object o : features) {
+                SimpleFeature feature = (SimpleFeature) o;
 
                 String name = feature.getFeatureType().getTypeName();
                 String namespaceURI = feature.getFeatureType().getName().getNamespaceURI();

@@ -148,8 +148,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
         Set<String> s2 = new TreeSet<>();
-        for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) e.next();
+        for (WFSGetFeatureOutputFormat extension : extensions) {
             s2.addAll(extension.getOutputFormats());
         }
 
@@ -221,8 +220,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals("WFS_Capabilities", e.getLocalName());
 
         final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-        for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-            FeatureTypeInfo ft = it.next();
+        for (FeatureTypeInfo ft : enabledTypes) {
             if (ft.enabled()) {
                 String prefixedName = ft.prefixedName();
 
@@ -418,8 +416,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
             // for each enabled type, check we added the otherSRS
             final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-            for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-                FeatureTypeInfo ft = it.next();
+            for (FeatureTypeInfo ft : enabledTypes) {
                 if (ft.enabled()) {
                     String prefixedName = ft.prefixedName();
 

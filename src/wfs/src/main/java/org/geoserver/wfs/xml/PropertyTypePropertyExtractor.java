@@ -7,7 +7,6 @@ package org.geoserver.wfs.xml;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
@@ -88,8 +87,8 @@ public class PropertyTypePropertyExtractor implements PropertyExtractor {
         Class clazz = value.getClass();
         List profiles = Arrays.asList(new Object[] {new XSProfile(), new GML3Profile()});
 
-        for (Iterator it = profiles.iterator(); it.hasNext(); ) {
-            TypeMappingProfile profile = (TypeMappingProfile) it.next();
+        for (Object o : profiles) {
+            TypeMappingProfile profile = (TypeMappingProfile) o;
             Name name = profile.name(clazz);
 
             if (name != null) {

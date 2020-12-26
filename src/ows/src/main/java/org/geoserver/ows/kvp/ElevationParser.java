@@ -159,8 +159,7 @@ public class ElevationParser {
     }
 
     private void addValue(Collection<Double> result, Double step) {
-        for (Iterator it = result.iterator(); it.hasNext(); ) {
-            final Object element = it.next();
+        for (final Object element : result) {
             if (element instanceof Double) {
                 // convert
                 final Double local = (Double) element;

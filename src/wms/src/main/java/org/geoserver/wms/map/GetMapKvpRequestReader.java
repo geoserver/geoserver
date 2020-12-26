@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -249,7 +248,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return false;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "PMD.ForLoopCanBeForeach"})
     @Override
     public GetMapRequest read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
@@ -886,8 +885,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             }
 
             Set<FeatureId> ids = new HashSet<>();
-            for (Iterator i = featureId.iterator(); i.hasNext(); ) {
-                ids.add(filterFactory.featureId((String) i.next()));
+            for (Object o : featureId) {
+                ids.add(filterFactory.featureId((String) o));
             }
             filters = Collections.singletonList(filterFactory.id(ids));
         }
@@ -1074,23 +1073,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             return;
         }
 
-        final int length = layerStyles.length;
         Style s;
-
-        for (int t = 0; t < length; t++) {
-            if (layerStyles[t] instanceof NamedStyle) {
+        for (Style layerStyle : layerStyles) {
+            if (layerStyle instanceof NamedStyle) {
                 layers.add(currLayer);
-                s = findStyle(wms, request, (layerStyles[t]).getName());
+                s = findStyle(wms, request, layerStyle.getName());
 
                 if (s == null) {
                     throw new ServiceException(
-                            "couldn't find style named '" + (layerStyles[t]).getName() + "'");
+                            "couldn't find style named '" + layerStyle.getName() + "'");
                 }
 
                 styles.add(s);
             } else {
                 layers.add(currLayer);
-                styles.add(layerStyles[t]);
+                styles.add(layerStyle);
             }
         }
     }
@@ -1138,8 +1135,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         String layerName = layer.getName();
         StyledLayer sl;
 
-        for (int i = 0; i < styledLayers.length; i++) {
-            sl = styledLayers[i];
+        for (StyledLayer value : styledLayers) {
+            sl = value;
 
             if (layerName.equals(sl.getName())) {
                 if (sl instanceof UserLayer) {
@@ -1180,8 +1177,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // the first style that matches the type name
         // TODO: would be nice to have a switch to turn this off since it's out of the spec
         if (style == null && laxStyleMatchAllowed) {
-            for (int i = 0; i < styledLayers.length; i++) {
-                sl = styledLayers[i];
+            for (StyledLayer styledLayer : styledLayers) {
+                sl = styledLayer;
 
                 if (layerName.equals(sl.getName())) {
                     if (sl instanceof UserLayer) {

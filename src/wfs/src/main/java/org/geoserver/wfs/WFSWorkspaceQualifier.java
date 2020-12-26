@@ -7,7 +7,6 @@ package org.geoserver.wfs;
 
 import com.google.common.base.Strings;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -206,8 +205,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     /** Iterates the given features and ensures their namespaceURI matches the given namespace */
     private void ensureFeatureNamespaceUriMatches(
             List features, NamespaceInfo ns, TransactionRequest t) {
-        for (Iterator j = features.iterator(); j.hasNext(); ) {
-            Object next = j.next();
+        for (Object next : features) {
             if (next instanceof Feature) {
                 Feature f = (Feature) next;
                 Name n = f.getType().getName();

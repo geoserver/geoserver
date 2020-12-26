@@ -250,6 +250,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * back reference to the classloader that loaded it). The same happens for any residual thread
      * launched by the web app.
      */
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             LOGGER.info("Beginning GeoServer cleanup sequence");

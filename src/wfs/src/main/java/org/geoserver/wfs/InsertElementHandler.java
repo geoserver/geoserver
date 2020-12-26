@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +86,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new HashMap();
 
             List featureList = insert.getFeatures();
-            for (Iterator f = featureList.iterator(); f.hasNext(); ) {
-                SimpleFeature feature = (SimpleFeature) f.next();
+            for (Object item : featureList) {
+                SimpleFeature feature = (SimpleFeature) item;
                 SimpleFeatureType schema = feature.getFeatureType();
                 ListFeatureCollection collection =
                         (ListFeatureCollection) schema2features.get(schema);
@@ -126,8 +125,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             // as they were supplied
             Map<String, List<FeatureId>> schema2fids = new HashMap<>();
 
-            for (Iterator c = schema2features.values().iterator(); c.hasNext(); ) {
-                SimpleFeatureCollection collection = (SimpleFeatureCollection) c.next();
+            for (Object value : schema2features.values()) {
+                SimpleFeatureCollection collection = (SimpleFeatureCollection) value;
                 SimpleFeatureType schema = collection.getSchema();
 
                 final QName elementName =
@@ -154,7 +153,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                         CoordinateReferenceSystem target =
                                 defaultGeometry.getCoordinateReferenceSystem();
                         if (target
-                                != null /* && !CRS.equalsIgnoreMetadata(collection.getSchema().getCoordinateReferenceSystem(), target) */) {
+                                != null /* && !CRS.equalsIgnoreMetadata(collection.getSchema()
+                                        .getCoordinateReferenceSystem(), target) */) {
                             collection = new ReprojectingFeatureCollection(collection, target);
                         }
                     }
@@ -218,8 +218,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
             // report back fids, we need to keep the same order the
             // fids were reported in the original feature collection
-            for (Iterator f = featureList.iterator(); f.hasNext(); ) {
-                SimpleFeature feature = (SimpleFeature) f.next();
+            for (Object o : featureList) {
+                SimpleFeature feature = (SimpleFeature) o;
                 SimpleFeatureType schema = feature.getFeatureType();
 
                 // get the next fid
@@ -277,8 +277,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
         List features = insert.getFeatures();
         if (!features.isEmpty()) {
-            for (Iterator f = features.iterator(); f.hasNext(); ) {
-                Object next = f.next();
+            for (Object next : features) {
                 // if parsing fails the parser just returns a Map, do throw an error in this case
                 if (!(next instanceof SimpleFeature)) {
                     String version = request.getVersion();

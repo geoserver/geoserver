@@ -71,8 +71,8 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
         // round up the info objects for each feature collection
         MultiValuedMap<NamespaceInfo, FeatureTypeInfo> ns2metas = new HashSetValuedHashMap<>();
 
-        for (Iterator fc = featureCollections.iterator(); fc.hasNext(); ) {
-            SimpleFeatureCollection features = (SimpleFeatureCollection) fc.next();
+        for (Object featureCollection : featureCollections) {
+            SimpleFeatureCollection features = (SimpleFeatureCollection) featureCollection;
             SimpleFeatureType featureType = features.getSchema();
 
             // load the metadata for the feature type

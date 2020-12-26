@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -234,9 +233,7 @@ public class OwsUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Object> T parameter(Object[] parameters, Class<T> type) {
-        for (int i = 0; i < parameters.length; i++) {
-            Object parameter = parameters[i];
-
+        for (Object parameter : parameters) {
             if ((parameter != null) && type.isAssignableFrom(parameter.getClass())) {
                 return (T) parameter;
             }
@@ -256,10 +253,9 @@ public class OwsUtils {
                 if (xmlEscape) s.append(ResponseUtils.encodeXML(message));
                 else s.append(message);
                 if (ex instanceof ServiceException) {
-                    for (Iterator t = ((ServiceException) ex).getExceptionText().iterator();
-                            t.hasNext(); ) {
+                    for (String value : ((ServiceException) ex).getExceptionText()) {
                         s.append("\n");
-                        String msg = (String) t.next();
+                        String msg = value;
                         if (!lastMessage.equals(msg)) {
                             if (xmlEscape) s.append(ResponseUtils.encodeXML(msg));
                             else s.append(msg);

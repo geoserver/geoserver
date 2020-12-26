@@ -201,12 +201,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
         // now set the extra request parameters for this request
         String[] propertyNames = requestParams.getPropertyNames();
-        for (int k = 0; k < parameters.length; k++) {
-            if (!(parameters[k] instanceof Parameter<?>)) {
+        for (GeneralParameterValue generalParameterValue : parameters) {
+            if (!(generalParameterValue instanceof Parameter<?>)) {
                 continue;
             }
 
-            final Parameter<?> parameter = (Parameter<?>) parameters[k];
+            final Parameter<?> parameter = (Parameter<?>) generalParameterValue;
             ReferenceIdentifier name = parameter.getDescriptor().getName();
             if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
                 //

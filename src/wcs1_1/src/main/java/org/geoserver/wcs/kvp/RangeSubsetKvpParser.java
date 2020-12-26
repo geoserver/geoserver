@@ -8,7 +8,6 @@ package org.geoserver.wcs.kvp;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.io.StringReader;
-import java.util.Iterator;
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs11.AxisSubsetType;
@@ -47,8 +46,8 @@ public class RangeSubsetKvpParser extends KvpParser {
         RangeSubsetType result =
                 (RangeSubsetType) root.jjtAccept(new RangeSubsetKvpParserVisitor(), null);
 
-        for (Iterator it = result.getFieldSubset().iterator(); it.hasNext(); ) {
-            FieldSubsetType type = (FieldSubsetType) it.next();
+        for (Object o : result.getFieldSubset()) {
+            FieldSubsetType type = (FieldSubsetType) o;
             String interpolationType = type.getInterpolationType();
             if (interpolationType != null) {
                 try {

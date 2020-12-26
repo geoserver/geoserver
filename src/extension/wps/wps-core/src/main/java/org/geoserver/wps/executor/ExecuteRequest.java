@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +106,8 @@ public class ExecuteRequest {
         }
 
         // turn them into a map of input providers
-        for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext(); ) {
-            InputType input = (InputType) i.next();
+        for (Object o : request.getDataInputs().getInput()) {
+            InputType input = (InputType) o;
             String inputId = input.getIdentifier().getValue();
 
             // locate the parameter for this request
@@ -185,8 +184,8 @@ public class ExecuteRequest {
             result.put(output, mime);
         } else {
             // the response document form
-            for (Iterator it = document.getOutput().iterator(); it.hasNext(); ) {
-                OutputDefinitionType out = (OutputDefinitionType) it.next();
+            for (Object o : document.getOutput()) {
+                OutputDefinitionType out = (OutputDefinitionType) o;
                 String outputName = out.getIdentifier().getValue();
                 if (rawResults.contains(outputName)) {
                     // was the output mime specified?

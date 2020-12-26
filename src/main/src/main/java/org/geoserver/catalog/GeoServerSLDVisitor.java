@@ -319,9 +319,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             List<LayerInfo> layers = new ArrayList<>();
             Style[] layerStyles = ul.getUserStyles();
 
-            for (int i = 0; i < featureConstraints.length; i++) {
+            for (FeatureTypeConstraint featureConstraint : featureConstraints) {
                 // make sure the layer is there
-                String name = featureConstraints[i].getFeatureTypeName();
+                String name = featureConstraint.getFeatureTypeName();
                 if (Collections.binarySearch(remoteTypeNames, name) < 0) {
                     throw new IllegalStateException(
                             "Could not find layer feature type '"

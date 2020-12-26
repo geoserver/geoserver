@@ -76,8 +76,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
             SimpleFeatureType featureType,
             String attrAlias) {
         List<AttributeDescriptor> descriptors = featureType.getAttributeDescriptors();
-        for (int i = 0; i < descriptors.size(); i++) {
-            AttributeDescriptor ad = descriptors.get(i);
+        for (AttributeDescriptor ad : descriptors) {
             SimpleFeatureType joinedSchema =
                     (SimpleFeatureType) ad.getUserData().get(ContentDataStore.JOINED_FEATURE_TYPE);
             String name = (attrAlias != null ? attrAlias + "." : "") + ad.getLocalName();

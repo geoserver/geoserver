@@ -36,11 +36,9 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     protected boolean templatesExist(
             Template header, Template footer, List<FeatureCollection> collections)
             throws IOException {
-        int collSize = collections.size();
         if (header == null || footer == null) return false;
         else {
-            for (int i = 0; i < collSize; i++) {
-                FeatureCollection fc = collections.get(i);
+            for (FeatureCollection fc : collections) {
                 Template content = getContentTemplate(fc, wms.getCharSet());
                 if (content != null) return true;
             }

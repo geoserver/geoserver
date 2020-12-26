@@ -86,11 +86,11 @@ public class NumDecimalsTest extends WFSTestSupport {
         for (int x = 0; x < nl.getLength(); x++) {
             Element e = (Element) nl.item(x);
             String[] tuples = e.getFirstChild().getNodeValue().split(" ");
-            for (int i = 0; i < tuples.length; i++) {
-                String[] coord = tuples[i].split(",");
-                for (int j = 0; j < coord.length; j++) {
-                    int dot = coord[j].indexOf('.');
-                    assertEquals(numdecimals, coord[j].substring(dot + 1).length());
+            for (String tuple : tuples) {
+                String[] coord = tuple.split(",");
+                for (String s : coord) {
+                    int dot = s.indexOf('.');
+                    assertEquals(numdecimals, s.substring(dot + 1).length());
                 }
             }
         }

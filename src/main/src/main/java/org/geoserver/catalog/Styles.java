@@ -77,9 +77,9 @@ public class Styles {
             }
 
             if (styles != null) {
-                for (int j = 0; j < styles.length; j++) {
-                    if (!(styles[j] instanceof NamedStyle)) {
-                        return styles[j];
+                for (Style style : styles) {
+                    if (!(style instanceof NamedStyle)) {
+                        return style;
                     }
                 }
             }

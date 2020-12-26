@@ -410,8 +410,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             start("KeywordList");
 
             if (keywords != null) {
-                for (Iterator<KeywordInfo> it = keywords.iterator(); it.hasNext(); ) {
-                    element("Keyword", it.next().getValue());
+                for (KeywordInfo keyword : keywords) {
+                    element("Keyword", keyword.getValue());
                 }
             }
 
@@ -510,8 +510,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 sortedFormats.remove("image/png");
                 sortedFormats.add(0, "image/png");
             }
-            for (Iterator<String> it = sortedFormats.iterator(); it.hasNext(); ) {
-                element("Format", String.valueOf(it.next()));
+            for (String sortedFormat : sortedFormats) {
+                element("Format", String.valueOf(sortedFormat));
             }
 
             handleDcpType(serviceUrl, null);

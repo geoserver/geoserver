@@ -6,7 +6,6 @@
 package org.geoserver.ows.util;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -27,8 +26,7 @@ public class KvpMap<K extends String, V> extends HashMap<K, V> {
 
     public KvpMap(Map<K, V> other) {
         this();
-        for (Iterator<Entry<K, V>> e = other.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry<K, V> entry = e.next();
+        for (Entry<K, V> entry : other.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }

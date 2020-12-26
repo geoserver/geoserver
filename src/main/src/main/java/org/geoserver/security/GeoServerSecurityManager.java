@@ -1869,8 +1869,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-            for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
-                String username = (String) iter.next();
+            for (Object o : props.keySet()) {
+                String username = (String) o;
 
                 configAttribEd.setAsText(props.getProperty(username));
                 UserAttribute attr = (UserAttribute) configAttribEd.getValue();
@@ -2333,11 +2333,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-            for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
+            for (Object o : props.keySet()) {
                 // the attribute editors parses the list of strings into password, username and
                 // enabled
                 // flag
-                String username = (String) iter.next();
+                String username = (String) o;
                 configAttribEd.setAsText(props.getProperty(username));
 
                 // if the parsing succeeded turn that into a user object

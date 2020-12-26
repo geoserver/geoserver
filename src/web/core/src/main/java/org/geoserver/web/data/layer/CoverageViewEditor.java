@@ -9,7 +9,6 @@ import it.geosolutions.jaiext.JAIExt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -168,9 +167,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                         compositionType = compositionChoice.getModelObject();
                         List<CoverageBand> bandsList = new ArrayList<>();
                         int i = currentOutputBands.size();
-                        for (Iterator<String> it = selection.iterator(); it.hasNext(); ) {
-                            String coverage = it.next();
-
+                        for (String coverage : selection) {
                             final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
                             String coverageName = coverage;
                             String bandIndex = null;

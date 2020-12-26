@@ -210,8 +210,8 @@ public class MonitorTestData {
             ids.add(data.getId());
         }
 
-        for (int i = 0; i < id.length; i++) {
-            assertTrue(ids.contains(Long.valueOf(id[i])));
+        for (int j : id) {
+            assertTrue(ids.contains(Long.valueOf(j)));
         }
     }
 

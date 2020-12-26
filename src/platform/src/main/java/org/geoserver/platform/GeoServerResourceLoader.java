@@ -259,8 +259,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /** Helper method to build up a file path from components. */
     String concat(String... location) {
         StringBuffer loc = new StringBuffer();
-        for (int i = 0; i < location.length; i++) {
-            loc.append(location[i]).append(File.separator);
+        for (String s : location) {
+            loc.append(s).append(File.separator);
         }
         loc.setLength(loc.length() - 1);
         return loc.toString();

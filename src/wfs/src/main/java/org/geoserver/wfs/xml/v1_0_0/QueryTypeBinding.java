@@ -7,7 +7,6 @@ package org.geoserver.wfs.xml.v1_0_0;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
@@ -155,8 +154,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         // JD:difference in spec here, moved from ogc:PropertyName to string
         List<PropertyName> propertyNames = node.getChildValues(PropertyName.class);
 
-        for (Iterator p = propertyNames.iterator(); p.hasNext(); ) {
-            PropertyName propertyName = (PropertyName) p.next();
+        for (PropertyName propertyName : propertyNames) {
             queryType.getPropertyName().add(propertyName.getPropertyName());
         }
 

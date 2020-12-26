@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Iterator;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
@@ -74,8 +73,8 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         GetFeatureType gfreq = WfsFactory.eINSTANCE.createGetFeatureType();
         gfreq.setBaseUrl(fInfoReq.getBaseUrl());
 
-        for (Iterator i = results.getFeature().iterator(); i.hasNext(); ) {
-            FeatureCollection fc = (FeatureCollection) i.next();
+        for (Object o : results.getFeature()) {
+            FeatureCollection fc = (FeatureCollection) o;
             features.getFeature().add(fc);
 
             QueryType qt = WfsFactory.eINSTANCE.createQueryType();

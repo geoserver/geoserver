@@ -413,8 +413,8 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
         }
 
         assertEquals(expectedIds.length, actualIds.size());
-        for (int i = 0; i < expectedIds.length; i++) {
-            assertThat(actualIds, hasItem(expectedIds[i]));
+        for (int expectedId : expectedIds) {
+            assertThat(actualIds, hasItem(expectedId));
         }
     }
 }

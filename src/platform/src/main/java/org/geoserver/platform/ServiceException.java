@@ -6,7 +6,6 @@
 package org.geoserver.platform;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -213,8 +212,7 @@ public class ServiceException extends RuntimeException {
         if (exceptionText == null || exceptionText.size() == 0) return msg;
 
         StringBuffer sb = new StringBuffer(msg);
-        for (Iterator<String> it = exceptionText.iterator(); it.hasNext(); ) {
-            String extraMessage = it.next();
+        for (String extraMessage : exceptionText) {
             sb.append(NEW_LINE).append(extraMessage);
         }
         return sb.toString();

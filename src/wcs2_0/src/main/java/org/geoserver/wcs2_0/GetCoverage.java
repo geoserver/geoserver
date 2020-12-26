@@ -431,10 +431,10 @@ public class GetCoverage {
         // subsetting, is not really an extension
         //
         List<GridCoverage2D> temp = new ArrayList<>();
-        for (int i = 0; i < coverages.size(); i++) {
+        for (GridCoverage2D gridCoverage2D : coverages) {
             List<GridCoverage2D> subsetted =
                     handleSubsettingExtension(
-                            coverages.get(i), gridCoverageRequest.getSpatialSubset(), hints);
+                            gridCoverage2D, gridCoverageRequest.getSpatialSubset(), hints);
             temp.addAll(subsetted);
         }
         coverages = temp;
@@ -1848,8 +1848,7 @@ public class GetCoverage {
             if (subset.isCrossingDateline()) {
                 Envelope2D coverageEnvelope = coverage.getEnvelope2D();
                 GeneralEnvelope[] normalizedEnvelopes = subset.getNormalizedEnvelopes();
-                for (int i = 0; i < normalizedEnvelopes.length; i++) {
-                    GeneralEnvelope ge = normalizedEnvelopes[i];
+                for (GeneralEnvelope ge : normalizedEnvelopes) {
                     if (ge.intersects(coverageEnvelope, false)) {
                         GridCoverage2D cropped = cropOnEnvelope(coverage, ge);
                         result.add(cropped);

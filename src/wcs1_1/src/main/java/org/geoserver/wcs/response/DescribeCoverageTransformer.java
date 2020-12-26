@@ -9,7 +9,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -136,8 +135,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
             start("wcs:CoverageDescriptions", attributes);
-            for (Iterator it = request.getIdentifier().iterator(); it.hasNext(); ) {
-                String coverageId = (String) it.next();
+            for (Object value : request.getIdentifier()) {
+                String coverageId = (String) value;
 
                 // check the coverage is known
                 LayerInfo layer = catalog.getLayerByName(coverageId);
@@ -217,8 +216,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             start("ows:Keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                    element("ows:Keyword", it.next().toString());
+                for (Object kword : kwords) {
+                    element("ows:Keyword", kword.toString());
                 }
             }
 
@@ -375,8 +374,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected void handleInterpolationMethods(CoverageInfo ci) {
             start("wcs:InterpolationMethods");
-            for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext(); ) {
-                String method = (String) it.next();
+            for (String method : ci.getInterpolationMethods()) {
                 String converted = METHOD_NAME_MAP.get(method);
                 if (converted != null) element("wcs:InterpolationMethod", converted);
             }
@@ -387,8 +385,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
         protected void handleSupportedFormats(CoverageInfo ci) throws Exception {
             // gather all the formats for this coverage
             Set<String> formats = new LinkedHashSet<>();
-            for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
-                String format = (String) it.next();
+            for (String format : ci.getSupportedFormats()) {
                 // wcs 1.1 requires mime types, not format names
                 try {
                     CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
@@ -411,8 +408,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             Set supportedCRSs = new LinkedHashSet();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
             if (ci.getResponseSRS() != null) supportedCRSs.addAll(ci.getResponseSRS());
-            for (Iterator it = supportedCRSs.iterator(); it.hasNext(); ) {
-                String crsName = (String) it.next();
+            for (Object crSs : supportedCRSs) {
+                String crsName = (String) crSs;
                 CoordinateReferenceSystem crs = CRS.decode(crsName);
                 element("wcs:SupportedCRS", urnIdentifier(crs));
                 element("wcs:SupportedCRS", crsName);

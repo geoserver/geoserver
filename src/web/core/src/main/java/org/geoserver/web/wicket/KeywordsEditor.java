@@ -8,7 +8,6 @@ package org.geoserver.web.wicket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -153,8 +152,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                         Collection<KeywordInfo> selection = choices.getModelObject();
                         @SuppressWarnings("unchecked")
                         List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
-                        for (Iterator<KeywordInfo> it = selection.iterator(); it.hasNext(); ) {
-                            KeywordInfo selected = it.next();
+                        for (KeywordInfo selected : selection) {
                             keywords.remove(selected);
                         }
                         choices.setChoices(keywords);

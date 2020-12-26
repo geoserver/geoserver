@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -266,11 +265,11 @@ public class MockData implements TestData {
     public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
-        for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
-            SRS.put(WFS10_TYPENAMES[i], 32615);
+        for (QName wfs10Typename : WFS10_TYPENAMES) {
+            SRS.put(wfs10Typename, 32615);
         }
-        for (int i = 0; i < WFS11_TYPENAMES.length; i++) {
-            SRS.put(WFS11_TYPENAMES[i], 4326);
+        for (QName wfs11Typename : WFS11_TYPENAMES) {
+            SRS.put(wfs11Typename, 4326);
         }
     }
 
@@ -428,8 +427,7 @@ public class MockData implements TestData {
      * they do come from
      */
     public void addWellKnownTypes(QName[] names) throws IOException {
-        for (int i = 0; i < names.length; i++) {
-            QName name = names[i];
+        for (QName name : names) {
             addWellKnownType(name, null);
         }
     }
@@ -884,18 +882,17 @@ public class MockData implements TestData {
 
         // coverage dimensions
         final GridSampleDimension[] sd = gc.getSampleDimensions();
-        for (int i = 0; i < sd.length; i++) {
+        for (GridSampleDimension gridSampleDimension : sd) {
             writer.write("<CoverageDimension>\n");
-            writer.write("<name>" + sd[i].getDescription().toString() + "</name>\n");
+            writer.write("<name>" + gridSampleDimension.getDescription().toString() + "</name>\n");
             writer.write("<interval>\n");
-            writer.write("<min>" + sd[i].getMinimumValue() + "</min>\n");
-            writer.write("<max>" + sd[i].getMaximumValue() + "</max>\n");
+            writer.write("<min>" + gridSampleDimension.getMinimumValue() + "</min>\n");
+            writer.write("<max>" + gridSampleDimension.getMaximumValue() + "</max>\n");
             writer.write("</interval>\n");
-            final List<Category> categories = sd[i].getCategories();
+            final List<Category> categories = gridSampleDimension.getCategories();
             if (categories != null && categories.size() >= 1) {
                 writer.write("<nullValues>\n");
-                for (Iterator<Category> it = sd[i].getCategories().iterator(); it.hasNext(); ) {
-                    Category cat = it.next();
+                for (Category cat : gridSampleDimension.getCategories()) {
                     if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
                         double min = cat.getRange().getMinimum();
                         double max = cat.getRange().getMaximum();

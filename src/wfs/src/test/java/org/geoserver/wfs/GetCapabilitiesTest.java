@@ -137,8 +137,8 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         List extensions = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
         Set<String> s2 = new TreeSet<>();
-        for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) e.next();
+        for (Object o : extensions) {
+            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) o;
             s2.add(extension.getCapabilitiesElementName());
         }
 
@@ -197,8 +197,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals("WFS_Capabilities", e.getLocalName());
 
         final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-        for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-            FeatureTypeInfo ft = it.next();
+        for (FeatureTypeInfo ft : enabledTypes) {
             if (ft.enabled()) {
                 String prefixedName = ft.prefixedName();
 

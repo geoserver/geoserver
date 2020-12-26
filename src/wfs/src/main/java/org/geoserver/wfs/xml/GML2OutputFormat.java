@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -206,8 +205,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
             transformer.addSchemaLocation(WFS.NAMESPACE, wfsSchemaloc);
         }
 
-        for (Iterator it = ftNamespaces.keySet().iterator(); it.hasNext(); ) {
-            String uri = (String) it.next();
+        for (Object o : ftNamespaces.keySet()) {
+            String uri = (String) o;
             transformer.addSchemaLocation(uri, (String) ftNamespaces.get(uri));
         }
 

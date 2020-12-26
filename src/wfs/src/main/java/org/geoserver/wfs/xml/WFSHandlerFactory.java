@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xml;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -63,9 +62,7 @@ public class WFSHandlerFactory implements HandlerFactory {
                 // found it
                 XSDSchema schema = schemaBuilder.build(meta, null);
 
-                for (Iterator e = schema.getElementDeclarations().iterator(); e.hasNext(); ) {
-                    XSDElementDeclaration element = (XSDElementDeclaration) e.next();
-
+                for (XSDElementDeclaration element : schema.getElementDeclarations()) {
                     if (name.getLocalPart().equals(element.getName())) {
                         return new ElementHandlerImpl(element, parent, parser);
                     }

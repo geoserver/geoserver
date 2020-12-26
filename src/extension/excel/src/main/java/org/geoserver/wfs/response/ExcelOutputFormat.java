@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.RichTextString;
@@ -84,8 +83,9 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
             CreationHelper helper = wb.getCreationHelper();
             ExcelCellStyles styles = new ExcelCellStyles(wb);
 
-            for (Iterator it = featureCollection.getFeature().iterator(); it.hasNext(); ) {
-                SimpleFeatureCollection fc = (SimpleFeatureCollection) it.next();
+            for (org.geotools.feature.FeatureCollection collection :
+                    featureCollection.getFeature()) {
+                SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
 
                 // create the sheet for this feature collection
                 Sheet sheet = wb.createSheet(fc.getSchema().getTypeName());

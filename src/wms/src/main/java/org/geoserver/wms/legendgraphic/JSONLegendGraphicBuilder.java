@@ -532,16 +532,15 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (index >= 0) {
             String base = iconUrl.substring(0, index + 1);
             String[] refs = iconUrl.substring(index + 1).split("&");
-            for (int i = 0; i < refs.length; i++) {
-                if (refs[i].matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
+            for (String s : refs) {
+                if (s.matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
                     String ref =
-                            refs[i].replaceAll(
-                                    "(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
-                    String[] split = refs[i].split("\\.");
+                            s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                    String[] split = s.split("\\.");
                     int symCount = Integer.parseInt(split[2].replaceAll("=", ""));
                     if (symbolizerCount == symCount) base += ref + "&";
                 } else {
-                    base += refs[i] + "&";
+                    base += s + "&";
                 }
             }
             if (base.endsWith("&")) {

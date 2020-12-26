@@ -1767,12 +1767,12 @@ public class ClassifierTest extends SLDServiceBaseTest {
         delta[2] = env1.getMinimum(1) - env2.getMinimum(1);
         delta[3] = env1.getMaximum(1) - env2.getMaximum(1);
 
-        for (int i = 0; i < delta.length; i++) {
+        for (double v : delta) {
             /*
              * As per Envelope2D#boundsEquals we use ! here to
              * catch any NaN values
              */
-            if (!(Math.abs(delta[i]) <= eps)) {
+            if (!(Math.abs(v) <= eps)) {
                 fail("Envelopes have not same 2D bounds: " + env1 + ", " + env2);
             }
         }

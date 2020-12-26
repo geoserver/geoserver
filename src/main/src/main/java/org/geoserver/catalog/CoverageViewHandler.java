@@ -384,10 +384,7 @@ class CoverageViewHandler {
         this.envelopeComposer = initEnvelopeComposer();
 
         List<CoverageBand> bands = coverageView.getCoverageBands();
-        int coverageBandsSize = bands.size();
-
-        for (int bIdx = 0; bIdx < coverageBandsSize; bIdx++) {
-            CoverageBand band = bands.get(bIdx);
+        for (CoverageBand band : bands) {
             List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
 
             // Peek for coverage name

@@ -7,7 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
@@ -295,8 +294,8 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     private NamespacePanel findNamespacePanel(MarkupContainer c) {
         Component child;
-        for (Iterator<? extends Component> it = c.iterator(); it.hasNext(); ) {
-            child = it.next();
+        for (Component component : c) {
+            child = component;
             if (child instanceof NamespacePanel) {
                 return (NamespacePanel) child;
             } else if (child instanceof MarkupContainer) {

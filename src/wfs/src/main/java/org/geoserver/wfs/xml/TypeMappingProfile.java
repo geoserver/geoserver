@@ -8,7 +8,6 @@ package org.geoserver.wfs.xml;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,12 +49,10 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
     public AttributeType type(Class clazz) {
         List<AttributeType> assignable = new ArrayList<>();
 
-        for (Iterator p = profiles.iterator(); p.hasNext(); ) {
-            ProfileImpl profile = (ProfileImpl) p.next();
+        for (Object o : profiles) {
+            ProfileImpl profile = (ProfileImpl) o;
 
-            for (Iterator i = profile.values().iterator(); i.hasNext(); ) {
-                AttributeType type = (AttributeType) i.next();
-
+            for (AttributeType type : profile.values()) {
                 if (type.getBinding().isAssignableFrom(clazz)) {
                     assignable.add(type);
                 }
@@ -111,11 +108,11 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
     public Name name(Class clazz) {
         List<Map.Entry> assignable = new ArrayList<>();
 
-        for (Iterator p = profiles.iterator(); p.hasNext(); ) {
-            ProfileImpl profile = (ProfileImpl) p.next();
+        for (Object o : profiles) {
+            ProfileImpl profile = (ProfileImpl) o;
 
-            for (Iterator i = profile.entrySet().iterator(); i.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) i.next();
+            for (Map.Entry<Name, AttributeType> nameAttributeTypeEntry : profile.entrySet()) {
+                Map.Entry entry = (Map.Entry) nameAttributeTypeEntry;
                 AttributeType type = (AttributeType) entry.getValue();
 
                 if (type.getBinding().isAssignableFrom(clazz)) {

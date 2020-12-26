@@ -5,7 +5,6 @@
  */
 package org.geoserver.ows.kvp;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,8 +55,8 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
 
             Object parsed = null;
 
-            for (Iterator p = parsers.iterator(); p.hasNext(); ) {
-                KvpParser parser = (KvpParser) p.next();
+            for (Object o : parsers) {
+                KvpParser parser = (KvpParser) o;
                 if (key.equalsIgnoreCase(parser.getKey())) {
                     parsed = parser.parse(raw);
                     if (parsed != null) {

@@ -246,14 +246,14 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         if (parameters != null) {
-            for (int i = 0; i < parameters.length; i++) {
-                final ParameterValue param = (ParameterValue) parameters[i];
+            for (GeneralParameterValue parameter : parameters) {
+                final ParameterValue param = (ParameterValue) parameter;
                 if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
                     int[] bandIndicesParam = (int[]) param.getValue();
                     if (bandIndicesParam != null) {
                         selectedBandIndices = new ArrayList<>();
-                        for (int bIdx = 0; bIdx < bandIndicesParam.length; bIdx++) {
-                            selectedBandIndices.add(bandIndicesParam[bIdx]);
+                        for (int j : bandIndicesParam) {
+                            selectedBandIndices.add(j);
                         }
                         break;
                     }

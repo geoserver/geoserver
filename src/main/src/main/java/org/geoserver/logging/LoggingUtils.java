@@ -174,10 +174,10 @@ public class LoggingUtils {
                         "VERBOSE_LOGGING.properties"
                     };
 
-            for (int i = 0; i < lcfiles.length; i++) {
-                File target = new File(lcdir.getAbsolutePath(), lcfiles[i]);
+            for (String lcfile : lcfiles) {
+                File target = new File(lcdir.getAbsolutePath(), lcfile);
                 if (!target.exists()) {
-                    resourceLoader.copyFromClassPath(lcfiles[i], target);
+                    resourceLoader.copyFromClassPath(lcfile, target);
                 }
             }
 

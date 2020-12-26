@@ -139,15 +139,15 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
             Set<String> queryNames = new HashSet<>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
-            for (int i = 0; i < names.length; i++) {
-                final String localName = names[i].getLocalPart();
+            for (Name name : names) {
+                final String localName = name.getLocalPart();
                 if (queryNames.contains(localName)) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.getResponse() == Response.CHALLENGE) {
                         throw SecureCatalogImpl.unauthorizedAccess(typeName);
                     } else {
                         throw new UnsupportedOperationException(
-                                "Trying to write on the write protected attribute " + names[i]);
+                                "Trying to write on the write protected attribute " + name);
                     }
                 }
             }

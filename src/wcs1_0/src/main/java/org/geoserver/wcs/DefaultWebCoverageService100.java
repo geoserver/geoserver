@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -339,8 +338,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
                     // grab the time positions
                     final EList timePosition = temporalSubset.getTimePosition();
-                    for (Iterator it = timePosition.iterator(); it.hasNext(); ) {
-                        TimePositionType tp = (TimePositionType) it.next();
+                    for (Object o : timePosition) {
+                        TimePositionType tp = (TimePositionType) o;
                         Date date = (Date) tp.getValue();
                         if (date == null) {
                             date = dimensions.getMaxTime();
@@ -349,8 +348,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     }
                     // grab the time intervals
                     final EList timePeriods = temporalSubset.getTimePeriod();
-                    for (Iterator it = timePeriods.iterator(); it.hasNext(); ) {
-                        TimePeriodType tp = (TimePeriodType) it.next();
+                    for (Object timePeriod : timePeriods) {
+                        TimePeriodType tp = (TimePeriodType) timePeriod;
                         Date begin = (Date) tp.getBeginPosition().getValue();
                         Date end = (Date) tp.getEndPosition().getValue();
                         timeValues.add(new DateRange(begin, end));
@@ -391,8 +390,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 if (request.getRangeSubset() != null) {
                     axisSubset = request.getRangeSubset().getAxisSubset();
                     if (axisSubset.size() > 0) {
-                        for (int a = 0; a < axisSubset.size(); a++) {
-                            AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
+                        for (Object o : axisSubset) {
+                            AxisSubsetType axis = (AxisSubsetType) o;
 
                             String axisName = axis.getName();
                             if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
@@ -551,8 +550,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 // extract the band indexes
                 EList axisSubset = request.getRangeSubset().getAxisSubset();
                 if (axisSubset.size() > 0) {
-                    for (int a = 0; a < axisSubset.size(); a++) {
-                        AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
+                    for (Object o : axisSubset) {
+                        AxisSubsetType axis = (AxisSubsetType) o;
 
                         try {
                             String axisName = axis.getName();

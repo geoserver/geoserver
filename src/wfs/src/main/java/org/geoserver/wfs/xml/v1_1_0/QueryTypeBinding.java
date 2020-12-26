@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
@@ -209,8 +208,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         // &lt;xsd:element ref="wfs:PropertyName"&gt;
         if (node.hasChild("PropertyName")) {
             // HACK, stripping of namespace prefix
-            for (Iterator p = node.getChildValues("PropertyName").iterator(); p.hasNext(); ) {
-                Object property = p.next();
+            for (Object property : node.getChildValues("PropertyName")) {
                 String propertyName;
                 if (property instanceof String) propertyName = (String) property;
                 else propertyName = ((PropertyName) property).getPropertyName();
@@ -235,7 +233,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         if (node.hasChild(SortBy[].class)) {
             SortBy[] sortBy = node.getChildValue(SortBy[].class);
 
-            for (int i = 0; i < sortBy.length; i++) query.getSortBy().add(sortBy[i]);
+            for (SortBy by : sortBy) query.getSortBy().add(by);
         }
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;

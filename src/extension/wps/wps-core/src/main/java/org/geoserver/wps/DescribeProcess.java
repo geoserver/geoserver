@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -102,8 +101,8 @@ public class DescribeProcess {
         ProcessDescriptionsType pds = wpsf.createProcessDescriptionsType();
         pds.setLang("en");
 
-        for (Iterator i = request.getIdentifier().iterator(); i.hasNext(); ) {
-            CodeType id = (CodeType) i.next();
+        for (Object o : request.getIdentifier()) {
+            CodeType id = (CodeType) o;
             processDescription(id, pds);
         }
 

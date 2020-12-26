@@ -274,9 +274,7 @@ public class GetFeature {
                 lockRequest.setLockActionAll();
             }
 
-            for (int i = 0; i < queries.size(); i++) {
-                Query query = queries.get(i);
-
+            for (Query query : queries) {
                 Lock lock = lockRequest.createLock();
                 lock.setFilter(query.getFilter());
                 lock.setHandle(query.getHandle());
@@ -506,9 +504,8 @@ public class GetFeature {
 
                             metaPropNames = new ArrayList<>();
 
-                            for (Iterator iter = propertyNames.iterator(); iter.hasNext(); ) {
-                                PropertyName propName =
-                                        createPropertyName((String) iter.next(), ns);
+                            for (String propertyName : propertyNames) {
+                                PropertyName propName = createPropertyName(propertyName, ns);
 
                                 if (propName.evaluate(meta.getFeatureType()) == null) {
                                     String mesg =
@@ -1402,9 +1399,7 @@ public class GetFeature {
         // handle xlink properties
         List<XlinkPropertyNameType> xlinkProperties = query.getXlinkPropertyNames();
         if (!xlinkProperties.isEmpty()) {
-            for (Iterator x = xlinkProperties.iterator(); x.hasNext(); ) {
-                XlinkPropertyNameType xlinkProperty = (XlinkPropertyNameType) x.next();
-
+            for (XlinkPropertyNameType xlinkProperty : xlinkProperties) {
                 Integer xlinkDepth = traverseXlinkDepth(xlinkProperty.getTraverseXlinkDepth());
 
                 // set the depth and property as hints on the query

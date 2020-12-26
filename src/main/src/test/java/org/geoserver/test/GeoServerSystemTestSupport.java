@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -963,8 +962,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected MockHttpServletRequest createRequest(String path, Map kvp) {
         StringBuffer q = new StringBuffer();
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
+        for (Object o : kvp.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             q.append(entry.getKey()).append("=").append(entry.getValue());
             q.append("&");
         }
@@ -1621,8 +1620,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                             Collection interceptors =
                                     GeoServerExtensions.extensions(
                                             HandlerInterceptor.class, applicationContext);
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object value : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) value;
                                 interceptor.preHandle(request, response, dispatcher);
                             }
 
@@ -1631,8 +1630,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                             dispatcher.service(request, response);
 
                             // execute the post handler step
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object o : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) o;
                                 interceptor.postHandle(request, response, dispatcher, null);
                             }
                         } catch (RuntimeException e) {
@@ -2315,8 +2314,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected <V> Map<String, V> caseInsensitiveKvp(Map<String, V> input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map<String, V> result = new HashMap<>();
-        for (Iterator<String> it = input.keySet().iterator(); it.hasNext(); ) {
-            String key = it.next();
+        for (String key : input.keySet()) {
             result.put(key.toUpperCase(), input.get(key));
         }
         return new CaseInsensitiveMap<>(result);

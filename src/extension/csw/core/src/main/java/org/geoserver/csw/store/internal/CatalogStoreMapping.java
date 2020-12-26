@@ -271,8 +271,8 @@ public class CatalogStoreMapping {
     public static String toDotPath(XPathUtil.StepList steps) {
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < steps.size(); i++) {
-            sb.append(steps.get(i).getName().getLocalPart());
+        for (XPathUtil.Step step : steps) {
+            sb.append(step.getName().getLocalPart());
             sb.append(".");
         }
         sb.deleteCharAt(sb.length() - 1);

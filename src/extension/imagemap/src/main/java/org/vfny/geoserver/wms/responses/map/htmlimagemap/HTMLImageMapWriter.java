@@ -476,8 +476,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList)
                 throws IOException {
             int total = 0;
-            for (int i = 0; i < ftsList.length; i++) {
-                FeatureTypeStyle fts = ftsList[i];
+            for (FeatureTypeStyle fts : ftsList) {
                 List<Rule> rules = filterRules(fts, ft);
                 total += rules.size();
 
@@ -567,8 +566,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         protected void writePathContent(Coordinate[] coords, StringBuffer buf) throws IOException {
             StringBuffer tempBuf = new StringBuffer();
             int nCoords = coords.length;
-            for (int i = 0; i < nCoords; i++) {
-                Coordinate curr = coords[i];
+            for (Coordinate curr : coords) {
                 String p = getPoint(curr);
 
                 tempBuf.append(" " + p);

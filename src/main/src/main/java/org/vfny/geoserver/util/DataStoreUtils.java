@@ -71,8 +71,8 @@ public abstract class DataStoreUtils {
         if (store instanceof DataStore) {
             try {
                 String[] names = ((DataStore) store).getTypeNames();
-                for (int i = 0; i < names.length; i++) {
-                    if (names[i].indexOf(":") >= 0) return new RetypingDataStore((DataStore) store);
+                for (String name : names) {
+                    if (name.indexOf(":") >= 0) return new RetypingDataStore((DataStore) store);
                 }
             } catch (IOException | RuntimeException e) {
                 // in case of exception computing the feature types make sure we clean up the store
@@ -89,9 +89,7 @@ public abstract class DataStoreUtils {
      * <p>bleck
      */
     public static DataAccessFactory aquireFactory(Map<String, Serializable> params) {
-        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
-                i.hasNext(); ) {
-            DataAccessFactory factory = i.next();
+        for (DataAccessFactory factory : getAvailableDataStoreFactories()) {
             initializeDataStoreFactory(factory);
 
             if (factory.canProcess(params)) {
@@ -116,9 +114,7 @@ public abstract class DataStoreUtils {
         if (displayName == null) {
             return null;
         }
-        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
-                i.hasNext(); ) {
-            DataAccessFactory factory = i.next();
+        for (DataAccessFactory factory : getAvailableDataStoreFactories()) {
             initializeDataStoreFactory(factory);
 
             if (displayName.equals(factory.getDisplayName())) {
@@ -158,9 +154,9 @@ public abstract class DataStoreUtils {
 
     /** Utility methods for find param by key */
     public static Param find(Param[] params, String key) {
-        for (int i = 0; i < params.length; i++) {
-            if (key.equalsIgnoreCase(params[i].key)) {
-                return params[i];
+        for (Param param : params) {
+            if (key.equalsIgnoreCase(param.key)) {
+                return param;
             }
         }
 
@@ -177,9 +173,7 @@ public abstract class DataStoreUtils {
     public static List<String> listDataStoresDescriptions() {
         List<String> list = new ArrayList<>();
 
-        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
-                i.hasNext(); ) {
-            DataAccessFactory factory = i.next();
+        for (DataAccessFactory factory : getAvailableDataStoreFactories()) {
             initializeDataStoreFactory(factory);
 
             list.add(factory.getDisplayName());
@@ -196,8 +190,7 @@ public abstract class DataStoreUtils {
         Map<String, Serializable> defaults = new HashMap<>();
         Param[] params = factory.getParametersInfo();
 
-        for (int i = 0; i < params.length; i++) {
-            Param param = params[i];
+        for (Param param : params) {
             String key = param.key;
             String value = null;
 
@@ -236,9 +229,7 @@ public abstract class DataStoreUtils {
         Param[] info = factory.getParametersInfo();
 
         // Convert Params into the kind of Map we actually need
-        for (Iterator<String> i = params.keySet().iterator(); i.hasNext(); ) {
-            String key = i.next();
-
+        for (String key : params.keySet()) {
             Object value = find(info, key).lookUp(params);
 
             if (value != null) {

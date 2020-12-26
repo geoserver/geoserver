@@ -404,8 +404,8 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             String value = entry.getValue();
             Object parsed = null;
 
-            for (Iterator p = parsers.iterator(); p.hasNext(); ) {
-                KvpParser parser = (KvpParser) p.next();
+            for (Object o : parsers) {
+                KvpParser parser = (KvpParser) o;
                 if (key.equalsIgnoreCase(parser.getKey())) {
                     try {
                         parsed = parser.parse(value);

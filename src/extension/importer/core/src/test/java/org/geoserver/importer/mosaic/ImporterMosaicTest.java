@@ -79,8 +79,7 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         List<FileData> files = m.getFiles();
         assertEquals(4, files.size());
 
-        for (int i = 0; i < files.size(); i++) {
-            FileData fd = files.get(i);
+        for (FileData fd : files) {
             assertTrue(fd instanceof Granule);
 
             Granule g = (Granule) fd;

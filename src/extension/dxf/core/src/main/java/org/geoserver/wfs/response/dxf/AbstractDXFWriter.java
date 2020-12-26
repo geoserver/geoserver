@@ -151,8 +151,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /** Extracts and cache the global ReferenceEnvelope for the given feature list. */
     protected ReferencedEnvelope getEnvelope(List<SimpleFeatureCollection> featureList) {
         if (e == null) {
-            for (int i = 0; i < featureList.size(); i++) {
-                FeatureCollection collection = featureList.get(i);
+            for (FeatureCollection collection : featureList) {
                 if (e == null) {
                     e = collection.getBounds();
                 } else {

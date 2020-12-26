@@ -60,8 +60,8 @@ public class GZIPFilter implements Filter {
                     (compressedTypes == null ? new String[0] : compressedTypes.split(","));
             // TODO: Are commas allowed in mimetypes?
             myCompressedTypes = new HashSet<>();
-            for (int i = 0; i < typeNames.length; i++) {
-                myCompressedTypes.add(Pattern.compile(typeNames[i]));
+            for (String typeName : typeNames) {
+                myCompressedTypes.add(Pattern.compile(typeName));
             }
         } catch (Exception e) {
             throw new RuntimeException("Error while setting up GZIPFilter; " + e);

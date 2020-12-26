@@ -195,8 +195,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         assertEquals(3, size);
         assertEquals(2, values.size());
         assertEquals(true, Ordering.natural().reverse().isOrdered(values));
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)?.*"));
+        for (Object value : values) {
+            assertEquals(true, ((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -208,8 +208,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches("^(?i:d).*"));
+        for (Object value : values) {
+            assertEquals(true, ((String) value).matches("^(?i:d).*"));
         }
     }
 
@@ -221,8 +221,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)?.*"));
+        for (Object value : values) {
+            assertEquals(true, ((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -234,8 +234,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)$"));
+        for (Object value : values) {
+            assertEquals(true, ((String) value).matches(".*(?i:a)$"));
         }
     }
 

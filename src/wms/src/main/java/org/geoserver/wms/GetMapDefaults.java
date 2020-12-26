@@ -122,8 +122,7 @@ public class GetMapDefaults {
             specifiedBbox = false;
 
             // Get the bounding box from the layers
-            for (int i = 0; i < layers.size(); i++) {
-                MapLayerInfo layerInfo = layers.get(i);
+            for (MapLayerInfo layerInfo : layers) {
                 ReferencedEnvelope curbbox;
                 try {
                     curbbox = layerInfo.getLatLongBoundingBox();

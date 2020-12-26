@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.opengis.wcs11.AxisSubsetType;
@@ -322,8 +321,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     protected <V> Map<String, V> caseInsensitiveKvp(Map<String, V> input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map<String, V> result = new HashMap<>();
-        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
+        for (String key : input.keySet()) {
             result.put(key.toUpperCase(), input.get(key));
         }
         return new CaseInsensitiveMap<>(result);

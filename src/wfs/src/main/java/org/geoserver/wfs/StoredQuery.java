@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
@@ -167,8 +166,7 @@ public class StoredQuery {
 
             Set<QName> returnTypes = new HashSet<>(qe.getReturnFeatureTypes());
             boolean allowAnyReturnType = returnTypes.equals(Collections.singleton(new QName("")));
-            for (Iterator<QName> it = queryTypes.iterator(); it.hasNext(); ) {
-                QName qName = it.next();
+            for (QName qName : queryTypes) {
                 if (!returnTypes.contains(qName)
                         && !allowAnyReturnType
                         && !isParameter(qName.getLocalPart(), queryDef.getParameter())) {

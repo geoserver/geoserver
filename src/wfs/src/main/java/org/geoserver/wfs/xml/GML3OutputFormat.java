@@ -263,8 +263,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                         request.getVersion(),
                         "request",
                         "DescribeFeatureType");
-        for (Iterator i = ns2metas.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) i.next();
+        for (Map.Entry<String, Set<ResourceInfo>> stringSetEntry : ns2metas.entrySet()) {
+            Map.Entry entry = (Map.Entry) stringSetEntry;
 
             String namespaceURI = (String) entry.getKey();
             Set metas = (Set) entry.getValue();

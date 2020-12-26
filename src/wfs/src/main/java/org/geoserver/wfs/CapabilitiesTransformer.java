@@ -195,11 +195,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         List<String> oflist = new ArrayList<>();
         Collection featureProducers =
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
-        for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
-            WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
+        for (Object featureProducer : featureProducers) {
+            WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) featureProducer;
             if (format.canHandle(wfsVersion)) {
-                for (Iterator f = format.getOutputFormats().iterator(); f.hasNext(); ) {
-                    oflist.add(f.next().toString());
+                for (String s : format.getOutputFormats()) {
+                    oflist.add(s.toString());
                 }
             }
         }
@@ -566,8 +566,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
                     Set<String> dupes = new HashSet<>();
-                    for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
-                        WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
+                    for (Object featureProducer : featureProducers) {
+                        WFSGetFeatureOutputFormat format =
+                                (WFSGetFeatureOutputFormat) featureProducer;
                         for (String name : format.getCapabilitiesElementNames()) {
                             if (!dupes.contains(name)) {
                                 element(name, null);
@@ -757,8 +758,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
-                for (Iterator it = featureTypes.iterator(); it.hasNext(); ) {
-                    FeatureTypeInfo ftype = (FeatureTypeInfo) it.next();
+                for (FeatureTypeInfo ftype : featureTypes) {
                     try {
                         mark();
                         handleFeatureType(ftype);
@@ -1547,8 +1547,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
-                for (Iterator i = featureTypes.iterator(); i.hasNext(); ) {
-                    FeatureTypeInfo featureType = (FeatureTypeInfo) i.next();
+                for (FeatureTypeInfo featureType : featureTypes) {
                     if (featureType.enabled()) {
                         try {
                             mark();
@@ -1935,8 +1934,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("ows:Keywords");
 
-                for (int i = 0; i < keywords.length; i++) {
-                    element("ows:Keyword", keywords[i].getValue());
+                for (KeywordInfo keyword : keywords) {
+                    element("ows:Keyword", keyword.getValue());
                 }
 
                 end("ows:Keywords");
@@ -2007,14 +2006,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 dcp(serviceURL, get, post);
 
                 // parameters
-                for (int i = 0; i < parameters.length; i++) {
-                    String pname = (String) parameters[i].getKey();
-                    String[] pvalues = (String[]) parameters[i].getValue();
+                for (Map.Entry parameter : parameters) {
+                    String pname = (String) parameter.getKey();
+                    String[] pvalues = (String[]) parameter.getValue();
 
                     start("ows:Parameter", attributes(new String[] {"name", pname}));
 
-                    for (int j = 0; j < pvalues.length; j++) {
-                        element("ows:Value", pvalues[j]);
+                    for (String pvalue : pvalues) {
+                        element("ows:Value", pvalue);
                     }
 
                     end("ows:Parameter");
@@ -2027,8 +2026,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                     start("ows:Constraint", attributes(new String[] {"name", cname}));
 
-                    for (int j = 0; j < cvalues.length; j++) {
-                        element("ows:Value", cvalues[j]);
+                    for (String cvalue : cvalues) {
+                        element("ows:Value", cvalue);
                     }
 
                     end("ows:Constraint");

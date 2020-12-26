@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -235,15 +234,15 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             if (temporalSubset != null
                     && temporalSubset.getTimePosition() != null
                     && temporalSubset.getTimePosition().size() > 0) {
-                for (Iterator it = temporalSubset.getTimePosition().iterator(); it.hasNext(); ) {
-                    Date tp = (Date) it.next();
+                for (Object o : temporalSubset.getTimePosition()) {
+                    Date tp = (Date) o;
                     timeValues.add(tp);
                 }
             } else if (temporalSubset != null
                     && temporalSubset.getTimePeriod() != null
                     && temporalSubset.getTimePeriod().size() > 0) {
-                for (Iterator it = temporalSubset.getTimePeriod().iterator(); it.hasNext(); ) {
-                    TimePeriodType tp = (TimePeriodType) it.next();
+                for (Object o : temporalSubset.getTimePeriod()) {
+                    TimePeriodType tp = (TimePeriodType) o;
                     Date beginning = (Date) tp.getBeginPosition();
                     Date ending = (Date) tp.getEndPosition();
 
@@ -785,8 +784,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 // geographic crs
                 String actualCRS = null;
                 final String gridBaseCrsCode = extractCode(gridBaseCrs);
-                for (Iterator it = meta.getResponseSRS().iterator(); it.hasNext(); ) {
-                    final String responseCRS = (String) it.next();
+                for (final String responseCRS : meta.getResponseSRS()) {
                     final String code = extractCode(responseCRS);
                     if (code.equalsIgnoreCase(gridBaseCrsCode)) {
                         actualCRS = responseCRS;
@@ -910,8 +908,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         // supported formats may be setup using old style formats, first scan
         // the
         // configured list
-        for (Iterator it = supportedFormats.iterator(); it.hasNext(); ) {
-            String sf = (String) it.next();
+        for (Object supportedFormat : supportedFormats) {
+            String sf = (String) supportedFormat;
             if (sf.equalsIgnoreCase(format)) {
                 return sf;
             } else {
@@ -996,8 +994,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         // with the kvp parsing of indentifiers that include spaces)
         List<CoverageDimensionInfo> dimensions = info.getDimensions();
         Set<String> dimensionMap = new HashSet<>();
-        for (int i = 0; i < dimensions.size(); i++) {
-            String keyName = dimensions.get(i).getName().replace(' ', '_');
+        for (CoverageDimensionInfo dimension : dimensions) {
+            String keyName = dimension.getName().replace(' ', '_');
             dimensionMap.add(keyName);
         }
 

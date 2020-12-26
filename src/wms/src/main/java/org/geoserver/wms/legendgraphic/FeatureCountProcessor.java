@@ -228,8 +228,7 @@ class FeatureCountProcessor {
 
     private Rule[] updateRuleTitles(Rule[] rules, Map<Rule, AtomicInteger> counters) {
         ArrayList<Rule> result = new ArrayList<>();
-        for (int i = 0; i < rules.length; i++) {
-            Rule rule = rules[i];
+        for (Rule rule : rules) {
             AtomicInteger counter = counters.get(rule);
             if (counter.get() == 0 && this.hideEmptyRules) {
                 continue;

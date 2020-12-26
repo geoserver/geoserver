@@ -130,8 +130,8 @@ public class DescribeFeatureTest extends WFSTestSupport {
             schemaLocation = schemaLocation.substring(query + 1);
             String[] sp = schemaLocation.split("&");
             Map<String, String> params = new HashMap<>();
-            for (int j = 0; j < sp.length; j++) {
-                String[] sp1 = sp[j].split("=");
+            for (String s : sp) {
+                String[] sp1 = s.split("=");
                 params.put(sp1[0].toLowerCase(), sp1[1].toLowerCase());
             }
 

@@ -302,8 +302,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
         StyledLayer sl = null;
 
-        for (int i = 0; i < slCount; i++) {
-            sl = styledLayers[i];
+        for (StyledLayer styledLayer : styledLayers) {
+            sl = styledLayer;
 
             String layerName = sl.getName();
 
@@ -322,7 +322,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                                 ? DefaultGeographicCRS.WGS84
                                 : getMapRequest.getCrs();
                 currLayer = initializeInlineFeatureLayer(ul, crs);
-                addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
+                addStyles(wms, getMapRequest, currLayer, styledLayer, layers, styles, filters);
             } else {
 
                 LayerGroupInfo layerGroup = getWMS().getLayerGroupByName(layerName);
@@ -341,7 +341,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                                 wms,
                                 getMapRequest,
                                 currLayer,
-                                styledLayers[i],
+                                styledLayer,
                                 layers,
                                 styles,
                                 filters);
@@ -352,14 +352,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                         throw new ServiceException("Layer not found: " + layerName);
                     }
                     currLayer = new MapLayerInfo(layerInfo);
-                    addStyles(
-                            wms,
-                            getMapRequest,
-                            currLayer,
-                            styledLayers[i],
-                            layers,
-                            styles,
-                            filters);
+                    addStyles(wms, getMapRequest, currLayer, styledLayer, layers, styles, filters);
                 }
             }
         }
@@ -410,10 +403,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         // DJB: TODO: this needs to do the whole thing, not just names
         if (ftcs != null) {
             FeatureTypeConstraint ftc;
-            final int length = ftcs.length;
-
-            for (int t = 0; t < length; t++) {
-                ftc = ftcs[t];
+            for (FeatureTypeConstraint featureTypeConstraint : ftcs) {
+                ftc = featureTypeConstraint;
 
                 if (ftc.getFeatureTypeName() != null) {
                     String ftc_name = ftc.getFeatureTypeName();
@@ -450,13 +441,11 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             return;
         }
 
-        final int length = layerStyles.length;
         Style s;
-
-        for (int t = 0; t < length; t++) {
-            if (layerStyles[t] instanceof NamedStyle) {
+        for (Style layerStyle : layerStyles) {
+            if (layerStyle instanceof NamedStyle) {
                 layers.add(currLayer);
-                String styleName = layerStyles[t].getName();
+                String styleName = layerStyle.getName();
                 s = wms.getStyleByName(styleName);
 
                 if (s == null) {
@@ -469,7 +458,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     throw new ServiceException("Dynamic style usage is forbidden");
                 }
                 layers.add(currLayer);
-                styles.add(layerStyles[t]);
+                styles.add(layerStyle);
             }
         }
     }
@@ -537,10 +526,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         }
 
         org.locationtech.jts.geom.Envelope env = new org.locationtech.jts.geom.Envelope();
-        final int size = coordList.size();
-
-        for (int i = 0; i < size; i++) {
-            env.expandToInclude((Coordinate) coordList.get(i));
+        for (Object o : coordList) {
+            env.expandToInclude((Coordinate) o);
         }
 
         getMapRequest.setBbox(env);

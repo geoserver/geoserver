@@ -226,9 +226,7 @@ public class FeatureWrapper extends BeansWrapper {
         // attributes, but at the same time, is a map keyed by name
         Map<String, Object> attributeMap = new LinkedHashMap<>();
         Collection<PropertyDescriptor> descriptors = ft.getDescriptors();
-        for (Iterator<PropertyDescriptor> it = descriptors.iterator(); it.hasNext(); ) {
-            PropertyDescriptor descr = it.next();
-
+        for (PropertyDescriptor descr : descriptors) {
             Map<String, Object> attribute = new HashMap<>();
             attribute.put("name", descr.getName().getLocalPart());
             attribute.put("namespace", getNamespace(descr.getName()));
@@ -340,9 +338,8 @@ public class FeatureWrapper extends BeansWrapper {
                 final Collection<PropertyDescriptor> types = feature.getType().getDescriptors();
                 Name attName;
                 Map attributesMap;
-                for (Iterator<PropertyDescriptor> iterator = types.iterator();
-                        iterator.hasNext(); ) {
-                    attName = iterator.next().getName();
+                for (PropertyDescriptor type : types) {
+                    attName = type.getName();
                     attributesMap = new AttributeMap(attName, feature);
                     entrySet.add(
                             new MapEntry<Object, Object>(attName.getLocalPart(), attributesMap));

@@ -19,15 +19,15 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
     @Test
     public void testGetInputStream() throws Exception {
-        for (int i = 0; i < testStrings.length; i++) {
-            doInputStreamTest(testStrings[i]);
+        for (String testString : testStrings) {
+            doInputStreamTest(testString);
         }
     }
 
     @Test
     public void testGetReader() throws Exception {
-        for (int i = 0; i < testStrings.length; i++) {
-            doGetReaderTest(testStrings[i]);
+        for (String testString : testStrings) {
+            doGetReaderTest(testString);
         }
     }
 

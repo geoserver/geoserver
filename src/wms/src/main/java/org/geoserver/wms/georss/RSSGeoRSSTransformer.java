@@ -6,7 +6,6 @@
 package org.geoserver.wms.georss;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import org.geoserver.wms.WMS;
@@ -81,8 +80,8 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
 
         void encodeItems(WMSMapContent map) throws IOException {
             List featureCollections = loadFeatureCollections(map);
-            for (Iterator f = featureCollections.iterator(); f.hasNext(); ) {
-                SimpleFeatureCollection features = (SimpleFeatureCollection) f.next();
+            for (Object featureCollection : featureCollections) {
+                SimpleFeatureCollection features = (SimpleFeatureCollection) featureCollection;
                 FeatureIterator<SimpleFeature> iterator = null;
 
                 try {

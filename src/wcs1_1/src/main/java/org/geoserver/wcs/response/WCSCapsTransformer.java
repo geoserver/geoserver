@@ -322,8 +322,8 @@ public class WCSCapsTransformer extends TransformerBase {
                 start("ows:Keywords");
 
                 if (kwords != null) {
-                    for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                        element("ows:Keyword", it.next().toString());
+                    for (Object kword : kwords) {
+                        element("ows:Keyword", kword.toString());
                     }
                 }
 
@@ -407,8 +407,7 @@ public class WCSCapsTransformer extends TransformerBase {
             }
 
             Collections.sort(coverages, new CoverageInfoLabelComparator());
-            for (Iterator i = coverages.iterator(); i.hasNext(); ) {
-                CoverageInfo cv = (CoverageInfo) i.next();
+            for (CoverageInfo cv : coverages) {
                 try {
                     mark();
                     handleCoverageSummary(cv);

@@ -188,8 +188,8 @@ public class ExecuteResponseBuilder {
             // inputs
             if (request.getDataInputs() != null && request.getDataInputs().getInput().size() > 0) {
                 response.setDataInputs(f.createDataInputsType1());
-                for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext(); ) {
-                    InputType input = (InputType) i.next();
+                for (Object o : request.getDataInputs().getInput()) {
+                    InputType input = (InputType) o;
                     response.getDataInputs().getInput().add(EMFUtils.clone(input, f, true));
                 }
             }

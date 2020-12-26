@@ -14,7 +14,6 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -319,8 +318,8 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
                 // System.out.println(
                 //       ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }

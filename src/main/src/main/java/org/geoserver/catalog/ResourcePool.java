@@ -858,16 +858,14 @@ public class ResourcePool {
             }
             if (schema != null) {
                 XSDTypeDefinition type = null;
-                for (Iterator e = schema.getElementDeclarations().iterator(); e.hasNext(); ) {
-                    XSDElementDeclaration element = (XSDElementDeclaration) e.next();
+                for (XSDElementDeclaration element : schema.getElementDeclarations()) {
                     if (ft.getName().equals(element.getName())) {
                         type = element.getTypeDefinition();
                         break;
                     }
                 }
                 if (type == null) {
-                    for (Iterator t = schema.getTypeDefinitions().iterator(); t.hasNext(); ) {
-                        XSDTypeDefinition typedef = (XSDTypeDefinition) t.next();
+                    for (XSDTypeDefinition typedef : schema.getTypeDefinitions()) {
                         if ((ft.getName() + "_Type").equals(typedef.getName())) {
                             type = typedef;
                             break;
@@ -880,8 +878,8 @@ public class ResourcePool {
                     for (Iterator<AttributeTypeInfo> i = atts.iterator(); i.hasNext(); ) {
                         AttributeTypeInfo at = i.next();
                         boolean found = false;
-                        for (Iterator c = children.iterator(); c.hasNext(); ) {
-                            XSDElementDeclaration ce = (XSDElementDeclaration) c.next();
+                        for (Object child : children) {
+                            XSDElementDeclaration ce = (XSDElementDeclaration) child;
                             if (at.getName().equals(ce.getName())) {
                                 found = true;
                                 if (ce.getContainer() instanceof XSDParticle) {

@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -104,9 +103,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             FeatureType featureType = meta.getFeatureType();
 
             List<Property> props = update.getUpdateProperties();
-            for (Iterator<Property> prop = props.iterator(); prop.hasNext(); ) {
-                Property property = prop.next();
-
+            for (Property property : props) {
                 // check that valus that are non-nillable exist
                 if (property.getValue() == null) {
                     String propertyName = property.getName().getLocalPart();
@@ -351,10 +348,10 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 FilterFactory2 ff =
                         CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
-                for (Iterator<FeatureId> f = fids.iterator(); f.hasNext(); ) {
+                for (FeatureId fid : fids) {
                     // create new FeatureIds without any possible version information in order to
                     // query for the latest version
-                    featureIds.add(ff.featureId(f.next().getID()));
+                    featureIds.add(ff.featureId(fid.getID()));
                 }
 
                 Id modified = ff.id(featureIds);

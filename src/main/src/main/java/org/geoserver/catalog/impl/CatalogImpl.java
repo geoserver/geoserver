@@ -1730,10 +1730,8 @@ public class CatalogImpl implements Catalog {
     protected void event(CatalogEvent event) {
         CatalogException toThrow = null;
 
-        for (Iterator l = listeners.iterator(); l.hasNext(); ) {
+        for (CatalogListener listener : listeners) {
             try {
-                CatalogListener listener = (CatalogListener) l.next();
-
                 if (event instanceof CatalogAddEvent) {
                     listener.handleAddEvent((CatalogAddEvent) event);
                 } else if (event instanceof CatalogRemoveEvent) {

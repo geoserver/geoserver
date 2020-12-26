@@ -950,8 +950,7 @@ public class GetMap {
                 FeatureTypeConstraint[] featureTypeConstraints = layer.getLayerFeatureConstraints();
                 if (featureTypeConstraints != null) {
                     List<Filter> filters = new ArrayList<>();
-                    for (int j = 0; j < featureTypeConstraints.length; j++) {
-                        FeatureTypeConstraint featureTypeConstraint = featureTypeConstraints[j];
+                    for (FeatureTypeConstraint featureTypeConstraint : featureTypeConstraints) {
                         filters.add(featureTypeConstraint.getFilter());
                     }
                     combined = ff.and(combined, ff.and(filters));

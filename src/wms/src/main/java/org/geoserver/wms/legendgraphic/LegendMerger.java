@@ -325,9 +325,8 @@ public class LegendMerger {
         LegendLayout layout = mergeOptions.getLayout();
 
         List<BufferedImage> nodes = new ArrayList<>();
-        final int imgCount = imageStack.size();
-        for (int i = 0; i < imgCount; i++) {
-            nodes.add((BufferedImage) imageStack.get(i));
+        for (RenderedImage renderedImage : imageStack) {
+            nodes.add((BufferedImage) renderedImage);
         }
 
         BufferedImage finalLegend = null;

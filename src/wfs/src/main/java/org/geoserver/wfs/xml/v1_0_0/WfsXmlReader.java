@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import java.io.Reader;
-import java.util.Iterator;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
@@ -78,8 +77,7 @@ public class WfsXmlReader extends XmlRequestReader {
         if (strict.booleanValue() && !parser.getValidationErrors().isEmpty()) {
             WFSException exception = new WFSException("Invalid request", "InvalidParameterValue");
 
-            for (Iterator e = parser.getValidationErrors().iterator(); e.hasNext(); ) {
-                Exception error = (Exception) e.next();
+            for (Exception error : parser.getValidationErrors()) {
                 exception.getExceptionText().add(error.getLocalizedMessage());
             }
 

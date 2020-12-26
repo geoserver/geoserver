@@ -65,8 +65,7 @@ public class GetFeatureInfo {
 
         int maxFeatures = request.getFeatureCount();
         List<LayerIdentifier> identifiers = GeoServerExtensions.extensions(LayerIdentifier.class);
-        for (int i = 0; i < requestedLayers.size(); i++) {
-            final MapLayerInfo layer = requestedLayers.get(i);
+        for (final MapLayerInfo layer : requestedLayers) {
             try {
                 LayerIdentifier<?> identifier = getLayerIdentifier(layer, identifiers);
                 List<FeatureCollection> identifiedCollections =

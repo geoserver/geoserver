@@ -308,8 +308,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                pe.visit(layers.get(i).getStyle());
+            for (Layer layer : layers) {
+                pe.visit(layer.getStyle());
                 if (!pe.canComputePalette()) break;
             }
             if (pe.canComputePalette()) potentialPalette = pe.getPalette();
@@ -525,9 +525,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // raster image. Both are better served with the
             // placemarks.
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                if (layers.get(i) instanceof StyleLayer) {
-                    StyleLayer layer = (StyleLayer) layers.get(i);
+            for (Layer value : layers) {
+                if (value instanceof StyleLayer) {
+                    StyleLayer layer = (StyleLayer) value;
                     Style style = layer.getStyle();
                     style.accept(dupVisitor);
                     Style copy = (Style) dupVisitor.getCopy();

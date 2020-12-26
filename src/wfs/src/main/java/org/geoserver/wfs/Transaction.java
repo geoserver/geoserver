@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,16 +159,16 @@ public class Transaction {
         //
         // (I am using element rather than transaction sub request
         // to agree with the spec docs)
-        for (Iterator it = elementHandlers.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Entry<TransactionElement, TransactionElementHandler>
+                elementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
+            Entry entry = (Entry) elementTransactionElementHandlerEntry;
             TransactionElement element = (TransactionElement) entry.getKey();
             TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
             Map<QName, FeatureTypeInfo> featureTypeInfos = new HashMap<>();
 
             QName[] typeNames = handler.getTypeNames(request, element);
 
-            for (int i = 0; i < typeNames.length; i++) {
-                final QName typeName = typeNames[i];
+            for (final QName typeName : typeNames) {
                 final String name = typeName.getLocalPart();
                 final String namespaceURI;
 
@@ -198,8 +197,7 @@ public class Transaction {
 
             // go through all feature type infos data objects, and load feature
             // stores
-            for (Iterator m = featureTypeInfos.values().iterator(); m.hasNext(); ) {
-                FeatureTypeInfo meta = (FeatureTypeInfo) m.next();
+            for (FeatureTypeInfo meta : featureTypeInfos.values()) {
                 String typeRef = meta.getStore().getName() + ":" + meta.getName();
 
                 String URI = meta.getNamespace().getURI();
@@ -290,8 +288,9 @@ public class Transaction {
         Exception exception = null;
 
         try {
-            for (Iterator it = elementHandlers.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) it.next();
+            for (Entry<TransactionElement, TransactionElementHandler>
+                    transactionElementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
+                Entry entry = (Entry) transactionElementTransactionElementHandlerEntry;
                 TransactionElement element = (TransactionElement) entry.getKey();
                 TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
 
@@ -467,9 +466,7 @@ public class Transaction {
             throws WFSTransactionException {
         List<TransactionElementHandler> matches = new ArrayList<>();
 
-        for (Iterator it = transactionElementHandlers.iterator(); it.hasNext(); ) {
-            TransactionElementHandler handler = (TransactionElementHandler) it.next();
-
+        for (TransactionElementHandler handler : transactionElementHandlers) {
             if (handler.getElementClass().isAssignableFrom(type)) {
                 matches.add(handler);
             }
@@ -617,8 +614,8 @@ public class Transaction {
      */
     private class TransactionListenerMux implements TransactionListener {
         public void dataStoreChange(List listeners, TransactionEvent event) throws WFSException {
-            for (Iterator it = listeners.iterator(); it.hasNext(); ) {
-                TransactionListener listener = (TransactionListener) it.next();
+            for (Object o : listeners) {
+                TransactionListener listener = (TransactionListener) o;
                 listener.dataStoreChange(event);
             }
         }

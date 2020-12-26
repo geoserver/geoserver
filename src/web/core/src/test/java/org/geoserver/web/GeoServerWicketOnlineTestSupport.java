@@ -92,9 +92,9 @@ public class GeoServerWicketOnlineTestSupport {
         String jsessionid = null;
 
         String[] parts = cookie.split(";");
-        for (int i = 0; i < parts.length; i++) {
-            if (parts[i].startsWith("JSESSIONID=")) {
-                jsessionid = parts[i];
+        for (String part : parts) {
+            if (part.startsWith("JSESSIONID=")) {
+                jsessionid = part;
             }
         }
         return jsessionid;

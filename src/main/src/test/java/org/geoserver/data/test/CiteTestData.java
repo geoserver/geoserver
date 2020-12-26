@@ -231,11 +231,11 @@ public abstract class CiteTestData implements TestData {
     public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
-        for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
-            SRS.put(WFS10_TYPENAMES[i], 32615);
+        for (QName wfs10Typename : WFS10_TYPENAMES) {
+            SRS.put(wfs10Typename, 32615);
         }
-        for (int i = 0; i < WFS11_TYPENAMES.length; i++) {
-            SRS.put(WFS11_TYPENAMES[i], 4326);
+        for (QName wfs11Typename : WFS11_TYPENAMES) {
+            SRS.put(wfs11Typename, 4326);
         }
     }
 

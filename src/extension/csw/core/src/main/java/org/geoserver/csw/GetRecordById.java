@@ -79,10 +79,9 @@ public class GetRecordById {
 
             // time to run the queries if we are not in hits mode
             List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
-            for (int i = 0; i < queries.size(); i++) {
+            for (WrappedQuery query : queries) {
                 FeatureCollection<FeatureType, Feature> collection =
-                        store.getRecords(
-                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
+                        store.getRecords(query.query, Transaction.AUTO_COMMIT, query.rd);
                 if (collection != null && collection.size() > 0) {
                     results.add(collection);
                 }

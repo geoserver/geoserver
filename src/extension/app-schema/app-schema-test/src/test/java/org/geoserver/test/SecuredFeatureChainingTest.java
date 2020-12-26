@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,8 +74,8 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaTestSupport {
 
         NamespaceSupport ns = new NamespaceSupport();
         Map nsMap = ((FeatureChainingMockData) testData).getNamespaces();
-        for (Iterator it = nsMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry entry = (Entry) it.next();
+        for (Object o : nsMap.entrySet()) {
+            Entry entry = (Entry) o;
             String prefix = (String) entry.getKey();
             String namespace = (String) entry.getValue();
             ns.declarePrefix(prefix, namespace);

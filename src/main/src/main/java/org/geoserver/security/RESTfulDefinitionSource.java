@@ -172,10 +172,10 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                     methodList = methods.split(",");
 
                     // Verify methodList is valid
-                    for (int ii = 0; ii < methodList.length; ii++) {
+                    for (String s : methodList) {
                         boolean matched = false;
-                        for (int jj = 0; jj < validMethodNames.length; jj++) {
-                            if (methodList[ii].equals(validMethodNames[jj])) {
+                        for (String validMethodName : validMethodNames) {
+                            if (s.equals(validMethodName)) {
                                 matched = true;
                                 break;
                             }
@@ -183,7 +183,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                         if (!matched) {
                             throw new IllegalArgumentException(
                                     "The HTTP Method Name ("
-                                            + methodList[ii]
+                                            + s
                                             + " does NOT equal a valid name (GET,PUT,POST,DELETE)");
                         }
                     }
@@ -212,8 +212,8 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
                 String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
 
-                for (int i = 0; i < tokens.length; i++) {
-                    mapping.addConfigAttribute(new SecurityConfig(tokens[i].trim()));
+                for (String token : tokens) {
+                    mapping.addConfigAttribute(new SecurityConfig(token.trim()));
                 }
                 mappings.add(mapping);
             }

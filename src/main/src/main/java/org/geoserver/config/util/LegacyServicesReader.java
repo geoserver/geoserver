@@ -207,8 +207,7 @@ public class LegacyServicesReader {
         if (baseMapGroupsElement != null) {
             Element[] baseMapGroupElements =
                     ReaderUtils.getChildElements(baseMapGroupsElement, "BaseMapGroup");
-            for (int i = 0; i < baseMapGroupElements.length; i++) {
-                Element baseMapGroupElement = baseMapGroupElements[i];
+            for (Element baseMapGroupElement : baseMapGroupElements) {
                 HashMap<String, Object> baseMap = new HashMap<>();
                 baseMap.put(
                         "baseMapTitle",
@@ -311,8 +310,8 @@ public class LegacyServicesReader {
         Element[] keywordElements = ReaderUtils.getChildElements(keywordsElement, "keyword");
         List<String> keywords = new ArrayList<>();
         if (keywordElements != null) {
-            for (int i = 0; i < keywordElements.length; i++) {
-                keywords.add(keywordElements[i].getFirstChild().getTextContent());
+            for (Element keywordElement : keywordElements) {
+                keywords.add(keywordElement.getFirstChild().getTextContent());
             }
         }
         service.put("keywords", keywords);
@@ -337,10 +336,10 @@ public class LegacyServicesReader {
 
     Element service(Element servicesElement, String id) throws Exception {
         Element[] serviceElements = ReaderUtils.getChildElements(servicesElement, "service");
-        for (int i = 0; i < serviceElements.length; i++) {
-            String serviceId = ReaderUtils.getAttribute(serviceElements[i], "type", false);
+        for (Element serviceElement : serviceElements) {
+            String serviceId = ReaderUtils.getAttribute(serviceElement, "type", false);
             if (id.equals(serviceId)) {
-                return serviceElements[i];
+                return serviceElement;
             }
         }
 

@@ -228,9 +228,7 @@ public class Log4JFormatter extends Formatter {
                                 logger.removeHandler(handler);
                                 handler = new Stdout(handler, log4j);
                                 handler.setLevel(filterLevel);
-                            } catch (UnsupportedEncodingException exception) {
-                                unexpectedException(exception);
-                            } catch (SecurityException exception) {
+                            } catch (UnsupportedEncodingException | SecurityException exception) {
                                 unexpectedException(exception);
                             }
                         }

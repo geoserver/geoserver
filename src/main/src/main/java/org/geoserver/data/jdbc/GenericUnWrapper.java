@@ -246,7 +246,7 @@ public class GenericUnWrapper implements UnWrapper {
                 return null;
             }
             return target.cast(result);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.log(
                     Level.FINEST,
                     "Using "
@@ -258,30 +258,8 @@ public class GenericUnWrapper implements UnWrapper {
                             + " failed: "
                             + e);
             return null; // unexpected with no arguments
-        } catch (IllegalAccessException e) {
-            LOGGER.log(
-                    Level.FINEST,
-                    "Using "
-                            + wrapper.getName()
-                            + "."
-                            + accessMethod.getName()
-                            + "() to unwrap "
-                            + target.getSimpleName()
-                            + " failed: "
-                            + e);
-            return null; // could be a visibility issue
-        } catch (InvocationTargetException e) {
-            LOGGER.log(
-                    Level.FINEST,
-                    "Using "
-                            + wrapper.getName()
-                            + "."
-                            + accessMethod.getName()
-                            + "() to unwrap "
-                            + target.getSimpleName()
-                            + " failed: "
-                            + e);
-            return null; // abort abort
-        }
+        } // could be a visibility issue
+        // abort abort
+
     }
 }

@@ -465,10 +465,7 @@ public class SecureXStream extends XStream {
             } else if (instance instanceof SingleValueConverter) {
                 registerConverter((SingleValueConverter) instance, priority);
             }
-        } catch (Exception e) {
-            throw new com.thoughtworks.xstream.InitializationException(
-                    "Could not instantiate converter : " + className, e);
-        } catch (LinkageError e) {
+        } catch (Exception | LinkageError e) {
             throw new com.thoughtworks.xstream.InitializationException(
                     "Could not instantiate converter : " + className, e);
         }

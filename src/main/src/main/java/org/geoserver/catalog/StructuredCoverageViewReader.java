@@ -218,9 +218,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
                     // account cases where we remove different number of records across different
                     // input coverages
                     removed = granuleStore.removeGranules(unmapped, hints);
-                } catch (UnsupportedOperationException e) {
-                    LOGGER.log(Level.FINER, e.getMessage(), e);
-                } catch (IOException e) {
+                } catch (UnsupportedOperationException | IOException e) {
                     LOGGER.log(Level.FINER, e.getMessage(), e);
                 }
             }

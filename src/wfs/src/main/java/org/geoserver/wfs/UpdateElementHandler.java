@@ -382,12 +382,10 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
             // update the update counter
             updated += fids.size();
-        } catch (IOException ioException) {
+        } catch (IOException | PointOutsideEnvelopeException ioException) {
             // JD: changing from throwing service exception to
             // adding action that failed
             throw new WFSTransactionException(ioException, null, handle);
-        } catch (PointOutsideEnvelopeException poe) {
-            throw new WFSTransactionException(poe, null, handle);
         }
 
         // update transaction summary

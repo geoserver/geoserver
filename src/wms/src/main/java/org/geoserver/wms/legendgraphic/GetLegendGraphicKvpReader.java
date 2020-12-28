@@ -367,15 +367,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 URL base = URLs.fileToUrl(styles);
                 url = new URL(base, onlineResource);
             }
-        } catch (MalformedURLException invalid) {
+        } catch (URISyntaxException | IOException invalid) {
             LOGGER.log(Level.FINER, "Unable to resolve " + onlineResource + " locally", invalid);
-            return null; // Do not try this online resource
-
-        } catch (IOException access) {
-            LOGGER.log(Level.FINER, "Unable to resolve " + onlineResource + " locally", access);
-            return null; // Do not try this online resource
-        } catch (URISyntaxException syntax) {
-            LOGGER.log(Level.FINER, "Unable to resolve " + onlineResource + " locally", syntax);
             return null; // Do not try this online resource
         }
         LegendInfoImpl resolved = new LegendInfoImpl();

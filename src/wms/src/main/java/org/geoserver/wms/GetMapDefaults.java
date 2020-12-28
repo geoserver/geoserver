@@ -16,7 +16,6 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Can be used to fill in defaults for incomplete GetMap requests */
@@ -264,8 +263,6 @@ public class GetMapDefaults {
 
         try {
             getMap.setCrs(CRS.decode(srs));
-        } catch (NoSuchAuthorityCodeException e) {
-            e.printStackTrace();
         } catch (FactoryException e) {
             e.printStackTrace();
         }

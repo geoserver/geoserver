@@ -121,10 +121,7 @@ public class DownloadLinkHandler {
                     }
                 }
                 return builder.toString();
-            } catch (IOException e) {
-                throw new RuntimeException(
-                        "Unable to encode the specified file:" + canonicalPath, e.getCause());
-            } catch (NoSuchAlgorithmException e) {
+            } catch (IOException | NoSuchAlgorithmException e) {
                 throw new RuntimeException(
                         "Unable to encode the specified file:" + canonicalPath, e.getCause());
             }

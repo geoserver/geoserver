@@ -224,10 +224,7 @@ public class EncodeHTMLImageMap extends WebMap {
                 if (EncodeHTMLImageMap.isWithInScale(rule, scaleDenominator)) {
                     result.add(rule);
                 }
-            } catch (TransformException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (FactoryException e) {
+            } catch (TransformException | FactoryException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

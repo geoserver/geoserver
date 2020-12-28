@@ -11,7 +11,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -543,11 +542,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                             return sb.toString();
                                         }
                                 }
-                            } catch (MalformedURLException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } catch (IOException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } catch (URISyntaxException ex) {
+                            } catch (URISyntaxException | IOException ex) {
                                 Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                             } finally {
                                 if (res != null) {

@@ -132,10 +132,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error obtaining datastore with the modified values", e);
-                confirmSaveOnConnectionFailure(info, requestTarget, e);
-            } catch (RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Error obtaining datastore with the modified values", e);
                 confirmSaveOnConnectionFailure(info, requestTarget, e);
             }

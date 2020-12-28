@@ -134,9 +134,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
                                 new ReferencedEnvelope(request.getCrs()),
                                 request.getCrs(),
                                 wms.isContinuousMapWrappingEnabled());
-            } catch (MismatchedDimensionException e) {
-                LOGGER.log(Level.FINER, e.getMessage(), e);
-            } catch (FactoryException e) {
+            } catch (MismatchedDimensionException | FactoryException e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
             }
             map.put(

@@ -54,7 +54,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.wms.responses.map.htmlimagemap.holes.HolesRemover;
 
@@ -594,12 +593,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                 xform = f.createAffineTransform(new GeneralMatrix(worldToScreen.createInverse()));
                 Decimator decimator = new Decimator(xform, mapArea);
                 geom = decimator.decimate(geom);
-            } catch (FactoryException e1) {
-
-            } catch (NoninvertibleTransformException e1) {
-
-            } catch (Exception e1) {
-
+            } catch (Exception e) {
+                // in case of failure, do not simplify
             }
             return geom;
         }

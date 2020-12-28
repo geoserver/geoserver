@@ -54,7 +54,7 @@ under the License.
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
     <rule ref="category/java/codestyle.xml/UnnecessaryCast" />
     <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
-    
+    <rule ref="category/java/codestyle.xml/IdenticalCatchBranches" />
 
     <!-- rule ref="category/java/design.xml/CollapsibleIfStatements" / -->
     <!-- rule ref="category/java/design.xml/SimplifiedTernary" / -->

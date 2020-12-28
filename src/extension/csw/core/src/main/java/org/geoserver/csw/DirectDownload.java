@@ -85,10 +85,7 @@ public class DirectDownload {
                         }
                     }
                 }
-            } catch (NoSuchAlgorithmException e) {
-                throw new ServiceException(
-                        "Exception occurred while looking for raw files for :" + fileId, e);
-            } catch (IOException e) {
+            } catch (NoSuchAlgorithmException | IOException e) {
                 throw new ServiceException(
                         "Exception occurred while looking for raw files for :" + fileId, e);
             }

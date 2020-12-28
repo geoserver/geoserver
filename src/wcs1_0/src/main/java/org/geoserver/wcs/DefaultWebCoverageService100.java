@@ -713,14 +713,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             retVal.setCoordinateReferenceSystem(nativeCRS);
             return retVal;
 
-        } catch (TransformException te) {
+        } catch (TransformException | FactoryException te) {
             // something bad happened while trying to transform this
             // envelope. let's try with wgs84
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, te.getLocalizedMessage(), te);
-        } catch (FactoryException fe) {
-            // something bad happened while trying to transform this
-            // envelope. let's try with wgs84
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, fe.getLocalizedMessage(), fe);
         }
 
         try {

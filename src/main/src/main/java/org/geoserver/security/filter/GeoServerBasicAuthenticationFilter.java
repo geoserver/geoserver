@@ -118,9 +118,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             try {
                 MessageDigest md = (MessageDigest) digest.clone();
                 digestString = new String(Hex.encode(md.digest(buff.toString().getBytes("utf-8"))));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (CloneNotSupportedException e) {
+            } catch (UnsupportedEncodingException | CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
             buff = new StringBuffer(username);

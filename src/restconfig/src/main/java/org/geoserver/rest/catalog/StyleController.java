@@ -190,7 +190,7 @@ public class StyleController extends AbstractCatalogController {
                 createStyleInfo(workspaceName, name, handler, handler.mimeType(version));
 
         checkStyleResourceNotExists(styleInfo);
-        writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+        writeStyleRaw(styleInfo, uploadedFile);
 
         catalog.add(styleInfo);
 
@@ -361,7 +361,7 @@ public class StyleController extends AbstractCatalogController {
 
             // Save the style: serialize the style out into the data directory
             StyleInfo styleInfo = catalog.getStyleByName(workspaceName, styleName);
-            writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+            writeStyleRaw(styleInfo, uploadedFile);
             catalog.save(styleInfo);
 
             LOGGER.info("PUT Style Package: " + styleName + ", workspace: " + workspaceName);
@@ -416,7 +416,7 @@ public class StyleController extends AbstractCatalogController {
         String content = new String(rawData, charset);
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         if (raw) {
-            writeStyleRaw(info, new ByteArrayInputStream(rawData));
+            writeStyleRaw(info, rawData);
 
             try {
                 // figure out if we need a version switch
@@ -523,7 +523,7 @@ public class StyleController extends AbstractCatalogController {
         } else {
             info.setFormat(handler.getFormat());
             info.setFormatVersion(version);
-            writeStyleRaw(info, new ByteArrayInputStream(rawData));
+            writeStyleRaw(info, rawData);
         }
     }
 
@@ -531,14 +531,25 @@ public class StyleController extends AbstractCatalogController {
      * Writes the content of an input stream to a style resource, without validation
      *
      * @param info Style info object, containing details about the style format and location
-     * @param input The style contents
+     * @param file The style contents
      * @throws IOException if there was an error persisting the style
      */
-    private void writeStyleRaw(StyleInfo info, InputStream input) throws IOException {
-        try {
+    private void writeStyleRaw(StyleInfo info, File file) throws IOException {
+        try (FileInputStream input = new FileInputStream(file)) {
             catalog.getResourcePool().writeStyle(info, input);
-        } finally {
-            org.geoserver.util.IOUtils.closeQuietly(input);
+        }
+    }
+
+    /**
+     * Writes the content of an input stream to a style resource, without validation
+     *
+     * @param info Style info object, containing details about the style format and location
+     * @param bytes The style contents
+     * @throws IOException if there was an error persisting the style
+     */
+    private void writeStyleRaw(StyleInfo info, byte[] bytes) throws IOException {
+        try (ByteArrayInputStream input = new ByteArrayInputStream(bytes)) {
+            catalog.getResourcePool().writeStyle(info, input);
         }
     }
 

@@ -509,15 +509,12 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     "GeoServer REST Role Service CACHE MISS for '"
                                             + restEndPoint
                                             + "'");
-
-                            ClientHttpRequest req = null;
-                            ClientHttpResponse res = null;
                             try {
                                 final URI baseURI = new URI(roleRESTBaseURL);
 
                                 URL url = baseURI.resolve(roleRESTEndpoint).toURL();
 
-                                req =
+                                ClientHttpRequest req =
                                         getRestTemplate()
                                                 .getRequestFactory()
                                                 .createRequest(url.toURI(), HttpMethod.GET);
@@ -525,34 +522,26 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                 if (authApiKey != null) {
                                     req.getHeaders().add("Authorization", "ApiKey " + authApiKey);
                                 }
-                                res = req.execute();
-                                int status = res.getRawStatusCode();
+                                try (ClientHttpResponse res = req.execute()) {
+                                    int status = res.getRawStatusCode();
 
-                                switch (status) {
-                                    case 200:
-                                    case 201:
-                                        try (BufferedReader br =
-                                                new BufferedReader(
-                                                        new InputStreamReader(res.getBody()))) {
-                                            StringBuilder sb = new StringBuilder();
-                                            String line;
-                                            while ((line = br.readLine()) != null) {
-                                                sb.append(line + "\n");
+                                    switch (status) {
+                                        case 200:
+                                        case 201:
+                                            try (BufferedReader br =
+                                                    new BufferedReader(
+                                                            new InputStreamReader(res.getBody()))) {
+                                                StringBuilder sb = new StringBuilder();
+                                                String line;
+                                                while ((line = br.readLine()) != null) {
+                                                    sb.append(line + "\n");
+                                                }
+                                                return sb.toString();
                                             }
-                                            return sb.toString();
-                                        }
+                                    }
                                 }
                             } catch (URISyntaxException | IOException ex) {
                                 Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } finally {
-                                if (res != null) {
-                                    try {
-                                        res.close();
-                                    } catch (Exception ex) {
-                                        Logger.getLogger(getClass().getName())
-                                                .log(Level.SEVERE, null, ex);
-                                    }
-                                }
                             }
 
                             return null;

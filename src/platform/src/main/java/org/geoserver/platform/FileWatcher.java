@@ -55,19 +55,13 @@ public class FileWatcher<T> {
         T result = null;
 
         if (resource.getType() == Type.RESOURCE) {
-            InputStream is = null;
 
-            try {
-                is = resource.in();
+            try (InputStream is = resource.in()) {
                 result = parseFileContents(is);
 
                 lastModified = resource.lastmodified();
                 lastCheck = System.currentTimeMillis();
                 stale = false;
-            } finally {
-                if (is != null) {
-                    is.close();
-                }
             }
         }
 

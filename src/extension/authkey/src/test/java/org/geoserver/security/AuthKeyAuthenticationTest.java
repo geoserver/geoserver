@@ -724,11 +724,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
     private void loadPropFile(File authKeyFile, Properties props)
             throws FileNotFoundException, IOException {
-        FileInputStream propFile = new FileInputStream(authKeyFile);
-        try {
+        try (FileInputStream propFile = new FileInputStream(authKeyFile)) {
             props.load(propFile);
-        } finally {
-            propFile.close();
         }
     }
 }

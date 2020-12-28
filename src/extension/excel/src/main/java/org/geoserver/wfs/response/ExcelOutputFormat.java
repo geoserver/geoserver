@@ -106,9 +106,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                 }
 
                 // write out the features
-                SimpleFeatureIterator i = fc.features();
-                int r = 0; // row index
-                try {
+                try (SimpleFeatureIterator i = fc.features()) {
+                    int r = 0; // row index
                     Row row;
                     while (i.hasNext()) {
                         r++; // start at 1, since header is at 0
@@ -170,8 +169,6 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                             }
                         }
                     }
-                } finally {
-                    i.close();
                 }
             }
 

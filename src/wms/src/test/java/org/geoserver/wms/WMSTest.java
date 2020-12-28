@@ -162,13 +162,10 @@ public class WMSTest extends WMSTestSupport {
         FeatureCollection features = fs.getFeatures(filter);
 
         Set<Integer> results = new HashSet<>();
-        FeatureIterator it = features.features();
-        try {
+        try (FeatureIterator it = features.features()) {
             while (it.hasNext()) {
                 results.add((Integer) it.next().getProperty("id").getValue());
             }
-        } finally {
-            it.close();
         }
         assertTrue(
                 "expected " + Arrays.toString(expectedIds) + " but got " + results,

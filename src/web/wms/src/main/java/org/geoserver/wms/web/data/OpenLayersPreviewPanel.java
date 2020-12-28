@@ -139,11 +139,8 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                             OpenLayersPreviewPanel.class.getResourceAsStream(
                                     "style-editor-legend.xml"),
                             "UTF-8");
-            OutputStream os = legend.out();
-            try {
+            try (OutputStream os = legend.out()) {
                 IOUtils.write(legendLayout, os, "UTF-8");
-            } finally {
-                os.close();
             }
         }
     }

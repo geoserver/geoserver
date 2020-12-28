@@ -326,15 +326,12 @@ public class IOUtils {
                         ZipEntry entry = new ZipEntry(prefix + file.getName());
                         zipout.putNextEntry(entry);
 
-                        InputStream in = new FileInputStream(file);
-                        int c;
-                        try {
+                        try (InputStream in = new FileInputStream(file)) {
+                            int c;
                             while (-1 != (c = in.read(buffer))) {
                                 zipout.write(buffer, 0, c);
                             }
                             zipout.closeEntry();
-                        } finally {
-                            in.close();
                         }
                     }
                 }

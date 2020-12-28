@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.IOUtils;
 import org.geoserver.wms.DescribeLayer;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.springframework.util.Assert;
@@ -74,6 +73,7 @@ public abstract class DescribeLayerResponse extends Response {
      *     org.geoserver.platform.Operation)
      */
     @Override
+    @SuppressWarnings("PMD.UseTryWithResources") // the output is provided from outside
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
 
@@ -93,7 +93,6 @@ public abstract class DescribeLayerResponse extends Response {
                     output.flush();
                 } catch (IOException ioe) {
                 }
-                IOUtils.closeQuietly(output);
             }
         }
     }

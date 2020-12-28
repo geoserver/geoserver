@@ -36,12 +36,9 @@ public class JSONLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
         Assert.isInstanceOf(JSONLegendGraphic.class, legend);
 
         JSONObject json = (JSONObject) ((LegendGraphic) legend).getLegend();
-        PrintWriter writer = new PrintWriter(output);
 
-        try {
+        try (PrintWriter writer = new PrintWriter(output)) {
             writer.write(json.toString(2));
-        } finally {
-            writer.close();
         }
     }
 

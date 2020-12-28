@@ -161,11 +161,12 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     StyledLayerDescriptor parse10(
             Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
-        @SuppressWarnings("PMD.CloseResource") // conditionally initialized, actually gets closed
+        // reader is conditionally initialized, actually gets closed
         Reader reader = null;
         try {
             // we need to close the reader if we grab one, but if it's a file it has

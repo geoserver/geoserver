@@ -306,17 +306,13 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
             listener.dataStoreChange(event);
 
-            FeatureIterator preprocess = features.features();
-
-            try {
+            try (FeatureIterator preprocess = features.features()) {
                 while (preprocess.hasNext()) {
                     SimpleFeature feature = (SimpleFeature) preprocess.next();
                     fids.add(feature.getIdentifier());
                 }
             } catch (NoSuchElementException e) {
                 throw new WFSException(request, "Could not aquire FeatureIDs", e);
-            } finally {
-                preprocess.close();
             }
 
             try {
@@ -361,13 +357,10 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                 // grab final ids. Not using fetureIds as they may contain different version
                 // information after the update
                 Set<FeatureId> changedIds = new HashSet<>();
-                SimpleFeatureIterator iterator = changed.features();
-                try {
+                try (SimpleFeatureIterator iterator = changed.features()) {
                     while (iterator.hasNext()) {
                         changedIds.add(iterator.next().getIdentifier());
                     }
-                } finally {
-                    iterator.close();
                 }
                 response.addUpdatedFeatures(handle, changedIds);
 

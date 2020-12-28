@@ -96,17 +96,11 @@ public class ShapeZipPPIO extends BinaryPPIO {
                     int count;
                     byte data[] = new byte[4096];
                     // write the files to the disk
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(file);
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
                         while ((count = zis.read(data)) != -1) {
                             fos.write(data, 0, count);
                         }
                         fos.flush();
-                    } finally {
-                        if (fos != null) {
-                            fos.close();
-                        }
                     }
                 }
                 zis.closeEntry();

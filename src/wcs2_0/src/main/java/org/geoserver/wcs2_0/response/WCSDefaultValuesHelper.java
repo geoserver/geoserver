@@ -187,8 +187,7 @@ public class WCSDefaultValuesHelper {
 
             // Get granules from query
             SimpleFeatureCollection granulesCollection = source.getGranules(query);
-            SimpleFeatureIterator features = granulesCollection.features();
-            try {
+            try (SimpleFeatureIterator features = granulesCollection.features()) {
                 if (features.hasNext()) {
                     final SimpleFeature feature = features.next();
 
@@ -209,10 +208,6 @@ public class WCSDefaultValuesHelper {
                         dimensionsSubset = setDefaultDimensionsSubset(customDimensions, feature);
                         subsettingRequest.setDimensionsSubset(dimensionsSubset);
                     }
-                }
-            } finally {
-                if (features != null) {
-                    features.close();
                 }
             }
         }

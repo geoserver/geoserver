@@ -55,11 +55,8 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         props.put("sf.*.r", "*");
         props.put("cite.*.r", "cite");
         props.put("cite.*.w", "cite");
-        FileOutputStream outputFile = new FileOutputStream(layers);
-        try {
+        try (FileOutputStream outputFile = new FileOutputStream(layers)) {
             props.store(outputFile, "");
-        } finally {
-            outputFile.close();
         }
     }
 

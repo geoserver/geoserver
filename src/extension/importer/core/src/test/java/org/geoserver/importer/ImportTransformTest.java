@@ -89,15 +89,12 @@ public class ImportTransformTest extends ImporterTestSupport {
         SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();
         assertEquals(Integer.class, schema.getDescriptor("cat").getType().getBinding());
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             assertTrue(it.hasNext());
             while (it.hasNext()) {
                 SimpleFeature f = (SimpleFeature) it.next();
                 assertTrue(f.getAttribute("cat") instanceof Integer);
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -178,15 +175,12 @@ public class ImportTransformTest extends ImporterTestSupport {
                 Date.class.isAssignableFrom(
                         schema.getDescriptor("timestamp").getType().getBinding()));
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             assertTrue(it.hasNext());
             while (it.hasNext()) {
                 SimpleFeature f = (SimpleFeature) it.next();
                 assertTrue(f.getAttribute("timestamp") instanceof Date);
             }
-        } finally {
-            it.close();
         }
     }
 

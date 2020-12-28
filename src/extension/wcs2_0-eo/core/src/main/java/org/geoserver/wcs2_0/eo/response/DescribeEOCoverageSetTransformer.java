@@ -294,18 +294,13 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
         private void handleCoverageDescriptions(List<CoverageGranules> coverageGranules) {
             start("wcs:CoverageDescriptions");
             for (CoverageGranules cg : coverageGranules) {
-                SimpleFeatureIterator features = cg.granules.features();
-                try {
+                try (SimpleFeatureIterator features = cg.granules.features()) {
                     while (features.hasNext()) {
                         SimpleFeature f = features.next();
                         String granuleId = codec.getGranuleId(cg.coverage, f.getID());
                         dcTranslator.handleCoverageDescription(
                                 granuleId,
                                 new GranuleCoverageInfo(cg.coverage, f, cg.dimensionDescriptors));
-                    }
-                } finally {
-                    if (features != null) {
-                        features.close();
                     }
                 }
             }

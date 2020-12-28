@@ -72,11 +72,8 @@ public class GeoServerMetaTile extends MetaTile {
         checkNotNull(metaTileMap, "webMap is not set");
 
         if (metaTileMap instanceof RawMap) {
-            OutputStream outStream = target.getOutputStream();
-            try {
+            try (OutputStream outStream = target.getOutputStream()) {
                 ((RawMap) metaTileMap).writeTo(outStream);
-            } finally {
-                outStream.close();
             }
             return true;
         }
@@ -127,15 +124,12 @@ public class GeoServerMetaTile extends MetaTile {
             }
         }
 
-        OutputStream outStream = target.getOutputStream();
-        try {
+        try (OutputStream outStream = target.getOutputStream()) {
             // call formatImageOuputStream instead of write to avoid disposition of rendered images
             // when processing a tile from a metatile and instead defer it to this class' dispose()
             // method
             mapEncoder.formatImageOutputStream(tile, outStream, tileContext);
             return true;
-        } finally {
-            outStream.close();
         }
     }
 

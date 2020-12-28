@@ -47,12 +47,9 @@ public class CatalogReader {
      * @throws IOException In event of a parser error.
      */
     public void read(File file) throws IOException {
-        FileReader reader = new FileReader(file);
 
-        try {
+        try (FileReader reader = new FileReader(file)) {
             catalog = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

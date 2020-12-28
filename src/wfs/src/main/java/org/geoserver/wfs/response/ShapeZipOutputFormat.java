@@ -296,15 +296,11 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                     cfg = new WFSConfiguration_1_0();
                     elementName = org.geotools.wfs.v1_0.WFS.GetFeature;
                 }
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(target);
+                try (FileOutputStream fos = new FileOutputStream(target)) {
                     Encoder encoder = new Encoder(cfg);
                     encoder.setIndenting(true);
                     encoder.setIndentSize(2);
                     encoder.encode(gft, elementName, fos);
-                } finally {
-                    if (fos != null) fos.close();
                 }
             }
         } catch (IOException e) {
@@ -313,14 +309,10 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     private void createEmptyZipWarning(File tempDir) throws IOException {
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File(tempDir, "README.TXT"));
+        try (PrintWriter pw = new PrintWriter(new File(tempDir, "README.TXT"))) {
             pw.print(
                     "The query result is empty, and the geometric type of the features is unknwon:"
                             + "an empty point shapefile has been created to fill the zip file");
-        } finally {
-            if (pw != null) pw.close();
         }
     }
 
@@ -405,11 +397,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                 File prjShapeFile = new File(tempDir, fileName + ".prj");
                 prjShapeFile.delete();
 
-                BufferedWriter out = new BufferedWriter(new FileWriter(prjShapeFile));
-                try {
+                try (BufferedWriter out = new BufferedWriter(new FileWriter(prjShapeFile))) {
                     out.write(data);
-                } finally {
-                    out.close();
                 }
             } else {
                 LOGGER.info(

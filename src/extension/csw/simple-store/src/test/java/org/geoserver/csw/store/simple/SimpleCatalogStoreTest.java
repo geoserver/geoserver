@@ -102,8 +102,7 @@ public class SimpleCatalogStoreTest {
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
 
-        FeatureIterator<Feature> fi = records.features();
-        try {
+        try (FeatureIterator<Feature> fi = records.features()) {
             while (fi.hasNext()) {
                 Feature f = fi.next();
 
@@ -113,7 +112,8 @@ public class SimpleCatalogStoreTest {
                 assertNotNull(id);
                 assertTrue(
                         id.matches(
-                                "urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"));
+                                "urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9"
+                                        + "]{12}"));
 
                 // check the feature id is the same as the id attribute
                 assertEquals(id, f.getIdentifier().getID());
@@ -123,8 +123,6 @@ public class SimpleCatalogStoreTest {
                 assertNotNull(type);
                 assertNotNull(type.getValue());
             }
-        } finally {
-            fi.close();
         }
     }
 

@@ -82,10 +82,8 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             List featureCollections = loadFeatureCollections(map);
             for (Object featureCollection : featureCollections) {
                 SimpleFeatureCollection features = (SimpleFeatureCollection) featureCollection;
-                FeatureIterator<SimpleFeature> iterator = null;
 
-                try {
-                    iterator = features.features();
+                try (FeatureIterator<SimpleFeature> iterator = features.features()) {
 
                     while (iterator.hasNext()) {
                         SimpleFeature feature = iterator.next();
@@ -95,10 +93,6 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
                             LOGGER.warning("Encoding failed for feature: " + feature.getID());
                             LOGGER.log(Level.FINE, "", e);
                         }
-                    }
-                } finally {
-                    if (iterator != null) {
-                        iterator.close();
                     }
                 }
             }

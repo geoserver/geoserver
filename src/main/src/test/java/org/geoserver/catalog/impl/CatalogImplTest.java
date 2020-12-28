@@ -3124,14 +3124,11 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
             props.add(pval);
         }
 
-        CloseableIterator<T> it = catalog.list(clazz, filter, offset, limit, sortOrder);
-        try {
+        try (CloseableIterator<T> it = catalog.list(clazz, filter, offset, limit, sortOrder)) {
             while (it.hasNext()) {
                 Object property = pe.getProperty(it.next(), sortProperty);
                 actual.add(property);
             }
-        } finally {
-            it.close();
         }
 
         assertEquals(props, actual);

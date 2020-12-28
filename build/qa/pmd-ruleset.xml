@@ -39,7 +39,7 @@ under the License.
     <rule ref="category/java/bestpractices.xml/UseAssertEqualsInsteadOfAssertTrue" />
     <rule ref="category/java/bestpractices.xml/UseAssertNullInsteadOfAssertTrue" />
     <rule ref="category/java/bestpractices.xml/UseAssertSameInsteadOfAssertTrue" />
-    
+    <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
 
     <rule ref="category/java/codestyle.xml/DontImportJavaLang" />
     <rule ref="category/java/codestyle.xml/DuplicateImports" />

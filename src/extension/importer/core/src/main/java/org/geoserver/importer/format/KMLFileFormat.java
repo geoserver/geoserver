@@ -131,14 +131,8 @@ public class KMLFileFormat extends VectorFormat {
 
     public Collection<SimpleFeatureType> parseFeatureTypes(String typeName, File file)
             throws IOException {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
+        try (InputStream inputStream = new FileInputStream(file)) {
             return parseFeatureTypes(typeName, inputStream);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
         }
     }
 

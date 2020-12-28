@@ -266,6 +266,7 @@ public class TransformRepository {
     /**
      * Writes the stylesheet of a transformation. This method will close the provided input stream.
      */
+    @SuppressWarnings("PMD.UseTryWithResources")
     public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
         Resource txFile = getTransformFile(info);
 

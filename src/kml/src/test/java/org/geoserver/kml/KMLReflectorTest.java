@@ -435,8 +435,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                 "attachment; filename=cite-BasicPolygons.kmz",
                 response.getHeader("Content-Disposition"));
 
-        ZipInputStream zis = new ZipInputStream(getBinaryInputStream(response));
-        try {
+        try (ZipInputStream zis = new ZipInputStream(getBinaryInputStream(response))) {
             // first entry, the kml document itself
             ZipEntry entry = zis.getNextEntry();
             assertEquals("wms.kml", entry.getName());
@@ -460,8 +459,6 @@ public class KMLReflectorTest extends WMSTestSupport {
             assertEquals("images/layers_0.png", entry.getName());
             zis.closeEntry();
             assertNull(zis.getNextEntry());
-        } finally {
-            zis.close();
         }
     }
 

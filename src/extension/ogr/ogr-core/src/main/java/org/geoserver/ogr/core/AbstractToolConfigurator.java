@@ -72,12 +72,9 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         ToolConfiguration configuration = getDefaultConfiguration();
         try {
             if (configFile.getType() == Type.RESOURCE) {
-                InputStream in = configFile.in();
-                try {
+                try (InputStream in = configFile.in()) {
                     XStream xstream = buildXStream();
                     configuration = (ToolConfiguration) xstream.fromXML(in);
-                } finally {
-                    in.close();
                 }
             }
         } catch (Exception e) {

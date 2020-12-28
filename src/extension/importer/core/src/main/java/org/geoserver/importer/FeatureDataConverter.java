@@ -152,16 +152,13 @@ public class FeatureDataConverter {
                         Class binding = gd.getType().getBinding();
                         if (Geometry.class.equals(binding)) {
                             try {
-                                FeatureReader r = format.read(data, item);
-                                try {
+                                try (FeatureReader r = format.read(data, item)) {
                                     if (r.hasNext()) {
                                         SimpleFeature f = (SimpleFeature) r.next();
                                         if (f.getDefaultGeometry() != null) {
                                             binding = f.getDefaultGeometry().getClass();
                                         }
                                     }
-                                } finally {
-                                    r.close();
                                 }
                             } catch (IOException e) {
                                 LOGGER.warning("Unable to determine concrete geometry type");

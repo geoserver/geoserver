@@ -637,8 +637,7 @@ public class ShapeZipTest extends WFSTestSupport {
         SimpleFeatureCollection fc = fs.getFeatures();
         SimpleFeatureType schema = fc.getSchema();
 
-        SimpleFeatureIterator iter = fc.features();
-        try {
+        try (SimpleFeatureIterator iter = fc.features()) {
             // check that every field has a not null or "empty" value
             while (iter.hasNext()) {
                 SimpleFeature f = iter.next();
@@ -652,7 +651,6 @@ public class ShapeZipTest extends WFSTestSupport {
                 }
             }
         } finally {
-            iter.close();
             ds.dispose();
             FileUtils.deleteQuietly(tempFolder);
         }
@@ -723,9 +721,8 @@ public class ShapeZipTest extends WFSTestSupport {
             final String fileName, final InputStream zippedIn, final String expectedContent)
             throws IOException {
 
-        ZipInputStream zis = new ZipInputStream(zippedIn);
-        ZipEntry entry = null;
-        try {
+        try (ZipInputStream zis = new ZipInputStream(zippedIn)) {
+            ZipEntry entry = null;
             while ((entry = zis.getNextEntry()) != null) {
                 try {
                     final String name = entry.getName();
@@ -738,8 +735,6 @@ public class ShapeZipTest extends WFSTestSupport {
                     zis.closeEntry();
                 }
             }
-        } finally {
-            zis.close();
         }
         fail(fileName + " was not found in the provided stream");
     }

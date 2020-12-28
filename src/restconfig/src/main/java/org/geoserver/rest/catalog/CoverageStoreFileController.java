@@ -348,7 +348,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
                     existing = coverages.get(0);
                 }
                 // check if we have it or not
-                if (coverages.size() == 0) {
+                if (coverages.isEmpty()) {
                     // no coverages yet configured, change add flag and continue on
                     add = true;
                 } else {

@@ -48,7 +48,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
 
     private void initControllers() {
         checkConfiguration();
-        if (controllers.size() == 0) {
+        if (controllers.isEmpty()) {
             LOGGER.info("Control-flow inactive, there are no configured rules");
         }
     }

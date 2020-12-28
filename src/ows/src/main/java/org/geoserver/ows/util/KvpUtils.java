@@ -320,7 +320,7 @@ public class KvpUtils {
                         normalized.add(v);
                     }
                 }
-                if (normalized.size() == 0) {
+                if (normalized.isEmpty()) {
                     value = null;
                 } else if (normalized.size() == 1) {
                     value = normalized.iterator().next();

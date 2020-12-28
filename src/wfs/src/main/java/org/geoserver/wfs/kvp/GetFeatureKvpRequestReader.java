@@ -140,7 +140,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             @SuppressWarnings("unchecked")
             List<Map<String, String>> viewParams =
                     (List<Map<String, String>>) kvp.get("viewParams");
-            if (viewParams.size() > 0) {
+            if (!viewParams.isEmpty()) {
                 int layerCount = req.getQueries().size();
 
                 // if we have just one replicate over all layers

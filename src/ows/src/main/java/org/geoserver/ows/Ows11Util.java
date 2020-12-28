@@ -49,7 +49,7 @@ public class Ows11Util {
 
     @SuppressWarnings("unchecked") // due to KeywordsType using raw collections
     public static KeywordsType keywords(List<String> keywords) {
-        if (keywords == null || keywords.size() == 0) {
+        if (keywords == null || keywords.isEmpty()) {
             return null;
         }
         KeywordsType kw = f.createKeywordsType();

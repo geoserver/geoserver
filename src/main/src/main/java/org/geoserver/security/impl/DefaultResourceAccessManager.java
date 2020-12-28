@@ -531,7 +531,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     }
                 }
             }
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
@@ -610,7 +610,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 }
             }
 
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
@@ -633,7 +633,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     }
                 }
             }
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);

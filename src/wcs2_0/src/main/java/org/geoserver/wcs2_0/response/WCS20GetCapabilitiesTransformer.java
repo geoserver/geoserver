@@ -452,7 +452,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("ows:AllowedValues");
             end("ows:Constraint");
 
-            if (extensions != null && extensions.size() > 0) {
+            if (extensions != null && !extensions.isEmpty()) {
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {
                         provider.encodeExtendedOperations(translator, wcs, request);
@@ -609,7 +609,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
 
-            if (extensions != null && extensions.size() > 0) {
+            if (extensions != null && !extensions.isEmpty()) {
                 start("wcs:Extension");
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {

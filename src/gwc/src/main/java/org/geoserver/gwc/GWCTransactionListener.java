@@ -134,7 +134,7 @@ public class GWCTransactionListener implements TransactionCallback {
     private ReferencedEnvelope merge(
             final String tileLayerName, final List<ReferencedEnvelope> dirtyList)
             throws TransformException, FactoryException {
-        if (dirtyList.size() == 0) {
+        if (dirtyList.isEmpty()) {
             return null;
         }
 

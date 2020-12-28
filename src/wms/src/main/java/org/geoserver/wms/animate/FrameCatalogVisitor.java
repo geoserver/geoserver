@@ -105,7 +105,7 @@ public class FrameCatalogVisitor {
             images.add(image);
         }
 
-        if (images == null || images.size() == 0) {
+        if (images == null || images.isEmpty()) {
             dispose();
             throw new IOException("Empty list of frames.");
         }

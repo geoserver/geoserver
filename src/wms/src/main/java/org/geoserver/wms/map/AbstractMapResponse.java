@@ -105,7 +105,7 @@ public abstract class AbstractMapResponse extends Response {
             return false;
         }
         Set<String> outputFormats = getOutputFormats();
-        if (outputFormats.size() == 0) {
+        if (outputFormats.isEmpty()) {
             // rely only on response binding
             return true;
         }

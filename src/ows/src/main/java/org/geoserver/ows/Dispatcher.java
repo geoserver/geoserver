@@ -1462,7 +1462,7 @@ public class Dispatcher extends AbstractController {
                 Collections.sort(vmatches, comparator);
             }
 
-            if (vmatches.size() > 0) xmlReader = vmatches.get(vmatches.size() - 1);
+            if (!vmatches.isEmpty()) xmlReader = vmatches.get(vmatches.size() - 1);
         } else {
             // only a single match, that was easy
             xmlReader = matches.get(0);

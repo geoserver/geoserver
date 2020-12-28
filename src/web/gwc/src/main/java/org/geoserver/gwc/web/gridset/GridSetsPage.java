@@ -169,7 +169,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             // see if the user selected anything
             List<GridSet> selection = gridsets.getSelection();
-            if (selection.size() == 0) {
+            if (selection.isEmpty()) {
                 return;
             }
 

@@ -67,7 +67,7 @@ public abstract class WebMap {
     }
 
     public String[][] getResponseHeaders() {
-        if (responseHeaders == null || responseHeaders.size() == 0) {
+        if (responseHeaders == null || responseHeaders.isEmpty()) {
             return null;
         }
         String[][] headers = new String[responseHeaders.size()][2];

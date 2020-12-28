@@ -40,7 +40,7 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         // we need at least one coverage
         final String identifiersValue = (String) rawKvp.get("identifiers");
         final List identifiers = KvpUtils.readFlat(identifiersValue);
-        if (identifiers == null || identifiers.size() == 0) {
+        if (identifiers == null || identifiers.isEmpty()) {
             throw new WcsException(
                     "Required paramer, identifiers, missing",
                     WcsExceptionCode.MissingParameterValue,

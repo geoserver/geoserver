@@ -167,7 +167,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             IModel<NamespaceInfo> namespaceModel = new NamespaceParamModel(paramsModel, paramName);
             IModel<String> paramLabelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel = new NamespacePanel(componentId, namespaceModel, paramLabelModel, true);
-        } else if (options != null && options.size() > 0) {
+        } else if (options != null && !options.isEmpty()) {
 
             IModel<Serializable> valueModel = new MapModel<>(paramsModel, paramName);
             if (binding.isEnum()) {

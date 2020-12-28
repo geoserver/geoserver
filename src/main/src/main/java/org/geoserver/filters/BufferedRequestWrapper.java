@@ -73,9 +73,11 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     public String getParameter(String name) {
         parseParameters();
         List<String> allValues = myParameterMap.get(name);
-        if (allValues != null && allValues.size() > 0) {
+        if (allValues == null || allValues.isEmpty()) {
+            return null;
+        } else {
             return allValues.get(0);
-        } else return null;
+        }
     }
 
     public Map<String, String[]> getParameterMap() {
@@ -97,9 +99,11 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     public String[] getParameterValues(String name) {
         parseParameters();
         List<String> allValues = myParameterMap.get(name);
-        if (allValues != null && allValues.size() > 0) {
+        if (allValues == null || allValues.isEmpty()) {
+            return null;
+        } else {
             return allValues.toArray(new String[0]);
-        } else return null;
+        }
     }
 
     protected void parseParameters() {

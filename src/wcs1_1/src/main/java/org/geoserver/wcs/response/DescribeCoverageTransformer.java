@@ -361,7 +361,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
                 if (nulls == null) return;
                 if (nulls.size() == 1) {
                     element("wcs:NullValue", nulls.get(0).toString());
-                } else if (nulls.size() >= 1) {
+                } else if (!nulls.isEmpty()) {
                     // the new specification allows only for a list of values,
                     // Can we assume min and max are two integer numbers and
                     // make up a list out of them? For the moment, just fail

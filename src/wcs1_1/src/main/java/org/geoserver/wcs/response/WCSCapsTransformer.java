@@ -318,7 +318,7 @@ public class WCSCapsTransformer extends TransformerBase {
 
         /** */
         protected void handleKeywords(List kwords) {
-            if (kwords != null && kwords.size() > 0) {
+            if (kwords != null && !kwords.isEmpty()) {
                 start("ows:Keywords");
 
                 if (kwords != null) {

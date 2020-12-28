@@ -705,7 +705,7 @@ public class GetCoverage {
     private ScalingType extractScaling(Map<String, ExtensionItemType> extensions) {
         ScalingType scaling = null;
         // look for a scaling extension
-        if (!(extensions == null || extensions.size() == 0 || !extensions.containsKey("Scaling"))) {
+        if (!(extensions == null || extensions.isEmpty() || !extensions.containsKey("Scaling"))) {
             final ExtensionItemType extensionItem = extensions.get("Scaling");
             assert extensionItem != null;
 
@@ -864,7 +864,7 @@ public class GetCoverage {
 
     private OverviewPolicy extractOverviewPolicy(Map<String, ExtensionItemType> extensions) {
         if (extensions == null
-                || extensions.size() == 0
+                || extensions.isEmpty()
                 || !extensions.containsKey(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
             // NO extension at hand
             return null;
@@ -1460,7 +1460,7 @@ public class GetCoverage {
         Utilities.ensureNonNull("defaultCRS", defaultCRS);
         final String identifier = isOutputCRS ? "outputCrs" : "subsettingCrs";
         // look for subsettingCRS Extension extension
-        if (extensions == null || extensions.size() == 0 || !extensions.containsKey(identifier)) {
+        if (extensions == null || extensions.isEmpty() || !extensions.containsKey(identifier)) {
             // NO extension at hand
             return defaultCRS;
         }
@@ -1603,7 +1603,7 @@ public class GetCoverage {
 
         // look for scaling extension
         if (extensions == null
-                || extensions.size() == 0
+                || extensions.isEmpty()
                 || !extensions.containsKey("Interpolation")) {
             // NO INTERPOLATION
             return returnValue;
@@ -1731,9 +1731,7 @@ public class GetCoverage {
         final List<String> returnValue = new ArrayList<>();
 
         // look for rangeSubset extension
-        if (extensions == null
-                || extensions.size() == 0
-                || !extensions.containsKey("rangeSubset")) {
+        if (extensions == null || extensions.isEmpty() || !extensions.containsKey("rangeSubset")) {
             // NO subsetting
             return coverage;
         }

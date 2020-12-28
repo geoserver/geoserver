@@ -434,7 +434,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             final List<String> warpingParameters) {
         return new ArrayList<String>() {
             {
-                if (targetEnvelope != null && targetEnvelope.size() > 0) {
+                if (targetEnvelope != null && !targetEnvelope.isEmpty()) {
                     add("-te");
                     addAll(targetEnvelope);
                 }

@@ -250,7 +250,7 @@ public class Predicates {
      * a false predicate is found.
      */
     public static Filter and(List<Filter> operands) {
-        if (operands.size() == 0) {
+        if (operands.isEmpty()) {
             return Filter.INCLUDE;
         } else if (operands.size() == 1) {
             return operands.get(0);
@@ -287,7 +287,7 @@ public class Predicates {
     }
 
     public static Filter or(List<Filter> operands) {
-        if (operands.size() == 0) {
+        if (operands.isEmpty()) {
             return Filter.EXCLUDE;
         } else if (operands.size() == 1) {
             return operands.get(0);

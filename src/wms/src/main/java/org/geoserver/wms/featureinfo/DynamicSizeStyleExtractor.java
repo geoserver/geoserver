@@ -56,7 +56,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
             }
         }
 
-        if (nonNullCopies.size() == 0) {
+        if (nonNullCopies.isEmpty()) {
             pages.pop();
             pages.push(null);
         } else {
@@ -87,7 +87,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
             }
         }
 
-        if (nonNullCopies.size() == 0) {
+        if (nonNullCopies.isEmpty()) {
             pages.pop();
             pages.push(null);
         } else {
@@ -107,7 +107,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
             }
         }
 
-        if (nonNullCopies.size() == 0) {
+        if (nonNullCopies.isEmpty()) {
             pages.pop();
             pages.push(null);
         } else {

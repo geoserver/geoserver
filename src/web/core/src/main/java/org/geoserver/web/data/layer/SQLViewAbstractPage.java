@@ -432,7 +432,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         }
 
         // no geometries? Or, shall we not try to guess the geometries type and srid?
-        if (geometries.size() == 0 || !guessGeometrySrid) {
+        if (geometries.isEmpty() || !guessGeometrySrid) {
             return base;
         }
 

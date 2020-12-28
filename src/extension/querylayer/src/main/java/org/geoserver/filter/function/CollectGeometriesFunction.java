@@ -43,7 +43,7 @@ public class CollectGeometriesFunction extends FunctionImpl {
 
     public Object evaluate(Object object) {
         List geometries = getParameters().get(0).evaluate(object, List.class);
-        if (geometries == null || geometries.size() == 0) {
+        if (geometries == null || geometries.isEmpty()) {
             return new GeometryCollection(null, new GeometryFactory());
         }
 

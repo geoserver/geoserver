@@ -76,7 +76,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
         }
 
         // make sure to add the "all access alloed" rule if the set if empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new ServiceAccessRule(new ServiceAccessRule()));
         }
 

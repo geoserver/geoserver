@@ -86,8 +86,8 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
      */
     protected Object convert(Element elem) {
         List<?> children = elem.getChildren();
-        if (children.size() == 0) {
-            if (elem.getContent().size() == 0) {
+        if (children.isEmpty()) {
+            if (elem.getContent().isEmpty()) {
                 return null;
             } else {
                 return elem.getText();

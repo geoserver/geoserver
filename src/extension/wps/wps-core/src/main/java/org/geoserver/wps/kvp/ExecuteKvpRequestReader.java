@@ -326,7 +326,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
 
         List<IOParam> ioParams = parseIOParameters(rawOutputs);
 
-        if (ioParams.size() == 0) {
+        if (ioParams.isEmpty()) {
             return response;
         }
         if (ioParams.size() > 1) {

@@ -463,7 +463,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                 } else {
                     List<String> unparsed = KvpUtils.readFlat(bands, KvpUtils.INNER_DELIMETER);
 
-                    if (unparsed.size() == 0) {
+                    if (unparsed.isEmpty()) {
                         throw new WcsException(
                                 "Requested axis subset contains wrong number of values (should have at least 1): "
                                         + unparsed.size(),

@@ -256,7 +256,7 @@ public class WCSUtils {
                                 }
                             }
 
-                            if (selectedBands.size() == 0) {
+                            if (selectedBands.isEmpty()) {
                                 throw new Exception("WRONG PARAM VALUES.");
                             }
                         }
@@ -539,7 +539,7 @@ public class WCSUtils {
             filter = request.getKvp().get("CQL_FILTER");
             if (filter instanceof List) {
                 List list = (List) filter;
-                if (list.size() > 0) {
+                if (!list.isEmpty()) {
                     filter = list.get(0);
                 }
             }

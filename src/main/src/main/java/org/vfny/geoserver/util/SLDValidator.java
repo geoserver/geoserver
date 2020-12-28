@@ -70,7 +70,7 @@ public class SLDValidator {
             int exceptionNum = 0;
 
             // check for lineNumber -1 errors  --> invalid XML
-            if (errors.size() > 0 && errors.get(0) instanceof SAXParseException) {
+            if (!errors.isEmpty() && errors.get(0) instanceof SAXParseException) {
                 SAXParseException sax = (SAXParseException) errors.get(0);
 
                 if (sax.getLineNumber() < 0) {

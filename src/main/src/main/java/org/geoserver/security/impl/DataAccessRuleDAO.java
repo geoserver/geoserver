@@ -102,7 +102,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         }
 
         // make sure the two basic rules if the set is empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new DataAccessRule(DataAccessRule.READ_ALL));
             result.add(new DataAccessRule(DataAccessRule.WRITE_ALL));
         }

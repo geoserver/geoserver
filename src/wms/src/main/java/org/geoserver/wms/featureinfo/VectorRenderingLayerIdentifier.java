@@ -149,7 +149,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         // check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
-        if (rules.size() == 0) {
+        if (rules.isEmpty()) {
             return null;
         }
         GetMapRequest getMap = params.getGetMapRequest();
@@ -469,7 +469,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
             // this can happen, the meta buffer estimator can get tripped by
             // graphic fills using dynamic sizes for their strokes
-            if (dynamicRules.size() == 0) {
+            if (dynamicRules.isEmpty()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine(
                             "No dynamic rules found, even if the estimator initially though so, "

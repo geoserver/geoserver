@@ -234,7 +234,7 @@ public class TileLayerInfoUtil {
 
         createParam |= tileLayerInfo.removeParameterFilter(paramKey);
 
-        if (createParam && allowedValues != null && allowedValues.size() > 0) {
+        if (createParam && allowedValues != null && !allowedValues.isEmpty()) {
             // make sure default value is among the list of allowed values
             Set<String> values = new TreeSet<>(allowedValues);
 

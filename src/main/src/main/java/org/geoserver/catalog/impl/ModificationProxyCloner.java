@@ -182,7 +182,7 @@ class ModificationProxyCloner {
                     cis.add(cast);
                 }
             }
-            if (cis.size() == 0) {
+            if (cis.isEmpty()) {
                 result = null;
             } else if (cis.size() == 1) {
                 result = cis.get(0);

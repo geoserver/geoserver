@@ -55,7 +55,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
         // removed
         WebMarkupContainer rulesRemoved = new WebMarkupContainer("rulesRemoved");
         removed.add(rulesRemoved);
-        if (roots.size() == 0) removed.setVisible(false);
+        if (roots.isEmpty()) removed.setVisible(false);
         else {
             rulesRemoved.add(
                     new ListView<String>("rules", names(roots)) {
@@ -71,7 +71,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
 
         WebMarkupContainer rulesNotRemoved = new WebMarkupContainer("rulesNotRemoved");
         problematic.add(rulesNotRemoved);
-        if (problems.size() == 0) problematic.setVisible(false);
+        if (problems.isEmpty()) problematic.setVisible(false);
         else {
             rulesNotRemoved.add(
                     new ListView<String>("problems", problems(problems)) {

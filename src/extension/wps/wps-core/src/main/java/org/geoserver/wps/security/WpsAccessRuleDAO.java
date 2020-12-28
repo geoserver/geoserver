@@ -104,7 +104,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
             }
         }
         // make sure the single basic rules if the set is empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new WpsAccessRule(WpsAccessRule.EXECUTE_ALL));
         }
 

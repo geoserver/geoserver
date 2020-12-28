@@ -219,7 +219,7 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
 
         for (ExtendedCapabilitiesProvider provider : providers) {
             List<String> roots = provider.getVendorSpecificCapabilitiesRoots(request);
-            if (roots != null && roots.size() > 0) {
+            if (roots != null && !roots.isEmpty()) {
                 for (String vendorRoot : roots) {
                     numRoots++;
                     if (numRoots > 1) {

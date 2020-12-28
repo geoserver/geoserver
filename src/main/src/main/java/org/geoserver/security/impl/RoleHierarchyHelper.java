@@ -83,7 +83,7 @@ public class RoleHierarchyHelper {
 
     /** recursive method to fill the descendant list */
     protected void fillDescendents(List<String> children, Set<String> descendants) {
-        if (children == null || children.size() == 0) return; // end recursion
+        if (children == null || children.isEmpty()) return; // end recursion
         for (String childName : children) {
             if (descendants.contains(childName)) // cycle
             cycleDetected(childName, null);

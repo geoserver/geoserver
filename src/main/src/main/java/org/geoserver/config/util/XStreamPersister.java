@@ -956,7 +956,7 @@ public class XStreamPersister {
                     Collections.sort(matches, comparator);
                 }
 
-                if (matches.size() > 0) {
+                if (!matches.isEmpty()) {
                     typeId = backwardBreifMap.get(matches.get(0));
                 }
             }

@@ -70,7 +70,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 return;
             }
             Set<XMLGridSubset> gridSubsets = validatable.getValue();
-            if (gridSubsets == null || gridSubsets.size() == 0) {
+            if (gridSubsets == null || gridSubsets.isEmpty()) {
                 error(validatable, "GridSubsetsEditor.validation.empty");
                 return;
             }

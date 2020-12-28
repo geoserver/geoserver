@@ -212,10 +212,10 @@ public class WMSMapContent extends MapContent {
             }
         }
 
-        if (filtered.size() > 0) {
-            return super.addLayers(filtered);
-        } else {
+        if (filtered.isEmpty()) {
             return 0;
+        } else {
+            return super.addLayers(filtered);
         }
     }
 

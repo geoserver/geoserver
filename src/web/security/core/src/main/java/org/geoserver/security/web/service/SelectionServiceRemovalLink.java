@@ -35,7 +35,7 @@ public class SelectionServiceRemovalLink extends AjaxLink {
     @Override
     public void onClick(AjaxRequestTarget target) {
         final List<ServiceAccessRule> selection = services.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 

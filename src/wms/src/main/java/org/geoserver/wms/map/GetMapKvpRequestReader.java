@@ -394,7 +394,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
         getMap.setLayers(newLayers);
 
-        if (interpolationList.size() > 0) {
+        if (!interpolationList.isEmpty()) {
             getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
         }
 
@@ -418,7 +418,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 try (StringReader reader = new StringReader(getMap.getSldBody())) {
                     List<Exception> errors = validateStyle(reader, getMap);
 
-                    if (errors.size() != 0) {
+                    if (!errors.isEmpty()) {
                         throw new ServiceException(
                                 SLDValidator.getErrorMessage(
                                         new StringReader(getMap.getSldBody()), errors));
@@ -459,7 +459,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
                         List<Exception> errors = validateStyle(input, getMap);
-                        if ((errors != null) && (errors.size() != 0)) {
+                        if ((errors != null) && (!errors.isEmpty())) {
                             throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
                         }
                     }
@@ -497,13 +497,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             }
 
             // ok, parse the styles parameter in isolation
-            if (styleNameList.size() > 0) {
+            if (!styleNameList.isEmpty()) {
                 List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
                 getMap.setStyles(parseStyles);
             }
 
             // first, expand base layers and default styles
-            if (isParseStyle() && requestedLayerInfos.size() > 0) {
+            if (isParseStyle() && !requestedLayerInfos.isEmpty()) {
                 List<Style> oldStyles =
                         getMap.getStyles() != null
                                 ? new ArrayList<>(getMap.getStyles())
@@ -542,7 +542,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         }
 
                     } else if (o instanceof LayerInfo) {
-                        style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
+                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                         if (style != null) {
                             newStyles.add(style);
                         } else {
@@ -557,7 +557,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                             newSortBy.add(getSortBy(sortBy, i));
                         }
                     } else if (o instanceof MapLayerInfo) {
-                        style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
+                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                         if (style != null) {
                             newStyles.add(style);
                         } else {
@@ -581,7 +581,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             // then proceed with standard processing
             List<MapLayerInfo> layers = getMap.getLayers();
-            if (isParseStyle() && (layers != null) && (layers.size() > 0)) {
+            if (isParseStyle() && (layers != null) && (!layers.isEmpty())) {
                 final List styles = getMap.getStyles();
 
                 if (layers.size() != styles.size()) {
@@ -638,7 +638,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // check the view params
         List<Map<String, String>> viewParams = getMap.getViewParams();
-        if (viewParams != null && viewParams.size() > 0) {
+        if (viewParams != null && !viewParams.isEmpty()) {
             int layerCount = getMap.getLayers().size();
 
             // if we have just one replicate over all layers
@@ -907,7 +907,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
 
         // return null in case we found no filters
-        if (filters.size() == 0) {
+        if (filters.isEmpty()) {
             filters = null;
         }
         return filters;
@@ -951,7 +951,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             final StyledLayerDescriptor sld,
             final List<String> styleNames)
             throws ServiceException, IOException {
-        if (requestedLayers.size() == 0) {
+        if (requestedLayers.isEmpty()) {
             sld.accept(new ProcessStandaloneSLDVisitor(wms, request));
         } else {
             processLibrarySld(request, sld, requestedLayers, styleNames);
@@ -1003,7 +1003,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         String styleName = null;
 
         for (int i = 0; i < requestedLayers.size(); i++) {
-            if (styleNames != null && styleNames.size() > 0) {
+            if (styleNames != null && !styleNames.isEmpty()) {
                 styleName = styleNames.get(i);
             }
             Object o = requestedLayers.get(i);
@@ -1387,7 +1387,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // }
         // }
 
-        if (layersOrGroups.size() == 0) {
+        if (layersOrGroups.isEmpty()) {
             throw new ServiceException("No LAYERS has been requested", getClass().getName());
         }
         return layersOrGroups;

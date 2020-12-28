@@ -212,7 +212,7 @@ public class FeatureInfoRequestParameters {
     /** The property names for the specified layer (if any, null otherwise) */
     public String[] getPropertyNames() {
         if (propertyNames == null
-                || propertyNames.size() == 0
+                || propertyNames.isEmpty()
                 || propertyNames.get(currentLayer) == null) {
             return Query.ALL_NAMES;
         } else {

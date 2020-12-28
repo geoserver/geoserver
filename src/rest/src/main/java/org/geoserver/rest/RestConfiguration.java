@@ -79,7 +79,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 if (!(strategy instanceof ContentNegotiationManager
                         || strategy instanceof DelegatingContentNegotiationStrategy)) {
                     mediaTypes = strategy.resolveMediaTypes(webRequest);
-                    if (mediaTypes.size() > 0) {
+                    if (!mediaTypes.isEmpty()) {
                         return mediaTypes;
                     }
                 }

@@ -540,7 +540,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         if (crs != null) {
             Set<ReferenceIdentifier> ids = crs.getIdentifiers();
             // WKT defined crs might not have identifiers at all
-            if (ids != null && ids.size() > 0) {
+            if (ids != null && !ids.isEmpty()) {
                 NamedIdentifier namedIdent = (NamedIdentifier) ids.iterator().next();
                 String csStr = namedIdent.getCodeSpace().toUpperCase();
 

@@ -460,7 +460,7 @@ public class PipelineBuilder {
                     result.add(clipped);
                 }
             }
-            if (result.size() == 0) {
+            if (result.isEmpty()) {
                 return null;
             }
             return new GeometryCollection(
@@ -478,7 +478,7 @@ public class PipelineBuilder {
             @SuppressWarnings("unchecked")
             List<Polygon> polys =
                     org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
-            if (polys.size() == 0) {
+            if (polys.isEmpty()) {
                 return null;
             }
             if (polys.size() == 1) {
@@ -500,7 +500,7 @@ public class PipelineBuilder {
             @SuppressWarnings("unchecked")
             List<LineString> lines =
                     org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
-            if (lines.size() == 0) {
+            if (lines.isEmpty()) {
                 return null;
             }
             if (lines.size() == 1) {
@@ -516,7 +516,7 @@ public class PipelineBuilder {
             }
             @SuppressWarnings("unchecked")
             List<Point> pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
-            if (pts.size() == 0) {
+            if (pts.isEmpty()) {
                 return null;
             }
             if (pts.size() == 1) {

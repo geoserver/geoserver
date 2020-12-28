@@ -128,7 +128,7 @@ public class GetCapabilities {
 
             KeywordsType kw = null;
             List<KeywordInfo> keywords = csw.getKeywords();
-            if (keywords != null && keywords.size() > 0) {
+            if (keywords != null && !keywords.isEmpty()) {
                 kw = owsf.createKeywordsType();
                 for (KeywordInfo keyword : keywords) {
                     kw.getKeyword().add(keyword.getValue());
@@ -427,7 +427,7 @@ public class GetCapabilities {
             for (RecordDescriptor rd : store.getRecordDescriptors()) {
                 List<Name> queriables =
                         store.getCapabilities().getQueriables(rd.getFeatureDescriptor().getName());
-                if (queriables != null && queriables.size() > 0) {
+                if (queriables != null && !queriables.isEmpty()) {
                     DomainType dt = owsf.createDomainType();
                     dt.setName(rd.getQueryablesDescription());
                     NamespaceSupport nss = rd.getNamespaceSupport();
@@ -547,7 +547,7 @@ public class GetCapabilities {
                         store.getCapabilities()
                                 .getDomainQueriables(rd.getFeatureDescriptor().getName());
 
-                if (queriables != null && queriables.size() > 0) {
+                if (queriables != null && !queriables.isEmpty()) {
                     NamespaceSupport nss = rd.getNamespaceSupport();
                     for (Name q : queriables) {
                         String prefix = nss.getPrefix(q.getNamespaceURI());
@@ -559,7 +559,7 @@ public class GetCapabilities {
                 }
             }
 
-            if (summary.size() > 0) {
+            if (!summary.isEmpty()) {
                 List<String> sorted = new ArrayList<>(summary);
                 Collections.sort(sorted);
                 DomainType dt = owsf.createDomainType();

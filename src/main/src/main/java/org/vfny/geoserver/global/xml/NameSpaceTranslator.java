@@ -287,7 +287,7 @@ public abstract class NameSpaceTranslator {
         Set posibilities = getElements(type);
 
         // System.out.println("getting default for type: " + type + " = " + posibilities);
-        if (posibilities.size() == 0) {
+        if (posibilities.isEmpty()) {
             return null;
         }
 
@@ -319,7 +319,7 @@ public abstract class NameSpaceTranslator {
 
         Set posibilities = getElements(type);
 
-        if (posibilities.size() == 0) {
+        if (posibilities.isEmpty()) {
             return null;
         }
 

@@ -113,7 +113,7 @@ public class TransformRepository {
                                 });
                         Templates template = tf.newTemplates(xslSource);
 
-                        if (errors.size() > 0) {
+                        if (!errors.isEmpty()) {
                             StringBuilder sb = new StringBuilder("Errors found in the template");
                             for (TransformerException e : errors) {
                                 sb.append("\n").append(e.getMessageAndLocation());

@@ -79,7 +79,7 @@ public class SRSListTextArea extends TextArea<List<String>> {
                                 }
                             });
 
-            if (invalid.size() > 0) {
+            if (!invalid.isEmpty()) {
                 IValidationError err =
                         new ValidationError("SRSListTextArea.unknownEPSGCodes")
                                 .addKey("SRSListTextArea.unknownEPSGCodes")

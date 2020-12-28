@@ -101,7 +101,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         if ((startUOM == null || startUOM.isEmpty()) && cinfo != null) {
             // Add the new value from the CoverageBand Details
             List<CoverageDimensionInfo> infos = cinfo.getObject().getDimensions();
-            if (infos != null && infos.size() > 0) {
+            if (infos != null && !infos.isEmpty()) {
                 CoverageDimensionInfo info = infos.get(0);
                 uom.setModelObject(info.getUnit());
             }

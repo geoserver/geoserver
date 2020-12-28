@@ -263,7 +263,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 if (group.getLayers().contains(layerGroupToRemove)) {
                     final List<PublishedInfo> layers = new ArrayList<>(group.getLayers());
                     layers.removeAll(objects.keySet());
-                    if (layers.size() == 0) {
+                    if (layers.isEmpty()) {
                         visit(group);
                     } else {
                         add(group, ModificationType.GROUP_CHANGED);

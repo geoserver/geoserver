@@ -33,7 +33,7 @@ public interface LayerGroupVisibilityPolicy {
                 @Override
                 public boolean hideLayerGroup(
                         LayerGroupInfo group, List<PublishedInfo> filteredLayers) {
-                    return filteredLayers.size() == 0;
+                    return filteredLayers.isEmpty();
                 }
             };
 
@@ -43,7 +43,7 @@ public interface LayerGroupVisibilityPolicy {
                 @Override
                 public boolean hideLayerGroup(
                         LayerGroupInfo group, List<PublishedInfo> filteredLayers) {
-                    return filteredLayers.size() == 0 && group.getLayers().size() > 0;
+                    return filteredLayers.isEmpty() && group.getLayers().size() > 0;
                 }
             };
 }

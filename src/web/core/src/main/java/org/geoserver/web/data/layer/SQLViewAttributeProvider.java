@@ -108,7 +108,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
                 pks.add(att.getName());
             }
         }
-        if (pks.size() > 0) {
+        if (!pks.isEmpty()) {
             vt.setPrimaryKeyColumns(pks);
         }
     }

@@ -36,7 +36,7 @@ public class SourceCoverageKvpParser extends KvpParser {
     public Object parse(String value) throws Exception {
         List<String> coverages = new ArrayList<>();
         final List<String> identifiers = KvpUtils.readFlat(value);
-        if (identifiers == null || identifiers.size() == 0) {
+        if (identifiers == null || identifiers.isEmpty()) {
             throw new WcsException(
                     "Required paramer, sourcecoverage, missing",
                     WcsExceptionCode.MissingParameterValue,

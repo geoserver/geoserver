@@ -5,6 +5,7 @@
 
 package org.geoserver.platform;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public class SystemEnvironmentTest {
             GeoServerEnvironment genv = new GeoServerEnvironment();
             // LOGGER.info("GeoServerEnvironment = " +
             // GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
-            assertTrue(!GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
+            assertFalse(GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
         }
     }
 }

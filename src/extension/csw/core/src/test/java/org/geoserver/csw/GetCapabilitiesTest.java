@@ -239,9 +239,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         // this one is mandatory, cannot be skipped
         assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        == 0);
+        assertEquals(
+                0,
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 

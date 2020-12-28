@@ -20,7 +20,7 @@ public class SRSToCRSModelTest {
         SRSToCRSModel crs = new SRSToCRSModel(srs);
         assertNull(crs.getObject());
         crs.setObject(null);
-        assertEquals(null, srs.getObject());
+        assertNull(srs.getObject());
     }
 
     @Test

@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.File;
@@ -67,7 +68,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.submit("cancel");
         tester.assertRenderedPage(GeoServerHomePage.class);
-        assertTrue(GeofenceTestUtils.readConfig("test-config.properties").length() == 0);
+        assertEquals(0, GeofenceTestUtils.readConfig("test-config.properties").length());
         // assertTrue(GeofenceTestUtils.readConfig("test-cache-config.properties").length() == 0);
     }
 

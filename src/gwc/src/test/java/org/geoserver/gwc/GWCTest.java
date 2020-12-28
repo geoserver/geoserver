@@ -17,8 +17,10 @@ import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateAcceptAllFloatParameterFilter;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateStringParameterFilter;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -1206,7 +1208,7 @@ public class GWCTest {
         // Ensuring caching is not possible
         assertFalse(mediator.isCachingPossible(tileLayer, request, target));
         // Ensure No error is logged
-        assertFalse(0 == target.length());
+        assertNotEquals(0, target.length());
     }
 
     private void assertDispatchMismatch(GetMapRequest request, String expectedReason) {
@@ -1265,7 +1267,7 @@ public class GWCTest {
 
         mediator.dispatch(request, errors);
 
-        assertTrue(errors.toString(), errors.length() == 0);
+        assertEquals(errors.toString(), 0, errors.length());
 
         verify(tileLayer, times(1)).getTile(captor.capture());
 
@@ -1273,12 +1275,13 @@ public class GWCTest {
 
         assertEquals(expectedGridset, tileRequest.getGridSetId());
         assertEquals("image/png", tileRequest.getMimeType().getMimeType());
-        assertTrue(
+        assertArrayEquals(
                 "Expected "
                         + Arrays.toString(tileIndex)
                         + " got "
                         + Arrays.toString(tileRequest.getTileIndex()),
-                Arrays.equals(tileIndex, tileRequest.getTileIndex()));
+                tileIndex,
+                tileRequest.getTileIndex());
     }
 
     private GeoServerTileLayer mockTileLayer(String layerName, List<String> gridSetNames)
@@ -1388,7 +1391,7 @@ public class GWCTest {
 
         StringBuilder errors = new StringBuilder();
         ConveyorTile tileRequest = mediator.prepareRequest(tileLayer, request, errors);
-        assertTrue(errors.toString(), errors.length() == 0);
+        assertEquals(errors.toString(), 0, errors.length());
 
         Map<String, String> fullParameters = tileRequest.getFilteringParameters();
         assertEquals(
@@ -1535,7 +1538,7 @@ public class GWCTest {
     @Test
     public void testGeoServerEnvParametrization() throws Exception {
         if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-            assertTrue("H2".equals(jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect()));
+            assertEquals("H2", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
     }
 

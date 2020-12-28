@@ -6,6 +6,7 @@
 package org.geoserver.wms.dimension;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         Double originallySmallest = Double.valueOf(1d);
         Double e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the smallest one",
                 Math.abs(e.doubleValue() - originallySmallest.doubleValue()) < 0.00001);
@@ -84,7 +85,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, 10d);
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the smallest one",
                 Math.abs(e.doubleValue() - originallySmallest.doubleValue()) < 0.00001);
@@ -94,7 +95,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, smaller.doubleValue());
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the smallest one",
                 Math.abs(e.doubleValue() - smaller.doubleValue()) < 0.00001);
@@ -115,7 +116,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         Double originallyBiggest = Double.valueOf(2d);
         Double e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the biggest one",
                 Math.abs(e.doubleValue() - originallyBiggest.doubleValue()) < 0.00001);
@@ -125,7 +126,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, smaller.doubleValue());
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the biggest one",
                 Math.abs(e.doubleValue() - originallyBiggest.doubleValue()) < 0.00001);
@@ -135,7 +136,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, bigger.doubleValue());
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the biggest one",
                 Math.abs(e.doubleValue() - bigger.doubleValue()) < 0.00001);
@@ -159,7 +160,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         Double originallyBiggest = Double.valueOf(3d);
         Double e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the fixed one",
                 Math.abs(e.doubleValue() - fixedElevation.doubleValue()) < 0.00001);
@@ -169,7 +170,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, smaller.doubleValue());
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the fixed one",
                 Math.abs(e.doubleValue() - fixedElevation.doubleValue()) < 0.00001);
@@ -179,7 +180,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         addFeatureWithElevation(fid++, bigger.doubleValue());
 
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the fixed one",
                 Math.abs(e.doubleValue() - fixedElevation.doubleValue()) < 0.00001);
@@ -203,7 +204,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         Double expected = Double.valueOf(2d);
 
         Double e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the nearest one to "
                         + referenceElevation.doubleValue(),
@@ -212,7 +213,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         expected = Double.valueOf(1.8d);
         addFeatureWithElevation(fid++, expected);
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the nearest one to "
                         + referenceElevation.doubleValue(),
@@ -220,7 +221,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
 
         addFeatureWithElevation(fid++, 1.3d);
         e = (Double) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", e != null);
+        assertNotNull("Default elevation is null", e);
         assertTrue(
                 "Default elevation should be the nearest one to "
                         + referenceElevation.doubleValue(),
@@ -238,7 +239,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
                 getCatalog().getFeatureTypeByName(ELEVATION_WITH_START_END.getLocalPart());
         @SuppressWarnings("unchecked")
         Range<Double> defaultRange = (Range<Double>) wms.getDefaultElevation(elevationWithStartEnd);
-        assertTrue("Default elevation is null", defaultRange != null);
+        assertNotNull("Default elevation is null", defaultRange);
         assertEquals(-100, defaultRange.getMinValue(), 0d);
         assertEquals(0, defaultRange.getMaxValue(), 0d);
     }

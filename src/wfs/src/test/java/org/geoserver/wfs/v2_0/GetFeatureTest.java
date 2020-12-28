@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -72,7 +72,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         fti.setSkipNumberMatched(true);
         this.getCatalog().save(fti);
 
-        assertEquals(true, fti.getSkipNumberMatched());
+        assertTrue(fti.getSkipNumberMatched());
 
         Document dom =
                 getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
@@ -234,7 +234,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Fifteen");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -390,7 +390,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -454,7 +454,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -936,9 +936,9 @@ public class GetFeatureTest extends WFS20TestSupport {
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
             NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
-            assertFalse(aggregatedBoundList.getLength() == 0);
+            assertNotEquals(0, aggregatedBoundList.getLength());
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);
@@ -982,9 +982,9 @@ public class GetFeatureTest extends WFS20TestSupport {
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
             NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
-            assertTrue(aggregatedBoundList.getLength() == 0);
+            assertEquals(0, aggregatedBoundList.getLength());
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);

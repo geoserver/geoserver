@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class UniqueProcessNamesTest extends WPSTestSupport {
         if (procs.size() > 0) {
             System.out.println("Duplicate process names: " + procs);
         }
-        assertTrue(procs.size() == 0);
+        assertEquals(0, procs.size());
     }
 
     private static void removeSingle(Collection<?> target, Collection<?> toRemove) {

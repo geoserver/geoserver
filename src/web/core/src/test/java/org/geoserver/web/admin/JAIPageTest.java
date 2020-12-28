@@ -6,8 +6,8 @@
 package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import com.sun.media.jai.mlib.MlibWarpRIF;
 import com.sun.media.jai.opimage.WarpRIF;
@@ -129,7 +129,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
             jaiext = p.getChoices();
             assertNotNull(jaiext);
             // JAI choices
-            assertTrue(!jaiext.contains("Warp"));
+            assertFalse(jaiext.contains("Warp"));
         } else {
             tester.assertInvisible("form:jaiext");
         }
@@ -174,7 +174,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
             jaiext = p.getChoices();
             assertNotNull(jaiext);
             // JAI choices
-            assertTrue(!jaiext.contains("Warp"));
+            assertFalse(jaiext.contains("Warp"));
         }
         form = tester.newFormTester("form");
         form.setValue("allowNativeWarp", false);

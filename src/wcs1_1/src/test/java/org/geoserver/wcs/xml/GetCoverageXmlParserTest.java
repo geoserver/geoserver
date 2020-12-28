@@ -5,9 +5,9 @@
  */
 package org.geoserver.wcs.xml;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.StringReader;
@@ -264,7 +264,7 @@ public class GetCoverageXmlParserTest {
         assertEquals("urn:ogc:def:method:WCS:1.1:2dSimpleGrid", gridCRS.getGridType());
         assertEquals("urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS", gridCRS.getGridCS());
         // System.out.println(gridCRS.getGridOrigin().getClass() + ": " + gridCRS.getGridOrigin());
-        assertTrue(Arrays.equals(new Double[] {10.0, 20.0}, (Double[]) gridCRS.getGridOrigin()));
-        assertTrue(Arrays.equals(new Double[] {1.0, 2.0}, (Double[]) gridCRS.getGridOffsets()));
+        assertArrayEquals(new Double[] {10.0, 20.0}, (Double[]) gridCRS.getGridOrigin());
+        assertArrayEquals(new Double[] {1.0, 2.0}, (Double[]) gridCRS.getGridOffsets());
     }
 }

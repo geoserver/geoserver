@@ -1772,7 +1772,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /** Checks the pixel i/j is fully transparent */
     protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
         int pixel = image.getRGB(i, j);
-        assertEquals(true, (pixel >> 24) == 0x00);
+        assertTrue((pixel >> 24) == 0x00);
     }
 
     /**

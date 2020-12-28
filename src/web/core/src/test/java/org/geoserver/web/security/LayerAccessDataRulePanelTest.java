@@ -1,5 +1,6 @@
 package org.geoserver.web.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -132,7 +133,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                     (LayerAccessDataRulePanel)
                             tester.getComponentFromLastRenderedPage("form:panel");
             panel.save();
-            assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).size() == 1);
+            assertEquals(1, manager.getResourceRule(wsName, layerModel.getObject()).size());
         } finally {
             manager.removeAllResourceRules(wsName, layerModel.getObject());
             assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).isEmpty());

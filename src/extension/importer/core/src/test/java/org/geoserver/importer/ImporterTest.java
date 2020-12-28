@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -129,34 +130,34 @@ public class ImporterTest extends ImporterTestSupport {
         ReferencedEnvelope customBbox =
                 new ReferencedEnvelope(30, 60, -10, 30, bbox.getCoordinateReferenceSystem());
         resource.setNativeBoundingBox(customBbox);
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
 
         // Test with "recalculate-bounds"=false
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", false);
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
 
         // Test with "recalculate-bounds"=true
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", true);
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
-        assertTrue(bbox.equals(resource.getNativeBoundingBox()));
+        assertEquals(bbox, resource.getNativeBoundingBox());
 
         // Test with "recalculate-bounds"="true"
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", "true");
-        assertFalse(bbox.equals(resource.getNativeBoundingBox()));
+        assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
-        assertTrue(bbox.equals(resource.getNativeBoundingBox()));
+        assertEquals(bbox, resource.getNativeBoundingBox());
     }
 
     @Test

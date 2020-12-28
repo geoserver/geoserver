@@ -9,10 +9,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.UUID;
 import net.sf.json.JSONArray;
@@ -163,7 +163,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                     new WKTReader().read(rule.getLimits().getAllowedArea()),
                     realRule.getRuleLimits().getAllowedArea());
         } catch (ParseException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
 
         rule.getLimits().setCatalogMode("HIDE");
@@ -225,7 +225,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                     new WKTReader().read(rule.getLayerDetails().getAllowedArea()),
                     realRule.getLayerDetails().getArea());
         } catch (ParseException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
         assertEquals(
                 rule.getLayerDetails().getCatalogMode(),

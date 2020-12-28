@@ -6,6 +6,7 @@ package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getFactory().createLayerGroup();
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
     }
 
     @Test
@@ -55,7 +56,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getLayerGroup("lg");
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
     }
 
     @Test
@@ -81,8 +82,8 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
 
         assertEquals(2, securedLg.getLayers().size());
         assertEquals(2, layers.size());
-        assertTrue(layers.get(0) == layer1);
-        assertTrue(layers.get(1) == layer2);
+        assertSame(layers.get(0), layer1);
+        assertSame(layers.get(1), layer2);
 
         securedLg.getLayers().remove(1);
         assertEquals(1, securedLg.getLayers().size());
@@ -119,7 +120,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getLayerGroup("lg");
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
         assertEquals(1, layerGroup.getLayers().size());
         assertEquals(1, layerGroup.getStyles().size());
     }

@@ -377,7 +377,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         fti.setSkipNumberMatched(true);
         this.getCatalog().save(fti);
         try {
-            assertEquals(true, fti.getSkipNumberMatched());
+            assertTrue(fti.getSkipNumberMatched());
             doTestNextPreviousGET("gs:Fifteen");
             doTestNextPreviousGET("cdf:Fifteen");
         } finally {

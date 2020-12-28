@@ -326,7 +326,7 @@ public class TimeKvpParserTest extends TestCase {
                                                 + "2007-01-12T12Z,2007-01-17T12Z,2007-01-01T12Z/2007-01-15T12Z"));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
-        assertTrue(l.size() == 1);
+        assertEquals(1, l.size());
         assertTrue(l.get(0) instanceof DateRange);
         final DateRange range = (DateRange) l.get(0);
         assertRange(range, format.parse("2007-01-01T12Z"), format.parse("2007-01-31T13Z"));
@@ -343,7 +343,7 @@ public class TimeKvpParserTest extends TestCase {
                                                 + "2007-01-17T12Z,2007-01-01T12Z,2007-01-05T12Z"));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
-        assertTrue(l.size() == 5);
+        assertEquals(5, l.size());
         assertRange(
                 (DateRange) l.get(0),
                 format.parse("2007-01-01T12Z"),

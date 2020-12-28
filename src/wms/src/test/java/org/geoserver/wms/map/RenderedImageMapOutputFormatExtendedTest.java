@@ -5,8 +5,8 @@
  */
 package org.geoserver.wms.map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
@@ -193,8 +193,8 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         assertNotNull(destImage);
         ColorModel cm = destImage.getColorModel();
         SampleModel sm = destImage.getSampleModel();
-        assertTrue(cm.getColorSpace().getNumComponents() == 1);
-        assertTrue(sm.getNumBands() == 1);
+        assertEquals(1, cm.getColorSpace().getNumComponents());
+        assertEquals(1, sm.getNumBands());
         dstImageMap.dispose();
 
         map.dispose();

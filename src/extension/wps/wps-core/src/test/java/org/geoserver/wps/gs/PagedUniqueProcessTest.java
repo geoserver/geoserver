@@ -6,6 +6,7 @@
 package org.geoserver.wps.gs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Ordering;
 import java.util.Arrays;
@@ -194,9 +195,9 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         int size = json.getInt("size");
         assertEquals(3, size);
         assertEquals(2, values.size());
-        assertEquals(true, Ordering.natural().reverse().isOrdered(values));
+        assertTrue(Ordering.natural().reverse().isOrdered(values));
         for (Object value : values) {
-            assertEquals(true, ((String) value).matches(".*(?i:a)?.*"));
+            assertTrue(((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -209,7 +210,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         int size = json.getInt("size");
         assertEquals(size, values.size());
         for (Object value : values) {
-            assertEquals(true, ((String) value).matches("^(?i:d).*"));
+            assertTrue(((String) value).matches("^(?i:d).*"));
         }
     }
 
@@ -222,7 +223,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         int size = json.getInt("size");
         assertEquals(size, values.size());
         for (Object value : values) {
-            assertEquals(true, ((String) value).matches(".*(?i:a)?.*"));
+            assertTrue(((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -235,7 +236,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         int size = json.getInt("size");
         assertEquals(size, values.size());
         for (Object value : values) {
-            assertEquals(true, ((String) value).matches(".*(?i:a)$"));
+            assertTrue(((String) value).matches(".*(?i:a)$"));
         }
     }
 
@@ -262,7 +263,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(TOTAL_DISTINCT, size);
-        assertEquals(true, Ordering.natural().isOrdered(values));
+        assertTrue(Ordering.natural().isOrdered(values));
     }
 
     @Test
@@ -274,7 +275,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(TOTAL_DISTINCT, size);
-        assertEquals(true, Ordering.natural().reverse().isOrdered(values));
+        assertTrue(Ordering.natural().reverse().isOrdered(values));
     }
 
     private String buildInputXml(

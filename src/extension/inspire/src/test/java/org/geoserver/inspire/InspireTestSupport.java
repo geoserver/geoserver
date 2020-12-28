@@ -31,7 +31,7 @@ public class InspireTestSupport {
         String[] schemaLocationParts = schemaLocation.split("\\s+");
         for (int i = 0; i < schemaLocationParts.length; i++) {
             if (schemaLocationParts[i].equals(namespace)) {
-                assertTrue(schemaLocationParts[i + 1].equals(url));
+                assertEquals(schemaLocationParts[i + 1], url);
             }
         }
     }

@@ -171,7 +171,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getLegends().size() == 1);
+        assertEquals(1, request.getLegends().size());
 
         requiredParameters.put("LAYER", NATURE_GROUP);
         request =
@@ -202,7 +202,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getLegends().size() == 2);
+        assertEquals(2, request.getLegends().size());
     }
 
     @org.junit.Test
@@ -214,7 +214,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getLegends().size() == 2);
+        assertEquals(2, request.getLegends().size());
     }
 
     @org.junit.Test

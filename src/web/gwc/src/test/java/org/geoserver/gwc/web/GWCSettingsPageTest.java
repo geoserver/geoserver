@@ -500,7 +500,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage(
                                 "form:cachingOptionsPanel:container:configs:blobstores:container:cacheConfContainer:policy");
         List evictionPolicies = evictionPoliciesDropDown.getChoices();
-        assertTrue(evictionPolicies.size() == 3);
+        assertEquals(3, evictionPolicies.size());
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.NULL));
         assertTrue(
                 evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_ACCESS));

@@ -233,7 +233,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remotestyles:extraRemoteStyles",
                 new HashSet<>(wmsLayer.remoteStyles()));
         // make sure remote styles on are not duplicated when loaded on page
-        assertTrue(wmsLayer.remoteStyles().size() == remoteStyleCount);
+        assertEquals(wmsLayer.remoteStyles().size(), remoteStyleCount);
         // asserting Remote Style UI fields
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());

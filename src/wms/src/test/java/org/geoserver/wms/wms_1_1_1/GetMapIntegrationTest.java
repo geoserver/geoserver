@@ -7,6 +7,7 @@ package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +26,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -1014,7 +1014,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         BufferedImage bi = getAsImage(url, "image/png");
         int[] pixel = new int[4];
         bi.getRaster().getPixel(0, 250, pixel);
-        assertTrue(Arrays.equals(new int[] {0, 0, 0, 255}, pixel));
+        assertArrayEquals(new int[] {0, 0, 0, 255}, pixel);
 
         // now reconfigure the mosaic for transparency
         CoverageInfo ci = getCatalog().getCoverageByName("sf:mosaic_holes");
@@ -1026,7 +1026,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // this time that pixel should be transparent
         bi = getAsImage(url, "image/png");
         bi.getRaster().getPixel(0, 250, pixel);
-        assertTrue(Arrays.equals(new int[] {255, 255, 255, 0}, pixel));
+        assertArrayEquals(new int[] {255, 255, 255, 0}, pixel);
     }
 
     @Test

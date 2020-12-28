@@ -47,7 +47,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         // simulate no user.properties file
         GeoServerSecurityManager secMgr = getSecurityManager();
         char[] generatedPW = secMgr.extractMasterPasswordForMigration(null);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
         // dumpPWInfoFile();
 
@@ -64,7 +64,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         props.put(noAdminUser, defaultMasterePassword + ",ROLE_WFS");
 
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
         assertFalse(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
         assertFalse(masterPWInfoFileContains(adminUser));
@@ -74,13 +74,13 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         // valid master password for noadminuser
         props.put(noAdminUser, "validPassword" + ",ROLE_WFS");
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
 
         // password to short  for adminuser
         props.put(adminUser, "abc" + "," + GeoServerRole.ADMIN_ROLE);
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
 
         // valid password for user having admin role

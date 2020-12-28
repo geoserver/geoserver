@@ -102,6 +102,6 @@ public class AccessManagerConfigTest extends GeoServerTestSupport {
         String content = GeofenceTestUtils.readConfig(configFile);
         assertTrue(content.contains("fakeservice"));
         assertTrue(content.contains("TEST_INSTANCE"));
-        assertTrue(!content.contains("custom_property_value"));
+        assertFalse(content.contains("custom_property_value"));
     }
 }

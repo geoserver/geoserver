@@ -6,6 +6,8 @@
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
     public void testInsert() throws Exception {
         super.testInsert();
         for (GeoServerRole role : store.getRoles()) {
-            assertTrue(role.getClass() == MemoryGeoserverRole.class);
+            assertSame(role.getClass(), MemoryGeoserverRole.class);
         }
     }
 
@@ -95,19 +97,19 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         SortedSet<GeoServerRole> roles;
 
         roles = calc.calculateRoles(ugService.createUserObject("user1", "abc", true));
-        assertTrue(roles.size() == 4);
+        assertEquals(4, roles.size());
         assertTrue(roles.contains(adminRole));
         assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE));
         assertTrue(roles.contains(groupAdminRole));
         assertTrue(roles.contains(GeoServerRole.GROUP_ADMIN_ROLE));
 
         roles = calc.calculateRoles(ugService.createUserObject("user2", "abc", true));
-        assertTrue(roles.size() == 2);
+        assertEquals(2, roles.size());
         assertTrue(roles.contains(adminRole));
         assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE));
 
         roles = calc.calculateRoles(ugService.createUserObject("user3", "abc", true));
-        assertTrue(roles.size() == 1);
+        assertEquals(1, roles.size());
         assertTrue(roles.contains(role1));
     }
 }

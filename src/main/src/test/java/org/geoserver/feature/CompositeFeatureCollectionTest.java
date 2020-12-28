@@ -23,8 +23,8 @@ public class CompositeFeatureCollectionTest extends DataTestCase {
         CompositeFeatureCollection<SimpleFeatureType, SimpleFeature> fc =
                 new CompositeFeatureCollection<>(new ArrayList<>());
         assertEquals(0, fc.size());
-        assertEquals(null, fc.getBounds());
-        assertEquals(null, DataUtilities.first(fc));
+        assertNull(fc.getBounds());
+        assertNull(DataUtilities.first(fc));
     }
 
     public void testComposeOne() {

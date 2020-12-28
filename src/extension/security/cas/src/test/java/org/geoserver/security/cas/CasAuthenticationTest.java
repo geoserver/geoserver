@@ -8,6 +8,7 @@ package org.geoserver.security.cas;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -277,7 +278,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         MockFilterChain chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
 
-        assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         String redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains(GeoServerCasConstants.LOGIN_URI));
         assertTrue(redirectURL.endsWith("bar"));
@@ -293,7 +294,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         String ticket = loginUsingTicket(helper, request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         SecurityContext ctx =
                 (SecurityContext)
@@ -324,7 +325,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         ticket = loginUsingTicket(helper, request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         ctx =
                 (SecurityContext)
@@ -363,13 +364,13 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                                 .getAttribute(
                                         HttpSessionSecurityContextRepository
                                                 .SPRING_SECURITY_CONTEXT_KEY);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         // checkForAuthenticatedRole(auth);
         assertEquals(GeoServerUser.ROOT_USERNAME, auth.getPrincipal());
-        assertTrue(auth.getAuthorities().size() == 1);
+        assertEquals(1, auth.getAuthorities().size());
         assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
         assertNotNull(
                 GeoServerCasAuthenticationFilter.getHandler()
@@ -387,7 +388,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         ticket = loginUsingTicket(helper, request, response, chain);
-        assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains("login"));
         ctx =
@@ -430,7 +431,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         request.setQueryString("ticket=" + ticket);
 
         getProxy().doFilter(request, response, chain);
-        assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains(GeoServerCasConstants.LOGIN_URI));
         ctx =
@@ -535,7 +536,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         loginUsingTicket(helper, request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         SecurityContext ctx =
                 (SecurityContext)
@@ -563,7 +564,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                         getSecurityManager()
                                 .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         logoutFilter.doFilter(request, response, chain);
-        assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         String redirectUrl = response.getHeader("Location");
         assertNotNull(redirectUrl);
         assertTrue(redirectUrl.contains(GeoServerCasConstants.LOGOUT_URI));
@@ -577,7 +578,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         String ticket = loginUsingTicket(helper, request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         ctx =
                 (SecurityContext)
@@ -606,7 +607,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 (GeoServerCasAuthenticationFilter) getSecurityManager().loadFilter(casFilterName);
         // getProxy().doFilter(request, response, chain);
         casFilter.doFilter(request, response, chain);
-        assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectUrl = response.getHeader("Location");
         assertNotNull(redirectUrl);
         assertThat(
@@ -1109,7 +1110,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         String ticket = loginUsingTicket(helper, request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         SecurityContext ctx =
                 (SecurityContext)

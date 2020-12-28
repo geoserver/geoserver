@@ -52,7 +52,7 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
                 new UsernamePasswordAuthenticationToken("sa", "");
         token.setDetails("details");
         assertTrue(provider.supports(token.getClass()));
-        assertTrue(!provider.supports(RememberMeAuthenticationToken.class));
+        assertFalse(provider.supports(RememberMeAuthenticationToken.class));
 
         Authentication auth = provider.authenticate(token);
         assertNotNull(auth);

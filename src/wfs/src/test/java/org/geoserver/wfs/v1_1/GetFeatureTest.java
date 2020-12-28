@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -87,7 +87,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Fifteen");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -165,7 +165,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -249,7 +249,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -472,7 +472,7 @@ public class GetFeatureTest extends WFSTestSupport {
             assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);

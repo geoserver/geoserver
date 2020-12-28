@@ -6,7 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -264,9 +264,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("squares");
         assertTrue(sampleFile.exists());
@@ -282,9 +282,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("temperature");
         assertTrue(sampleFile.exists());
@@ -316,9 +316,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("cite_states");
         assertTrue(sampleFile.exists());
@@ -350,7 +350,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 
@@ -385,7 +385,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 

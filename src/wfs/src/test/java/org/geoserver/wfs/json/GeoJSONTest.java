@@ -961,7 +961,7 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONArray bboxRep = rootObjectRep.getJSONArray("bbox");
         // bbox should be equal since the NORTH-EAST axis order in the wfs 1.1.0
         // should have been ignored and kept to EAST-NORTH
-        assertTrue(bboxRep.equals(bbox));
+        assertEquals(bboxRep, bbox);
     }
 
     private Object getProperty(JSONObject feature, String propertyName) {

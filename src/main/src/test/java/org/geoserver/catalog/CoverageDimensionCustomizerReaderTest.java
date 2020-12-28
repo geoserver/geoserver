@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -176,7 +175,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         Category category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
         assertEquals(category.getRange().getMinimum(), noData1, DELTA);
@@ -226,7 +225,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         Category category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check that it does not contain sampleToGeophisics and that the Range contains only NaN
         assertEquals(category.getRange().getMinimum(), Double.NaN, DELTA);
@@ -252,7 +251,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
         assertEquals(category.getRange().getMinimum(), noData1, DELTA);

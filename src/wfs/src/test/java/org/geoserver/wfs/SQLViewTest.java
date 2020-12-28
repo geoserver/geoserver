@@ -7,7 +7,7 @@ package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -147,7 +147,7 @@ public class SQLViewTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gs:name", doc);
         assertXpathEvaluatesTo("1", "count(//gs:pgeo_view)", doc);
     }
@@ -170,7 +170,7 @@ public class SQLViewTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureCollection = doc.getElementsByTagName("wfs:FeatureCollection");
-        assertFalse(featureCollection.getLength() == 0);
+        assertNotEquals(0, featureCollection.getLength());
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", doc);
         assertXpathEvaluatesTo("1", "count(//gs:pgeo_view)", doc);
     }

@@ -7,7 +7,7 @@ package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,9 +216,9 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
             String geoName = ((Element) geoPlacemarks.item(i)).getAttribute("id");
             String dataName = ((Element) dataPlacemarks.item(i)).getAttribute("id");
 
-            assertTrue(
+            assertFalse(
                     geoName + " and " + dataName + " should not be the same!",
-                    !geoName.equals(dataName));
+                    geoName.equals(dataName));
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.sldservice.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
@@ -19,7 +20,7 @@ public class CapabilitiesTest extends SLDServiceBaseTest {
         final String restPath =
                 RestBaseController.ROOT_PATH + "/sldservice/" + getServiceUrl() + ".json";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         JSONObject json = (JSONObject) getAsJSON(restPath, 200);
         JSONObject vector = json.getJSONObject("capabilities").getJSONObject("vector");
         JSONObject raster = json.getJSONObject("capabilities").getJSONObject("raster");

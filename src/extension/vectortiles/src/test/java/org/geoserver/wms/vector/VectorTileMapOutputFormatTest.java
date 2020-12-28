@@ -5,8 +5,8 @@
 package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -204,7 +204,7 @@ public class VectorTileMapOutputFormatTest {
                 createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
         Query q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
-        assertTrue(q.getFilter() != Filter.EXCLUDE);
+        assertNotSame(q.getFilter(), Filter.EXCLUDE);
 
         // ------------------- abnormal case, there are no rules in the sld that will draw
 
@@ -215,7 +215,7 @@ public class VectorTileMapOutputFormatTest {
         mapContent = createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
         q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
-        assertTrue(q.getFilter() == Filter.EXCLUDE);
+        assertSame(q.getFilter(), Filter.EXCLUDE);
     }
 
     // the calculated style buffer must account for oversampling

@@ -6,6 +6,7 @@ package org.geoserver.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -298,7 +299,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         SecurityContext ctx =
                 (SecurityContext)
@@ -403,7 +404,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);

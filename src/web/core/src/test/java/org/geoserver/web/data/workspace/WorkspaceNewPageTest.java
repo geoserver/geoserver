@@ -11,7 +11,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -222,7 +221,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         wsInfo = getCatalog().getWorkspaceByName("cba");
         assertEquals("cba", wsInfo.getName());
-        assertTrue(manager.getResourceRule(wsInfo.getName(), wsInfo).size() == 1);
+        assertEquals(1, manager.getResourceRule(wsInfo.getName(), wsInfo).size());
     }
 
     @Test
@@ -244,7 +243,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         try {
             tester.newFormTester("form");
             TabbedPanel tabs = (TabbedPanel) tester.getComponentFromLastRenderedPage("form:tabs");
-            assertTrue(tabs.getTabs().size() == 1);
+            assertEquals(1, tabs.getTabs().size());
         } finally {
             applicationContext.getBeanFactory().destroyBean("secureCatalog");
             GeoServerExtensionsHelper.clear();

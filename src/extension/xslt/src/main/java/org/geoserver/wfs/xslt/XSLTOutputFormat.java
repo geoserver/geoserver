@@ -199,49 +199,43 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
 
         // prepare the stream connections, so that we can do the transformation on the fly
         PipedInputStream pis = new PipedInputStream();
-        @SuppressWarnings("PMD.CloseResource") // these operates in memory
-        final PipedOutputStream pos = new PipedOutputStream(pis);
+        try (PipedOutputStream pos = new PipedOutputStream(pis)) {
 
-        // submit the source output format execution, tracking exceptions
-        Future<Void> future =
-                executor.submit(
-                        new Callable<Void>() {
+            // submit the source output format execution, tracking exceptions
+            Future<Void> future =
+                    executor.submit(
+                            new Callable<Void>() {
 
-                            @Override
-                            public Void call() throws Exception {
-                                try {
+                                @Override
+                                public Void call() throws Exception {
                                     sourceResponse.write(featureCollection, pos, sourceOperation);
-                                } finally {
-                                    // close the stream to make sure the transformation won't keep
-                                    // on waiting
-                                    pos.close();
+                                    pos.close(); // or the piped input stream will never finish
+                                    return null;
                                 }
+                            });
 
-                                return null;
-                            }
-                        });
+            // run the transformation
+            TransformerException transformerException = null;
+            try {
+                transformer.transform(new StreamSource(pis), new StreamResult(output));
+            } catch (TransformerException e) {
+                transformerException = e;
+            } finally {
+                pis.close();
+            }
 
-        // run the transformation
-        TransformerException transformerException = null;
-        try {
-            transformer.transform(new StreamSource(pis), new StreamResult(output));
-        } catch (TransformerException e) {
-            transformerException = e;
-        } finally {
-            pis.close();
-        }
-
-        // now handle exceptions, starting from the source
-        try {
-            future.get();
-        } catch (Exception e) {
-            throw new WFSException(
-                    "Failed to run the output format generating the source for the XSTL transformation",
-                    e);
-        }
-        if (transformerException != null) {
-            throw new WFSException(
-                    "Failed to run the the XSTL transformation", transformerException);
+            // now handle exceptions, starting from the source
+            try {
+                future.get();
+            } catch (Exception e) {
+                throw new WFSException(
+                        "Failed to run the output format generating the source for the XSTL transformation",
+                        e);
+            }
+            if (transformerException != null) {
+                throw new WFSException(
+                        "Failed to run the the XSTL transformation", transformerException);
+            }
         }
     }
 

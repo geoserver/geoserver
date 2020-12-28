@@ -42,12 +42,9 @@ public class LegacyFeatureTypeInfoReader {
      */
     public void read(Resource file) throws IOException {
         parentDirectory = file.parent();
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in());
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in())) {
             featureType = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

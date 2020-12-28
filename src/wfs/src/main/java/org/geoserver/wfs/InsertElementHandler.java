@@ -245,8 +245,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
     void checkFeatureCoordinatesRange(SimpleFeatureCollection collection)
             throws PointOutsideEnvelopeException {
         List types = collection.getSchema().getAttributeDescriptors();
-        SimpleFeatureIterator fi = collection.features();
-        try {
+        try (SimpleFeatureIterator fi = collection.features()) {
             while (fi.hasNext()) {
                 SimpleFeature f = fi.next();
                 for (int i = 0; i < types.size(); i++) {
@@ -260,8 +259,6 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     }
                 }
             }
-        } finally {
-            fi.close();
         }
     }
 

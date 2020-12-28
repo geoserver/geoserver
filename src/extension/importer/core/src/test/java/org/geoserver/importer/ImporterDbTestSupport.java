@@ -77,11 +77,8 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
         @SuppressWarnings("unchecked")
         public Map<String, Serializable> getConnectionParams() throws IOException {
             Properties props = new Properties();
-            FileInputStream fin = new FileInputStream(getFixture());
-            try {
+            try (FileInputStream fin = new FileInputStream(getFixture())) {
                 props.load(fin);
-            } finally {
-                fin.close();
             }
 
             return new HashMap(props);

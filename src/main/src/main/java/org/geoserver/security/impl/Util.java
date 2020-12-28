@@ -174,11 +174,8 @@ public class Util {
      * <p>This method delegates to {@link #loadUniversal(InputStream)}.
      */
     public static Properties loadPropertyFile(File f) throws IOException {
-        FileInputStream fin = new FileInputStream(f);
-        try {
+        try (FileInputStream fin = new FileInputStream(f)) {
             return loadUniversal(fin);
-        } finally {
-            fin.close();
         }
     }
 

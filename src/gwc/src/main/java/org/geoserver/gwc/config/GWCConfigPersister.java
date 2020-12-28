@@ -94,11 +94,8 @@ public class GWCConfigPersister {
         Resource tmp = getConfigRoot().get(GWC_CONFIG_FILE + ".tmp");
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());
-        OutputStream out = tmp.out();
-        try {
+        try (OutputStream out = tmp.out()) {
             xmlPersister.save(config, out);
-        } finally {
-            out.close();
         }
         Resource configFile = getConfigRoot().get(GWC_CONFIG_FILE);
         tmp.renameTo(configFile);

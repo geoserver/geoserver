@@ -324,8 +324,7 @@ public class StatusPanel extends Panel {
     private synchronized int getLockCount() {
         int count = 0;
 
-        CloseableIterator<DataStoreInfo> i = getDataStores();
-        try {
+        try (CloseableIterator<DataStoreInfo> i = getDataStores()) {
             while (i.hasNext()) {
                 DataStoreInfo meta = i.next();
 
@@ -349,8 +348,6 @@ public class StatusPanel extends Panel {
                 //    continue;
                 // }
             }
-        } finally {
-            i.close();
         }
         return count;
     }
@@ -358,8 +355,7 @@ public class StatusPanel extends Panel {
     private synchronized int getConnectionCount() {
         int count = 0;
 
-        CloseableIterator<DataStoreInfo> i = getDataStores();
-        try {
+        try (CloseableIterator<DataStoreInfo> i = getDataStores()) {
             while (i.hasNext()) {
                 DataStoreInfo meta = i.next();
 
@@ -377,8 +373,6 @@ public class StatusPanel extends Panel {
 
                 count += 1;
             }
-        } finally {
-            i.close();
         }
 
         return count;

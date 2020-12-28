@@ -204,11 +204,8 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
 
         String queryDefinition = substitutePlaceHolders(TEST_STORED_QUERY_DEFINITION, parameters);
-        StringReader reader = new StringReader(queryDefinition);
-        try {
+        try (StringReader reader = new StringReader(queryDefinition)) {
             return (StoredQueryDescriptionType) p.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

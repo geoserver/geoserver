@@ -55,12 +55,9 @@ public class LegacyCatalogReader {
      * @throws IOException In event of a parser error.
      */
     public void read(Resource file) throws IOException {
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in());
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in())) {
             catalog = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

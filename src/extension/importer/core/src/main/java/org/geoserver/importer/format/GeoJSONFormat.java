@@ -110,13 +110,10 @@ public class GeoJSONFormat extends VectorFormat {
 
     SimpleFeature sniff(File file) {
         try {
-            FeatureIterator it = new FeatureJSON().streamFeatureCollection(file);
-            try {
+            try (FeatureIterator it = new FeatureJSON().streamFeatureCollection(file)) {
                 if (it.hasNext()) {
                     return (SimpleFeature) it.next();
                 }
-            } finally {
-                it.close();
             }
         } catch (Exception e) {
             LOG.log(Level.FINER, "Error reading file as json", e);

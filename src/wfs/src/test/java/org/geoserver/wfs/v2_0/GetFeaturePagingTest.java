@@ -97,8 +97,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
 
         DefaultFeatureCollection toAdd = new DefaultFeatureCollection(null, null);
-        FeatureIterator it = features.features();
-        try {
+        try (FeatureIterator it = features.features()) {
             SimpleFeature f = null;
             int i = 0;
             while (it.hasNext()) {
@@ -108,8 +107,6 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
                 b.add(i++);
                 toAdd.add(b.buildFeature(null));
             }
-        } finally {
-            it.close();
         }
         fs.addFeatures(toAdd);
     }

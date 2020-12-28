@@ -2128,14 +2128,11 @@ public class ResourcePool {
     public void writeStyle(StyleInfo info, Style style, boolean format) throws IOException {
         synchronized (styleCache) {
             Resource styleFile = dataDir().style(info);
-            BufferedOutputStream out = new BufferedOutputStream(styleFile.out());
 
-            try {
+            try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
                 Styles.handler(info.getFormat())
                         .encode(Styles.sld(style), info.getFormatVersion(), format, out);
                 clear(info);
-            } finally {
-                out.close();
             }
         }
     }
@@ -2161,14 +2158,11 @@ public class ResourcePool {
             throws IOException {
         synchronized (sldCache) {
             Resource styleFile = dataDir().style(info);
-            BufferedOutputStream out = new BufferedOutputStream(styleFile.out());
 
-            try {
+            try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
                 Styles.handler(info.getFormat())
                         .encode(style, info.getFormatVersion(), format, out);
                 clear(info);
-            } finally {
-                out.close();
             }
         }
     }

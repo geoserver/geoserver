@@ -105,13 +105,10 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
 
     @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress) {
-        SimpleFeatureIterator it = features();
-        try {
+        try (SimpleFeatureIterator it = features()) {
             while (it.hasNext()) {
                 visitor.visit(it.next());
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -194,9 +191,8 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
 
     public ReferencedEnvelope getBounds() {
         ReferencedEnvelope bounds = null;
-        SimpleFeatureIterator i = features();
 
-        try {
+        try (SimpleFeatureIterator i = features()) {
             if (!i.hasNext()) {
                 bounds = new ReferencedEnvelope();
                 bounds.setToNull();
@@ -212,8 +208,6 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             }
 
             return bounds;
-        } finally {
-            i.close();
         }
     }
 

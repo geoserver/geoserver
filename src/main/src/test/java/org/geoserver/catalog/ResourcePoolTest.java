@@ -411,13 +411,10 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         Element title = ReaderUtils.getChildElement(dom, "title");
         title.getFirstChild().setNodeValue("foo");
 
-        OutputStream output = new FileOutputStream(info);
-        try {
+        try (OutputStream output = new FileOutputStream(info)) {
             TransformerFactory.newInstance()
                     .newTransformer()
                     .transform(new DOMSource(dom), new StreamResult(output));
-        } finally {
-            output.close();
         }
 
         getGeoServer().reload();

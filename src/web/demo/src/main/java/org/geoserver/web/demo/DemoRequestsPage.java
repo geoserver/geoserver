@@ -97,15 +97,12 @@ public class DemoRequestsPage extends GeoServerBasePage {
     private String getFileContents(final String reqFileName) throws IOException {
         final Resource file = demoDir.get(reqFileName);
         final StringBuilder sb = new StringBuilder();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()));
-        String line;
-        try {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");
             }
-        } finally {
-            reader.close();
         }
         return sb.toString();
     }

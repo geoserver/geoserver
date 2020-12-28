@@ -195,8 +195,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
             for (String name : blockNames.values()) writeInsert(layer, name);
         } else {
             // iterates through all the items
-            FeatureIterator<SimpleFeature> iter = coll.features();
-            try {
+            try (FeatureIterator<SimpleFeature> iter = coll.features()) {
                 while (iter.hasNext()) {
                     SimpleFeature f = iter.next();
                     String fid = f.getID();
@@ -217,8 +216,6 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                         }
                     }
                 }
-            } finally {
-                iter.close();
             }
         }
     }

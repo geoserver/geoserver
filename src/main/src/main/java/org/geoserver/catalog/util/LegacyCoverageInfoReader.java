@@ -43,12 +43,9 @@ public class LegacyCoverageInfoReader {
      */
     public void read(File file) throws IOException {
         parentDirectory = file.getParentFile();
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file));
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file))) {
             coverage = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

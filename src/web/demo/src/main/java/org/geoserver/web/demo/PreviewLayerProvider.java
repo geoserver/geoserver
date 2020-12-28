@@ -147,17 +147,10 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     @Override
     public Iterator<PreviewLayer> iterator(final long first, final long count) {
-        Iterator<PreviewLayer> iterator = filteredItems(first, count);
-        if (iterator instanceof CloseableIterator) {
+        try (CloseableIterator<PreviewLayer> iterator = filteredItems(first, count)) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging
-            try {
-                return Lists.newArrayList(iterator).iterator();
-            } finally {
-                CloseableIteratorAdapter.close(iterator);
-            }
-        } else {
-            return iterator;
+            return Lists.newArrayList(iterator).iterator();
         }
     }
 
@@ -166,7 +159,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
      * page
      */
     @SuppressWarnings("resource")
-    private Iterator<PreviewLayer> filteredItems(long first, long count) {
+    private CloseableIterator<PreviewLayer> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting

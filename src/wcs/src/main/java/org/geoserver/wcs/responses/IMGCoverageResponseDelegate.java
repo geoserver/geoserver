@@ -56,6 +56,7 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 });
     }
 
+    @SuppressWarnings("PMD.UseTryWithResources")
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,

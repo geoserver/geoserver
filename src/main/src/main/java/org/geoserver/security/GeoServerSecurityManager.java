@@ -1698,11 +1698,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         // look for file
         Resource pwDigestFile = security().get(MASTER_PASSWD_DIGEST_FILENAME);
         if (pwDigestFile.getType() == Type.RESOURCE) {
-            InputStream fin = pwDigestFile.in();
-            try {
+            try (InputStream fin = pwDigestFile.in()) {
                 return IOUtils.toString(fin, "UTF-8");
-            } finally {
-                fin.close();
             }
         } else {
             // compute and store
@@ -1716,11 +1713,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     void saveMasterPasswordDigest(String masterPasswdDigest) throws IOException {
-        OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out();
-        try {
+        try (OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out()) {
             IOUtils.write(masterPasswdDigest, fout, "UTF-8");
-        } finally {
-            fout.close();
         }
     }
 
@@ -2716,22 +2710,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** reads a config file from the specified directly using the specified xstream persister */
     <T extends SecurityConfig> T loadConfig(Class<T> config, Resource resource, XStreamPersister xp)
             throws IOException {
-        InputStream in = resource.in();
-        try {
+        try (InputStream in = resource.in()) {
             Object loaded = xp.load(in, SecurityConfig.class).clone(true);
             return config.cast(loaded);
-        } finally {
-            in.close();
         }
     }
     /** reads a config file from the specified directly using the specified xstream persister */
     SecurityConfig loadConfigFile(Resource directory, String filename, XStreamPersister xp)
             throws IOException {
-        InputStream fin = directory.get(filename).in();
-        try {
+        try (InputStream fin = directory.get(filename).in()) {
             return xp.load(fin, SecurityConfig.class).clone(true);
-        } finally {
-            fin.close();
         }
     }
 

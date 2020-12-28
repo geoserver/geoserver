@@ -113,11 +113,8 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         // check if property file exists and reload
         if (propFile.exists()) {
             FileUtils.copyFile(propFile, backupFile);
-            FileInputStream inputFile = new FileInputStream(backupFile);
-            try {
+            try (FileInputStream inputFile = new FileInputStream(backupFile)) {
                 oldProps.load(inputFile);
-            } finally {
-                inputFile.close();
             }
         }
 
@@ -137,11 +134,8 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
                 counter++;
             }
         }
-        FileOutputStream outputFile = new FileOutputStream(propFile, false);
-        try {
+        try (FileOutputStream outputFile = new FileOutputStream(propFile, false)) {
             authKeyProps.store(outputFile, "Format is authkey=username");
-        } finally {
-            outputFile.close();
         }
 
         if (backupFile.exists()) backupFile.delete();

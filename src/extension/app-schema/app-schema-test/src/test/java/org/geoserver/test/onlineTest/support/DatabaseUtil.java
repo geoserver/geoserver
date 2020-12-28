@@ -43,9 +43,8 @@ public class DatabaseUtil {
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
-            try {
+            try (BufferedReader input =
+                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null;
                 PostgisIgnoreOperator pio = new PostgisIgnoreOperator();
                 while ((line = input.readLine()) != null) {
@@ -69,9 +68,6 @@ public class DatabaseUtil {
                 }
 
                 return statements;
-
-            } finally {
-                input.close();
             }
         } catch (Exception e) {
             throw e;
@@ -206,9 +202,8 @@ public class DatabaseUtil {
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
-            try {
+            try (BufferedReader input =
+                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null, suffix = null; // not declared within while loop
                 boolean start = true;
 
@@ -256,9 +251,6 @@ public class DatabaseUtil {
                 }
 
                 return statements;
-
-            } finally {
-                input.close();
             }
         } catch (Exception e) {
             throw e;

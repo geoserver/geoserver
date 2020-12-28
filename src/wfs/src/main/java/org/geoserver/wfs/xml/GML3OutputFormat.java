@@ -407,18 +407,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         // more then 3 char.
         File featureOut = File.createTempFile(output.hashCode() + "_dump", ".xml");
         // create a buffered output stream to write the output from encode to disk first
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(featureOut));
         // create a buffered input stream to read the dumped xml file in
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(featureOut));
-        try {
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(featureOut));
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(featureOut))) {
             // the output file has to be unique with each Class object to ensure concurrency
             encode(results, out, encoder);
             this.transform(in, this.getXSLT(), output);
         } catch (TransformerException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);
         } finally {
-            out.close();
-            in.close();
             featureOut.delete();
         }
     }

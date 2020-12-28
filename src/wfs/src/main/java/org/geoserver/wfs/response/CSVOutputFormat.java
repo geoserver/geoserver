@@ -148,8 +148,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         AttrFormatter[] formatters = getFormatters(fc.getSchema());
 
         // write out the features
-        FeatureIterator<?> i = fc.features();
-        try {
+        try (FeatureIterator<?> i = fc.features()) {
             while (i.hasNext()) {
                 Feature f = i.next();
                 // dump fid
@@ -206,8 +205,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 // by RFC each line is terminated by CRLF
                 w.write("\r\n");
             }
-        } finally {
-            i.close();
         }
 
         w.flush();

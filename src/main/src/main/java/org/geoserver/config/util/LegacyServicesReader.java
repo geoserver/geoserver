@@ -56,17 +56,14 @@ public class LegacyServicesReader {
      * @throws IOException In event of a parser error.
      */
     public void read(File file) throws IOException {
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file));
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file))) {
             serverConfiguration = ReaderUtils.parse(reader);
             global = null;
             contact = null;
             wfs = null;
             wms = null;
             wcs = null;
-        } finally {
-            reader.close();
         }
     }
 

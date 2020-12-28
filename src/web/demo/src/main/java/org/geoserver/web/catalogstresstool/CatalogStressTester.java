@@ -133,11 +133,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     protected List<Tuple> load() {
                         Catalog catalog = GeoServerApplication.get().getCatalog();
                         Filter filter = Predicates.acceptAll();
-                        CloseableIterator<WorkspaceInfo> list =
-                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null);
-                        List<Tuple> workspaces;
-                        try {
-                            workspaces =
+
+                        try (CloseableIterator<WorkspaceInfo> list =
+                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null)) {
+                            List<Tuple> workspaces =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     list,
@@ -148,11 +147,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            list.close();
+                            Collections.sort(workspaces);
+                            return workspaces;
                         }
-                        Collections.sort(workspaces);
-                        return workspaces;
                     }
                 };
         workspace =
@@ -187,12 +184,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                         }
                         Filter filter = Predicates.equal("workspace.id", ws.id);
                         int limit = 100;
-                        CloseableIterator<StoreInfo> iter =
-                                catalog.list(StoreInfo.class, filter, null, limit, null);
 
-                        List<Tuple> stores;
-                        try {
-                            stores =
+                        try (CloseableIterator<StoreInfo> iter =
+                                catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                            List<Tuple> stores =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
@@ -204,11 +199,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            iter.close();
+                            Collections.sort(stores);
+                            return stores;
                         }
-                        Collections.sort(stores);
-                        return stores;
                     }
                 };
 
@@ -242,12 +235,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                         }
                         Integer limit = 100;
                         Filter filter = Predicates.equal("store.id", storeInfo.id);
-                        CloseableIterator<ResourceInfo> iter =
-                                catalog.list(ResourceInfo.class, filter, null, limit, null);
 
-                        List<Tuple> resources;
-                        try {
-                            resources =
+                        try (CloseableIterator<ResourceInfo> iter =
+                                catalog.list(ResourceInfo.class, filter, null, limit, null)) {
+                            List<Tuple> resources =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
@@ -258,11 +249,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            iter.close();
+                            Collections.sort(resources);
+                            return resources;
                         }
-                        Collections.sort(resources);
-                        return resources;
                     }
                 };
 

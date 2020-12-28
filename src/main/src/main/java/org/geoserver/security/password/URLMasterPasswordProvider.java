@@ -80,15 +80,12 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     @Override
     protected char[] doGetMasterPassword() throws Exception {
         try {
-            InputStream in = input(config.getURL(), getConfigDir());
-            try {
+            try (InputStream in = input(config.getURL(), getConfigDir())) {
                 // JD: for some reason the decrypted passwd comes back sometimes with null chars
                 // tacked on
                 // MCR, was a problem with toBytes and toChar in SecurityUtils
                 // return trimNullChars(toChars(decode(IOUtils.toByteArray(in))));
                 return toChars(decode(IOUtils.toByteArray(in)));
-            } finally {
-                in.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -97,11 +94,8 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
 
     @Override
     protected void doSetMasterPassword(char[] passwd) throws Exception {
-        OutputStream out = output(config.getURL(), getConfigDir());
-        try {
+        try (OutputStream out = output(config.getURL(), getConfigDir())) {
             out.write(encode(passwd));
-        } finally {
-            out.close();
         }
     }
 
@@ -205,12 +199,9 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
             if (config.isReadOnly()) {
                 // read-only, assure we can read from url
                 try {
-                    InputStream in =
-                            input(url, manager.masterPasswordProvider().get(config.getName()));
-                    try {
+                    try (InputStream in =
+                            input(url, manager.masterPasswordProvider().get(config.getName()))) {
                         in.read();
-                    } finally {
-                        in.close();
                     }
                 } catch (IOException ex) {
                     throw new URLMasterPasswordProviderException(URL_LOCATION_NOT_READABLE, url);

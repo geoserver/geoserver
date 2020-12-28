@@ -128,15 +128,11 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
         final byte[] buffer = new byte[8 * 1024];
 
         if (file.exists()) {
-            final InputStream in = new FileInputStream(file);
-            int c;
-            try {
+            try (InputStream in = new FileInputStream(file)) {
+                int c;
                 while (-1 != (c = in.read(buffer))) {
                     output.write(buffer, 0, c);
                 }
-
-            } finally {
-                in.close();
             }
         }
         output.flush();

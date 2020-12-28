@@ -190,9 +190,9 @@ public class CatalogStyleChangeListener implements CatalogListener {
         String newWorkspaceName = (String) preModifyEvent.getNewValues().get(nameIdx);
 
         // grab the styles
-        CloseableIterator<StyleInfo> styles =
-                catalog.list(StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName));
-        try {
+        try (CloseableIterator<StyleInfo> styles =
+                catalog.list(
+                        StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName))) {
             while (styles.hasNext()) {
                 StyleInfo style = styles.next();
                 String oldStyleName = oldWorkspaceName + ":" + style.getName();
@@ -200,8 +200,6 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
                 handleStyleRenamed(oldStyleName, newStyleName);
             }
-        } finally {
-            styles.close();
         }
     }
 

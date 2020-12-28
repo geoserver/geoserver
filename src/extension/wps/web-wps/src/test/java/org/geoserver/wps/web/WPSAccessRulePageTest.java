@@ -6,6 +6,8 @@
 package org.geoserver.wps.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServer;
@@ -66,7 +68,7 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         ProcessFactoryInfoProvider dp =
                 (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
         for (ProcessGroupInfo pgi : dp.getItems()) {
-            assertEquals(pgi.isEnabled(), true);
+            assertTrue(pgi.isEnabled());
         }
 
         FormTester ft = tester.newFormTester("form");
@@ -77,7 +79,7 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
                 "processFilterTable:listContainer:items:4:itemProperties:0:component:enabled",
                 "false");
         ft.submit();
-        assertEquals(dp.getItems().get(0).isEnabled(), false);
-        assertEquals(dp.getItems().get(3).isEnabled(), false);
+        assertFalse(dp.getItems().get(0).isEnabled());
+        assertFalse(dp.getItems().get(3).isEnabled());
     }
 }

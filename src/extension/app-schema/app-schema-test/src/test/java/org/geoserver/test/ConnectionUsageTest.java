@@ -6,6 +6,7 @@ package org.geoserver.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -262,7 +263,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         assertNotNull(f);
 
         FeatureSource mappedSource = mappingIt.getMappedSource();
-        assertTrue(mappedSource.getDataStore() == sourceDataStore);
+        assertSame(mappedSource.getDataStore(), sourceDataStore);
         assertNotNull(mappingIt.getTransaction());
         transaction = mappingIt.getTransaction();
 
@@ -273,7 +274,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
             FeatureTypeMapping mapping, DataAccessMappingFeatureIterator mappingIt)
             throws IOException {
         List<AttributeMapping> attrs = mapping.getAttributeMappings();
-        assertTrue(attrs != null);
+        assertNotNull(attrs);
         assertTrue(attrs.size() > 0);
 
         for (AttributeMapping attr : attrs) {

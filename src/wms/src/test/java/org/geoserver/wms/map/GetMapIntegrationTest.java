@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -274,7 +274,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         byte[][] bankData11 = db11.getBankData();
         byte[][] bankData13 = db13.getBankData();
         for (int i = 0; i < bankData11.length; i++) {
-            assertTrue(Arrays.equals(bankData11[i], bankData13[i]));
+            assertArrayEquals(bankData11[i], bankData13[i]);
         }
     }
 

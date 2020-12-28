@@ -41,6 +41,10 @@ under the License.
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
     <rule ref="category/java/bestpractices.xml/SystemPrintln" />
     <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
+    <rule ref="category/java/bestpractices.xml/UseAssertEqualsInsteadOfAssertTrue" />
+    <rule ref="category/java/bestpractices.xml/UseAssertNullInsteadOfAssertTrue" />
+    <rule ref="category/java/bestpractices.xml/UseAssertSameInsteadOfAssertTrue" />
+    
 
     <rule ref="category/java/codestyle.xml/DontImportJavaLang" />
     <rule ref="category/java/codestyle.xml/DuplicateImports" />

@@ -19,7 +19,6 @@ import static org.geoserver.inspire.InspireTestSupport.assertInspireMetadataUrlR
 import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
@@ -148,7 +147,7 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         final Document dom = getAsDOM(WCS_1_1_1_GETCAPREQUEST);
 
         final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertTrue(nodeList.getLength() == 0);
+        assertEquals(0, nodeList.getLength());
     }
 
     // Test ExtendedCapabilities is not produced if required settings missing

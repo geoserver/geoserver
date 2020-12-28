@@ -41,7 +41,7 @@ public class InstanceOfTest {
 
         // Ensure the function name is returned correctly
         assertNotNull(functionNames);
-        assertTrue(functionNames.size() == 1);
+        assertEquals(1, functionNames.size());
         assertEquals(IsInstanceOf.NAME, functionNames.get(0));
 
         // Get the filterFactory

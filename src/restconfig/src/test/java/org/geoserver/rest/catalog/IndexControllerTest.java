@@ -4,8 +4,8 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +42,9 @@ public class IndexControllerTest extends CatalogRESTTestSupport {
                     "Index should only contain GET endpoints. Found: " + linkText,
                     invalidLinks.contains(linkText));
         }
-        assertTrue(
+        assertEquals(
                 "Could not find the following links in index: " + linksToFind.toString(),
-                linksToFind.size() == 0);
+                0,
+                linksToFind.size());
     }
 }

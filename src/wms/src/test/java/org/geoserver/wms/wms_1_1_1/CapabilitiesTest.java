@@ -524,26 +524,22 @@ public class CapabilitiesTest extends WMSTestSupport {
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
-        assertTrue(
-                xpath.evaluate("//Exception/Format[1]", doc).equals("application/vnd.ogc.se_xml"));
-        assertTrue(
-                xpath.evaluate("//Exception/Format[2]", doc)
-                        .equals("application/vnd.ogc.se_inimage"));
-        assertTrue(
-                xpath.evaluate("//Exception/Format[3]", doc)
-                        .equals("application/vnd.ogc.se_blank"));
-        assertTrue(xpath.evaluate("//Exception/Format[4]", doc).equals("application/json"));
+        assertEquals("application/vnd.ogc.se_xml", xpath.evaluate("//Exception/Format[1]", doc));
+        assertEquals(
+                "application/vnd.ogc.se_inimage", xpath.evaluate("//Exception/Format[2]", doc));
+        assertEquals("application/vnd.ogc.se_blank", xpath.evaluate("//Exception/Format[3]", doc));
+        assertEquals("application/json", xpath.evaluate("//Exception/Format[4]", doc));
         assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() >= 4);
 
         boolean jsonpOriginal = JSONType.isJsonpEnabled();
         try {
             JSONType.setJsonpEnabled(true);
             doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
-            assertTrue(xpath.evaluate("//Exception/Format[5]", doc).equals("text/javascript"));
-            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 5);
+            assertEquals("text/javascript", xpath.evaluate("//Exception/Format[5]", doc));
+            assertEquals(5, xpath.getMatchingNodes("//Exception/Format", doc).getLength());
             JSONType.setJsonpEnabled(false);
             doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
-            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 4);
+            assertEquals(4, xpath.getMatchingNodes("//Exception/Format", doc).getLength());
         } finally {
             JSONType.setJsonpEnabled(jsonpOriginal);
         }
@@ -712,7 +708,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         Transformer transformer = tf.newTransformer();
         transformer.transform(domSource, result);
 
-        assertEquals(writer.toString().contains(info.getRootLayerTitle()), true);
+        assertTrue(writer.toString().contains(info.getRootLayerTitle()));
     }
 
     /**

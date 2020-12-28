@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLAssert;
@@ -93,7 +93,7 @@ public class LockFeatureTest extends WFSTestSupport {
         get("wfs?request=ReleaseLock&version=1.0.0&lockId=" + lockId);
 
         assertEquals("WFS_LockFeatureResponse", dom.getDocumentElement().getNodeName());
-        assertFalse(dom.getElementsByTagName("FeaturesNotLocked").getLength() == 0);
+        assertNotEquals(0, dom.getElementsByTagName("FeaturesNotLocked").getLength());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class LockFeatureTest extends WFSTestSupport {
         // release the lock
         get("wfs?request=ReleaseLock&version=1.0.0&lockId=" + lockId);
 
-        assertFalse(dom.getElementsByTagName("wfs:SUCCESS").getLength() == 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
     }
 
     @Test

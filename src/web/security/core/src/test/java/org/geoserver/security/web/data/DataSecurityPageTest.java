@@ -6,7 +6,7 @@
 package org.geoserver.security.web.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
@@ -108,12 +108,10 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
         tester.assertRenderedPage(DataSecurityPage.class);
 
         // simple test
-        assertFalse(
-                ("CHALLENGE"
-                        .equals(
-                                tester.getComponentFromLastRenderedPage(
-                                                "catalogModeForm:catalogMode")
-                                        .getDefaultModelObject())));
+        assertNotEquals(
+                "CHALLENGE",
+                tester.getComponentFromLastRenderedPage("catalogModeForm:catalogMode")
+                        .getDefaultModelObject());
 
         // edit catalogMode value
         final FormTester form = tester.newFormTester("catalogModeForm");

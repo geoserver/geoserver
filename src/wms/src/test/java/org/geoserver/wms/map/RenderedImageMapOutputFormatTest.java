@@ -1080,8 +1080,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         request.setLayers(Arrays.asList(mapLayer));
 
         layerInfo.setDefaultWMSInterpolationMethod(null);
-        assertEquals(
-                null, request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertNull(request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
         assertTrue(request.getInterpolations().isEmpty());
 
         assertEquals(
@@ -1430,7 +1429,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         // Source and result image first bands should be the same. We have reversed the order
         // of the three first bands of the source coverage and then we re-reversed the three
         // first bands using channel selection on the raster symbolizer used for rendering.
-        Assert.assertTrue(Arrays.equals(destImageRowBand0, srcImageRowBand0));
+        assertArrayEquals(destImageRowBand0, srcImageRowBand0);
         // Result band 0 should not be equal to source image band 2
         Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand2));
 

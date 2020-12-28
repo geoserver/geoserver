@@ -513,7 +513,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         try {
             TabbedPanel tabs =
                     (TabbedPanel) tester.getComponentFromLastRenderedPage("publishedinfo:tabs");
-            assertTrue(tabs.getTabs().size() == 3);
+            assertEquals(3, tabs.getTabs().size());
         } finally {
             applicationContext.getBeanFactory().destroyBean("secureCatalog");
             GeoServerExtensionsHelper.clear();

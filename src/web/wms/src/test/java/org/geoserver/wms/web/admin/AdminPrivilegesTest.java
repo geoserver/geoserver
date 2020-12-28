@@ -7,6 +7,7 @@ package org.geoserver.wms.web.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -102,7 +103,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
                     it.next()
                             .get("itemProperties:0:component:link:label")
                             .getDefaultModelObjectAsString();
-            assertFalse("sf_style".equals(name));
+            assertNotEquals("sf_style", name);
         }
     }
 

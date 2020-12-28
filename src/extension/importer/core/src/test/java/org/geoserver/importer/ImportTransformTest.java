@@ -6,7 +6,7 @@
 package org.geoserver.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -227,10 +227,8 @@ public class ImportTransformTest extends ImporterTestSupport {
                 CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), l2.getResource().getNativeCRS()));
         assertEquals("EPSG:4326", l2.getResource().getSRS());
 
-        assertFalse(
-                l1.getResource()
-                        .getNativeBoundingBox()
-                        .equals(l2.getResource().getNativeBoundingBox()));
+        assertNotEquals(
+                l1.getResource().getNativeBoundingBox(), l2.getResource().getNativeBoundingBox());
         assertTrue(
                 CRS.equalsIgnoreMetadata(
                         l2.getResource().getNativeCRS(),

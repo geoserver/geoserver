@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -288,7 +289,7 @@ public class CatalogConfigurationTest {
         GeoServerTileLayerInfo newState = TileLayerInfoUtil.create(defaults);
         newState.setId(orig.getInfo().getId());
         newState.setName(orig.getInfo().getName());
-        assertFalse(orig.equals(newState));
+        assertNotEquals(orig, newState);
 
         final GeoServerTileLayer modified =
                 new GeoServerTileLayer(orig.getPublishedInfo(), gridSetBroker, newState);

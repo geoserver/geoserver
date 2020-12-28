@@ -6,7 +6,6 @@
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -200,7 +199,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         Element scaleElement = (Element) scaleNode.item(0);
 
-        assertTrue(scaleElement == null); // scale hint is not generated
+        assertNull(scaleElement); // scale hint is not generated
     }
 
     /**

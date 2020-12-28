@@ -234,11 +234,11 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         WPSInfo wpsInfo = loadFromXml("wps-test-workspace.xml");
         assertNotNull(wpsInfo);
         assertNotNull(wpsInfo.getWorkspace());
-        assertTrue(wpsInfo.getWorkspace().getId().equals("wps-load-test-workspace-id"));
+        assertEquals("wps-load-test-workspace-id", wpsInfo.getWorkspace().getId());
         // if the workspace was correctly retrieved from the catalog it should have the name
         // property available
         try {
-            assertTrue(wpsInfo.getWorkspace().getName().equals("wps-load-test-workspace-name"));
+            assertEquals("wps-load-test-workspace-name", wpsInfo.getWorkspace().getName());
         } catch (NullPointerException exception) {
             // this is a proxy that only know the workspace id
             fail("NULL proxy");

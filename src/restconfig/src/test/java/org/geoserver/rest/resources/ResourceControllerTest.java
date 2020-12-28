@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.resources;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -474,7 +475,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         Resource newDir = getDataDirectory().get("/mynewdir");
         assertTrue(Resources.exists(newDir));
-        assertTrue(newDir.getType() == Type.DIRECTORY);
+        assertSame(newDir.getType(), Type.DIRECTORY);
         Assert.assertFalse(Resources.exists(myRes));
         assertTrue(Resources.exists(getDataDirectory().get("/mynewdir/myres")));
 

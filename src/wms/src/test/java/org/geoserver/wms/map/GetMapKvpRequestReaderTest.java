@@ -675,7 +675,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
-            assertTrue("Exception should not reveal its cause", e.getCause() == null);
+            assertNull("Exception should not reveal its cause", e.getCause());
         }
     }
 
@@ -697,7 +697,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
-            assertTrue("Exception should not reveal its cause", e.getCause() == null);
+            assertNull("Exception should not reveal its cause", e.getCause());
         }
     }
 
@@ -719,7 +719,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
-            assertTrue("Exception should not reveal its cause", e.getCause() == null);
+            assertNull("Exception should not reveal its cause", e.getCause());
         }
     }
 
@@ -743,7 +743,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
             fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
         } catch (ServiceException e) {
-            assertTrue("Exception should not reveal its cause", e.getCause() == null);
+            assertNull("Exception should not reveal its cause", e.getCause());
         }
     }
 

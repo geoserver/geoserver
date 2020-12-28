@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class ModuleStatusTest {
         ModuleStatusImpl impl = new ModuleStatusImpl();
         impl.setAvailable(false);
         impl.setEnabled(false);
-        assertEquals(impl.isAvailable(), false);
-        assertEquals(impl.isEnabled(), false);
+        assertFalse(impl.isAvailable());
+        assertFalse(impl.isEnabled());
     }
 }

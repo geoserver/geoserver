@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
@@ -34,7 +34,7 @@ public class SrsNameTest extends WFSTestSupport {
 
         print(d);
         NodeList boxes = d.getElementsByTagName("gml:Box");
-        assertFalse(boxes.getLength() == 0);
+        assertNotEquals(0, boxes.getLength());
         for (int i = 0; i < boxes.getLength(); i++) {
             Element box = (Element) boxes.item(i);
             assertEquals(
@@ -42,7 +42,7 @@ public class SrsNameTest extends WFSTestSupport {
         }
 
         NodeList points = d.getElementsByTagName("gml:Point");
-        assertFalse(points.getLength() == 0);
+        assertNotEquals(0, points.getLength());
         for (int i = 0; i < points.getLength(); i++) {
             Element point = (Element) points.item(i);
             assertEquals(
@@ -63,14 +63,14 @@ public class SrsNameTest extends WFSTestSupport {
             assertEquals("wfs:FeatureCollection", d.getDocumentElement().getNodeName());
 
             NodeList boxes = d.getElementsByTagName("gml:Envelope");
-            assertFalse(boxes.getLength() == 0);
+            assertNotEquals(0, boxes.getLength());
             for (int i = 0; i < boxes.getLength(); i++) {
                 Element box = (Element) boxes.item(i);
                 assertEquals("urn:x-ogc:def:crs:EPSG:32615", box.getAttribute("srsName"));
             }
 
             NodeList points = d.getElementsByTagName("gml:Point");
-            assertFalse(points.getLength() == 0);
+            assertNotEquals(0, points.getLength());
             for (int i = 0; i < points.getLength(); i++) {
                 Element point = (Element) points.item(i);
                 assertEquals("urn:x-ogc:def:crs:EPSG:32615", point.getAttribute("srsName"));

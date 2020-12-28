@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.web.group;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.SortedSet;
@@ -104,10 +104,10 @@ public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserG
         m.invoke(link.delegate, null, null);
 
         SortedSet<GeoServerUserGroup> groups = ugService.getUserGroups();
-        assertTrue(groups.size() == 0);
+        assertEquals(0, groups.size());
 
-        if (withRoles) assertTrue(gaService.getRolesForGroup("group1").size() == 0);
-        else assertTrue(gaService.getRolesForGroup("group1").size() == 2);
+        if (withRoles) assertEquals(0, gaService.getRolesForGroup("group1").size());
+        else assertEquals(2, gaService.getRolesForGroup("group1").size());
     }
 
     @Test

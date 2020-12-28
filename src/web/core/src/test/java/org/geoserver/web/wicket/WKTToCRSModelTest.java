@@ -22,7 +22,7 @@ public class WKTToCRSModelTest {
         WKTToCRSModel crs = new WKTToCRSModel(wkt);
         assertNull(crs.getObject());
         crs.setObject(null);
-        assertEquals(null, wkt.getObject());
+        assertNull(wkt.getObject());
     }
 
     @Test

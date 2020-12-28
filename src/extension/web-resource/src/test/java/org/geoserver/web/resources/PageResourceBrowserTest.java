@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -288,7 +289,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         // rename resource
         tester.clickLink("download");
 
-        assertTrue(Arrays.equals(DATA.getBytes(), tester.getLastResponse().getBinaryContent()));
+        assertArrayEquals(DATA.getBytes(), tester.getLastResponse().getBinaryContent());
     }
 
     @Test

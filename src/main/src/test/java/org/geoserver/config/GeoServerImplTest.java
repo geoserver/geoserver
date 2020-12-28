@@ -12,8 +12,9 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -101,7 +102,7 @@ public class GeoServerImplTest {
         }
 
         ServiceInfo s = geoServer.getServiceByName("foo", ServiceInfo.class);
-        assertTrue(s != service);
+        assertNotSame(s, service);
         assertEquals(service, s);
     }
 
@@ -187,7 +188,7 @@ public class GeoServerImplTest {
         newProps.put("123", "456");
         gsii.setClientProperties(newProps);
 
-        assertFalse(before.equals(newProps));
+        assertNotEquals(before, newProps);
     }
 
     @Test

@@ -647,7 +647,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         // check saved value
         StyleInfo styletoCheck = catalog.getStyleByName("Lakes");
         assertEquals(1, styletoCheck.getMetadata().size());
-        assertTrue(styletoCheck.getMetadata().get("timeToLive") != null);
+        assertNotNull(styletoCheck.getMetadata().get("timeToLive"));
         String timeToLive = (String) styletoCheck.getMetadata().get("timeToLive");
         assertEquals("500", timeToLive);
     }
@@ -657,7 +657,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     public void testStyleMetadataMapNotNull() throws Exception {
         final Catalog catalog = getCatalog();
         StyleInfo styletoCheck = catalog.getStyleByName("relative");
-        assertTrue(styletoCheck.getMetadata() != null);
+        assertNotNull(styletoCheck.getMetadata());
         assertEquals(0, styletoCheck.getMetadata().size());
     }
 
@@ -673,7 +673,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         // check updated metadataMap
         styletoCheck = catalog.getStyleByName("Lakes");
         assertEquals(1, styletoCheck.getMetadata().size());
-        assertTrue(styletoCheck.getMetadata().get("timeToLive") == null);
+        assertNull(styletoCheck.getMetadata().get("timeToLive"));
     }
 
     private void setupInitialStyleToUpdate() {

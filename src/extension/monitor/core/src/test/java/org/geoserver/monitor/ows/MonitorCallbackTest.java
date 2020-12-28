@@ -10,6 +10,7 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -628,7 +629,7 @@ public class MonitorCallbackTest {
         callback.operationDispatched(new Request(), op("GetLegendGraphic", "WMS", "1.1.1", glg));
         List<String> resources = data.getResources();
         assertEquals(data.getOperation(), "GetLegendGraphic");
-        assertEquals(resources, null);
+        assertNull(resources);
     }
 
     static File createTempDir() throws IOException {

@@ -27,6 +27,7 @@ import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.Types;
+import org.geotools.filter.LikeFilterImpl;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -1987,8 +1988,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         // current point in time the property has not been mapped and is unable to be filtered on
         // the database whereas gsml:purpose is straight forward and can be pre processed on the
         // database
-        assertTrue(
-                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getLiteral()));
+        assertEquals("*ypical*", ((LikeFilterImpl) afterSplit).getLiteral());
         ArrayList<String> ids = new ArrayList<>();
         while (iterator.hasNext()) {
             ids.add(iterator.next().getIdentifier().toString());

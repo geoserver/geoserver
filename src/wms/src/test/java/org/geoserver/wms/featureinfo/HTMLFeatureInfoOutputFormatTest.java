@@ -267,7 +267,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         assertEquals("text/html", response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
     }
 
     @SuppressWarnings("unchecked")

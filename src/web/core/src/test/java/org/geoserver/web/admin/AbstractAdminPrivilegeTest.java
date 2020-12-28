@@ -7,6 +7,7 @@ package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -257,7 +258,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
                     it.next()
                             .get("itemProperties:0:component:link:label")
                             .getDefaultModelObjectAsString();
-            assertFalse("sf_local".equals(name));
+            assertNotEquals("sf_local", name);
         }
     }
 
@@ -331,7 +332,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         RequestCycle cycle = RequestCycle.get();
         RenderPageRequestHandler handler =
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
+        assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
     }
 
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
@@ -349,6 +350,6 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         RequestCycle cycle = RequestCycle.get();
         RenderPageRequestHandler handler =
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
+        assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
     }
 }

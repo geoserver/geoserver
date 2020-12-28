@@ -11,6 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -381,7 +382,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerAssociationsTab() {
 
         LayerInfo l = getCatalog().getLayers().get(0);
-        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        assertNotSame(l.getDefaultStyle(), buildingsStyle);
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
         tester.assertComponent("styleForm:context:panel:layer.table", GeoServerTablePanel.class);
 
@@ -730,7 +731,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerPreviewTab() {
 
         LayerInfo l = getCatalog().getLayers().get(0);
-        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        assertNotSame(l.getDefaultStyle(), buildingsStyle);
         // used to fail with an exception here because the template file cannot be found
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
         print(tester.getLastRenderedPage(), true, true);
@@ -741,7 +742,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerPreviewTabStyleGroup() {
 
         LayerInfo l = getCatalog().getLayers().get(0);
-        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        assertNotSame(l.getDefaultStyle(), buildingsStyle);
         // used to fail with an exception here because the template file cannot be found
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
 

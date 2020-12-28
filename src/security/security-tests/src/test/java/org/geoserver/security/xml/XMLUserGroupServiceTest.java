@@ -271,8 +271,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             // modifiy store1
             store1.addGroup(group);
             store1.store();
-            assertTrue(service1.getUserGroups().size() == 1);
-            assertTrue(service1.getGroupCount() == 1);
+            assertEquals(1, service1.getUserGroups().size());
+            assertEquals(1, service1.getGroupCount());
 
             // increment lastmodified adding a second manually, the test is too fast
             xmlFile.setLastModified(xmlFile.lastModified() + 2000);
@@ -284,8 +284,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             }
 
             // here comes the magic !!!
-            assertTrue(service2.getUserGroups().size() == 1);
-            assertTrue(service2.getGroupCount() == 1);
+            assertEquals(1, service2.getUserGroups().size());
+            assertEquals(1, service2.getGroupCount());
         } finally {
             xmlFile.delete();
         }

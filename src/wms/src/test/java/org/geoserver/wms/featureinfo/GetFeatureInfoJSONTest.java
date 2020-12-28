@@ -87,7 +87,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.jsonp, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -133,7 +133,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.jsonp, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -175,7 +175,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.json, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -210,7 +210,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.json, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -317,7 +317,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertEquals(JSONType.json, response.getContentType());
 
             // Check if the character encoding is the one expected
-            assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+            assertEquals("UTF-8", response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();
@@ -363,7 +363,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertEquals(JSONType.json, response.getContentType());
 
             // Check if the character encoding is the one expected
-            assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+            assertEquals("UTF-8", response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();

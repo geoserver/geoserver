@@ -7,6 +7,7 @@ package org.geoserver.web.wicket.property;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -90,7 +91,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
                 break;
             }
         }
-        assertFalse(i == 3);
+        assertNotEquals(3, i);
 
         tester.clickLink("form:props:container:list:" + i + ":remove", true);
         tester.newFormTester("form").submit();

@@ -6,6 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
         Transformer transformer = tf.newTransformer();
         transformer.transform(domSource, result);
 
-        assertEquals(writer.toString().indexOf("22222") < writer.toString().indexOf("11111"), true);
+        assertTrue(writer.toString().indexOf("22222") < writer.toString().indexOf("11111"));
     }
 
     /**

@@ -400,7 +400,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo lakes =
                 cat.getFeatureTypeByName(
                         MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        assertFalse("foo".equals(lakes.getTitle()));
+        assertNotEquals("foo", lakes.getTitle());
 
         GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
         File info = dd.config(lakes).file();
@@ -524,23 +524,19 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
             DataStoreInfo expandedDs = getCatalog().getResourcePool().clone(ds, true);
 
-            assertTrue(ds.getConnectionParameters().get("host").equals("${jdbc.host}"));
-            assertTrue(ds.getConnectionParameters().get("port").equals("${jdbc.port}"));
+            assertEquals("${jdbc.host}", ds.getConnectionParameters().get("host"));
+            assertEquals("${jdbc.port}", ds.getConnectionParameters().get("port"));
 
             if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("host")
-                                .equals(gsEnvironment.resolveValue("${jdbc.host}")));
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("port")
-                                .equals(gsEnvironment.resolveValue("${jdbc.port}")));
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("host"),
+                        gsEnvironment.resolveValue("${jdbc.host}"));
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("port"),
+                        gsEnvironment.resolveValue("${jdbc.port}"));
             } else {
-                assertTrue(expandedDs.getConnectionParameters().get("host").equals("${jdbc.host}"));
-                assertTrue(expandedDs.getConnectionParameters().get("port").equals("${jdbc.port}"));
+                assertEquals("${jdbc.host}", expandedDs.getConnectionParameters().get("host"));
+                assertEquals("${jdbc.port}", expandedDs.getConnectionParameters().get("port"));
             }
         } finally {
             getCatalog().remove(ds);

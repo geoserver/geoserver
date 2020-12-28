@@ -896,7 +896,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("Invalid srs", "EPSG:4326", resource.getSRS());
         ReferencedEnvelope emptyBounds = new ReferencedEnvelope();
         emptyBounds.setToNull();
-        assertTrue("Unexpected bounding box", emptyBounds.equals(resource.getNativeBoundingBox()));
+        assertEquals("Unexpected bounding box", emptyBounds, resource.getNativeBoundingBox());
         // transform chain to limit characters
         // otherwise we get a sql exception thrown
         task.addTransform(new DescriptionLimitingTransform());
@@ -906,8 +906,7 @@ public class ImporterDataTest extends ImporterTestSupport {
             error.printStackTrace();
             fail(error.getMessage());
         }
-        assertFalse(
-                "Bounding box not updated", emptyBounds.equals(resource.getNativeBoundingBox()));
+        assertNotEquals("Bounding box not updated", emptyBounds, resource.getNativeBoundingBox());
         FeatureTypeInfo fti = (FeatureTypeInfo) resource;
         assertEquals("Invalid type name", "sample", fti.getName());
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =

@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import static java.util.Optional.ofNullable;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -116,18 +117,14 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
         // assert that feature type is returned with a point geometry
         assertTrue(ft1.getUserData().containsKey(TestRetypeFeatureTypeCallback.RETYPED));
-        assertTrue(ft1.getGeometryDescriptor().getType().getBinding().equals(Point.class));
+        assertEquals(ft1.getGeometryDescriptor().getType().getBinding(), Point.class);
 
         FeatureSource retyped = pool.getFeatureSource(info, null);
         // assert FeatureSource is nicely wrapped inside Geoserver wrapper
         assertTrue(retyped instanceof GeoServerFeatureSource);
         // assert FeatureSource has Geometry type set to Point
-        assertTrue(
-                retyped.getSchema()
-                        .getGeometryDescriptor()
-                        .getType()
-                        .getBinding()
-                        .equals(Point.class));
+        assertEquals(
+                retyped.getSchema().getGeometryDescriptor().getType().getBinding(), Point.class);
         AttributeDescriptor geomAttibute =
                 (AttributeDescriptor) retyped.getSchema().getGeometryDescriptor().getDefaultValue();
         // Finally assert that each features has a valid geometry
@@ -180,7 +177,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
         try {
             int count = retyped.getFeatures().size();
-            assertTrue(count == 1);
+            assertEquals(1, count);
         } finally {
             // reset
             info.setCqlFilter(null);

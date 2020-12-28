@@ -6,7 +6,7 @@
 package org.vfny.geoserver.crs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import org.geoserver.data.test.SystemTestData;
@@ -58,6 +58,6 @@ public class OverrideCRSTest extends GeoServerSystemTestSupport {
         BursaWolfParameters[] bwParamArray3002 = datum3002.getBursaWolfParameters();
         assertEquals(1, bwParamArray3002.length);
         BursaWolfParameters bw3002 = bwParamArray3002[0];
-        assertFalse(bw3002.equals(bw3003));
+        assertNotEquals(bw3002, bw3003);
     }
 }

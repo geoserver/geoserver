@@ -288,10 +288,10 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 1, srcImageRowBand1);
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 2, srcImageRowBand2);
 
-        Assert.assertTrue(Arrays.equals(destImageRowBand0, srcImageRowBand2));
-        Assert.assertTrue(Arrays.equals(destImageRowBand1, srcImageRowBand0));
-        Assert.assertTrue(Arrays.equals(destImageRowBand2, srcImageRowBand1));
-        Assert.assertTrue(Arrays.equals(destImageRowBand3, srcImageRowBand0));
+        Assert.assertArrayEquals(destImageRowBand0, srcImageRowBand2);
+        Assert.assertArrayEquals(destImageRowBand1, srcImageRowBand0);
+        Assert.assertArrayEquals(destImageRowBand2, srcImageRowBand1);
+        Assert.assertArrayEquals(destImageRowBand3, srcImageRowBand0);
         Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand0));
     }
 

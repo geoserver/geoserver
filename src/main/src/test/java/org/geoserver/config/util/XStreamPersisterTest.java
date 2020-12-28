@@ -8,7 +8,7 @@ package org.geoserver.config.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1106,12 +1106,13 @@ public class XStreamPersisterTest {
 
         assertEquals("EPSG:4901", c.toString(crs));
         // definition with odd UOM that won't be matched to the EPSG one
-        assertFalse(
-                "EPSG:4901"
-                        .equals(
-                                c.toString(
-                                        CRS.parseWKT(
-                                                "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\",6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],UNIT[\"Grad\",0.01570796326794897]]"))));
+        assertNotEquals(
+                "EPSG:4901",
+                c.toString(
+                        CRS.parseWKT(
+                                "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\","
+                                        + "6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],"
+                                        + "UNIT[\"Grad\",0.01570796326794897]]")));
     }
 
     @Test

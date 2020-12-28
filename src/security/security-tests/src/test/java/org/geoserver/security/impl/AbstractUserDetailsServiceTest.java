@@ -8,6 +8,8 @@ package org.geoserver.security.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -221,9 +223,9 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
 
                 assertFalse(role.isAnonymous());
                 assertTrue(anonymousRole.isAnonymous());
-                assertFalse(role == anonymousRole);
-                assertFalse(role.equals(anonymousRole));
-                assertTrue(theUser.getUsername().equals(role.getUserName()));
+                assertNotSame(role, anonymousRole);
+                assertNotEquals(role, anonymousRole);
+                assertEquals(theUser.getUsername(), role.getUserName());
                 assertNull(anonymousRole.getUserName());
 
             } else if ("persrole2".equals(role.getAuthority())) {

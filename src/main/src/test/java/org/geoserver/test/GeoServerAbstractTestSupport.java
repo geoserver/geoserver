@@ -1120,11 +1120,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                                 HandlerInterceptor interceptor = (HandlerInterceptor) o;
                                 interceptor.postHandle(request, response, dispatcher, null);
                             }
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (IOException e) {
-                            throw e;
-                        } catch (ServletException e) {
+                        } catch (RuntimeException | ServletException | IOException e) {
                             throw e;
                         } catch (Exception e) {
                             throw (IOException)

@@ -138,9 +138,7 @@ public final class ResponseUtils {
             v.setErrorHandler(handler);
             v.validate(xml);
             return handler.errors;
-        } catch (SAXException e) {
-            return exception(e);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             return exception(e);
         }
     }

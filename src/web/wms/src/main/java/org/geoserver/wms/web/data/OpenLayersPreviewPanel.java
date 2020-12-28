@@ -153,9 +153,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         try {
             renderHeaderCss(header);
             renderHeaderScript(header);
-        } catch (IOException e) {
-            throw new WicketRuntimeException(e);
-        } catch (TemplateException e) {
+        } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
         }
     }

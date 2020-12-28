@@ -534,9 +534,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                                                     referencedEnvelope,
                                                     mapContent.getMapWidth(),
                                                     hints));
-                                } catch (TransformException e) {
-                                    throw new ServiceException(e);
-                                } catch (FactoryException e) {
+                                } catch (TransformException | FactoryException e) {
                                     throw new ServiceException(e);
                                 }
                                 return null;

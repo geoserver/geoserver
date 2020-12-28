@@ -229,9 +229,7 @@ public class RasterTableSelectionPanel extends Panel {
         ISession session;
         try {
             session = pool.getSession();
-        } catch (IOException e) {
-            throw new IllegalAccessError(e.getMessage());
-        } catch (UnavailableConnectionException e) {
+        } catch (IOException | UnavailableConnectionException e) {
             throw new IllegalAccessError(e.getMessage());
         }
 

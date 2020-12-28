@@ -83,9 +83,7 @@ public class NetCDFParserBean {
             NetCDFCFParser parser = null;
             try {
                 parser = NetCDFCFParser.unmarshallXml(cfStandardTable.file());
-            } catch (JAXBException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            } catch (IllegalStateException e) {
+            } catch (JAXBException | IllegalStateException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
             // If so set it as global attribute

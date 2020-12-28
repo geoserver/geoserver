@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -124,11 +123,6 @@ public class ExternalGraphicPanel extends Panel {
                                     input.error(error);
                                     return; // error message back!
                                 }
-                            } catch (MalformedURLException e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Unable to access image");
-                                error.addKey("imageUnavailable");
-                                input.error(error);
                             } catch (IOException e) {
                                 ValidationError error = new ValidationError();
                                 error.setMessage("Unable to access image");

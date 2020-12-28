@@ -82,10 +82,7 @@ public class FrameCatalogVisitor {
             RenderedImage image = null;
             try {
                 image = future.get();
-            } catch (InterruptedException e) {
-                dispose();
-                throw new IOException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 dispose();
                 throw new IOException(e);
             }

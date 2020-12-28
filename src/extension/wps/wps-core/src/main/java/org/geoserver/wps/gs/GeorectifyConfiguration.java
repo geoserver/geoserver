@@ -7,7 +7,6 @@ package org.geoserver.wps.gs;
 
 import com.google.common.collect.Maps;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -232,14 +231,6 @@ public class GeorectifyConfiguration implements ApplicationListener {
                     }
                 }
 
-            } catch (FileNotFoundException e) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Unable to parse the config file: " + configFile.path(),
-                            e);
-                }
-
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(
@@ -247,6 +238,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             "Unable to parse the config file: " + configFile.path(),
                             e);
                 }
+
             } finally {
                 if (fis != null) {
                     try {

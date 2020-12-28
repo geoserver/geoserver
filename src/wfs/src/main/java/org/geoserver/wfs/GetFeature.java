@@ -118,7 +118,6 @@ import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.LazyLoader;
@@ -609,10 +608,8 @@ public class GetFeature {
                                             break;
                                         }
                                     }
-                                } catch (NoSuchAuthorityCodeException ne) {
+                                } catch (FactoryException ne) {
                                     LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
-                                } catch (FactoryException e) {
-                                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                                 }
                             }
                         }
@@ -831,10 +828,7 @@ public class GetFeature {
                         (BigInteger)
                                 enhancer.create(new Class[] {String.class}, new Object[] {"0"});
             }
-        } catch (IOException e) {
-            throw new WFSException(
-                    request, "Error occurred getting features", e, request.getHandle());
-        } catch (SchemaException e) {
+        } catch (IOException | SchemaException e) {
             throw new WFSException(
                     request, "Error occurred getting features", e, request.getHandle());
         }

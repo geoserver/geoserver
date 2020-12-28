@@ -52,7 +52,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
 import org.opengis.referencing.cs.CoordinateSystem;
@@ -561,9 +560,6 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         try {
             // in 100 we work with Lon,Lat always
             return CRS.decode(crsName, true);
-        } catch (NoSuchAuthorityCodeException e) {
-            throw new WcsException(
-                    "Could not recognize crs " + crsName, InvalidParameterValue, "crs");
         } catch (FactoryException e) {
             throw new WcsException(
                     "Could not recognize crs " + crsName, InvalidParameterValue, "crs");

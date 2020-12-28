@@ -135,7 +135,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         List<CatalogStore> storeCandidates =
                 GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
 
-        if (storeCandidates != null && storeCandidates.size() > 0) {
+        if (storeCandidates != null && !storeCandidates.isEmpty()) {
             String defaultStore = System.getProperty("DefaultCatalogStore");
             if (defaultStore != null) {
                 for (CatalogStore store : storeCandidates) {

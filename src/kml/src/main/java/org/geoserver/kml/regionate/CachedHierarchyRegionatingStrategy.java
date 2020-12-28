@@ -160,7 +160,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
 
         // This okay, just means the tile is empty
-        if (featuresInTile.size() == 0) {
+        if (featuresInTile.isEmpty()) {
             throw new HttpErrorCodeException(204);
         } else {
             FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -297,7 +297,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
             String stmt = "INSERT INTO TILECACHE VALUES (" + t.x + ", " + t.y + ", " + t.z + ", ?)";
             ps = conn.prepareStatement(stmt);
 
-            if (fids.size() == 0) {
+            if (fids.isEmpty()) {
                 // we just have to mark the tile as empty
                 ps.setString(1, null);
                 ps.execute();

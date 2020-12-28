@@ -282,7 +282,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     protected static List<Object> interpolate(Map<String, String> properties, Collection<?> value) {
-        if (value.size() > 0) {
+        if (!value.isEmpty()) {
             List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;

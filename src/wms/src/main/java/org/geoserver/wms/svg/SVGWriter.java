@@ -264,7 +264,7 @@ class SVGWriter extends OutputStreamWriter {
                 LOGGER.finer("Added BOUNDS handler decorator");
             }
 
-            if (atts.size() > 0) {
+            if (!atts.isEmpty()) {
                 this.writerHandler = new AttributesSVGHandler(this.writerHandler);
                 LOGGER.finer("Added ATTRIBUTES handler decorator");
             }

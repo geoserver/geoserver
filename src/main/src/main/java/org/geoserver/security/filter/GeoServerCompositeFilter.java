@@ -82,7 +82,7 @@ public class GeoServerCompositeFilter extends GeoServerSecurityFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (nestedFilters == null || nestedFilters.size() == 0) {
+        if (nestedFilters == null || nestedFilters.isEmpty()) {
             chain.doFilter(request, response);
             return;
         }

@@ -152,7 +152,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
     private void updateLinksVisibility() {
         List<AuthorityURLInfo> list = authorityURLs.getModelObject();
-        boolean anyLink = list.size() > 0;
+        boolean anyLink = !list.isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }
@@ -160,7 +160,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     @Override
     public void convertInput() {
         List<AuthorityURLInfo> info = authorityURLs.getModelObject();
-        if (info == null || info.size() == 0) {
+        if (info == null || info.isEmpty()) {
             setConvertedInput(new ArrayList<>(2));
             return;
         }

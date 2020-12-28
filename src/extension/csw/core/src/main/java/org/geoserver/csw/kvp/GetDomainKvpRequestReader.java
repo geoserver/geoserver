@@ -30,7 +30,7 @@ public class GetDomainKvpRequestReader extends CSWKvpRequestReader {
         Object propertyName = kvp.remove(PROPERTYNAME);
 
         if (propertyName != null) {
-            if (propertyName instanceof List && ((List) propertyName).size() > 0) {
+            if (propertyName instanceof List && !((List) propertyName).isEmpty()) {
                 Object property = null;
 
                 if (((List) propertyName).get(0) instanceof List) {

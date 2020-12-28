@@ -122,7 +122,7 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
                     context.setCurrentFeature(sf);
 
                     List<Symbolizer> symbolizers = getSymbolizers(simplified, sf);
-                    if (symbolizers.size() == 0) {
+                    if (symbolizers.isEmpty()) {
                         // skip layers that have no active symbolizers
                         continue;
                     }

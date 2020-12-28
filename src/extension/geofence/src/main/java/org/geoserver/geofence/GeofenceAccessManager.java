@@ -1026,7 +1026,7 @@ public class GeofenceAccessManager
             allowedStyles.addAll(rule.getAllowedStyles());
         }
 
-        if ((allowedStyles.size() > 0) && !allowedStyles.contains(styleName)) {
+        if ((!allowedStyles.isEmpty()) && !allowedStyles.contains(styleName)) {
             throw new ServiceException(
                     "The '" + styleName + "' style is not available on this layer");
         }

@@ -223,10 +223,10 @@ public class LegacyTileLayerInfoLoader {
         metadata.put(CONFIG_KEY_AUTO_CACHE_STYLES, autoCacheStyles);
         metadata.put(CONFIG_KEY_IN_MEMORY_CACHED, inMemoryCached);
 
-        if (cachedStyles.size() > 0) {
-            metadata.put(CONFIG_KEY_CACHED_STYLES, marshalList(cachedStyles));
-        } else {
+        if (cachedStyles.isEmpty()) {
             metadata.remove(CONFIG_KEY_CACHED_STYLES);
+        } else {
+            metadata.put(CONFIG_KEY_CACHED_STYLES, marshalList(cachedStyles));
         }
     }
 }

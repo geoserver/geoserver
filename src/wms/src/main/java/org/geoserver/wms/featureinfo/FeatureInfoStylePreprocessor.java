@@ -191,7 +191,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     public void visit(FeatureTypeStyle fts) {
         extraRules.clear();
         super.visit(fts);
-        if (extraRules.size() > 0) {
+        if (!extraRules.isEmpty()) {
             FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
             copy.rules().addAll(extraRules);
         }
@@ -314,7 +314,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         if (stroke != null) {
             List<Expression> dashArray = stroke.dashArray();
             Graphic graphicStroke = stroke.getGraphicStroke();
-            if (graphicStroke != null || dashArray != null && dashArray.size() > 0) {
+            if (graphicStroke != null || dashArray != null && !dashArray.isEmpty()) {
                 addSolidLineSymbolier = true;
             }
         }

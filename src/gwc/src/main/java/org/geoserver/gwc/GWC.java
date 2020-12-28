@@ -527,7 +527,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         final List<MimeType> mimeTypes;
         if (styleName == null) {
             styleNames = getCachedStyles(layerName);
-            if (styleNames.size() == 0) {
+            if (styleNames.isEmpty()) {
                 styleNames.add("");
             }
         } else {
@@ -929,13 +929,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         Map<String, ParameterFilter> filters;
         {
             List<ParameterFilter> parameterFilters = layer.getParameterFilters();
-            if (null != parameterFilters && parameterFilters.size() > 0) {
+            if (null == parameterFilters || parameterFilters.isEmpty()) {
+                filters = Collections.emptyMap();
+            } else {
                 filters = new HashMap<>();
                 for (ParameterFilter pf : parameterFilters) {
                     filters.put(pf.getKey().toUpperCase(), pf);
                 }
-            } else {
-                filters = Collections.emptyMap();
             }
         }
 

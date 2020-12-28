@@ -125,7 +125,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                     }
                 };
         add(customDimensionsEditor);
-        customDimensionsEditor.setVisible(customDimensionModels.size() > 0);
+        customDimensionsEditor.setVisible(!customDimensionModels.isEmpty());
 
         // vector custom dimensions panel
         buildVectorCustomDimensionsPanel(model, resource);

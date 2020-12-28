@@ -247,7 +247,7 @@ public class KMLFeatureAccessor {
         }
 
         GeometryDescriptor gd = schema.getGeometryDescriptor();
-        if (sourceEnvelopes.size() == 0) {
+        if (sourceEnvelopes.isEmpty()) {
             return Filter.INCLUDE;
         } else if (sourceEnvelopes.size() == 1) {
             ReferencedEnvelope se = sourceEnvelopes.get(0);

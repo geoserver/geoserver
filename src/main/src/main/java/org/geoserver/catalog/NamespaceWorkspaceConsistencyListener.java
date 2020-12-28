@@ -111,7 +111,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
             WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getPrefix());
             if (ws != null) {
                 List<DataStoreInfo> stores = catalog.getDataStoresByWorkspace(ws);
-                if (stores.size() > 0) {
+                if (!stores.isEmpty()) {
                     for (DataStoreInfo store : stores) {
                         String oldURI = (String) store.getConnectionParameters().get("namespace");
                         if (oldURI != null && !namespaceURI.equals(oldURI)) {

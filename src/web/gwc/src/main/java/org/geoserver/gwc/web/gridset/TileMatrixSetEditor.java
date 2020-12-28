@@ -62,7 +62,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         @Override
         public void validate(IValidatable<List<Grid>> validatable) {
             List<Grid> grids = validatable.getValue();
-            if (grids == null || grids.size() == 0) {
+            if (grids == null || grids.isEmpty()) {
                 ValidationError error = new ValidationError();
                 error.setMessage(
                         new ResourceModel("TileMatrixSetEditor.validation.empty").getObject());
@@ -381,7 +381,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
     @Override
     public void convertInput() {
         List<Grid> info = grids.getModelObject();
-        if (info == null || info.size() == 0) {
+        if (info == null || info.isEmpty()) {
             setConvertedInput(new ArrayList<>(2));
             return;
         }

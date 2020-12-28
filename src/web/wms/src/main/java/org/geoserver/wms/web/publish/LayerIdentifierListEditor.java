@@ -211,7 +211,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
     private void updateLinksVisibility() {
         List<LayerIdentifierInfo> list = identifiers.getModelObject();
-        boolean anyLink = list.size() > 0;
+        boolean anyLink = !list.isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }

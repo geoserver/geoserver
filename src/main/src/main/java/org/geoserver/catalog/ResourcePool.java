@@ -1010,7 +1010,7 @@ public class ResourcePool {
 
         List<Name> typeNames = dataAccess.getNames();
         String nsURI = null;
-        if (typeNames.size() > 0) {
+        if (!typeNames.isEmpty()) {
             nsURI = typeNames.get(0).getNamespaceURI();
         }
         do {

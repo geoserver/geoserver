@@ -940,7 +940,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             throws ConfigurationException {
 
         Set<XMLGridSubset> cachedGridSets = info.getGridSubsets();
-        if (cachedGridSets.size() == 0) {
+        if (cachedGridSets.isEmpty()) {
             return Collections.emptyMap();
         }
 

@@ -177,12 +177,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // spatial
             final SpatialSubsetType spatialSubset = domainSubset.getSpatialSubset();
             final EList grids = spatialSubset.getGrid();
-            if (grids.size() == 0)
+            if (grids.isEmpty())
                 throw new IllegalArgumentException(
                         "Invalid number of Grid for spatial subsetting was set:" + grids.size());
             final RectifiedGridType grid = (RectifiedGridType) grids.get(0);
             final List envelopes = spatialSubset.getEnvelope();
-            if (envelopes.size() == 0)
+            if (envelopes.isEmpty())
                 throw new IllegalArgumentException(
                         "Invalid number of Envelope for spatial subsetting was set:"
                                 + envelopes.size());
@@ -389,7 +389,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 List axisSubset = null;
                 if (request.getRangeSubset() != null) {
                     axisSubset = request.getRangeSubset().getAxisSubset();
-                    if (axisSubset.size() > 0) {
+                    if (!axisSubset.isEmpty()) {
                         for (Object o : axisSubset) {
                             AxisSubsetType axis = (AxisSubsetType) o;
 

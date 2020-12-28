@@ -84,42 +84,42 @@ public class ConfirmRemovalPanel extends Panel {
             CatalogInfo catalogInfo = it.next();
             if (catalogInfo instanceof ResourceInfo) it.remove();
         }
-        removed.setVisible(cascaded.size() > 0);
+        removed.setVisible(!cascaded.isEmpty());
         add(removed);
 
         // removed workspaces
         WebMarkupContainer wsr = new WebMarkupContainer("workspacesRemoved");
         removed.add(wsr);
         List<WorkspaceInfo> workspaces = visitor.getObjects(WorkspaceInfo.class);
-        if (workspaces.size() == 0) wsr.setVisible(false);
+        if (workspaces.isEmpty()) wsr.setVisible(false);
         wsr.add(new Label("workspaces", names(workspaces)));
 
         // removed stores
         WebMarkupContainer str = new WebMarkupContainer("storesRemoved");
         removed.add(str);
         List<StoreInfo> stores = visitor.getObjects(StoreInfo.class);
-        if (stores.size() == 0) str.setVisible(false);
+        if (stores.isEmpty()) str.setVisible(false);
         str.add(new Label("stores", names(stores)));
 
         // removed layers
         WebMarkupContainer lar = new WebMarkupContainer("layersRemoved");
         removed.add(lar);
         List<LayerInfo> layers = visitor.getObjects(LayerInfo.class, DELETE);
-        if (layers.size() == 0) lar.setVisible(false);
+        if (layers.isEmpty()) lar.setVisible(false);
         lar.add(new Label("layers", names(layers)));
 
         // removed groups
         WebMarkupContainer grr = new WebMarkupContainer("groupsRemoved");
         removed.add(grr);
         List<LayerGroupInfo> groups = visitor.getObjects(LayerGroupInfo.class, DELETE);
-        if (groups.size() == 0) grr.setVisible(false);
+        if (groups.isEmpty()) grr.setVisible(false);
         grr.add(new Label("groups", names(groups)));
 
         // removed styles
         WebMarkupContainer syr = new WebMarkupContainer("stylesRemoved");
         removed.add(syr);
         List<StyleInfo> styles = visitor.getObjects(StyleInfo.class, DELETE);
-        if (styles.size() == 0) syr.setVisible(false);
+        if (styles.isEmpty()) syr.setVisible(false);
         syr.add(new Label("styles", names(styles)));
 
         // modified objects root (we show it if any modified object is on the list)
@@ -133,14 +133,14 @@ public class ConfirmRemovalPanel extends Panel {
         WebMarkupContainer lam = new WebMarkupContainer("layersModified");
         modified.add(lam);
         layers = visitor.getObjects(LayerInfo.class, STYLE_RESET, EXTRA_STYLE_REMOVED);
-        if (layers.size() == 0) lam.setVisible(false);
+        if (layers.isEmpty()) lam.setVisible(false);
         lam.add(new Label("layers", names(layers)));
 
         // groups modified
         WebMarkupContainer grm = new WebMarkupContainer("groupsModified");
         modified.add(grm);
         groups = visitor.getObjects(LayerGroupInfo.class, GROUP_CHANGED);
-        if (groups.size() == 0) grm.setVisible(false);
+        if (groups.isEmpty()) grm.setVisible(false);
         grm.add(new Label("groups", names(groups)));
     }
 

@@ -110,17 +110,17 @@ class InputParameterValues implements Serializable {
 
     public boolean isComplex() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof ComplexPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof ComplexPPIO;
     }
 
     public boolean isBoundingBox() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof BoundingBoxPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof BoundingBoxPPIO;
     }
 
     public boolean isCoordinateReferenceSystem() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof CoordinateReferenceSystemPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof CoordinateReferenceSystemPPIO;
     }
 
     List<ProcessParameterIO> getProcessParameterIO() {

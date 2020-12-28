@@ -332,11 +332,11 @@ public class WMS implements ApplicationContextAware {
         WMSInfo serviceInfo = getServiceInfo();
         List<Version> versions = serviceInfo.getVersions();
         String version;
-        if (versions.size() > 0) {
-            version = versions.get(0).toString();
-        } else {
+        if (versions.isEmpty()) {
             // shouldn't a version be set?
             version = "1.1.1";
+        } else {
+            version = versions.get(0).toString();
         }
         return version;
     }
@@ -1319,7 +1319,7 @@ public class WMS implements ApplicationContextAware {
 
             @SuppressWarnings("unchecked")
             Set<Date> values = visitor.getUnique();
-            if (values.size() <= 0) {
+            if (values.isEmpty()) {
                 result = null;
             } else {
                 // we might get null values out of the visitor, strip them
@@ -1398,7 +1398,7 @@ public class WMS implements ApplicationContextAware {
 
             @SuppressWarnings("unchecked")
             Set<Object> values = visitor.getUnique();
-            if (values.size() <= 0) {
+            if (values.isEmpty()) {
                 result = null;
             } else {
                 for (Object value : values) {

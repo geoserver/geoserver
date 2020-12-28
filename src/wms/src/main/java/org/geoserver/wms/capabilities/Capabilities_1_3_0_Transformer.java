@@ -745,16 +745,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 end("Layer");
             } else {
-                if (layerGroups.size() > 0) {
+                if (layerGroups.isEmpty()) {
+                    // now encode the single layer
+                    handleLayerTree(layers, layersAlreadyProcessed, true);
+                } else {
                     try {
                         handleLayerGroups(new ArrayList<>(layerGroups), true);
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
                     }
-                } else {
-                    // now encode the single layer
-                    handleLayerTree(layers, layersAlreadyProcessed, true);
                 }
             }
         }
@@ -806,10 +806,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             .filter(layer -> includeLayer(layersAlreadyProcessed, layer))
                             .collect(Collectors.toList());
             List<LayerGroupInfo> rootGroups = filterNestedGroups(layerGroups);
-            if (rootLayers.size() == 1 && rootGroups.size() == 0) {
+            if (rootLayers.size() == 1 && rootGroups.isEmpty()) {
                 return rootLayers.get(0);
             }
-            if (rootLayers.size() == 0 && rootGroups.size() == 1) {
+            if (rootLayers.isEmpty() && rootGroups.size() == 1) {
                 return rootGroups.get(0);
             }
             return null;
@@ -1256,7 +1256,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         protected Set<LayerInfo> getLayersInGroups(List<LayerGroupInfo> layerGroups) {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<>();
 
-            if (layerGroups == null || layerGroups.size() == 0) {
+            if (layerGroups == null || layerGroups.isEmpty()) {
                 return layersAlreadyProcessed;
             }
 

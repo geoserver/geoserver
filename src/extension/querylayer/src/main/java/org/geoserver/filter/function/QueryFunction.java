@@ -134,7 +134,7 @@ public class QueryFunction extends FunctionImpl {
                 results.add(value);
             }
 
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
                 return null;
             }
             if (maxResults > 0 && results.size() > maxResults && !single) {

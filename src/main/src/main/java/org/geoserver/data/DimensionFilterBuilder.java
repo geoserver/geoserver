@@ -32,7 +32,7 @@ public class DimensionFilterBuilder {
 
     public void appendFilters(
             String startAttributeName, String endAttributeName, List<Object> ranges) {
-        if (ranges == null || ranges.size() == 0) {
+        if (ranges == null || ranges.isEmpty()) {
             return;
         }
 

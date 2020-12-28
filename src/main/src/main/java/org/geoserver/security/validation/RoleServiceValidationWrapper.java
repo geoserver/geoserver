@@ -120,7 +120,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
                 secMgr.getDataAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());
 
-        if (keys.size() > 0) {
+        if (!keys.isEmpty()) {
             String ruleString = StringUtils.collectionToCommaDelimitedString(keys);
             throw createSecurityException(ROLE_IN_USE_$2, role.getAuthority(), ruleString);
         }

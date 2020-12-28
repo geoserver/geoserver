@@ -43,7 +43,7 @@ public class RuleFiltersCollector extends AbstractStyleVisitor {
 
     /** Returns a filter that includes all the visited rules */
     Filter getSummaryFilter() {
-        if (filters.size() == 0) {
+        if (filters.isEmpty()) {
             return Filter.INCLUDE;
         } else if (filters.size() == 1) {
             return filters.get(0);

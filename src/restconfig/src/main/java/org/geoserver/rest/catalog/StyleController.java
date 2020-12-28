@@ -506,7 +506,7 @@ public class StyleController extends AbstractCatalogController {
         // If there is more than one layer, assume this is a style group and validate accordingly.
         if (sld.getStyledLayers().length > 1) {
             List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
-            if (validationErrors.size() > 0) {
+            if (!validationErrors.isEmpty()) {
                 throw validationErrors.get(0);
             }
         }

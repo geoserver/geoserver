@@ -234,7 +234,7 @@ public class GetMap {
             if (singleTimeRange) {
                 List<Object> expandTimeList =
                         expandTimeList((DateRange) times.get(0), request, maxAllowedFrames);
-                if (expandTimeList.size() == 0) {
+                if (expandTimeList.isEmpty()) {
                     return executeInternal(
                             mapContent, request, delegate, Arrays.asList(times.get(0)), elevations);
                 } else {
@@ -266,7 +266,7 @@ public class GetMap {
                 List<Object> expandElevationList =
                         expandElevationList(
                                 (NumberRange) elevations.get(0), request, maxAllowedFrames);
-                if (expandElevationList.size() == 0) {
+                if (expandElevationList.isEmpty()) {
                     map =
                             executeInternal(
                                     mapContent,
@@ -876,11 +876,11 @@ public class GetMap {
                     "MissingOrInvalidParameter");
         }
 
-        if (request.getLayers().size() == 0) {
+        if (request.getLayers().isEmpty()) {
             throw new ServiceException("No layers have been requested", "LayerNotDefined");
         }
 
-        if (request.getStyles().size() == 0) {
+        if (request.getStyles().isEmpty()) {
             throw new ServiceException("No styles have been requested", "StyleNotDefined");
         }
 
@@ -920,7 +920,7 @@ public class GetMap {
     private Filter[] buildLayersFilters(List<Filter> requestFilters, List<MapLayerInfo> layers) {
         final int nLayers = layers.size();
 
-        if (requestFilters == null || requestFilters.size() == 0) {
+        if (requestFilters == null || requestFilters.isEmpty()) {
             requestFilters = Collections.nCopies(layers.size(), Filter.INCLUDE);
         } else if (requestFilters.size() != nLayers) {
             throw new IllegalArgumentException(

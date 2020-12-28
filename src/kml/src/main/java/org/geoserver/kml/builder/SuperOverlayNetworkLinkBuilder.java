@@ -508,13 +508,13 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // check there is no extra filtering applied to the layer
         List<Filter> filters = request.getFilter();
-        if (filters != null && filters.size() > 0 && filters.get(layerIndex) != Filter.INCLUDE) {
+        if (filters != null && !filters.isEmpty() && filters.get(layerIndex) != Filter.INCLUDE) {
             return false;
         }
 
         // no extra sorts
         List<List<SortBy>> sortBy = request.getSortBy();
-        if (sortBy != null && sortBy.size() > 0) {
+        if (sortBy != null && !sortBy.isEmpty()) {
             return false;
         }
 

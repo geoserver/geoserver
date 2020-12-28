@@ -60,7 +60,7 @@ public class AxisSubsetKvpParser extends KvpParser {
         } else {
             List<String> unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
 
-            if (unparsed.size() == 0) {
+            if (unparsed.isEmpty()) {
                 throw new WcsException(
                         "Requested axis subset contains wrong number of values (should have at least 1): "
                                 + unparsed.size(),

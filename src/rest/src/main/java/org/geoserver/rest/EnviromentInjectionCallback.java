@@ -36,7 +36,7 @@ public class EnviromentInjectionCallback extends DispatcherCallbackAdapter {
         }
 
         // set it into the EnvFunction
-        if (envVars.size() > 0) {
+        if (!envVars.isEmpty()) {
             EnvFunction.setLocalValues(envVars);
         }
     }

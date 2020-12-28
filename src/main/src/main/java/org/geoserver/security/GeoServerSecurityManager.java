@@ -1899,7 +1899,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         String username = GeoServerUser.ADMIN_USERNAME;
         String masterPW = candidates.get(username);
-        if (masterPW == null && candidates.size() > 0) {
+        if (masterPW == null && !candidates.isEmpty()) {
             username = candidates.keySet().iterator().next();
             masterPW = candidates.get(username);
         }

@@ -113,7 +113,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         paramsList.setReuseItems(true);
         add(paramsList);
 
-        if (keys.size() == 0) setVisible(false);
+        if (keys.isEmpty()) setVisible(false);
     }
 
     /**

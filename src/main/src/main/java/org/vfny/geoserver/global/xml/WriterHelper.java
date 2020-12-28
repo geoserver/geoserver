@@ -202,7 +202,7 @@ public class WriterHelper {
      */
     public void textTag(String tagName, Map attributes, String data) throws ConfigurationException {
         StringBuffer sb = new StringBuffer();
-        sb.append("<" + tagName + ((attributes.size() > 0) ? " " : ""));
+        sb.append("<" + tagName + ((attributes.isEmpty()) ? "" : " "));
 
         Iterator i = attributes.keySet().iterator();
 

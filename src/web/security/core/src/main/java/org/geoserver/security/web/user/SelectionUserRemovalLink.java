@@ -57,7 +57,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
     @Override
     public void onClick(AjaxRequestTarget target) {
         final List<GeoServerUser> selection = users.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 

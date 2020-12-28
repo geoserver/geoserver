@@ -153,7 +153,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
 
         // check request attributes and use those ones only
         List<PropertyName> securityProperties = securityQuery.getProperties();
-        if (securityProperties != null && securityProperties.size() > 0) {
+        if (securityProperties != null && !securityProperties.isEmpty()) {
             List<PropertyName> userProperties = userQuery.getProperties();
             if (userProperties == null) {
                 result.setProperties(securityProperties);

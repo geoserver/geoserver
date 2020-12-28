@@ -87,7 +87,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
             return false;
 
         // impossible to devise a palette (0 shuold never happen, but you never know...)
-        if (colors.size() == 0 || colors.size() > 256) return false;
+        if (colors.isEmpty() || colors.size() > 256) return false;
 
         return true;
     }

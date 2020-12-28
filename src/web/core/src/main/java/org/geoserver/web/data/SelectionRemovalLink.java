@@ -42,7 +42,7 @@ public class SelectionRemovalLink extends AjaxLink<Void> {
     public void onClick(AjaxRequestTarget target) {
         // see if the user selected anything
         final List<? extends CatalogInfo> selection = catalogObjects.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 

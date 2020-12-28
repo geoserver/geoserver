@@ -159,7 +159,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                     List<LayerResource> selection = layers.getSelection();
 
                     // if nothing was selected we need to go back
-                    if (selection.size() == 0) {
+                    if (selection.isEmpty()) {
                         error(
                                 new ParamResourceModel("selectionEmpty", WMTSLayerImporterPage.this)
                                         .getString());

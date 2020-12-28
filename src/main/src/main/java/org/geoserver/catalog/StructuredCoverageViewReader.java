@@ -139,7 +139,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             }
             // aggregate and return
             SimpleFeatureCollection result;
-            if (collections.size() == 0) {
+            if (collections.isEmpty()) {
                 throw new IllegalStateException(
                         "Unexpected, there is not a single band in the definition?");
             } else {

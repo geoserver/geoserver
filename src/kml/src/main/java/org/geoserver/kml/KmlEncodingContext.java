@@ -268,7 +268,7 @@ public class KmlEncodingContext {
     /** Adds features to the folder own list */
     public void addFeatures(Folder folder, List<Feature> features) {
         List<Feature> originalFeatures = folder.getFeature();
-        if (originalFeatures == null || originalFeatures.size() == 0) {
+        if (originalFeatures == null || originalFeatures.isEmpty()) {
             folder.setFeature(features);
         } else {
             // in this case, compose the already existing features with the
@@ -280,7 +280,7 @@ public class KmlEncodingContext {
     /** Adds features to the document own list */
     public void addFeatures(Document document, List<Feature> features) {
         List<Feature> originalFeatures = document.getFeature();
-        if (originalFeatures == null || originalFeatures.size() == 0) {
+        if (originalFeatures == null || originalFeatures.isEmpty()) {
             document.setFeature(features);
         } else {
             // in this case, compose the already existing features with the

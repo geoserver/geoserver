@@ -485,7 +485,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
             addStylesFrom(sldStyles, styleNames, parseSldBody(sldBody));
 
-        } else if (styleNames.size() > 0) {
+        } else if (!styleNames.isEmpty()) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from STYLE parameter");
             }
@@ -607,7 +607,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param source list of styles from a given source
      */
     private void addStylesFrom(List<Style> sldStyles, List<String> styleNames, Style[] source) {
-        if (styleNames.size() == 0) {
+        if (styleNames.isEmpty()) {
             sldStyles.add(findStyle(null, source));
         } else {
             for (String styleName : styleNames) {

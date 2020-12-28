@@ -250,7 +250,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     e);
         }
         // if none is found use the default set
-        if (logProfiles == null || logProfiles.size() == 0) logProfiles = DEFAULT_LOG_PROFILES;
+        if (logProfiles == null || logProfiles.isEmpty()) logProfiles = DEFAULT_LOG_PROFILES;
 
         form.add(
                 new ListChoice<>(

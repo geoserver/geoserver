@@ -117,7 +117,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
     @Override
     public String toString() {
         List<Expression> params = getParameters();
-        if (params == null || params.size() == 0) {
+        if (params == null || params.isEmpty()) {
             return "IsInstanceOf([INVALID])";
         } else {
             return "IsInstanceOf(" + params.get(0) + ")";

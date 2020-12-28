@@ -306,7 +306,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             List<CoverageDimensionInfo> storedDimensions,
             int[] bandIndexes) {
         GridSampleDimension[] wrappedDims = null;
-        if (storedDimensions != null && storedDimensions.size() > 0) {
+        if (storedDimensions != null && !storedDimensions.isEmpty()) {
             int i = 0;
             wrappedDims = new GridSampleDimension[dims.length];
             for (SampleDimension dim : dims) {
@@ -611,14 +611,14 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             // custom null values
             final List<Double> nullValues = info.getNullValues();
             double[] configuredNoDataValues;
-            if (nullValues != null && nullValues.size() > 0) {
+            if (nullValues == null || nullValues.isEmpty()) {
+                configuredNoDataValues = sampleDim.getNoDataValues();
+            } else {
                 final int size = nullValues.size();
                 configuredNoDataValues = new double[size];
                 for (int i = 0; i < size; i++) {
                     configuredNoDataValues[i] = nullValues.get(i);
                 }
-            } else {
-                configuredNoDataValues = sampleDim.getNoDataValues();
             }
 
             // Check if the nodata has been configured

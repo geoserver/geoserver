@@ -155,7 +155,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                 }
             }
         }
-        if (authorities.size() == 0) {
+        if (authorities.isEmpty()) {
             LOGGER.log(
                     Level.WARNING,
                     "Error in WebServiceAuthenticationKeyMapper, cannot find any Role in response adding anonymous role");
@@ -181,7 +181,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         }
 
         // Check if Role Admin and Anonymous are present other than other roles
-        if (authorities.size() > 0) {
+        if (!authorities.isEmpty()) {
             for (GrantedAuthority authority : authorities) {
                 if (authority.equals(GeoServerRole.ADMIN_ROLE)
                         || authority.equals(GeoServerRole.GROUP_ADMIN_ROLE)

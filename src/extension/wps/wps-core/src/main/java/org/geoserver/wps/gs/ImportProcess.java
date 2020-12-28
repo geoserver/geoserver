@@ -473,7 +473,7 @@ public class ImportProcess implements GeoServerProcess {
                         if (coverages.size() == 1) {
                             existing = coverages.get(0);
                         }
-                        if (coverages.size() == 0) {
+                        if (coverages.isEmpty()) {
                             // no coverages yet configured, change add flag and continue on
                             add = true;
                         } else {

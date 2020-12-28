@@ -55,7 +55,7 @@ public abstract class Lock extends RequestObject {
             if (typeNames != null) {
                 if (typeNames.size() == 1) {
                     return (QName) typeNames.get(0);
-                } else if (typeNames.size() > 0) {
+                } else if (!typeNames.isEmpty()) {
                     throw new IllegalArgumentException(
                             "Multiple type names on single lock not supported");
                 }

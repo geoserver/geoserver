@@ -194,7 +194,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         if (originalStore != null
                                 && originalStore.isEnabled()
                                 && !blobStore.isEnabled()
-                                && assignedLayers.size() > 0) {
+                                && !assignedLayers.isEmpty()) {
                             dialog.showOkCancel(
                                     target,
                                     new GeoServerDialog.DialogDelegate() {

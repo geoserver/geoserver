@@ -289,7 +289,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             final List<GeneralParameterDescriptor> parameterDescriptors =
                     readParametersDescriptor.getDescriptor().descriptors();
             ParameterValue time = null;
-            boolean hasTime = timeValues.size() > 0;
+            boolean hasTime = !timeValues.isEmpty();
 
             if (hasTime) {
                 for (GeneralParameterDescriptor pd : parameterDescriptors) {

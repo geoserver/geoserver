@@ -212,7 +212,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             Set<String> localAttributes = fae.getAttributeNameSet();
             Set<String> localPrefixes = getPrefixes(localAttributes);
             if (!localPrefixes.isEmpty()) {
-                if (prefixes.size() == 0) {
+                if (prefixes.isEmpty()) {
                     // accumulate the prefixes, to see how many tables we're joining
                     prefixes.addAll(localPrefixes);
                 } else if (prefixes.size() > 1) {

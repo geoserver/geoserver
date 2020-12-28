@@ -895,7 +895,7 @@ public class CatalogImpl implements Catalog {
                         // validate style groups
                         StyledLayerDescriptor sld = styles.get(i).getSLD();
                         List<Exception> errors = SLDNamedLayerValidator.validate(this, sld);
-                        if (errors.size() > 0) {
+                        if (!errors.isEmpty()) {
                             throw new IllegalArgumentException(
                                     "Invalid style group: " + errors.get(0).getMessage(),
                                     errors.get(0));

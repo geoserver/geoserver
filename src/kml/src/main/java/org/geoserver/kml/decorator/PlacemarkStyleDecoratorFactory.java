@@ -80,13 +80,13 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Style style = pm.createAndAddStyle();
             List<Symbolizer> symbolizers = context.getCurrentSymbolizers();
             SimpleFeature sf = context.getCurrentFeature();
-            if (symbolizers.size() > 0 && sf.getDefaultGeometry() != null) {
+            if (!symbolizers.isEmpty() && sf.getDefaultGeometry() != null) {
                 // sort by point, text, line and polygon
                 Map<Class, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
 
                 // if no point symbolizers, create a default one
                 List<Symbolizer> points = classified.get(PointSymbolizer.class);
-                if (points.size() == 0) {
+                if (points.isEmpty()) {
                     if (context.isDescriptionEnabled()) {
                         setDefaultIconStyle(style, sf, context);
                     }
@@ -99,7 +99,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
                 // handle label styles
                 List<Symbolizer> texts = classified.get(TextSymbolizer.class);
-                if (texts.size() == 0) {
+                if (texts.isEmpty()) {
                     if (context.isDescriptionEnabled()) {
                         setDefaultLabelStyle(style);
                     }
@@ -115,21 +115,21 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 List<Symbolizer> lines = classified.get(LineSymbolizer.class);
                 // the XML schema allows only one line style, follow painter's model
                 // and set the last one
-                if (lines.size() > 0) {
+                if (!lines.isEmpty()) {
                     LineSymbolizer lastLineSymbolizer =
                             (LineSymbolizer) lines.get(lines.size() - 1);
                     setLineStyle(style, sf, lastLineSymbolizer.getStroke());
                 }
 
                 // handle polygon styles
-                boolean forceOutiline = lines.size() == 0;
+                boolean forceOutline = lines.isEmpty();
                 List<Symbolizer> polygons = classified.get(PolygonSymbolizer.class);
-                if (polygons.size() > 0) {
+                if (!polygons.isEmpty()) {
                     // the XML schema allows only one polygon style, follow painter's model
                     // and set the last one
                     PolygonSymbolizer lastPolygonSymbolizer =
                             (PolygonSymbolizer) polygons.get(polygons.size() - 1);
-                    setPolygonStyle(style, sf, lastPolygonSymbolizer, forceOutiline);
+                    setPolygonStyle(style, sf, lastPolygonSymbolizer, forceOutline);
                 }
             }
 

@@ -95,7 +95,7 @@ public class FilteredProcessesProvider
             ProcessInfo pai = new ProcessInfoImpl();
             pai.setName(getName());
             pai.setEnabled(getEnabled());
-            if (getRoles() != null && getRoles().size() > 0) {
+            if (getRoles() != null && !getRoles().isEmpty()) {
                 pai.getRoles().addAll(getRoles());
             }
             if (validators != null && validators.size() > 0) {

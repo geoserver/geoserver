@@ -112,7 +112,7 @@ public abstract class AbstractInputProvider implements InputProvider {
         KvpUtils.normalize(original);
         Map<String, Object> parsed = new KvpMap<>(original);
         List<Throwable> errors = KvpUtils.parse(parsed);
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             throw new WPSException("Failed to parse KVP request", errors.get(0));
         }
 

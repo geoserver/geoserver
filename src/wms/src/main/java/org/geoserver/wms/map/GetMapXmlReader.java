@@ -733,7 +733,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 }
             }
 
-            if (errors.size() != 0) {
+            if (!errors.isEmpty()) {
                 in = new FileInputStream(f);
                 throw new ServiceException(SLDValidator.getErrorMessage(in, errors));
             }
@@ -766,7 +766,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 }
             }
 
-            if (errors.size() != 0) {
+            if (!errors.isEmpty()) {
                 in = new FileInputStream(f);
                 throw new ServiceException(GETMAPValidator.getErrorMessage(in, errors));
             }

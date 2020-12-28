@@ -400,7 +400,7 @@ public class WCSDefaultValuesHelper {
         if (additionalDimensions != null
                 && dimensionSubset != null
                 && additionalDimensions.size() != dimensionSubset.size()
-                && dimensionSubset.size() > 0) {
+                && !dimensionSubset.isEmpty()) {
 
             List<Filter> additionalDimensionFilterList = new ArrayList<>();
             Set<String> dimensionKeys = dimensionSubset.keySet();

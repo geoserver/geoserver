@@ -209,7 +209,7 @@ public class ServiceException extends RuntimeException {
     @Override
     public String toString() {
         String msg = super.toString();
-        if (exceptionText == null || exceptionText.size() == 0) return msg;
+        if (exceptionText == null || exceptionText.isEmpty()) return msg;
 
         StringBuffer sb = new StringBuffer(msg);
         for (String extraMessage : exceptionText) {

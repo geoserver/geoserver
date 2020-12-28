@@ -57,7 +57,7 @@ public interface TreeNode<T> extends Serializable {
      * @return true if the node is a leaf
      */
     default boolean isLeaf() {
-        return getChildren().size() == 0;
+        return getChildren().isEmpty();
     }
 
     /**

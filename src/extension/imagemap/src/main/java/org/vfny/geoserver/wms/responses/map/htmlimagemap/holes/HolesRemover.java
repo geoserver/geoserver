@@ -195,7 +195,7 @@ public class HolesRemover {
 
         // if there are any interior reflex vertices, find the one that, when connected
         // to our rightMostHoleVertex, forms the line closest to Vector2.UnitX
-        if (interiorReflexVertices.size() > 0) {
+        if (!interiorReflexVertices.isEmpty()) {
             float closestDot = -1f;
             for (Vertex v : interiorReflexVertices) {
                 GVector n = new GVector(new double[] {v.getPosition().x, v.getPosition().y});

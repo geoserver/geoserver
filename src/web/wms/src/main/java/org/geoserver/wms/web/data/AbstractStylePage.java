@@ -173,7 +173,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // Try getting the first layer associated with this style
         if (style != null) {
             layers = catalog.getLayers(style);
-            if (layers.size() > 0) {
+            if (!layers.isEmpty()) {
                 layerModel = new Model<>(layers.get(0));
                 return;
             }
@@ -188,7 +188,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
                 for (ResourceInfo resource : resources) {
                     layers = catalog.getLayers(resource);
-                    if (layers.size() > 0) {
+                    if (!layers.isEmpty()) {
                         layerModel = new Model<>(layers.get(0));
                         return;
                     }
@@ -198,7 +198,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         // Try getting the first layer returned by the catalog
         layers = catalog.getLayers();
-        if (layers.size() > 0) {
+        if (!layers.isEmpty()) {
             layerModel = new Model<>(layers.get(0));
             return;
         }

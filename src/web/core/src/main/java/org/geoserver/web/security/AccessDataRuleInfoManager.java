@@ -204,7 +204,7 @@ public class AccessDataRuleInfoManager {
         }
         for (AccessMode key : modeRoleMap.keySet()) {
             Set<String> roles = modeRoleMap.get(key);
-            if (roles != null && roles.size() > 0) {
+            if (roles != null && !roles.isEmpty()) {
                 DataAccessRule rule = new DataAccessRule();
                 if (!globalLayerGroup) {
                     rule.setRoot(wsName);

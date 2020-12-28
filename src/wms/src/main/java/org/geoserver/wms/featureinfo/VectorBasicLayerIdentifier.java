@@ -71,7 +71,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         final Style style = params.getStyle();
         // ok, internally rendered layer then, we check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
-        if (rules.size() == 0) {
+        if (rules.isEmpty()) {
             return null;
         }
 
@@ -148,7 +148,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         // handle sql view params
         final Map<String, String> viewParams = params.getViewParams();
-        if (viewParams != null && viewParams.size() > 0) {
+        if (viewParams != null && !viewParams.isEmpty()) {
             q.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
         }
 

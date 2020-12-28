@@ -158,7 +158,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
     @Override
     public boolean canHandle(Operation operation) {
         // we can't handle anything if the ogr2ogr configuration failed
-        if (formats.size() == 0) {
+        if (formats.isEmpty()) {
             return false;
         } else {
             return super.canHandle(operation);

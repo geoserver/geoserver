@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -375,7 +375,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         if (webappClassLoader.equals(factory.getClass().getClassLoader())) {
                             boolean unregistered = false;
                             // we need to scan against all "products" to unregister the factory
-                            Vector orderedProductList =
+                            List orderedProductList =
                                     opRegistry.getOrderedProductList(mode, red.getName());
                             if (orderedProductList != null) {
                                 for (Iterator products = orderedProductList.iterator();

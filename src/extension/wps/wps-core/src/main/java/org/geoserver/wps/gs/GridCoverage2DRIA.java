@@ -49,7 +49,7 @@ import org.opengis.referencing.operation.TransformException;
  *
  * @author ETj <etj at geo-solutions.it>
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "PMD.ReplaceVectorWithList"})
 public class GridCoverage2DRIA extends GeometricOpImage {
 
     /** DEFAULT_BORDEREXTENDER */

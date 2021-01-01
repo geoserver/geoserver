@@ -546,7 +546,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Format", format);
             }
 
-            handleDcpType(serviceUrl, null); // only GET method
+            // advertise both GET and POST for GetMap requests
+            handleDcpType(serviceUrl, serviceUrl);
             end("GetMap");
 
             start("GetFeatureInfo");

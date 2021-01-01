@@ -343,10 +343,16 @@
       <constructor-arg ref="entityResolverProvider" />
     </bean>
     
-     <bean id="getMapXmlReader" 
-    	class="org.geoserver.wms.map.GetMapXmlReader">
+    <bean id="getMapOwsXmlReader"
+    	class="org.geoserver.wms.map.GetMapOwsXmlReader">
     	<constructor-arg ref="wms"/>
     </bean>
+
+    <bean id="getMapSldXmlReader"
+      class="org.geoserver.wms.map.GetMapSldXmlReader">
+      <constructor-arg ref="wms"/>
+    </bean>
+
    	<bean id="sldXmlReader"
    		class="org.geoserver.sld.SLDXmlRequestReader">
       <constructor-arg ref="wms"/>

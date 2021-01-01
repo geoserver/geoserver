@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -36,7 +35,6 @@ import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
-import org.geotools.filter.ExpressionDOMParser;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.FeatureTypeConstraint;
@@ -66,15 +64,15 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * reads in a GetFeature XML WFS request from a XML stream
+ * Abstract reader for WMS GetMap XML requests.
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
  * @version $Id$
  */
-public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
+public abstract class AbstractGetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
-    private static final Logger LOGGER = Logging.getLogger(GetMapXmlReader.class);
+    private static final Logger LOGGER = Logging.getLogger(AbstractGetMapXmlReader.class);
 
     private static final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
 
@@ -84,9 +82,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * Creates a new GetMapXmlReader object.
      *
      * @param wms The WMS config object.
+     * @param namespace The namespace of the GetMap XML element supported by the reader implementation.
      */
-    public GetMapXmlReader(WMS wms) {
-        super(OWS.NAMESPACE, "GetMap");
+    public AbstractGetMapXmlReader(WMS wms, String namespace) {
+        super(namespace, "GetMap");
         this.wms = wms;
     }
 
@@ -148,9 +147,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * Actually read in the XML request and stick it in the request object. We do this using the DOM
      * parser (because the SLD parser is DOM based and we can integrate). 1. parse into DOM 2. parse
      * the SLD 3. grab the rest of the attribute 4. stuff #3 attributes in the request object 5.
-     * stuff the SLD info into the request object 6. return GetMap schema is at
-     * http://www.opengeospatial.org/docs/02-017r1.pdf (page 18) NOTE: see handlePostGet() for
-     * people who put the SLD in the POST and the parameters in the GET.
+     * stuff the SLD info into the request object 6. return.
+     * NOTE: see handlePostGet() for people who put the SLD in the POST and the parameters in the GET.
      */
     private void parseGetMapXML(Reader xml, GetMapRequest getMapRequest, boolean validateSchema)
             throws Exception {
@@ -508,38 +506,41 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         return mapLayer;
     }
 
+    protected abstract List<Coordinate> getCoordinateList(Node nodeBbox);
+
+    protected abstract String getEpsgCode(Node nodeGetMap, Node nodeBbox);
+
     /** xs:element name="BoundingBox" type="gml:BoxType"/> dont forget the SRS! */
     private void parseBBox(GetMapRequest getMapRequest, Node nodeGetMap) throws Exception {
-        Node bboxNode = getNode(nodeGetMap, "BoundingBox");
+        Node nodeBbox = getNode(nodeGetMap, "BoundingBox");
 
-        if (bboxNode == null) {
+        if (nodeBbox == null) {
             throw new Exception(
-                    "GetMap XML parser - couldnt find node 'BoundingBox' in GetMap tag");
+                "GetMap XML parser - couldnt find node 'BoundingBox' in GetMap tag");
         }
 
-        List coordList =
-                new ExpressionDOMParser(CommonFactoryFinder.getFilterFactory2()).coords(bboxNode);
-
+        // Retrieve the coordinates of the bounding box.
+        List<Coordinate> coordList = getCoordinateList(nodeBbox);
         if (coordList.size() != 2) {
             throw new Exception(
-                    "GetMap XML parser - node 'BoundingBox' in GetMap tag should have 2 coordinates in it");
+                "GetMap XML parser - node 'BoundingBox' in GetMap tag should have 2 coordinates in it");
         }
 
         org.locationtech.jts.geom.Envelope env = new org.locationtech.jts.geom.Envelope();
-        for (Object o : coordList) {
-            env.expandToInclude((Coordinate) o);
+        for (Coordinate coordinate : coordList) {
+            env.expandToInclude(coordinate);
         }
 
         getMapRequest.setBbox(env);
 
-        // SRS
-        NamedNodeMap atts = bboxNode.getAttributes();
-        Node srsNode = atts.getNamedItem("srsName");
-
-        if (srsNode != null) {
-            String srs = srsNode.getNodeValue();
-            String epsgCode = srs.substring(srs.indexOf('#') + 1);
-            epsgCode = "EPSG:" + epsgCode;
+        // Retrieve the EPSG code of the bounding box.
+        String epsgCode = getEpsgCode(nodeGetMap, nodeBbox);
+        if (epsgCode != null) {
+            // EPSG notations like http://www.opengis.net/gml/srs/epsg.xml#XXXX,
+            // are converted to the canonical form EPSG:xxxx.
+            if (epsgCode.indexOf('#') != -1) {
+                epsgCode = "EPSG:" + epsgCode.substring(epsgCode.indexOf('#') + 1);
+            }
 
             try {
                 CoordinateReferenceSystem mapcrs = CRS.decode(epsgCode);

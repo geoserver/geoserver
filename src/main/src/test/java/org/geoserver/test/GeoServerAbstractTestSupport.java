@@ -5,6 +5,9 @@
  */
 package org.geoserver.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -120,19 +123,19 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         return testData;
     }
 
-    /** Override runTest so that the test will be skipped if the TestData is not available */
-    protected void runTest() throws Throwable {
-        if (getTestData().isTestDataAvailable()) {
-            super.runTest();
-        } else {
-            LOGGER.warning(
-                    "Skipping "
-                            + getClass()
-                            + "."
-                            + getName()
-                            + " since test data is not available");
-        }
-    }
+    //    /** Override runTest so that the test will be skipped if the TestData is not available */
+    //    protected void runTest() throws Throwable {
+    //        if (getTestData().isTestDataAvailable()) {
+    //            super.runTest();
+    //        } else {
+    //            LOGGER.warning(
+    //                    "Skipping "
+    //                            + getClass()
+    //                            + "."
+    //                            + getName()
+    //                            + " since test data is not available");
+    //        }
+    //    }
 
     @Override
     protected void tearDownInternal() throws Exception {

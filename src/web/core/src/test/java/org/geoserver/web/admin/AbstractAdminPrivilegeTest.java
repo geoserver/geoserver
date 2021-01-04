@@ -44,6 +44,7 @@ import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupport {
@@ -317,6 +318,8 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:cancel").isEnabled());
     }
 
+    @Test
+    @Ignore // was not marked as @Test, does not pass
     public void testSqlViewNewPageAsWorkspaceAdmin() throws Exception {
         loginAsCite();
 
@@ -335,6 +338,8 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
     }
 
+    @Test
+    @Ignore // was not marked as @Test, does not pass
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
         loginAsCite();
 
@@ -351,5 +356,10 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         RenderPageRequestHandler handler =
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
         assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
+    }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "/GEOSERVER_DEVELOPER_LOGGING.properties";
     }
 }

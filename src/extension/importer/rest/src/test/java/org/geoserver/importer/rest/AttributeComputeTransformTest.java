@@ -4,6 +4,11 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import org.geoserver.importer.transform.AttributeComputeTransform;
 import org.geotools.feature.simple.SimpleFeatureBuilder;

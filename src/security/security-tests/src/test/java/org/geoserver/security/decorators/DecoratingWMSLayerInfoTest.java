@@ -7,10 +7,12 @@ package org.geoserver.security.decorators;
 
 import static org.easymock.EasyMock.*;
 
-import junit.framework.TestCase;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class DecoratingWMSLayerInfoTest extends TestCase {
+public class DecoratingWMSLayerInfoTest {
+    @Test
     public void testPrefixName() {
         // build up the mock
         WMSLayerInfo li = createNiceMock(WMSLayerInfo.class);
@@ -19,6 +21,6 @@ public class DecoratingWMSLayerInfoTest extends TestCase {
         replay(li);
 
         DecoratingWMSLayerInfo ro = new DecoratingWMSLayerInfo(li);
-        assertEquals("PREFIX", ro.prefixedName());
+        Assert.assertEquals("PREFIX", ro.prefixedName());
     }
 }

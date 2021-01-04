@@ -8,19 +8,21 @@ package org.geoserver.ows.kvp;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test for the format options / SQL View parameters in a request.
  *
  * @author Robert Coup
  */
-public class FormatOptionsKvpParserTest extends TestCase {
+public class FormatOptionsKvpParserTest {
 
     private FormatOptionsKvpParser parser;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         parser = new FormatOptionsKvpParser();
     }
 
@@ -29,6 +31,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
      *
      * @throws ParseException if the string can't be parsed.
      */
+    @Test
     public void testPairs() throws Exception {
         Map<String, String> expected =
                 new HashMap<String, String>() {
@@ -43,7 +46,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
         @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>) parser.parse("key1:value1;key2:value2;key3;key4:value4");
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     /**
@@ -51,6 +54,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
      *
      * @throws ParseException if the string can't be parsed.
      */
+    @Test
     public void testEscapedSeparators() throws Exception {
         Map<String, String> expected =
                 new HashMap<String, String>() {
@@ -65,7 +69,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
         Map<String, String> actual =
                 (Map<String, String>)
                         parser.parse("key1:value\\:1;key2:value\\:2;key3:value\\:3\\;ZZZ");
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     /**
@@ -73,6 +77,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
      *
      * @throws ParseException if the string can't be parsed.
      */
+    @Test
     public void testEmbeddedSeparators() throws Exception {
         Map<String, String> expected =
                 new HashMap<String, String>() {
@@ -87,7 +92,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
         Map<String, String> actual =
                 (Map<String, String>)
                         parser.parse("key1:value:1;key2:value:2;key3:value:3\\:ZZ\\;XX");
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     /**
@@ -95,6 +100,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
      *
      * @throws ParseException if the string can't be parsed.
      */
+    @Test
     public void testErrors() throws Exception {
         Map<String, String> expected =
                 new HashMap<String, String>() {
@@ -108,7 +114,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
         @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>) parser.parse("key1:value:1;key2:value:2;key3:value:3");
-        assertEquals(expected.size(), actual.size());
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected.size(), actual.size());
+        Assert.assertEquals(expected, actual);
     }
 }

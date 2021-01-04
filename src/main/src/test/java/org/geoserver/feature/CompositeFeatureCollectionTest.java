@@ -4,21 +4,22 @@
  */
 package org.geoserver.feature;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.geotools.data.DataTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class CompositeFeatureCollectionTest extends DataTestCase {
 
-    public CompositeFeatureCollectionTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testCompositeEmpty() {
         CompositeFeatureCollection<SimpleFeatureType, SimpleFeature> fc =
                 new CompositeFeatureCollection<>(new ArrayList<>());
@@ -27,6 +28,7 @@ public class CompositeFeatureCollectionTest extends DataTestCase {
         assertNull(DataUtilities.first(fc));
     }
 
+    @Test
     public void testComposeOne() {
         CompositeFeatureCollection<SimpleFeatureType, SimpleFeature> fc =
                 new CompositeFeatureCollection<>(
@@ -38,6 +40,7 @@ public class CompositeFeatureCollectionTest extends DataTestCase {
         assertEquals(riverFeatures[0], DataUtilities.first(fc));
     }
 
+    @Test
     public void testComposeMany() {
         SimpleFeatureCollection roads = DataUtilities.collection(roadFeatures);
         SimpleFeatureCollection rivers = DataUtilities.collection(riverFeatures);

@@ -4,30 +4,35 @@
  */
 package org.geoserver.gwc;
 
-import junit.framework.TestCase;
 import org.geowebcache.util.URLMangler;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ResponseUtilsURLManglerTest extends TestCase {
+public class ResponseUtilsURLManglerTest {
 
     private URLMangler urlMangler;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         urlMangler = new ResponseUtilsURLMangler();
     }
 
+    @Test
     public void testBuildURL() {
         String url = urlMangler.buildURL("http://foo.example.com", "/foo", "/bar");
-        assertEquals("http://foo.example.com/foo/bar", url);
+        Assert.assertEquals("http://foo.example.com/foo/bar", url);
     }
 
+    @Test
     public void testBuildTrailingSlashes() throws Exception {
         String url = urlMangler.buildURL("http://foo.example.com/", "/foo/", "/bar");
-        assertEquals("http://foo.example.com/foo/bar", url);
+        Assert.assertEquals("http://foo.example.com/foo/bar", url);
     }
 
+    @Test
     public void testBuildNoLeadingSlashes() throws Exception {
         String url = urlMangler.buildURL("http://foo.example.com/", "foo/", "bar");
-        assertEquals("http://foo.example.com/foo/bar", url);
+        Assert.assertEquals("http://foo.example.com/foo/bar", url);
     }
 }

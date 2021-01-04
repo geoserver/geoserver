@@ -4,10 +4,10 @@
  */
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode.InvalidSubsetting;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;

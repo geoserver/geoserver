@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.assertTrue;
+
 /** Unit tests for Guava based AuthenticationCache implementation. */
 public class GuavaAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     private static final int CONCURRENCY = 3;

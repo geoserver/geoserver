@@ -7,60 +7,64 @@ package org.geoserver.ows.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class OwsUtilsTest extends TestCase {
+public class OwsUtilsTest {
 
+    @Test
     public void testSimple() throws Exception {
         Foo foo = new Foo();
         foo.setA("a");
 
-        assertEquals("a", OwsUtils.get(foo, "a"));
-        assertNull(OwsUtils.get(foo, "b"));
+        Assert.assertEquals("a", OwsUtils.get(foo, "a"));
+        Assert.assertNull(OwsUtils.get(foo, "b"));
 
         OwsUtils.set(foo, "b", 5);
-        assertEquals(5, OwsUtils.get(foo, "b"));
+        Assert.assertEquals(5, OwsUtils.get(foo, "b"));
 
-        assertEquals(0f, OwsUtils.get(foo, "c"));
+        Assert.assertEquals(0f, OwsUtils.get(foo, "c"));
         OwsUtils.set(foo, "c", 5f);
-        assertEquals(5f, OwsUtils.get(foo, "c"));
+        Assert.assertEquals(5f, OwsUtils.get(foo, "c"));
     }
 
+    @Test
     public void testExtended() throws Exception {
         Bar bar = new Bar();
-        assertNull(OwsUtils.get(bar, "foo"));
-        assertNull(OwsUtils.get(bar, "foo.a"));
+        Assert.assertNull(OwsUtils.get(bar, "foo"));
+        Assert.assertNull(OwsUtils.get(bar, "foo.a"));
 
         Foo foo = new Foo();
         bar.setFoo(foo);
-        assertEquals(foo, OwsUtils.get(bar, "foo"));
-        assertNull(OwsUtils.get(bar, "foo.a"));
+        Assert.assertEquals(foo, OwsUtils.get(bar, "foo"));
+        Assert.assertNull(OwsUtils.get(bar, "foo.a"));
 
         foo.setA("abc");
-        assertEquals("abc", OwsUtils.get(bar, "foo.a"));
+        Assert.assertEquals("abc", OwsUtils.get(bar, "foo.a"));
 
         OwsUtils.set(bar, "foo.b", 123);
-        assertEquals(123, OwsUtils.get(bar, "foo.b"));
+        Assert.assertEquals(123, OwsUtils.get(bar, "foo.b"));
     }
 
+    @Test
     public void testPut() throws Exception {
         Baz baz = new Baz();
         try {
             OwsUtils.put(baz, "map", "k", "v");
-            fail("null map should cause exception");
+            Assert.fail("null map should cause exception");
         } catch (NullPointerException e) {
         }
 
         baz.map = new HashMap();
         try {
             OwsUtils.put(baz, "xyz", "k", "v");
-            fail("bad property should cause exception");
+            Assert.fail("bad property should cause exception");
         } catch (IllegalArgumentException e) {
         }
 
-        assertTrue(baz.map.isEmpty());
+        Assert.assertTrue(baz.map.isEmpty());
         OwsUtils.put(baz, "map", "k", "v");
-        assertEquals("v", baz.map.get("k"));
+        Assert.assertEquals("v", baz.map.get("k"));
     }
 
     class Foo {

@@ -17,8 +17,8 @@ public class PostScriptTransformTest extends TransformTestSupport {
     GeoServerDataDirectory dd;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void init() throws Exception {
+        super.init();
 
         File tempDirectory = Files.createTempDirectory("postScriptTest").toFile();
         dd = new GeoServerDataDirectory(tempDirectory);
@@ -31,8 +31,7 @@ public class PostScriptTransformTest extends TransformTestSupport {
         script.setExecutable(true, true);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         super.tearDown();
         File dir = dd.getRoot().dir();
         FileUtils.deleteQuietly(dir);

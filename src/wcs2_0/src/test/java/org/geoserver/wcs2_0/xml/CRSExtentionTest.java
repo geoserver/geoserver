@@ -4,8 +4,8 @@
  */
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;

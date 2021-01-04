@@ -4,12 +4,15 @@
  */
 package org.geoserver.wms.map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import junit.framework.Test;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -23,16 +26,12 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geotools.styling.Style;
+import org.junit.Test;
 import org.opengis.filter.PropertyIsEqualTo;
 
 public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     GetMapXmlReader reader;
     Dispatcher dispatcher;
-
-    /** This is a READ ONLY TEST so we can use one time setup */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetMapXmlReaderTest());
-    }
 
     @Override
     protected void oneTimeSetUp() throws Exception {
@@ -63,11 +62,13 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         reader = new GetMapXmlReader(wms);
     }
 
+    @Test
     public void testCreateRequest() throws Exception {
         GetMapRequest request = reader.createRequest();
         assertNotNull(request);
     }
 
+    @Test
     public void testResolveStylesForLayerGroup() throws Exception {
         GetMapRequest request = reader.createRequest();
         BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml");
@@ -84,6 +85,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(expected, style);
     }
 
+    @Test
     public void testLayerFeatureConstraintFilterParsing() throws Exception {
         GetMapRequest request = reader.createRequest();
         BufferedReader input = getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml");
@@ -100,6 +102,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         assertEquals("[ NAME = VALUE ]", parsed.toString());
     }
 
+    @Test
     public void testAllowDynamicStyles() throws Exception {
         GetMapRequest request = reader.createRequest();
         BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml");

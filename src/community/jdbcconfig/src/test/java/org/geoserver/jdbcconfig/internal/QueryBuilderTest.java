@@ -16,7 +16,6 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import junit.framework.TestCase;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -28,7 +27,7 @@ import org.opengis.filter.Filter;
  * @author groldan
  * @author Kevin Smith, OpenGeo
  */
-public class QueryBuilderTest extends TestCase {
+public class QueryBuilderTest {
 
     private JDBCConfigTestSupport testSupport;
 

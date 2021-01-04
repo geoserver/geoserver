@@ -5,9 +5,9 @@
  */
 package org.geoserver.wcs2_0;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;

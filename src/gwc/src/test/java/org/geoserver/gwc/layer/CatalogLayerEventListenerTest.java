@@ -75,7 +75,6 @@ public class CatalogLayerEventListenerTest {
     private StyleInfo mockDefaultStyle;
     private Set<StyleInfo> mockStyles;
 
-    /** @see junit.framework.TestCase#setUp() */
     @Before
     public void setUp() throws Exception {
         GWCConfig configDefaults = GWCConfig.getOldDefaults();

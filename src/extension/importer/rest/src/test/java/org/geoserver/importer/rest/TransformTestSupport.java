@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
 
 import java.beans.PropertyDescriptor;
 import java.io.StringWriter;
@@ -28,10 +29,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
 public abstract class TransformTestSupport extends DataTestCase {
-
-    public TransformTestSupport() {
-        super(TransformTestSupport.class.getName());
-    }
 
     public void doJSONTest(ImportTransform transform) throws Exception {
         StringWriter buffer = new StringWriter();

@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.spi.ImageReaderSpi;
-import junit.framework.TestCase;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.io.netcdf.NetCDFFormat;
@@ -19,7 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /** Simple test class for checking if netcdf data are supported. */
-public class NetCDFDataTest extends TestCase {
+public class NetCDFDataTest {
 
     @Test
     public void testFormatSupported() throws FileNotFoundException, IOException {

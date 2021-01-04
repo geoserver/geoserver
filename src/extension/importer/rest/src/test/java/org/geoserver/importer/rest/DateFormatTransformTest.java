@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import java.text.ParseException;

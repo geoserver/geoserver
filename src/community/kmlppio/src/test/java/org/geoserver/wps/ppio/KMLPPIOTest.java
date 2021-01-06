@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps.ppio;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;

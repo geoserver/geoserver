@@ -5,9 +5,12 @@
  */
 package org.geoserver.script.app;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class AppTest extends ScriptIntTestSupport {
@@ -27,6 +30,7 @@ public class AppTest extends ScriptIntTestSupport {
         return "js";
     }
 
+    @Test
     public void testSimple() throws Exception {
         FileUtils.copyURLToFile(
                 getClass().getResource("main-helloWorld." + ext), new File(app, "main." + ext));
@@ -36,6 +40,7 @@ public class AppTest extends ScriptIntTestSupport {
         assertEquals("Hello World!", resp.getContentAsString());
     }
 
+    @Test
     public void testSimple2() throws Exception {
         FileUtils.copyURLToFile(
                 getClass().getResource("main-helloWorld." + ext), new File(app, "main." + ext));

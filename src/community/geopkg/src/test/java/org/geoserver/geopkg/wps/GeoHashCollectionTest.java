@@ -4,6 +4,8 @@
  */
 package org.geoserver.geopkg.wps;
 
+import static org.junit.Assert.*;
+
 import org.geotools.data.DataTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;

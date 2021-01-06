@@ -142,7 +142,12 @@ public class ImagesService implements ApplicationContextAware {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(ConformanceClass.CORE, ConformanceClass.COLLECTIONS, IMAGES_CORE, IMAGES_TRANSACTIONAL);
+        List<String> classes =
+                Arrays.asList(
+                        ConformanceClass.CORE,
+                        ConformanceClass.COLLECTIONS,
+                        IMAGES_CORE,
+                        IMAGES_TRANSACTIONAL);
         return new ConformanceDocument(classes);
     }
 

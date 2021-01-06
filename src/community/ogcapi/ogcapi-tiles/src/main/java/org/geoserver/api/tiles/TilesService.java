@@ -26,6 +26,7 @@ import org.geoserver.api.APIException;
 import org.geoserver.api.APIFilterParser;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
+import org.geoserver.api.ConformanceClass;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.InvalidParameterValueException;
@@ -77,10 +78,11 @@ public class TilesService {
 
     static final Logger LOGGER = Logging.getLogger(TilesService.class);
 
-    public static final String CC_CORE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/core";
-    public static final String CC_MULTITILE =
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/multitile";
-    public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/info";
+    public static final String CC_TILESET =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset";
+    public static final String CC_MULTITILES =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/multitiles";
+    public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info";
 
     private final GeoServer geoServer;
     private final GWC gwc;
@@ -133,7 +135,13 @@ public class TilesService {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CC_CORE, CC_MULTITILE, CC_INFO);
+        List<String> classes =
+                Arrays.asList(
+                        ConformanceClass.CORE,
+                        ConformanceClass.COLLECTIONS,
+                        CC_TILESET,
+                        CC_MULTITILES,
+                        CC_INFO);
         return new ConformanceDocument(classes);
     }
 

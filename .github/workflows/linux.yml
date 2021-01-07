@@ -46,7 +46,7 @@ jobs:
       run:  mvn -f src/community/pom.xml assembly:single -nsu -N
     - name: Remove SNAPSHOT jars from repository
       run: |
-        find .m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
+        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
 
   QA:
     runs-on: ubuntu-20.04
@@ -76,7 +76,7 @@ jobs:
       run: mvn -nsu -B -U -T4 -fae -Dfmt.action=check -DskipTests -Prelease -PcommunityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       run: |
-        find .m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
+        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
 
   docs:
     runs-on: ubuntu-20.04

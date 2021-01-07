@@ -49,8 +49,8 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
                         null,
                         new ArrayList<Range>() {
                             {
-                                add(new Range(0d, true, 1000d, false));
-                                add(new Range(1000d, true, 2000d, false));
+                                add(new Range<>(0d, true, 1000d, false));
+                                add(new Range<>(1000d, true, 2000d, false));
                             }
                         },
                         new NullProgressListener());

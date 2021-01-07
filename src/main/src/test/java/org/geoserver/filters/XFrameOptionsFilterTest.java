@@ -5,6 +5,7 @@
 package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -31,7 +32,7 @@ public class XFrameOptionsFilterTest {
         System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY, "false");
         String header = getXStreamHeader();
 
-        assertEquals("Expect default XFrameOption to be null", null, header);
+        assertNull("Expect default XFrameOption to be null", header);
 
         if (currentShouldSetProperty != null) {
             System.setProperty(

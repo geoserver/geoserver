@@ -38,7 +38,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // Setup XMLUnit namespaces
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("ows", "http://www.opengis.net/ows");
         namespaces.put("ogc", "http://www.opengis.net/ogc");

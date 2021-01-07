@@ -20,4 +20,4 @@ There are many ways to install GeoServer on your system. This section will discu
    war
    upgrade
 
-.. note:: At this time we no longer provide a Windows Installer, due to lack of a secure Windows machine where the installer can be built and signed. However if you realy need the Windows installer, you can create one following :developer:`the instruction on this site <win-installer.html>`.
+.. note:: At this time, we no longer provide a Windows Installer, due to lack of a secure Windows machine where the installer can be built and signed. However if you really need the Windows installer, you can create one following :developer:`the instruction on this site <win-installer.html>`.

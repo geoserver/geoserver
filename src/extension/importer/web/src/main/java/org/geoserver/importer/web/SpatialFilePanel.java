@@ -25,7 +25,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
 
     String file;
 
-    TextField fileField;
+    TextField<String> fileField;
     GeoServerDialog dialog;
 
     public SpatialFilePanel(String id) {
@@ -33,10 +33,10 @@ public class SpatialFilePanel extends ImportSourcePanel {
 
         add(dialog = new GeoServerDialog("dialog"));
 
-        Form form = new Form("form", new CompoundPropertyModel(this));
+        Form<SpatialFilePanel> form = new Form<>("form", new CompoundPropertyModel<>(this));
         add(form);
 
-        fileField = new TextField("file");
+        fileField = new TextField<>("file");
         fileField.setRequired(true);
         fileField.setOutputMarkupId(true);
         form.add(fileField);
@@ -68,7 +68,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
                                         }
 
                                         GeoServerFileChooser chooser =
-                                                new GeoServerFileChooser(id, new Model(file)) {
+                                                new GeoServerFileChooser(id, new Model<>(file)) {
                                                     @Override
                                                     protected void fileClicked(
                                                             File file, AjaxRequestTarget target) {

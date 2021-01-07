@@ -190,7 +190,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
      */
     protected Collection<GeoServerRole> getRolesFromUserGroupService(
             HttpServletRequest request, String principal) throws IOException {
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
 
         GeoServerUserGroupService service =
                 getSecurityManager().loadUserGroupService(getUserGroupServiceName());
@@ -217,7 +217,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
      */
     protected Collection<GeoServerRole> getRolesFromHttpAttribute(
             HttpServletRequest request, String principal) throws IOException {
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
 
         String rolesString = request.getHeader(getRolesHeaderAttribute());
         if (rolesString == null || rolesString.trim().length() == 0) {

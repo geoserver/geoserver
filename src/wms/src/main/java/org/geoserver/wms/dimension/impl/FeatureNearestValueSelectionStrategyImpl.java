@@ -41,7 +41,7 @@ public class FeatureNearestValueSelectionStrategyImpl
 
     @Override
     public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         final FeatureCalc nearest =
                 new NearestVisitor(ff.property(dimension.getAttribute()), this.toMatch);
 

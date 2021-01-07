@@ -6,6 +6,7 @@ package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getFactory().createLayerGroup();
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
     }
 
     @Test
@@ -43,7 +44,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         // create mocks
         final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);
         expect(lg.getWorkspace()).andReturn(null);
-        final ArrayList<PublishedInfo> layers = new ArrayList<PublishedInfo>();
+        final ArrayList<PublishedInfo> layers = new ArrayList<>();
         expect(lg.getLayers()).andReturn(layers);
         replay(lg);
         final Catalog catalog = createNiceMock(Catalog.class);
@@ -55,7 +56,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getLayerGroup("lg");
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
     }
 
     @Test
@@ -65,14 +66,14 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerInfo layer2 = createNiceMock(LayerInfo.class);
 
         final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);
-        final ArrayList<PublishedInfo> layers = new ArrayList<PublishedInfo>();
+        final ArrayList<PublishedInfo> layers = new ArrayList<>();
         expect(lg.getLayers()).andReturn(layers).anyTimes();
         lg.setRootLayer(layer1);
         expectLastCall();
         replay(lg);
 
         // tests
-        final ArrayList<PublishedInfo> securedLayers = new ArrayList<PublishedInfo>();
+        final ArrayList<PublishedInfo> securedLayers = new ArrayList<>();
         final SecuredLayerGroupInfo securedLg =
                 new SecuredLayerGroupInfo(lg, null, securedLayers, new ArrayList<>());
 
@@ -81,8 +82,8 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
 
         assertEquals(2, securedLg.getLayers().size());
         assertEquals(2, layers.size());
-        assertTrue(layers.get(0) == layer1);
-        assertTrue(layers.get(1) == layer2);
+        assertSame(layers.get(0), layer1);
+        assertSame(layers.get(1), layer2);
 
         securedLg.getLayers().remove(1);
         assertEquals(1, securedLg.getLayers().size());
@@ -119,7 +120,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         final LayerGroupInfo layerGroup = secureCatalog.getLayerGroup("lg");
 
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
-        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertSame(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class), lg);
         assertEquals(1, layerGroup.getLayers().size());
         assertEquals(1, layerGroup.getStyles().size());
     }

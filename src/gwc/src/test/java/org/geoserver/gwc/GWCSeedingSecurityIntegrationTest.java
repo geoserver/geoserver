@@ -4,12 +4,12 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import javax.xml.namespace.QName;
@@ -75,11 +75,11 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         testData.addWorkspace(PUB_PREFIX, PUB_URI, catalog);
         testData.addWorkspace(SEC_PREFIX, SEC_URI, catalog);
 
-        testData.addVectorLayer(SEC_BRIDGES, Collections.EMPTY_MAP, SystemTestData.class, catalog);
+        testData.addVectorLayer(SEC_BRIDGES, Collections.emptyMap(), SystemTestData.class, catalog);
         testData.addVectorLayer(
-                SEC_BUILDINGS, Collections.EMPTY_MAP, SystemTestData.class, catalog);
-        testData.addVectorLayer(PUB_STREAMS, Collections.EMPTY_MAP, SystemTestData.class, catalog);
-        testData.addVectorLayer(PUB_LAKES, Collections.EMPTY_MAP, SystemTestData.class, catalog);
+                SEC_BUILDINGS, Collections.emptyMap(), SystemTestData.class, catalog);
+        testData.addVectorLayer(PUB_STREAMS, Collections.emptyMap(), SystemTestData.class, catalog);
+        testData.addVectorLayer(PUB_LAKES, Collections.emptyMap(), SystemTestData.class, catalog);
 
         DataAccessRuleDAO dao =
                 GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
@@ -235,7 +235,7 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
                         2,
                         "image/png",
                         taskType,
-                        Collections.EMPTY_MAP);
+                        Collections.emptyMap());
         return seedRequest;
     }
 
@@ -259,7 +259,7 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
                         new long[] {0L, 0L, 1L},
                         "EPSG:4326",
                         "image/png",
-                        Collections.EMPTY_MAP);
+                        Collections.emptyMap());
 
         gwc.getCompositeBlobStore().get(tileObject);
 

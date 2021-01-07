@@ -42,7 +42,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertEquals(SecuredFeatureSource.class, fs.getClass());
         assertTrue(fs.policy.isHide());
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isHide());
+        assertTrue(store.policy.isHide());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
                 fail("Should have failed with a security exception");
         }
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isMetadata());
+        assertTrue(store.policy.isMetadata());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         SecuredFeatureStore fs = (SecuredFeatureStore) ro.getFeatureSource(null, null);
         assertTrue(fs.policy.isReadOnlyChallenge());
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isReadOnlyChallenge());
+        assertTrue(store.policy.isReadOnlyChallenge());
     }
 
     @Test

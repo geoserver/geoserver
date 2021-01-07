@@ -5,12 +5,15 @@
  */
 package org.geoserver.script.function;
 
+import static org.junit.Assert.assertEquals;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -27,6 +30,7 @@ public class ScriptFunctionIntTest extends ScriptIntTestSupport {
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
     }
 
+    @Test
     public void testWFS() throws Exception {
         String xml =
                 "<wfs:GetFeature "
@@ -51,6 +55,7 @@ public class ScriptFunctionIntTest extends ScriptIntTestSupport {
                 dom.getElementsByTagName("sf:intProperty").item(0).getFirstChild().getNodeValue());
     }
 
+    @Test
     public void testSLD() throws Exception {
         String sld =
                 "<StyledLayerDescriptor xmlns:ogc='http://www.opengis.net/ogc'>"

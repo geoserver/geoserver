@@ -21,7 +21,7 @@ public class EnumPanel extends Panel {
     public EnumPanel(String id, Class<Enum> enumeration, IModel<Enum> model) {
         super(id, model);
         final List<Enum> enums = Arrays.asList(enumeration.getEnumConstants());
-        DropDownChoice<Enum> choice = new DropDownChoice<Enum>("enum", model, enums);
+        DropDownChoice<Enum> choice = new DropDownChoice<>("enum", model, enums);
         add(choice);
     }
 }

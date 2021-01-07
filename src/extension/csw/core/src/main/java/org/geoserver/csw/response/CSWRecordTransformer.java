@@ -88,6 +88,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                 if (bboxes != null) {
                     // grab the original bounding boxes from the user data (the geometry is an
                     // aggregate)
+                    @SuppressWarnings("unchecked")
                     List<ReferencedEnvelope> originalBoxes =
                             (List<ReferencedEnvelope>)
                                     bboxes.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);

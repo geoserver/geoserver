@@ -57,7 +57,7 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         // add org.geoserver.catalog.testReader.CustomFormat coverage
         String styleName = "temperature";
         testData.addStyle(styleName, "../temperature.sld", getClass(), getCatalog());
-        Map propertyMap = new HashMap();
+        Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WATTEMP,
@@ -75,7 +75,7 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");

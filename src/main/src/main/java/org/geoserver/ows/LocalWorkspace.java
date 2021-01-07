@@ -15,7 +15,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 public class LocalWorkspace {
 
     /** the workspace thread local */
-    static ThreadLocal<WorkspaceInfo> workspace = new ThreadLocal<WorkspaceInfo>();
+    static ThreadLocal<WorkspaceInfo> workspace = new ThreadLocal<>();
 
     public static void set(WorkspaceInfo ws) {
         workspace.set(ws);

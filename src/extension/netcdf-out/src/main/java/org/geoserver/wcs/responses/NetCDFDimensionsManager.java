@@ -46,8 +46,7 @@ public class NetCDFDimensionsManager {
      * A dimension mapping between dimension names and dimension mapper instances We use a Linked
      * map to preserve the dimension order
      */
-    private Map<String, NetCDFDimensionMapping> netcdfDimensions =
-            new LinkedHashMap<String, NetCDFDimensionMapping>();
+    private Map<String, NetCDFDimensionMapping> netcdfDimensions = new LinkedHashMap<>();
 
     public final int getNumDimensions() {
         return netcdfDimensions.keySet().size();
@@ -85,15 +84,15 @@ public class NetCDFDimensionsManager {
             // Set the dimension values type
             final DimensionBean.DimensionType dimensionType = dimension.getDimensionType();
             final boolean isRange = dimension.isRange();
-            TreeSet<Object> tree = null;
+            TreeSet<? extends Comparable> tree = null;
             switch (dimensionType) {
                 case TIME:
-                    tree = new TreeSet(new DateRangeComparator());
+                    tree = new TreeSet<>(new DateRangeComparator());
                     //                isRange ? new TreeSet(new DateRangeComparator()) : new
                     // TreeSet<Date>();
                     break;
                 case ELEVATION:
-                    tree = new TreeSet(new NumberRangeComparator());
+                    tree = new TreeSet<>(new NumberRangeComparator());
                     //                isRange ? new TreeSet(new NumberRangeComparator()) : new
                     // TreeSet<Number>();
                     break;
@@ -103,13 +102,13 @@ public class NetCDFDimensionsManager {
                         tree =
                                 // new TreeSet(new DateRangeComparator());
                                 isRange
-                                        ? new TreeSet(new DateRangeComparator())
-                                        : new TreeSet<Object>();
+                                        ? new TreeSet<>(new DateRangeComparator())
+                                        : new TreeSet<>();
                     } else {
                         tree = // new TreeSet<Object>();
                                 isRange
-                                        ? new TreeSet(new NumberRangeComparator())
-                                        : new TreeSet<Object>();
+                                        ? new TreeSet<>(new NumberRangeComparator())
+                                        : new TreeSet<>();
                     }
             }
             mapper.setDimensionValues(
@@ -228,9 +227,9 @@ public class NetCDFDimensionsManager {
 
         /** A DimensionValues based on Set of objects */
         static class DimensionValuesSet implements DimensionValues {
-            Set<Object> values;
+            Set<? extends Comparable> values;
 
-            public DimensionValuesSet(Set<Object> set) {
+            public DimensionValuesSet(Set<? extends Comparable> set) {
                 values = set;
             }
 
@@ -240,8 +239,9 @@ public class NetCDFDimensionsManager {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public void addValue(Object object) {
-                values.add(object);
+                ((Set) values).add(object);
             }
 
             @Override
@@ -260,7 +260,7 @@ public class NetCDFDimensionsManager {
 
             @Override
             public Array getValues() {
-                return (Array) values;
+                return values;
             }
 
             @Override
@@ -317,6 +317,7 @@ public class NetCDFDimensionsManager {
 
                 // Get Dimension values
                 final DimensionValues dimensionValues = getDimensionValues();
+                @SuppressWarnings("unchecked")
                 final Set<Object> values = (Set<Object>) dimensionValues.getValues();
                 final int numElements = values.size();
 

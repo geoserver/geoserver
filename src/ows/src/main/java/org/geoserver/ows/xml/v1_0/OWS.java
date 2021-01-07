@@ -243,7 +243,7 @@ public class OWS extends XSD {
     private OWS() {}
 
     /** Adds a dependency on the xlink schema. */
-    protected void addDependencies(Set dependencies) {
+    protected void addDependencies(Set<XSD> dependencies) {
         super.addDependencies(dependencies);
 
         dependencies.add(XLINK.getInstance());

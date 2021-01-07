@@ -118,7 +118,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
                         "v-component_of_current_surface@0",
                         1,
                         CompositionType.BAND_SELECT);
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand_u);
         coverageBands.add(outputBand_v);
         coverageView = new CoverageView("regional_currents", coverageBands);
@@ -165,7 +165,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
                         1,
                         CompositionType.BAND_SELECT);
 
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(1);
+        final List<CoverageBand> coverageBands = new ArrayList<>(1);
         coverageBands.add(b0);
         coverageBands.add(b1);
         coverageBands.add(b2);
@@ -256,7 +256,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         assertEquals(5, sampleModel.getNumBands());
         reader.dispose();
 
-        List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+        List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.addAll(Arrays.asList(bandIndicesParam));
         GeneralParameterValue[] readParams =
                 paramList.toArray(new GeneralParameterValue[paramList.size()]);
@@ -288,10 +288,10 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 1, srcImageRowBand1);
         srcImage.getData().getSamples(0, 0, sWidth, sHeight, 2, srcImageRowBand2);
 
-        Assert.assertTrue(Arrays.equals(destImageRowBand0, srcImageRowBand2));
-        Assert.assertTrue(Arrays.equals(destImageRowBand1, srcImageRowBand0));
-        Assert.assertTrue(Arrays.equals(destImageRowBand2, srcImageRowBand1));
-        Assert.assertTrue(Arrays.equals(destImageRowBand3, srcImageRowBand0));
+        Assert.assertArrayEquals(destImageRowBand0, srcImageRowBand2);
+        Assert.assertArrayEquals(destImageRowBand1, srcImageRowBand0);
+        Assert.assertArrayEquals(destImageRowBand2, srcImageRowBand1);
+        Assert.assertArrayEquals(destImageRowBand3, srcImageRowBand0);
         Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand0));
     }
 
@@ -330,7 +330,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         assertEquals(5, sampleModel.getNumBands());
         reader.dispose();
 
-        List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+        List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.addAll(Arrays.asList(bandIndicesParam));
         GeneralParameterValue[] readParams =
                 paramList.toArray(new GeneralParameterValue[paramList.size()]);

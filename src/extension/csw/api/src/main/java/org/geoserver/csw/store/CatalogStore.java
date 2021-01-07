@@ -14,6 +14,7 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
@@ -35,8 +36,8 @@ public interface CatalogStore {
      * Queries a specific record type using the GeoTools Query object (which contains type name,
      * attribute selection
      */
-    FeatureCollection getRecords(Query q, Transaction t, RecordDescriptor outputRd)
-            throws IOException;
+    FeatureCollection<FeatureType, Feature> getRecords(
+            Query q, Transaction t, RecordDescriptor outputRd) throws IOException;
 
     /**
      * Returns the number of records that {@link #getRecords(Query, Transaction, String)} would

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
         long[] xyz = {1L, 2L, 3L};
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
         TileObject to =
@@ -170,7 +171,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
         long[] xyz = {1L, 2L, 3L};
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
         TileObject to =
@@ -223,7 +224,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -268,7 +269,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -300,7 +301,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -369,13 +370,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
                 is.close();
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                assertTrue(false);
+                fail();
             }
             try {
                 is2.close();
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                assertTrue(false);
+                fail();
             }
         }
     }

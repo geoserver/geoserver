@@ -4,7 +4,6 @@
  */
 package org.geoserver.rest.catalog;
 
-import com.google.common.io.Files;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -190,7 +190,7 @@ public class StyleController extends AbstractCatalogController {
                 createStyleInfo(workspaceName, name, handler, handler.mimeType(version));
 
         checkStyleResourceNotExists(styleInfo);
-        writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+        writeStyleRaw(styleInfo, uploadedFile);
 
         catalog.add(styleInfo);
 
@@ -361,7 +361,7 @@ public class StyleController extends AbstractCatalogController {
 
             // Save the style: serialize the style out into the data directory
             StyleInfo styleInfo = catalog.getStyleByName(workspaceName, styleName);
-            writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+            writeStyleRaw(styleInfo, uploadedFile);
             catalog.save(styleInfo);
 
             LOGGER.info("PUT Style Package: " + styleName + ", workspace: " + workspaceName);
@@ -416,7 +416,7 @@ public class StyleController extends AbstractCatalogController {
         String content = new String(rawData, charset);
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         if (raw) {
-            writeStyleRaw(info, new ByteArrayInputStream(rawData));
+            writeStyleRaw(info, rawData);
 
             try {
                 // figure out if we need a version switch
@@ -506,7 +506,7 @@ public class StyleController extends AbstractCatalogController {
         // If there is more than one layer, assume this is a style group and validate accordingly.
         if (sld.getStyledLayers().length > 1) {
             List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
-            if (validationErrors.size() > 0) {
+            if (!validationErrors.isEmpty()) {
                 throw validationErrors.get(0);
             }
         }
@@ -523,7 +523,7 @@ public class StyleController extends AbstractCatalogController {
         } else {
             info.setFormat(handler.getFormat());
             info.setFormatVersion(version);
-            writeStyleRaw(info, new ByteArrayInputStream(rawData));
+            writeStyleRaw(info, rawData);
         }
     }
 
@@ -531,14 +531,25 @@ public class StyleController extends AbstractCatalogController {
      * Writes the content of an input stream to a style resource, without validation
      *
      * @param info Style info object, containing details about the style format and location
-     * @param input The style contents
+     * @param file The style contents
      * @throws IOException if there was an error persisting the style
      */
-    private void writeStyleRaw(StyleInfo info, InputStream input) throws IOException {
-        try {
+    private void writeStyleRaw(StyleInfo info, File file) throws IOException {
+        try (FileInputStream input = new FileInputStream(file)) {
             catalog.getResourcePool().writeStyle(info, input);
-        } finally {
-            org.geoserver.util.IOUtils.closeQuietly(input);
+        }
+    }
+
+    /**
+     * Writes the content of an input stream to a style resource, without validation
+     *
+     * @param info Style info object, containing details about the style format and location
+     * @param bytes The style contents
+     * @throws IOException if there was an error persisting the style
+     */
+    private void writeStyleRaw(StyleInfo info, byte[] bytes) throws IOException {
+        try (ByteArrayInputStream input = new ByteArrayInputStream(bytes)) {
+            catalog.getResourcePool().writeStyle(info, input);
         }
     }
 
@@ -584,7 +595,7 @@ public class StyleController extends AbstractCatalogController {
      * @throws IOException if there was an error extracting the archive
      */
     private File unzipSldPackage(InputStream object) throws IOException {
-        File tempDir = Files.createTempDir();
+        File tempDir = Files.createTempDirectory("_sld").toFile();
 
         org.geoserver.util.IOUtils.decompress(object, tempDir);
 

@@ -44,7 +44,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     public EnvelopePanel(String id, ReferencedEnvelope e) {
-        this(id, new Model<ReferencedEnvelope>(e));
+        this(id, new Model<>(e));
     }
 
     public EnvelopePanel(String id, IModel<ReferencedEnvelope> model) {
@@ -96,12 +96,12 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         add(maxYLabel = new Label("maxYL", new ResourceModel("maxY")));
         add(maxZLabel = new Label("maxZL", new ResourceModel("maxZ")));
 
-        add(minXInput = new DecimalTextField("minX", new PropertyModel<Double>(this, "minX")));
-        add(minYInput = new DecimalTextField("minY", new PropertyModel<Double>(this, "minY")));
-        add(minZInput = new DecimalTextField("minZ", new PropertyModel<Double>(this, "minZ")));
-        add(maxXInput = new DecimalTextField("maxX", new PropertyModel<Double>(this, "maxX")));
-        add(maxYInput = new DecimalTextField("maxY", new PropertyModel<Double>(this, "maxY")));
-        add(maxZInput = new DecimalTextField("maxZ", new PropertyModel<Double>(this, "maxZ")));
+        add(minXInput = new DecimalTextField("minX", new PropertyModel<>(this, "minX")));
+        add(minYInput = new DecimalTextField("minY", new PropertyModel<>(this, "minY")));
+        add(minZInput = new DecimalTextField("minZ", new PropertyModel<>(this, "minZ")));
+        add(maxXInput = new DecimalTextField("maxX", new PropertyModel<>(this, "maxX")));
+        add(maxYInput = new DecimalTextField("maxY", new PropertyModel<>(this, "maxY")));
+        add(maxZInput = new DecimalTextField("maxZ", new PropertyModel<>(this, "maxZ")));
 
         minZInput.setVisible(is3D());
         minZLabel.setVisible(is3D());
@@ -110,7 +110,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
         crsContainer = new WebMarkupContainer("crsContainer");
         crsContainer.setVisible(false);
-        crsPanel = new CRSPanel("crs", new PropertyModel<CoordinateReferenceSystem>(this, "crs"));
+        crsPanel = new CRSPanel("crs", new PropertyModel<>(this, "crs"));
         crsContainer.add(crsPanel);
         add(crsContainer);
     }
@@ -122,7 +122,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     private void updateFields() {
-        ReferencedEnvelope e = (ReferencedEnvelope) getModelObject();
+        ReferencedEnvelope e = getModelObject();
         if (e != null) {
             this.minX = e.getMinX();
             this.minY = e.getMinY();

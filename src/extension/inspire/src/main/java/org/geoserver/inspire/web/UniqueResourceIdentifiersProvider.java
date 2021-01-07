@@ -25,10 +25,10 @@ public class UniqueResourceIdentifiersProvider
     @Override
     protected List<Property<UniqueResourceIdentifier>> getProperties() {
         return Arrays.asList(
-                new BeanProperty<UniqueResourceIdentifier>("code", "code"),
-                new BeanProperty<UniqueResourceIdentifier>("namespace", "namespace"),
-                new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
-                new PropertyPlaceholder<UniqueResourceIdentifier>("remove"));
+                new BeanProperty<>("code", "code"),
+                new BeanProperty<>("namespace", "namespace"),
+                new BeanProperty<>("metadataURL", "metadataURL"),
+                new PropertyPlaceholder<>("remove"));
     }
 
     @Override

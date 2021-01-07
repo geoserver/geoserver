@@ -224,12 +224,10 @@ public class FeatureWrapper extends BeansWrapper {
     private SimpleHash buildType(ComplexType ft) {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
-        Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> attributeMap = new LinkedHashMap<>();
         Collection<PropertyDescriptor> descriptors = ft.getDescriptors();
-        for (Iterator<PropertyDescriptor> it = descriptors.iterator(); it.hasNext(); ) {
-            PropertyDescriptor descr = it.next();
-
-            Map<String, Object> attribute = new HashMap<String, Object>();
+        for (PropertyDescriptor descr : descriptors) {
+            Map<String, Object> attribute = new HashMap<>();
             attribute.put("name", descr.getName().getLocalPart());
             attribute.put("namespace", getNamespace(descr.getName()));
             attribute.put("prefix", getPrefix(descr.getName()));
@@ -296,7 +294,7 @@ public class FeatureWrapper extends BeansWrapper {
     }
 
     private Map<String, Object> buildDummyFeatureTypeInfo(ComplexAttribute f) {
-        Map<String, Object> dummy = new HashMap<String, Object>();
+        Map<String, Object> dummy = new HashMap<>();
         dummy.put("name", f.getType().getName().getLocalPart());
         dummy.put("namespace", getNamespace(f.getType().getName()));
         dummy.put("prefix", getPrefix(f.getType().getName()));
@@ -336,13 +334,12 @@ public class FeatureWrapper extends BeansWrapper {
 
         public Set entrySet() {
             if (entrySet == null) {
-                entrySet = new LinkedHashSet<MapEntry>();
+                entrySet = new LinkedHashSet<>();
                 final Collection<PropertyDescriptor> types = feature.getType().getDescriptors();
                 Name attName;
                 Map attributesMap;
-                for (Iterator<PropertyDescriptor> iterator = types.iterator();
-                        iterator.hasNext(); ) {
-                    attName = iterator.next().getName();
+                for (PropertyDescriptor type : types) {
+                    attName = type.getName();
                     attributesMap = new AttributeMap(attName, feature);
                     entrySet.add(
                             new MapEntry<Object, Object>(attName.getLocalPart(), attributesMap));
@@ -408,7 +405,7 @@ public class FeatureWrapper extends BeansWrapper {
          */
         public Set entrySet() {
             if (entrySet == null) {
-                entrySet = new LinkedHashSet<MapEntry>();
+                entrySet = new LinkedHashSet<>();
                 final ComplexType featureType = feature.getType();
                 PropertyDescriptor attributeDescr = featureType.getDescriptor(attributeName);
                 Property property = feature.getProperty(attributeName);

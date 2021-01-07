@@ -12,7 +12,6 @@ import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -554,11 +553,10 @@ public class LegendUtils {
             final FeatureTypeStyle[] ftStyles, double scaleDenominator) {
         ensureNotNull(ftStyles, "FeatureTypeStyle array ");
         /** Holds both the rules that apply and the ElseRule's if any, in the order they appear */
-        final List<Rule> ruleList = new ArrayList<Rule>();
+        final List<Rule> ruleList = new ArrayList<>();
 
         // get applicable rules at the current scale
-        for (int i = 0; i < ftStyles.length; i++) {
-            FeatureTypeStyle fts = ftStyles[i];
+        for (FeatureTypeStyle fts : ftStyles) {
             for (Rule r : fts.rules()) {
                 if (isWithInScale(r, scaleDenominator)) {
                     ruleList.add(r);
@@ -618,7 +616,7 @@ public class LegendUtils {
             // this is a label WITH line-breaks...we need to figure out it's height *and*
             // width, and then adjust the legend size accordingly
             Rectangle2D bounds = new Rectangle2D.Double(0, 0, 0, 0);
-            ArrayList<Integer> lineHeight = new ArrayList<Integer>();
+            ArrayList<Integer> lineHeight = new ArrayList<>();
             // four backslashes... "\\" -> '\', so "\\\\n" -> '\' + '\' + 'n'
             final String realLabel = label.replaceAll("\\\\n", "\n");
             StringTokenizer st = new StringTokenizer(realLabel, "\n\r\f");
@@ -727,8 +725,7 @@ public class LegendUtils {
                                 + 2 * dx
                                 + 0.5);
         final BufferedImage finalImage =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, transparent);
+                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
         final Graphics2D finalGraphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, finalImage, hintsMap);
 
@@ -749,7 +746,7 @@ public class LegendUtils {
         }
 
         finalGraphics.dispose();
-        return (BufferedImage) finalImage;
+        return finalImage;
     }
 
     /**
@@ -794,8 +791,8 @@ public class LegendUtils {
     /** Locates the specified rule by name */
     public static Rule getRule(FeatureTypeStyle[] fts, String rule) {
         Rule sldRule = null;
-        for (int i = 0; i < fts.length; i++) {
-            for (Rule r : fts[i].rules()) {
+        for (FeatureTypeStyle ft : fts) {
+            for (Rule r : ft.rules()) {
                 if (rule.equalsIgnoreCase(r.getName())) {
                     sldRule = r;
                     if (LOGGER.isLoggable(Level.FINE)) {

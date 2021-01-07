@@ -136,9 +136,8 @@ public class ReaderUtils {
      */
     public static Element[] getChildElements(Element root, String name, boolean mandatory)
             throws Exception {
-        ArrayList elements = new ArrayList();
+        final List<Element> elements = new ArrayList<>();
         Node child = root.getFirstChild();
-
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
                 if (name.equals(child.getNodeName())) {
@@ -154,7 +153,7 @@ public class ReaderUtils {
                     root.getNodeName() + " does not contains a child element named " + name);
         }
 
-        return (Element[]) elements.toArray(new Element[0]);
+        return elements.toArray(new Element[0]);
     }
 
     /**
@@ -488,10 +487,10 @@ public class ReaderUtils {
      * @param keywordsElem The root element to look for children in.
      * @return The list of keywords that were found.
      */
-    public static List getKeyWords(Element keywordsElem) {
+    public static List<String> getKeyWords(Element keywordsElem) {
         NodeList klist = keywordsElem.getElementsByTagName("keyword");
         int kCount = klist.getLength();
-        List keywords = new ArrayList(kCount);
+        List<String> keywords = new ArrayList<>(kCount);
         String kword;
         Element kelem;
 
@@ -504,17 +503,7 @@ public class ReaderUtils {
             }
         }
 
-        Object[] s = (Object[]) keywords.toArray();
-
-        if (s == null) {
-            return new ArrayList();
-        }
-
-        ArrayList ss = new ArrayList(s.length);
-
-        for (int i = 0; i < s.length; i++) ss.add(s[i]);
-
-        return ss;
+        return keywords;
     }
 
     /**

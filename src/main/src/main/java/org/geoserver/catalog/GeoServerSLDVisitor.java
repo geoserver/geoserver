@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -303,11 +304,11 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
                         "No FeatureTypeConstraint specified, no layer can be loaded for this UserStyle");
 
             DataStore remoteWFS = null;
-            List remoteTypeNames = null;
+            List<String> remoteTypeNames = null;
             try {
                 URL url = new URL(service.getOnlineResource());
                 remoteWFS = connectRemoteWFS(url);
-                remoteTypeNames = new ArrayList(Arrays.asList(remoteWFS.getTypeNames()));
+                remoteTypeNames = new ArrayList<>(Arrays.asList(remoteWFS.getTypeNames()));
                 Collections.sort(remoteTypeNames);
 
             } catch (MalformedURLException e) {
@@ -318,9 +319,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             List<LayerInfo> layers = new ArrayList<>();
             Style[] layerStyles = ul.getUserStyles();
 
-            for (int i = 0; i < featureConstraints.length; i++) {
+            for (FeatureTypeConstraint featureConstraint : featureConstraints) {
                 // make sure the layer is there
-                String name = featureConstraints[i].getFeatureTypeName();
+                String name = featureConstraint.getFeatureTypeName();
                 if (Collections.binarySearch(remoteTypeNames, name) < 0) {
                     throw new IllegalStateException(
                             "Could not find layer feature type '"
@@ -344,7 +345,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     protected static DataStore connectRemoteWFS(URL remoteOwsUrl) {
         try {
             WFSDataStoreFactory storeFactory = new WFSDataStoreFactory();
-            Map params = new HashMap(storeFactory.getImplementationHints());
+            Map<String, Serializable> params = new HashMap<>();
             params.put(
                     WFSDataStoreFactory.URL.key,
                     remoteOwsUrl + "&request=GetCapabilities&service=WFS");
@@ -409,7 +410,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
      * @param featureSource the feature source to be wrapped
      * @return The wrapping layer
      */
-    protected LayerInfo getLayerFromFeatureSource(final FeatureSource featureSource) {
+    protected LayerInfo getLayerFromFeatureSource(
+            final FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {
         // TODO: Wrap info from GeoTools {@link FeatureSource#getInfo()} for GetFeatureInfo, etc.
         FeatureTypeInfoImpl featureTypeInfo = null;
         try {
@@ -435,9 +437,10 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     }
 
     protected static class FeatureSourceWrappingFeatureTypeInfoImpl extends FeatureTypeInfoImpl {
-        FeatureSource featureSource;
+        FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
 
-        public FeatureSourceWrappingFeatureTypeInfoImpl(FeatureSource featureSource)
+        public FeatureSourceWrappingFeatureTypeInfoImpl(
+                FeatureSource<? extends FeatureType, ? extends Feature> featureSource)
                 throws IOException, TransformException, FactoryException {
             super();
             this.featureSource = featureSource;
@@ -448,7 +451,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         }
 
         @Override
-        public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
+        public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+                ProgressListener listener, Hints hints) {
             return featureSource;
         }
 

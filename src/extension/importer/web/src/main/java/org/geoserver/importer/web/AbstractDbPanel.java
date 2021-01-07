@@ -93,19 +93,19 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
 
     /** Switches between the types of param panels */
     Component connectionTypeChoice(final Map<String, Component> paramPanelMap) {
-        ArrayList<String> connectionTypeList = new ArrayList<String>(paramPanelMap.keySet());
-        DropDownChoice choice =
-                new DropDownChoice(
+        ArrayList<String> connectionTypeList = new ArrayList<>(paramPanelMap.keySet());
+        DropDownChoice<String> choice =
+                new DropDownChoice<>(
                         "connType",
-                        new PropertyModel(this, "connectionType"),
-                        new Model(connectionTypeList),
-                        new ChoiceRenderer() {
+                        new PropertyModel<>(this, "connectionType"),
+                        new Model<>(connectionTypeList),
+                        new ChoiceRenderer<String>() {
 
-                            public String getIdValue(Object object, int index) {
-                                return String.valueOf(object);
+                            public String getIdValue(String object, int index) {
+                                return object;
                             }
 
-                            public Object getDisplayValue(Object object) {
+                            public Object getDisplayValue(String object) {
                                 return new ParamResourceModel("ConnectionType." + object, null)
                                         .getString();
                             }

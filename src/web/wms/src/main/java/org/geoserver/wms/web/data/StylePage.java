@@ -126,7 +126,7 @@ public class StylePage extends GeoServerSecuredPage {
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
             return new SimpleBookmarkableLink(
-                    id, WorkspaceEditPage.class, new Model<String>(wsName), "name", wsName);
+                    id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
         } else {
             return new WebMarkupContainer(id);
         }

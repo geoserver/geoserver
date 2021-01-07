@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -119,8 +118,7 @@ public class LegacyCatalogImporter {
         if (!featureTypes.exists()) featureTypes.mkdir();
         File[] featureTypeDirectories = featureTypes.listFiles();
         if (featureTypeDirectories != null) {
-            for (int i = 0; i < featureTypeDirectories.length; i++) {
-                File featureTypeDirectory = featureTypeDirectories[i];
+            for (File featureTypeDirectory : featureTypeDirectories) {
                 if (!featureTypeDirectory.isDirectory() || featureTypeDirectory.isHidden())
                     continue;
 
@@ -201,8 +199,7 @@ public class LegacyCatalogImporter {
         if (!coverages.exists()) coverages.mkdir();
         File[] coverageDirectories = coverages.listFiles();
         if (coverageDirectories != null) {
-            for (int i = 0; i < coverageDirectories.length; i++) {
-                File coverageDirectory = coverageDirectories[i];
+            for (File coverageDirectory : coverageDirectories) {
                 if (!coverageDirectory.isDirectory() || coverageDirectory.isHidden()) continue;
 
                 // load info.xml
@@ -281,8 +278,8 @@ public class LegacyCatalogImporter {
     }
 
     void importFormats(CatalogFactory factory, List formats) {
-        for (Iterator f = formats.iterator(); f.hasNext(); ) {
-            Map map = (Map) f.next();
+        for (Object format : formats) {
+            Map map = (Map) format;
             CoverageStoreInfo coverageStore = factory.createCoverageStore();
 
             coverageStore.setName((String) map.get("id"));
@@ -306,8 +303,8 @@ public class LegacyCatalogImporter {
     }
 
     void importDataStores(CatalogFactory factory, Map dataStores) {
-        for (Iterator d = dataStores.values().iterator(); d.hasNext(); ) {
-            Map map = (Map) d.next();
+        for (Object item : dataStores.values()) {
+            Map map = (Map) item;
             DataStoreInfo dataStore = factory.createDataStore();
             dataStore.setName((String) map.get("id"));
 
@@ -316,8 +313,8 @@ public class LegacyCatalogImporter {
             dataStore.setWorkspace(catalog.getWorkspaceByName(namespacePrefix));
 
             Map connectionParams = (Map) map.get("connectionParams");
-            for (Iterator e = connectionParams.entrySet().iterator(); e.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) e.next();
+            for (Object o : connectionParams.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
                 String key = (String) entry.getKey();
                 Serializable value = (Serializable) entry.getValue();
 
@@ -354,8 +351,8 @@ public class LegacyCatalogImporter {
 
     /** Imports all styles and loads them into the catalog */
     void importStyles(CatalogFactory factory, Map styles) {
-        for (Iterator s = styles.entrySet().iterator(); s.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) s.next();
+        for (Object o : styles.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             StyleInfo style = factory.createStyle();
             style.setName((String) entry.getKey());
             style.setFilename((String) entry.getValue());
@@ -375,8 +372,8 @@ public class LegacyCatalogImporter {
      * provided value.
      */
     void importNamespaces(CatalogFactory factory, Map namespaces, boolean isolated) {
-        for (Iterator n = namespaces.entrySet().iterator(); n.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) n.next();
+        for (Object o : namespaces.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             if (entry.getKey() == null || "".equals(entry.getKey())) {
                 continue;
             }
@@ -600,6 +597,7 @@ public class LegacyCatalogImporter {
 
             GeneralGridEnvelope range = new GeneralGridEnvelope(low, high);
 
+            @SuppressWarnings("unchecked")
             Map<String, Double> tx = (Map<String, Double>) grid.get("geoTransform");
             if (tx != null) {
                 double[] matrix = new double[3 * 3];
@@ -624,8 +622,8 @@ public class LegacyCatalogImporter {
             coverage.setGrid(new GridGeometry2D(range, gridEnvelope));
         }
 
-        for (Iterator x = cInfoReader.coverageDimensions().iterator(); x.hasNext(); ) {
-            Map map = (Map) x.next();
+        for (Map<String, Object> stringObjectMap : cInfoReader.coverageDimensions()) {
+            Map map = (Map) stringObjectMap;
             CoverageDimensionInfo cd = factory.createCoverageDimension();
             cd.setName((String) map.get("name"));
             cd.setDescription((String) map.get("description"));

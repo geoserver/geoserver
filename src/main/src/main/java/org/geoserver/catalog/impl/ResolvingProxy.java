@@ -49,6 +49,7 @@ public class ResolvingProxy extends ProxyBase {
      *
      * @throws RuntimeException If creating the proxy fails.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T create(String ref, String prefix, Class<T> clazz) {
         InvocationHandler h = new ResolvingProxy(ref, prefix);
 

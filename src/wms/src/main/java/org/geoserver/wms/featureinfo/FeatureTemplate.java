@@ -86,7 +86,7 @@ public class FeatureTemplate {
     public static String TIME_FORMAT_PATTERN = "HH:mm:ss";
 
     /** Template cache used to avoid paying the cost of template lookup for each feature */
-    Map templateCache = new HashMap();
+    Map<TemplateKey, Template> templateCache = new HashMap<>();
 
     /**
      * Cached writer used for plain conversion from Feature to String. Improves performance
@@ -299,7 +299,7 @@ public class FeatureTemplate {
 
         // lookup the cache first
         TemplateKey key = new TemplateKey(featureType, template);
-        t = (Template) templateCache.get(key);
+        t = templateCache.get(key);
         if (t != null) return t;
 
         // otherwise, build a loader and do the lookup

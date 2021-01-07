@@ -7,11 +7,13 @@ package org.geoserver.importer.transform;
 
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.kml.Folder;
 import org.geotools.styling.FeatureTypeStyle;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -21,7 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
-public class KMLPlacemarkTransformTest extends TestCase {
+public class KMLPlacemarkTransformTest {
 
     private KMLPlacemarkTransform kmlPlacemarkTransform;
 
@@ -29,8 +31,8 @@ public class KMLPlacemarkTransformTest extends TestCase {
 
     private SimpleFeatureType transformedType;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         kmlPlacemarkTransform = new KMLPlacemarkTransform();
 
         SimpleFeatureTypeBuilder origBuilder = new SimpleFeatureTypeBuilder();
@@ -57,6 +59,7 @@ public class KMLPlacemarkTransformTest extends TestCase {
         transformedType = transformedBuilder.buildFeatureType();
     }
 
+    @Test
     public void testFeatureType() throws Exception {
         SimpleFeatureType result = kmlPlacemarkTransform.convertFeatureType(origType);
         assertBinding(result, "LookAt", Point.class);
@@ -67,56 +70,59 @@ public class KMLPlacemarkTransformTest extends TestCase {
     private void assertBinding(SimpleFeatureType ft, String attr, Class<?> expectedBinding) {
         AttributeDescriptor descriptor = ft.getDescriptor(attr);
         Class<?> binding = descriptor.getType().getBinding();
-        assertEquals(expectedBinding, binding);
+        Assert.assertEquals(expectedBinding, binding);
     }
 
+    @Test
     public void testGeometry() throws Exception {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(origType);
         GeometryFactory gf = new GeometryFactory();
         fb.set("Geometry", gf.createPoint(new Coordinate(3d, 4d)));
         SimpleFeature feature = fb.buildFeature("testgeometry");
-        assertEquals(
+        Assert.assertEquals(
                 "Unexpected Geometry class",
                 Point.class,
                 feature.getAttribute("Geometry").getClass());
-        assertEquals(
+        Assert.assertEquals(
                 "Unexpected default geometry",
                 Point.class,
                 feature.getDefaultGeometry().getClass());
         SimpleFeature result = kmlPlacemarkTransform.convertFeature(feature, transformedType);
-        assertEquals(
+        Assert.assertEquals(
                 "Invalid Geometry class", Point.class, result.getAttribute("Geometry").getClass());
-        assertEquals(
+        Assert.assertEquals(
                 "Unexpected default geometry",
                 Point.class,
                 feature.getDefaultGeometry().getClass());
     }
 
+    @Test
     public void testLookAtProperty() throws Exception {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(origType);
         GeometryFactory gf = new GeometryFactory();
         Coordinate c = new Coordinate(3d, 4d);
         fb.set("LookAt", gf.createPoint(c));
         SimpleFeature feature = fb.buildFeature("testlookat");
-        assertEquals(
+        Assert.assertEquals(
                 "Unexpected LookAt attribute class",
                 Point.class,
                 feature.getAttribute("LookAt").getClass());
         SimpleFeature result = kmlPlacemarkTransform.convertFeature(feature, transformedType);
-        assertEquals(
+        Assert.assertEquals(
                 "Invalid LookAt attribute class",
                 Point.class,
                 result.getAttribute("LookAt").getClass());
     }
 
+    @Test
     public void testFolders() throws Exception {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(origType);
-        List<Folder> folders = new ArrayList<Folder>(2);
+        List<Folder> folders = new ArrayList<>(2);
         folders.add(new Folder("foo"));
         folders.add(new Folder("bar"));
         fb.featureUserData("Folder", folders);
         SimpleFeature feature = fb.buildFeature("testFolders");
         SimpleFeature newFeature = kmlPlacemarkTransform.convertFeature(feature, transformedType);
-        assertEquals("foo -> bar", newFeature.getAttribute("Folder"));
+        Assert.assertEquals("foo -> bar", newFeature.getAttribute("Folder"));
     }
 }

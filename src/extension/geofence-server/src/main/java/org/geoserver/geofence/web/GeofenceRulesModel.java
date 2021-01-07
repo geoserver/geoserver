@@ -61,34 +61,27 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         }
     }
 
-    public static final Property<ShortRule> PRIORITY =
-            new BeanProperty<ShortRule>("priority", "priority");
+    public static final Property<ShortRule> PRIORITY = new BeanProperty<>("priority", "priority");
 
-    public static final Property<ShortRule> ROLE =
-            new RuleBeanProperty<ShortRule>("roleName", "roleName");
+    public static final Property<ShortRule> ROLE = new RuleBeanProperty<>("roleName", "roleName");
 
-    public static final Property<ShortRule> USER =
-            new RuleBeanProperty<ShortRule>("userName", "userName");
+    public static final Property<ShortRule> USER = new RuleBeanProperty<>("userName", "userName");
 
-    public static final Property<ShortRule> SERVICE =
-            new RuleBeanProperty<ShortRule>("service", "service");
+    public static final Property<ShortRule> SERVICE = new RuleBeanProperty<>("service", "service");
 
-    public static final Property<ShortRule> REQUEST =
-            new RuleBeanProperty<ShortRule>("request", "request");
+    public static final Property<ShortRule> REQUEST = new RuleBeanProperty<>("request", "request");
 
     public static final Property<ShortRule> WORKSPACE =
-            new RuleBeanProperty<ShortRule>("workspace", "workspace");
+            new RuleBeanProperty<>("workspace", "workspace");
 
-    public static final Property<ShortRule> LAYER =
-            new RuleBeanProperty<ShortRule>("layer", "layer");
+    public static final Property<ShortRule> LAYER = new RuleBeanProperty<>("layer", "layer");
 
-    public static final Property<ShortRule> ACCESS =
-            new RuleBeanProperty<ShortRule>("access", "access");
+    public static final Property<ShortRule> ACCESS = new RuleBeanProperty<>("access", "access");
 
     public static final Property<ShortRule> ADDRESS_RANGE =
-            new RuleBeanProperty<ShortRule>("addressRange", "addressRange");
+            new RuleBeanProperty<>("addressRange", "addressRange");
 
-    public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<ShortRule>("buttons");
+    public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<>("buttons");
 
     private static RuleAdminService adminService() {
         return (RuleAdminService) GeoServerApplication.get().getBean("ruleAdminService");

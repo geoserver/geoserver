@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.vfny.geoserver.util.Requests;
@@ -61,7 +60,7 @@ public class ProxifyingURLMangler implements URLMangler {
     public static String TEMPLATE_PREFIX = "${";
     public static String TEMPLATE_POSTFIX = "}";
 
-    public static Map<String, Pattern> FORWARDED_PATTERNS = new HashMap<String, Pattern>();
+    public static Map<String, Pattern> FORWARDED_PATTERNS = new HashMap<>();
 
     {
         Arrays.asList(ForwardedComponents.values())
@@ -90,7 +89,9 @@ public class ProxifyingURLMangler implements URLMangler {
 
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
+
         // possible security liabilities)
+
         if (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null) {
             this.mangleURLHeaders(baseURL, proxyBase);
         } else {
@@ -157,45 +158,35 @@ public class ProxifyingURLMangler implements URLMangler {
      * @return map of header names and values
      */
     private Map<String, String> compileHeadersMap() {
-
-        Map<String, String> headers = new HashMap<String, String>();
-
-        HttpServletRequest owsRequest = Dispatcher.REQUEST.get().getHttpRequest();
-        Arrays.asList(Headers.values())
-                .forEach(
-                        (header) -> {
-                            if (owsRequest.getHeader(header.asString()) != null) {
-                                if (header == Headers.FORWARDED) {
-                                    FORWARDED_PATTERNS.forEach(
-                                            (comp, pattern) -> {
-                                                Matcher m =
-                                                        pattern.matcher(
-                                                                owsRequest.getHeader(
-                                                                        header.asString()));
-                                                if (m.matches()) {
-                                                    headers.put(
-                                                            String.format(
-                                                                    "%s%s%s",
-                                                                    TEMPLATE_PREFIX,
-                                                                    Headers.FORWARDED.asString()
-                                                                            + "."
-                                                                            + comp,
-                                                                    TEMPLATE_POSTFIX),
-                                                            m.group(2));
-                                                }
-                                            });
-                                } else {
-                                    headers.put(
-                                            String.format(
-                                                    "%s%s%s",
-                                                    TEMPLATE_PREFIX,
-                                                    header.asString(),
-                                                    TEMPLATE_POSTFIX),
-                                            owsRequest.getHeader(header.asString()));
-                                }
-                            }
-                        });
+        Map<String, String> headers = new HashMap<>();
+        Arrays.asList(Headers.values()).forEach(h -> collectHeader(headers, h.asString()));
 
         return headers;
+    }
+
+    private void collectHeader(Map<String, String> headers, String headerName) {
+        String headerValue = HTTPHeadersCollector.getHeader(headerName);
+        if (headerValue != null) {
+            if (headerName.equals(Headers.FORWARDED.asString())) {
+                collectForwardedHeaders(headers, headerValue);
+            } else {
+                headers.put(toTemplate(headerName), headerValue);
+            }
+        }
+    }
+
+    private void collectForwardedHeaders(Map<String, String> headers, String headerValue) {
+        FORWARDED_PATTERNS.forEach(
+                (comp, pattern) -> {
+                    Matcher m = pattern.matcher(headerValue);
+                    if (m.matches()) {
+                        String key = toTemplate(Headers.FORWARDED.asString() + "." + comp);
+                        headers.put(key, m.group(2));
+                    }
+                });
+    }
+
+    private String toTemplate(String header) {
+        return String.format("%s%s%s", TEMPLATE_PREFIX, header, TEMPLATE_POSTFIX);
     }
 }

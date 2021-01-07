@@ -400,6 +400,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         //          String linkId = tabbedPanel.getId()+":tabs-container:tabs:"+tabIndex+":link";
         //          tester.clickLink(linkId,true);
 
+        @SuppressWarnings("unchecked")
         DataView<SecurityNamedServiceConfig> dv =
                 (DataView<SecurityNamedServiceConfig>) panel.get("table:listContainer:items");
         // page.get("tabbedPanel:panel:table:listContainer:items");

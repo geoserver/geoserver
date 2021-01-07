@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,8 +86,8 @@ public class CatalogWriter {
         Element dataStoresElement = document.createElement("datastores");
         catalog.appendChild(dataStoresElement);
 
-        for (Iterator d = dataStores.entrySet().iterator(); d.hasNext(); ) {
-            Map.Entry dataStore = (Map.Entry) d.next();
+        for (Object item : dataStores.entrySet()) {
+            Map.Entry dataStore = (Map.Entry) item;
             String id = (String) dataStore.getKey();
             Map params = (Map) dataStore.getValue();
 
@@ -106,8 +105,8 @@ public class CatalogWriter {
             Element connectionParamtersElement = document.createElement("connectionParams");
             dataStoreElement.appendChild(connectionParamtersElement);
 
-            for (Iterator p = params.entrySet().iterator(); p.hasNext(); ) {
-                Map.Entry param = (Map.Entry) p.next();
+            for (Object o : params.entrySet()) {
+                Map.Entry param = (Map.Entry) o;
                 String name = (String) param.getKey();
                 Object value = param.getValue();
 
@@ -130,8 +129,8 @@ public class CatalogWriter {
         Element formatsElement = document.createElement("formats");
         catalog.appendChild(formatsElement);
 
-        for (Iterator d = coverageStores.entrySet().iterator(); d.hasNext(); ) {
-            Map.Entry dataStore = (Map.Entry) d.next();
+        for (Object o : coverageStores.entrySet()) {
+            Map.Entry dataStore = (Map.Entry) o;
             String id = (String) dataStore.getKey();
             Map params = (Map) dataStore.getValue();
 
@@ -174,8 +173,8 @@ public class CatalogWriter {
         Element namespacesElement = document.createElement("namespaces");
         catalog.appendChild(namespacesElement);
 
-        for (Iterator n = namespaces.entrySet().iterator(); n.hasNext(); ) {
-            Map.Entry namespace = (Map.Entry) n.next();
+        for (Object o : namespaces.entrySet()) {
+            Map.Entry namespace = (Map.Entry) o;
             String prefix = (String) namespace.getKey();
             String uri = (String) namespace.getValue();
 
@@ -212,8 +211,8 @@ public class CatalogWriter {
         Element stylesElement = document.createElement("styles");
         catalog.appendChild(stylesElement);
 
-        for (Iterator s = styles.entrySet().iterator(); s.hasNext(); ) {
-            Map.Entry style = (Map.Entry) s.next();
+        for (Object o : styles.entrySet()) {
+            Map.Entry style = (Map.Entry) o;
             String id = (String) style.getKey();
             String filename = (String) style.getValue();
 

@@ -134,9 +134,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
 
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Arrays.asList(
-                (javax.servlet.Filter)
-                        applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
+        return Arrays.asList(applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
     }
 
     static class SecurityProvider extends GeoServerSecurityProvider {

@@ -6,7 +6,6 @@
 package org.geoserver.wfs;
 
 import java.io.IOException;
-import java.util.Iterator;
 import net.opengis.wfs.GetGmlObjectType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -56,8 +55,7 @@ public class GetGmlObject {
         }
 
         // walk through datastores finding one that is gmlobject aware
-        for (Iterator d = catalog.getDataStores().iterator(); d.hasNext(); ) {
-            DataStoreInfo dsInfo = (DataStoreInfo) d.next();
+        for (DataStoreInfo dsInfo : catalog.getDataStores()) {
             DataAccess<? extends FeatureType, ? extends Feature> ds;
             try {
                 ds = dsInfo.getDataStore(null);

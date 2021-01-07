@@ -168,7 +168,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
         assertEquals(4, pwConfig.getMaxLength());
 
         // reload from manager
-        pwConfig = (PasswordPolicyConfig) getSecurityManager().loadPasswordPolicyConfig("default2");
+        pwConfig = getSecurityManager().loadPasswordPolicyConfig("default2");
         assertNotNull(pwConfig);
         assertEquals("default2", pwConfig.getName());
         assertEquals(PasswordValidatorImpl.class.getName(), pwConfig.getClassName());

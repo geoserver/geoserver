@@ -198,7 +198,7 @@ public class RetypingDataStoreTest {
         SimpleFeatureStore store;
         store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
         SimpleFeature original = store.getFeatures(fidFilter).features().next();
-        String newAddress = ((String) original.getAttribute("ADDRESS")) + " xxx";
+        String newAddress = original.getAttribute("ADDRESS") + " xxx";
 
         store.modifyFeatures(new NameImpl("ADDRESS"), newAddress, fidFilter);
         SimpleFeature modified = store.getFeatures(fidFilter).features().next();
@@ -245,7 +245,7 @@ public class RetypingDataStoreTest {
         SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource("oaks");
         List<FeatureId> ids = store.addFeatures(fc);
         assertEquals(1, ids.size());
-        String id = ((FeatureId) ids.iterator().next()).getID();
+        String id = ids.iterator().next().getID();
         assertTrue("Id does not start with " + "oaks" + " it's " + id, id.startsWith("oaks"));
     }
 

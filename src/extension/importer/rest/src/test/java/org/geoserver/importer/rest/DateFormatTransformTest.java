@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import java.text.ParseException;
@@ -59,7 +61,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
 
         // make a big shuffled list of patterns to ensure caching of last pattern
         // doesn't cause any problems
-        List<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<>();
         patterns.addAll(
                 Collections2.transform(
                         Dates.patterns(false),

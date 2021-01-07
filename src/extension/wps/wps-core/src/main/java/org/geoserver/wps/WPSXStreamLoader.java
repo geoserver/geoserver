@@ -112,19 +112,19 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     protected WPSInfo initialize(WPSInfo service) {
         // TODO: move this code block to the parent class
         if (service.getKeywords() == null) {
-            ((WPSInfoImpl) service).setKeywords(new ArrayList());
+            ((WPSInfoImpl) service).setKeywords(new ArrayList<>());
         }
         if (service.getExceptionFormats() == null) {
-            ((WPSInfoImpl) service).setExceptionFormats(new ArrayList());
+            ((WPSInfoImpl) service).setExceptionFormats(new ArrayList<>());
         }
         if (service.getMetadata() == null) {
             ((WPSInfoImpl) service).setMetadata(new MetadataMap());
         }
         if (service.getClientProperties() == null) {
-            ((WPSInfoImpl) service).setClientProperties(new HashMap());
+            ((WPSInfoImpl) service).setClientProperties(new HashMap<>());
         }
         if (service.getVersions() == null) {
-            ((WPSInfoImpl) service).setVersions(new ArrayList());
+            ((WPSInfoImpl) service).setVersions(new ArrayList<>());
         }
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
@@ -134,21 +134,21 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             service.setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
         if (service.getProcessGroups() == null) {
-            ((WPSInfoImpl) service).setProcessGroups(new ArrayList());
+            ((WPSInfoImpl) service).setProcessGroups(new ArrayList<>());
         } else {
             for (ProcessGroupInfo pg : service.getProcessGroups()) {
                 if (pg.getRoles() == null) {
-                    pg.setRoles(new ArrayList<String>());
+                    pg.setRoles(new ArrayList<>());
                 }
                 if (pg.getMetadata() == null) {
                     ((ProcessGroupInfoImpl) pg).setMetadata(new MetadataMap());
                 }
                 if (pg.getFilteredProcesses() == null) {
-                    ((ProcessGroupInfoImpl) pg).setFilteredProcesses(new ArrayList<ProcessInfo>());
+                    ((ProcessGroupInfoImpl) pg).setFilteredProcesses(new ArrayList<>());
                 } else {
                     for (ProcessInfo pi : pg.getFilteredProcesses()) {
                         if (pi.getRoles() == null) {
-                            ((ProcessInfoImpl) pi).setRoles(new ArrayList<String>());
+                            ((ProcessInfoImpl) pi).setRoles(new ArrayList<>());
                         }
                         if (pi.getValidators() == null) {
                             Multimap<String, WPSInputValidator> validators =
@@ -220,7 +220,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                         (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
 
                 if (converted.getFilteredProcesses() != null) {
-                    List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
+                    List<ProcessInfo> newFilteredProcesses = new ArrayList<>();
                     for (Object fp : converted.getFilteredProcesses()) {
                         if (fp instanceof NameImpl) {
                             NameImpl ni = (NameImpl) fp;
@@ -313,6 +313,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void addCurrentElementToCollection(
                 HierarchicalStreamReader reader,
                 UnmarshallingContext context,

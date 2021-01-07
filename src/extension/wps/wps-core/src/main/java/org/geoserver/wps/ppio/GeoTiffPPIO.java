@@ -43,7 +43,7 @@ public class GeoTiffPPIO extends BinaryPPIO {
     protected static final String COMPRESSION_KEY = "compression";
     protected static final String WRITENODATA_KEY = "writenodata";
 
-    private static final Set<String> SUPPORTED_PARAMS = new HashSet<String>();
+    private static final Set<String> SUPPORTED_PARAMS = new HashSet<>();
 
     private static final String SUPPORTED_PARAMS_LIST;
 

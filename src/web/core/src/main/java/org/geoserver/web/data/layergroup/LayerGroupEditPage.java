@@ -125,7 +125,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             updateRootLayerPanel(getPublishedInfo().getMode());
 
-            TextField<String> name = new TextField<String>("name");
+            TextField<String> name = new TextField<>("name");
             name.setRequired(true);
             // JD: don't need this, this is validated at the catalog level
             // name.add(new GroupNameValidator());
@@ -133,7 +133,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(new CheckBox("enabled"));
             add(new CheckBox("advertised"));
             final DropDownChoice<LayerGroupInfo.Mode> modeChoice =
-                    new DropDownChoice<LayerGroupInfo.Mode>(
+                    new DropDownChoice<>(
                             "mode", new LayerGroupModeModel(), new LayerGroupModeChoiceRenderer());
             modeChoice.setNullValid(false);
             modeChoice.setRequired(true);
@@ -152,15 +152,14 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(modeChoice);
 
             queryableCheckBox =
-                    new CheckBox(
-                            "queryable", new Model<Boolean>(!getPublishedInfo().isQueryDisabled()));
+                    new CheckBox("queryable", new Model<>(!getPublishedInfo().isQueryDisabled()));
             add(queryableCheckBox);
 
             add(new TextField<String>("title"));
             add(new TextArea<String>("abstract"));
 
             DropDownChoice<WorkspaceInfo> wsChoice =
-                    new DropDownChoice<WorkspaceInfo>(
+                    new DropDownChoice<>(
                             "workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
             wsChoice.add(
@@ -305,7 +304,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     protected void doSaveInternal() {
         // validation
         if (lgEntryPanel.getEntries().size() == 0) {
-            error((String) new ParamResourceModel("oneLayerMinimum", getPage()).getObject());
+            error(new ParamResourceModel("oneLayerMinimum", getPage()).getObject());
             return;
         }
 

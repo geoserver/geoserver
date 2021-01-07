@@ -59,7 +59,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model(file));
+                                return new GeoServerFileChooser(id, new Model<>(file));
                             }
                         }));
 
@@ -120,7 +120,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 new DialogDelegate() {
                     @Override
                     protected Component getContents(String id) {
-                        return new GeoServerFileChooser(id, new Model(root));
+                        return new GeoServerFileChooser(id, new Model<>(root));
                     }
 
                     @Override
@@ -140,13 +140,14 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
                             public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model(), true);
+                                return new GeoServerFileChooser(id, new Model<>(), true);
                             }
                         }));
 
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
+        @SuppressWarnings("unchecked")
         DropDownChoice<File> rootChoice =
                 (DropDownChoice<File>) tester.getComponentFromLastRenderedPage("form:panel:roots");
         assertEquals(1, rootChoice.getChoices().size());
@@ -189,7 +190,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         List<String> values =
                 rootsFinder.getMatches(rootPath, fileFilter).collect(Collectors.toList());
         assertThat(values.size(), greaterThan(0));
-        assertEquals(new HashSet(values).size(), values.size());
+        assertEquals(new HashSet<>(values).size(), values.size());
         assertThat(
                 values,
                 hasItem("file://" + new File(rootPath, MockData.CITE_PREFIX).getAbsolutePath()));

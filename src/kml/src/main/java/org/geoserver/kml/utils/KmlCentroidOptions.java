@@ -18,7 +18,7 @@ public class KmlCentroidOptions {
     public static final String SAMPLE = PREFIX + "_sample";
     public static final String CLIP = PREFIX + "_clip";
 
-    public static final KmlCentroidOptions DEFAULT = new KmlCentroidOptions(new KvpMap());
+    public static final KmlCentroidOptions DEFAULT = new KmlCentroidOptions(new KvpMap<>());
 
     static final int DEFAULT_SAMPLES = 5;
 
@@ -27,11 +27,11 @@ public class KmlCentroidOptions {
         return create(
                 context != null && context.getRequest() != null
                         ? context.getRequest().getFormatOptions()
-                        : Collections.EMPTY_MAP);
+                        : Collections.emptyMap());
     }
 
     /** Creates centroid options from the specified format options. */
-    public static KmlCentroidOptions create(Map formatOptions) {
+    public static KmlCentroidOptions create(Map<String, Object> formatOptions) {
         if (formatOptions != null) {
             for (Object key : formatOptions.keySet()) {
                 if (key.toString().toLowerCase().startsWith(PREFIX)) {
@@ -42,9 +42,9 @@ public class KmlCentroidOptions {
         return KmlCentroidOptions.DEFAULT;
     }
 
-    Map raw;
+    Map<String, Object> raw;
 
-    public KmlCentroidOptions(Map raw) {
+    public KmlCentroidOptions(Map<String, Object> raw) {
         this.raw = raw;
     }
 

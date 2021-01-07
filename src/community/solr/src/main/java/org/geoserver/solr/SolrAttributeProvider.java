@@ -18,13 +18,12 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
 
     private static final long serialVersionUID = -1021780286733349153L;
 
-    private List<SolrAttribute> attributes = new ArrayList<SolrAttribute>();
+    private List<SolrAttribute> attributes = new ArrayList<>();
 
     private Boolean hideEmpty = true;
 
     /** Name of field */
-    protected static final Property<SolrAttribute> NAME =
-            new BeanProperty<SolrAttribute>("name", "name");
+    protected static final Property<SolrAttribute> NAME = new BeanProperty<>("name", "name");
 
     /** Class type of field */
     protected static final Property<SolrAttribute> TYPE =
@@ -42,23 +41,20 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
             };
 
     /** SRID of geometric field */
-    protected static final Property<SolrAttribute> SRID =
-            new BeanProperty<SolrAttribute>("srid", "srid");
+    protected static final Property<SolrAttribute> SRID = new BeanProperty<>("srid", "srid");
 
     /** Mark as the default geometry */
     protected static final Property<SolrAttribute> DEFAULT_GEOMETRY =
-            new BeanProperty<SolrAttribute>("defaultGeometry", "defaultGeometry");
+            new BeanProperty<>("defaultGeometry", "defaultGeometry");
 
     /** Store if the field is PK */
-    protected static final Property<SolrAttribute> PK = new BeanProperty<SolrAttribute>("pk", "pk");
+    protected static final Property<SolrAttribute> PK = new BeanProperty<>("pk", "pk");
 
     /** Store if the field is in use in datastore */
-    protected static final Property<SolrAttribute> USE =
-            new BeanProperty<SolrAttribute>("use", "use");
+    protected static final Property<SolrAttribute> USE = new BeanProperty<>("use", "use");
 
     /** Store if the field has no data on SOLR document */
-    protected static final Property<SolrAttribute> EMPTY =
-            new BeanProperty<SolrAttribute>("empty", "empty");
+    protected static final Property<SolrAttribute> EMPTY = new BeanProperty<>("empty", "empty");
 
     /**
      * Build attribute provider

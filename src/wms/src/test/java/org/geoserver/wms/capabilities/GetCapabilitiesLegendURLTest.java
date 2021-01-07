@@ -6,7 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -124,7 +124,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         testData.addStyle("squares", "squares.sld", GetFeatureInfoTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);
@@ -135,7 +135,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                 "Population.sld",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);
-        Map<LayerProperty, Object> properties = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "states");
         LocalWorkspace.set(workspaceInfo);
         testData.addVectorLayer(
@@ -147,7 +147,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         LocalWorkspace.set(null);
 
         testData.addStyle("temperature", "temperature.sld", WMSTestSupport.class, catalog);
-        properties = new HashMap<LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WORLD, "world.tiff", null, properties, SystemTestData.class, catalog);
@@ -183,7 +183,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                         getClass().getResourceAsStream("/legendURL/Bridges.png"),
                         LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");
@@ -264,9 +264,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("squares");
         assertTrue(sampleFile.exists());
@@ -282,9 +282,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("temperature");
         assertTrue(sampleFile.exists());
@@ -316,9 +316,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("cite_states");
         assertTrue(sampleFile.exists());
@@ -350,7 +350,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 
@@ -370,9 +370,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
 
         catalog.firePostModified(
                 catalog.getStyleByName("Bridges"),
-                new ArrayList<String>(),
-                new ArrayList(),
-                new ArrayList());
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
 
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);
@@ -385,7 +385,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 
@@ -461,8 +461,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         } else {
 
             String[] list = file.list();
-            for (int i = 0; i < list.length; i++) {
-                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + list[i]));
+            for (String s : list) {
+                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + s));
             }
 
             file.delete();

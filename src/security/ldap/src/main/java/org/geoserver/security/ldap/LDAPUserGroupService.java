@@ -123,7 +123,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() {
-        final SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        final SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -166,7 +166,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
         return gsUser;
     }
 
-    protected ContextMapper addToUsers(SortedSet<GeoServerUser> users) {
+    protected ContextMapper<Object> addToUsers(SortedSet<GeoServerUser> users) {
         return ctx -> {
             users.add(createUser((DirContextAdapter) ctx));
             return null;
@@ -175,7 +175,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUser> getUsers() {
-        final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        final SortedSet<GeoServerUser> users = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -214,7 +214,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) {
-        final AtomicReference<GeoServerUserGroup> group = new AtomicReference<GeoServerUserGroup>();
+        final AtomicReference<GeoServerUserGroup> group = new AtomicReference<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -245,7 +245,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public GeoServerUser getUserByUsername(String username) {
-        final AtomicReference<GeoServerUser> user = new AtomicReference<GeoServerUser>();
+        final AtomicReference<GeoServerUser> user = new AtomicReference<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -273,7 +273,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUser> getUsersForGroup(final GeoServerUserGroup group) {
-        final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        final SortedSet<GeoServerUser> users = new TreeSet<>();
 
         if (!useNestedGroups) {
             // no nested groups, load users from root group only
@@ -385,7 +385,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(final GeoServerUser user) {
-        final SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        final SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
                     @Override
@@ -408,8 +408,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                 });
         // if nested groups search is enabled, add hierarchical parent groups
         if (useNestedGroups) {
-            final SortedSet<GeoServerUserGroup> parentGroups =
-                    new TreeSet<GeoServerUserGroup>(groups);
+            final SortedSet<GeoServerUserGroup> parentGroups = new TreeSet<>(groups);
             for (GeoServerUserGroup egroup : parentGroups) {
                 addNestedParentGroups(egroup, groups, 1);
             }
@@ -450,7 +449,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     private String getGroupDn(GeoServerUserGroup group) {
         final String groupName = group.getGroupname();
-        final MutableObject<String> groupDnReference = new MutableObject<String>(null);
+        final MutableObject<String> groupDnReference = new MutableObject<>(null);
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
                     @Override
@@ -503,7 +502,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) {
-        final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        final SortedSet<GeoServerUser> users = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -535,7 +534,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     @Override
     public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) {
-        final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        final SortedSet<GeoServerUser> users = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
@@ -574,7 +573,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     @Override
     public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
             throws IOException {
-        final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        final SortedSet<GeoServerUser> users = new TreeSet<>();
 
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {

@@ -67,7 +67,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     /** Returns the mapper parameters. */
     public Map<String, String> getMapperParameters() {
         if (mapperParameters == null) {
-            mapperParameters = new HashMap<String, String>();
+            mapperParameters = new HashMap<>();
         }
         return mapperParameters;
     }

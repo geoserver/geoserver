@@ -185,7 +185,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 catalog);
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,
                 catalog);

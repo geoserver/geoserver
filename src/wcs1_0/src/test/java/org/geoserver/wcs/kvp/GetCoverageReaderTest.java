@@ -69,7 +69,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     }
 
     private Map<String, Object> baseMap() {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.0.0");
         raw.put("request", "GetCoverage");

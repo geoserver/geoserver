@@ -64,7 +64,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         if (format == null) {
             return null;
         } else {
-            return (Format) SecuredObjects.secure(format, policy);
+            return SecuredObjects.secure(format, policy);
         }
     }
 
@@ -91,8 +91,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 parameters = limitParams;
             } else if (limitParams != null) {
                 // scan the input params, add and overwrite with the limits params as needed
-                List<GeneralParameterValue> params =
-                        new ArrayList<GeneralParameterValue>(Arrays.asList(parameters));
+                List<GeneralParameterValue> params = new ArrayList<>(Arrays.asList(parameters));
                 for (GeneralParameterValue lparam : limitParams) {
                     // remove the overwritten param, if any
                     for (Iterator it = params.iterator(); it.hasNext(); ) {
@@ -164,7 +163,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         if (info == null) {
             return null;
         } else {
-            return (ServiceInfo) SecuredObjects.secure(info, policy);
+            return SecuredObjects.secure(info, policy);
         }
     }
 
@@ -174,7 +173,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         if (info == null) {
             return null;
         } else {
-            return (ResourceInfo) SecuredObjects.secure(info, policy);
+            return SecuredObjects.secure(info, policy);
         }
     }
 }

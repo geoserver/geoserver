@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -69,11 +68,10 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         final double newMinimum = -2000d;
         final double newMaximum = 2000d;
-        final NumberRange<Double> range =
-                new NumberRange<Double>(Double.class, newMinimum, newMaximum);
+        final NumberRange<Double> range = new NumberRange<>(Double.class, newMinimum, newMaximum);
         coverageDim.setRange(range);
 
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);
@@ -118,11 +116,10 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         final double newMinimum = -2000d;
         final double newMaximum = 2000d;
-        final NumberRange<Double> range =
-                new NumberRange<Double>(Double.class, newMinimum, newMaximum);
+        final NumberRange<Double> range = new NumberRange<>(Double.class, newMinimum, newMaximum);
         coverageDim.setRange(range);
 
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);
@@ -153,7 +150,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setRange(NumberRange.create(0d, 10000d));
 
         // Definition of the nodata
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         nullValues.add(noData1);
         coverageDim.setNullValues(nullValues);
@@ -178,7 +175,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         Category category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
         assertEquals(category.getRange().getMinimum(), noData1, DELTA);
@@ -196,7 +193,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setDimensionType(SampleDimensionType.REAL_64BITS);
 
         // Definition of the nodata
-        final List<Double> nullValues = new ArrayList<Double>();
+        final List<Double> nullValues = new ArrayList<>();
         final double noData1 = -32768d;
         final double noData2 = -32767d;
         nullValues.add(noData1);
@@ -228,7 +225,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         Category category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check that it does not contain sampleToGeophisics and that the Range contains only NaN
         assertEquals(category.getRange().getMinimum(), Double.NaN, DELTA);
@@ -254,7 +251,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
         // Ensure NoData Category is present
         category = categories.get(0);
-        assertTrue(category.getName().equals(Category.NODATA.getName()));
+        assertEquals(category.getName(), Category.NODATA.getName());
 
         // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
         assertEquals(category.getRange().getMinimum(), noData1, DELTA);

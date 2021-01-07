@@ -43,8 +43,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     public GeofenceAdminRulePage(final ShortAdminRule rule, final GeofenceAdminRulesModel rules) {
 
-        final Form<ShortAdminRule> form =
-                new Form<>("form", new CompoundPropertyModel<ShortAdminRule>(rule));
+        final Form<ShortAdminRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
 
         form.add(new TextField<Integer>("priority").setRequired(true));
@@ -103,7 +102,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     protected List<String> getWorkspaceNames() {
 
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (WorkspaceInfo ws : getCatalog().getFacade().getWorkspaces()) {
             resultSet.add(ws.getName());
         }

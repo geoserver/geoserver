@@ -134,6 +134,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<ExecutionStatus> list(Query query) {
         int maxFeatures = query.getMaxFeatures();
         int startIndex = query.getStartIndex() == null ? 0 : query.getStartIndex();
@@ -148,6 +149,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         if (postFilter != null && postFilter != Filter.INCLUDE) {
             FilteringEntryProcessor filterProcessor = new FilteringEntryProcessor(postFilter);
             Map<String, Object> entries = statuses.executeOnEntries(filterProcessor);
+            @SuppressWarnings("unchecked")
             List<ExecutionStatus> result = new ArrayList(entries.values());
             return postProcessResults(query, maxFeatures, startIndex, needsSorting, result);
         } else {
@@ -222,21 +224,21 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         return result;
     }
 
-    private Comparator getComparator(String prefix, SortBy[] sorts) {
+    private <T> Comparator<T> getComparator(String prefix, SortBy[] sorts) {
         if (sorts == null || sorts.length == 0) {
             return null;
         }
 
-        List<Comparator> comparators = new ArrayList<>();
+        List<Comparator<T>> comparators = new ArrayList<>();
         for (SortBy sort : sorts) {
             if (sort == SortBy.NATURAL_ORDER) {
-                comparators.add(new BeanComparator(prefix + "creationTime"));
+                comparators.add(new BeanComparator<>(prefix + "creationTime"));
             } else if (sort == SortBy.REVERSE_ORDER) {
                 comparators.add(
-                        Collections.reverseOrder(new BeanComparator(prefix + "creationTime")));
+                        Collections.reverseOrder(new BeanComparator<>(prefix + "creationTime")));
             } else {
                 String property = sort.getPropertyName().getPropertyName();
-                Comparator comparator = new BeanComparator(prefix + property);
+                Comparator<T> comparator = new BeanComparator<>(prefix + property);
                 if (sort.getSortOrder() == SortOrder.DESCENDING) {
                     comparator = Collections.reverseOrder(comparator);
                 }
@@ -245,7 +247,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         }
 
         if (comparators.size() > 1) {
-            return new CompositeComparator(comparators);
+            return new CompositeComparator<>(comparators);
         } else {
             return comparators.get(0);
         }
@@ -259,7 +261,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
     private static class FilterPredicate {
         Filter postFilter;
 
-        Predicate predicate;
+        Predicate<String, ExecutionStatus> predicate;
 
         public FilterPredicate(Filter filter) {
             try {
@@ -271,19 +273,23 @@ public class HazelcastStatusStore implements ProcessStatusStore {
                 Filter preFilter = splitter.getFilterPre();
                 // turn into a predicate
                 if (preFilter == Filter.INCLUDE) {
-                    predicate = TruePredicate.INSTANCE;
+                    predicate = TruePredicate.truePredicate();
                 } else {
                     FilterToCriteria transformer = new FilterToCriteria();
-                    predicate =
-                            (Predicate<String, ExecutionStatus>)
-                                    preFilter.accept(transformer, null);
+                    predicate = toPredicate(preFilter, transformer);
                 }
             } catch (Exception e) {
                 // the translation might not work since the predicate model is more limited than
                 // the OGC filter one
                 postFilter = filter;
-                predicate = TruePredicate.INSTANCE;
+                predicate = TruePredicate.truePredicate();
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        private Predicate<String, ExecutionStatus> toPredicate(
+                Filter preFilter, FilterToCriteria transformer) {
+            return (Predicate<String, ExecutionStatus>) preFilter.accept(transformer, null);
         }
     }
 

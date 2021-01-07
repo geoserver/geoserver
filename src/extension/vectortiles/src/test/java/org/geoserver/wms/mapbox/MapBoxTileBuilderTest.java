@@ -66,10 +66,10 @@ public class MapBoxTileBuilderTest {
         MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);
 
         Geometry point = geom("POINT(1 10)");
-        Map<String, Object> pointProps = ImmutableMap.<String, Object>of("name", "point1");
+        Map<String, Object> pointProps = ImmutableMap.of("name", "point1");
 
         Geometry line = geom("LINESTRING(0 0, 1 1, 2 2)");
-        Map<String, Object> lineProps = ImmutableMap.<String, Object>of("name", "line1");
+        Map<String, Object> lineProps = ImmutableMap.of("name", "line1");
 
         tileBuilder.addFeature("Points", "unused", "unused", point, pointProps);
         tileBuilder.addFeature("Lines", "unused", "unused", line, lineProps);
@@ -113,7 +113,7 @@ public class MapBoxTileBuilderTest {
                 geom("LINESTRING(-100 -100,300 300)"); // box is 0 to 256, so this is outside the
         // box
 
-        Map<String, Object> lineProps = ImmutableMap.<String, Object>of("name", "line1");
+        Map<String, Object> lineProps = ImmutableMap.of("name", "line1");
 
         tileBuilder.addFeature("Lines", "unused", "unused", line, lineProps);
 
@@ -136,8 +136,8 @@ public class MapBoxTileBuilderTest {
     public void testFeatureIdsWithDigitsAtTheEnd() throws Exception {
         MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
 
-        Map<String, Object> lineProps1 = ImmutableMap.<String, Object>of("name", "line1");
-        Map<String, Object> lineProps2 = ImmutableMap.<String, Object>of("name", "line2");
+        Map<String, Object> lineProps1 = ImmutableMap.of("name", "line1");
+        Map<String, Object> lineProps2 = ImmutableMap.of("name", "line2");
 
         tileBuilder.addFeature(
                 "Lines", "Lines.1", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
@@ -157,8 +157,8 @@ public class MapBoxTileBuilderTest {
     public void testFeatureIdsWithoutDigits() throws Exception {
         MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
 
-        Map<String, Object> lineProps1 = ImmutableMap.<String, Object>of("name", "line1");
-        Map<String, Object> lineProps2 = ImmutableMap.<String, Object>of("name", "line2");
+        Map<String, Object> lineProps1 = ImmutableMap.of("name", "line1");
+        Map<String, Object> lineProps2 = ImmutableMap.of("name", "line2");
 
         tileBuilder.addFeature(
                 "Lines", "an_id", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);

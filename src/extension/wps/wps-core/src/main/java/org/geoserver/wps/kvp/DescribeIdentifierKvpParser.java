@@ -30,11 +30,11 @@ public class DescribeIdentifierKvpParser extends KvpParser {
     @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
 
-        List<CodeType> values = new ArrayList<CodeType>();
+        List<CodeType> values = new ArrayList<>();
 
         Ows11Factory owsFactory = new Ows11FactoryImpl();
 
-        for (String str : (List<String>) KvpUtils.readFlat(value)) {
+        for (String str : KvpUtils.readFlat(value)) {
             CodeType codeType = owsFactory.createCodeType();
             codeType.setValue(str);
             values.add(codeType);

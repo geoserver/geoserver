@@ -204,7 +204,7 @@ public class Predicates {
      * a false predicate is found.
      */
     public static Filter and(Filter op1, Filter op2) {
-        List<Filter> children = new ArrayList<Filter>();
+        List<Filter> children = new ArrayList<>();
         if (op1 instanceof And) {
             children.addAll(((And) op1).getChildren());
         } else {
@@ -250,7 +250,7 @@ public class Predicates {
      * a false predicate is found.
      */
     public static Filter and(List<Filter> operands) {
-        if (operands.size() == 0) {
+        if (operands.isEmpty()) {
             return Filter.INCLUDE;
         } else if (operands.size() == 1) {
             return operands.get(0);
@@ -267,7 +267,7 @@ public class Predicates {
      * a true predicate is found.
      */
     public static Filter or(Filter op1, Filter op2) {
-        List<Filter> children = new ArrayList<Filter>();
+        List<Filter> children = new ArrayList<>();
         if (op1 instanceof Or) {
             children.addAll(((Or) op1).getChildren());
         } else {
@@ -287,7 +287,7 @@ public class Predicates {
     }
 
     public static Filter or(List<Filter> operands) {
-        if (operands.size() == 0) {
+        if (operands.isEmpty()) {
             return Filter.EXCLUDE;
         } else if (operands.size() == 1) {
             return operands.get(0);

@@ -35,7 +35,7 @@ class TypeNamesResolver {
         }
 
         String[] typeNames = qualifiedString.split("\\s*,\\s*");
-        List<QName> result = new ArrayList<QName>();
+        List<QName> result = new ArrayList<>();
         for (String tn : typeNames) {
             QName qname = resolver.parseQName(tn, namespaces);
             if (qname.getNamespaceURI() == null) {

@@ -23,7 +23,7 @@ public class SimpleThreadBlocker implements ThreadBlocker {
     BlockingQueue<Request> queue;
 
     public SimpleThreadBlocker(int queueSize) {
-        queue = new ArrayBlockingQueue<Request>(queueSize, true);
+        queue = new ArrayBlockingQueue<>(queueSize, true);
     }
 
     public void requestComplete(Request request) {

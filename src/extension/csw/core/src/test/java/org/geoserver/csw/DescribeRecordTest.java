@@ -27,7 +27,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReaderNS() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "DescribeRecord");
@@ -59,7 +59,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReaderNoNamespace() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "DescribeRecord");
@@ -76,7 +76,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReaderDefaultNamespace() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "DescribeRecord");
@@ -104,7 +104,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         DescribeRecordType dr =
                 (DescribeRecordType)
-                        reader.read(null, getResourceAsReader("DescribeRecord.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("DescribeRecord.xml"), null);
         assertDescribeRecordValid(dr);
     }
 

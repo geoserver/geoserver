@@ -37,7 +37,7 @@ public class PostGISPanel extends AbstractDbPanel {
 
     @Override
     protected LinkedHashMap<String, Component> buildParamPanels() {
-        LinkedHashMap<String, Component> result = new LinkedHashMap<String, Component>();
+        LinkedHashMap<String, Component> result = new LinkedHashMap<>();
 
         int port = 5432;
         String db = System.getProperty("user.name");

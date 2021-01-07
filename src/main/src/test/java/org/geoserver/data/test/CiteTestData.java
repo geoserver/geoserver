@@ -228,14 +228,14 @@ public abstract class CiteTestData implements TestData {
     public static QName[] CITE_TYPENAMES = WMS_TYPENAMES;
 
     /** map of qname to srs */
-    public static HashMap<QName, Integer> SRS = new HashMap<QName, Integer>();
+    public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
-        for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
-            SRS.put(WFS10_TYPENAMES[i], 32615);
+        for (QName wfs10Typename : WFS10_TYPENAMES) {
+            SRS.put(wfs10Typename, 32615);
         }
-        for (int i = 0; i < WFS11_TYPENAMES.length; i++) {
-            SRS.put(WFS11_TYPENAMES[i], 4326);
+        for (QName wfs11Typename : WFS11_TYPENAMES) {
+            SRS.put(wfs11Typename, 4326);
         }
     }
 
@@ -243,7 +243,7 @@ public abstract class CiteTestData implements TestData {
     public static String DEFAULT_RASTER_STYLE = "raster";
 
     /** map of coverage qname to filename and format */
-    public static HashMap<QName, String[]> COVERAGES = new HashMap<QName, String[]>();
+    public static HashMap<QName, String[]> COVERAGES = new HashMap<>();
 
     static {
         COVERAGES.put(TASMANIA_DEM, new String[] {"tazdem.tiff", TIFF});

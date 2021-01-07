@@ -71,7 +71,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         final Style style = params.getStyle();
         // ok, internally rendered layer then, we check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
-        if (rules.size() == 0) {
+        if (rules.isEmpty()) {
             return null;
         }
 
@@ -148,11 +148,11 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         // handle sql view params
         final Map<String, String> viewParams = params.getViewParams();
-        if (viewParams != null && viewParams.size() > 0) {
+        if (viewParams != null && !viewParams.isEmpty()) {
             q.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
         }
 
-        FeatureCollection match;
+        FeatureCollection<? extends FeatureType, ? extends Feature> match;
         LOGGER.log(Level.FINE, q.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
@@ -165,7 +165,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         // if we could not include the rules filter into the query, post process in
         // memory
         if (!Filter.INCLUDE.equals(postFilter)) {
-            match = new FilteringFeatureCollection(match, postFilter);
+            match = new FilteringFeatureCollection<>(match, postFilter);
         }
 
         return Collections.singletonList(match);
@@ -212,7 +212,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
     private Filter buildRulesFilter(org.opengis.filter.FilterFactory ff, List<Rule> rules) {
         // build up a or of all the rule filters
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         for (Rule rule : rules) {
             if (rule.getFilter() == null || rule.isElseFilter()) return Filter.INCLUDE;
             filters.add(rule.getFilter());

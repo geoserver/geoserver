@@ -5,6 +5,11 @@
  */
 package org.geoserver.script.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -15,6 +20,7 @@ import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.junit.Test;
 
 public abstract class WfsTxHookTest extends ScriptIntTestSupport {
 
@@ -28,11 +34,13 @@ public abstract class WfsTxHookTest extends ScriptIntTestSupport {
         return f;
     }
 
+    @Test
     public void testLookupHook() throws Exception {
         File script = copyOverFile("tx");
         assertNotNull(scriptMgr.lookupWfsTxHook(script));
     }
 
+    @Test
     public void testHookExecution() throws Exception {
         File script = copyOverFile("tx");
         TransactionRequest tx = new TransactionRequest.WFS11(null);
@@ -67,6 +75,7 @@ public abstract class WfsTxHookTest extends ScriptIntTestSupport {
         assertTrue(context.containsKey("abort"));
     }
 
+    @Test
     public void testHookError() throws Exception {
         File script = copyOverFile("tx-error");
 

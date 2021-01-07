@@ -48,7 +48,8 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         this.root = basePath;
     }
 
-    @SuppressWarnings("PMD.CloseResource") // complex but apparently correct handling
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
+    // complex but apparently correct handling
     public Resource.Lock acquire(final String lockKey) {
         // first off, synchronize among threads in the same jvm (the nio locks won't lock
         // threads in the same JVM)
@@ -68,22 +69,15 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                     currFos = new FileOutputStream(file);
                     try {
                         currLock = currFos.getChannel().lock();
-                    } catch (OverlappingFileLockException e) {
+                    } catch (OverlappingFileLockException | IOException e) {
                         IOUtils.closeQuietly(currFos);
                         try {
                             Thread.sleep(20);
                         } catch (InterruptedException ie) {
                             // ok, moving on
                         }
-                    } catch (IOException e) {
-                        // this one is also thrown with a message "avoided fs deadlock"
-                        IOUtils.closeQuietly(currFos);
-                        try {
-                            Thread.sleep(20);
-                        } catch (InterruptedException ie) {
-                            // ok, moving on
-                        }
-                    }
+                    } // this one is also thrown with a message "avoided fs deadlock"
+
                     count++;
                 }
 

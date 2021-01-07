@@ -332,11 +332,11 @@ public class WMS implements ApplicationContextAware {
         WMSInfo serviceInfo = getServiceInfo();
         List<Version> versions = serviceInfo.getVersions();
         String version;
-        if (versions.size() > 0) {
-            version = versions.get(0).toString();
-        } else {
+        if (versions.isEmpty()) {
             // shouldn't a version be set?
             version = "1.1.1";
+        } else {
+            version = versions.get(0).toString();
         }
         return version;
     }
@@ -712,7 +712,7 @@ public class WMS implements ApplicationContextAware {
 
     /** Returns all allowed map output formats. */
     public Collection<GetMapOutputFormat> getAllowedMapFormats() {
-        List<GetMapOutputFormat> result = new ArrayList<GetMapOutputFormat>();
+        List<GetMapOutputFormat> result = new ArrayList<>();
         for (GetMapOutputFormat producer : WMSExtensions.findMapProducers(applicationContext)) {
             if (isAllowedGetMapFormat(producer)) {
                 result.add(producer);
@@ -736,7 +736,7 @@ public class WMS implements ApplicationContextAware {
 
         final Collection<GetMapOutputFormat> producers;
         producers = WMSExtensions.findMapProducers(applicationContext);
-        final Set<String> formats = new HashSet<String>();
+        final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
             formats.addAll(producer.getOutputFormatNames());
@@ -749,7 +749,7 @@ public class WMS implements ApplicationContextAware {
 
         final Collection<GetMapOutputFormat> producers;
         producers = WMSExtensions.findMapProducers(applicationContext);
-        final Set<String> formats = new HashSet<String>();
+        final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
             if (isAllowedGetMapFormat(producer) == false) {
@@ -801,7 +801,7 @@ public class WMS implements ApplicationContextAware {
         List<GetLegendGraphicOutputFormat> formats;
         formats = WMSExtensions.findLegendGraphicFormats(applicationContext);
 
-        Set<String> mimeTypes = new HashSet<String>();
+        Set<String> mimeTypes = new HashSet<>();
         for (GetLegendGraphicOutputFormat format : formats) {
             mimeTypes.add(format.getContentType());
         }
@@ -862,7 +862,7 @@ public class WMS implements ApplicationContextAware {
 
     /** @return a list of all getFeatureInfo content types */
     public List<String> getAvailableFeatureInfoFormats() {
-        List<String> mimeTypes = new ArrayList<String>();
+        List<String> mimeTypes = new ArrayList<>();
         for (GetFeatureInfoOutputFormat format :
                 WMSExtensions.findFeatureInfoFormats(applicationContext)) {
             mimeTypes.add(format.getContentType());
@@ -872,7 +872,7 @@ public class WMS implements ApplicationContextAware {
 
     /** @return a list of all allowed getFeature info content types */
     public List<String> getAllowedFeatureInfoFormats() {
-        List<String> mimeTypes = new ArrayList<String>();
+        List<String> mimeTypes = new ArrayList<>();
         for (GetFeatureInfoOutputFormat format :
                 WMSExtensions.findFeatureInfoFormats(applicationContext)) {
             if (isAllowedGetFeatureInfoFormat(format) == false) {
@@ -1079,13 +1079,12 @@ public class WMS implements ApplicationContextAware {
         final DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
         // add the descriptors for custom dimensions
         final List<GeneralParameterDescriptor> parameterDescriptors =
-                new ArrayList<GeneralParameterDescriptor>(
-                        readParametersDescriptor.getDescriptor().descriptors());
+                new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
         parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
             // handle "default"
-            List<Object> fixedTimes = new ArrayList<Object>(times);
+            List<Object> fixedTimes = new ArrayList<>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
                     fixedTimes.set(i, getDefaultTime(coverage));
@@ -1109,7 +1108,7 @@ public class WMS implements ApplicationContextAware {
                 metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
             // handle "default"
-            List<Object> fixedElevations = new ArrayList<Object>(elevations);
+            List<Object> fixedElevations = new ArrayList<>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
                     fixedElevations.set(i, getDefaultElevation(coverage));
@@ -1177,7 +1176,7 @@ public class WMS implements ApplicationContextAware {
         }
 
         // custom dimensions
-        List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
+        List<String> customDomains = new ArrayList<>(dimensions.getCustomDomains());
         for (String domain : new ArrayList<>(customDomains)) {
             List<String> values = request.getCustomDimension(domain);
             if (values != null) {
@@ -1256,7 +1255,7 @@ public class WMS implements ApplicationContextAware {
     public TreeSet<Date> queryCoverageNearestMatchTimes(
             CoverageInfo coverage, List<Object> queryRanges) throws IOException {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        final TreeSet<Date> foundDates = new TreeSet<Date>();
+        final TreeSet<Date> foundDates = new TreeSet<>();
         if (time == null || !time.isEnabled()) {
             throw new ServiceException(
                     "Coverage " + coverage.prefixedName() + " does not have time support enabled");
@@ -1313,14 +1312,14 @@ public class WMS implements ApplicationContextAware {
 
         FeatureCollection collection = getDimensionCollection(typeInfo, time);
 
-        TreeSet<Date> result = new TreeSet<Date>();
+        TreeSet<Date> result = new TreeSet<>();
         if (time.getPresentation() == DimensionPresentation.LIST) {
             final UniqueVisitor visitor = new UniqueVisitor(time.getAttribute());
             collection.accepts(visitor, null);
 
             @SuppressWarnings("unchecked")
             Set<Date> values = visitor.getUnique();
-            if (values.size() <= 0) {
+            if (values.isEmpty()) {
                 result = null;
             } else {
                 // we might get null values out of the visitor, strip them
@@ -1390,7 +1389,7 @@ public class WMS implements ApplicationContextAware {
 
         FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
 
-        TreeSet<Double> result = new TreeSet<Double>();
+        TreeSet<Double> result = new TreeSet<>();
         if (elevation.getPresentation() == DimensionPresentation.LIST
                 || (elevation.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL
                         && elevation.getResolution() == null)) {
@@ -1399,7 +1398,7 @@ public class WMS implements ApplicationContextAware {
 
             @SuppressWarnings("unchecked")
             Set<Object> values = visitor.getUnique();
-            if (values.size() <= 0) {
+            if (values.isEmpty()) {
                 result = null;
             } else {
                 for (Object value : values) {
@@ -1463,7 +1462,9 @@ public class WMS implements ApplicationContextAware {
         // visitor)
         UniqueVisitor visitor = new UniqueVisitor(attribute);
         collection.accepts(visitor, null);
-        TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
+        @SuppressWarnings("unchecked")
+        Set<Comparable> uniques = visitor.getUnique();
+        TreeSet<Object> result = new TreeSet<>(uniques);
         return result;
     }
 
@@ -1529,12 +1530,15 @@ public class WMS implements ApplicationContextAware {
                         ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
                         customDim);
         // custom dimensions have no range support
-        return (T)
-                strategy.getDefaultValue(
-                        resourceInfo,
-                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
-                        customDim,
-                        clz);
+        @SuppressWarnings("unchecked")
+        T result =
+                (T)
+                        strategy.getDefaultValue(
+                                resourceInfo,
+                                ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
+                                customDim,
+                                clz);
+        return result;
     }
 
     public DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(
@@ -1613,7 +1617,7 @@ public class WMS implements ApplicationContextAware {
 
         // handle elevation support
         if (elevationInfo != null && elevationInfo.isEnabled() && elevations != null) {
-            List<Object> defaultedElevations = new ArrayList<Object>(elevations.size());
+            List<Object> defaultedElevations = new ArrayList<>(elevations.size());
             for (Object elevation : elevations) {
                 if (elevation == null) {
                     // this is "default"
@@ -1842,6 +1846,7 @@ public class WMS implements ApplicationContextAware {
                         && dimensionInfo.getResolution() == null)) {
             final UniqueVisitor uniqueVisitor = new UniqueVisitor(dimensionInfo.getAttribute());
             fcollection.accepts(uniqueVisitor, null);
+            @SuppressWarnings("unchecked")
             Set<Object> uniqueValues = uniqueVisitor.getUnique();
             for (Object obj : uniqueValues) {
                 result.add(obj);

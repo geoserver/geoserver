@@ -35,7 +35,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected transient Catalog catalog;
 
-    protected Map<String, Serializable> connectionParameters = new HashMap<String, Serializable>();
+    protected Map<String, Serializable> connectionParameters = new HashMap<>();
 
     protected MetadataMap metadata = new MetadataMap();
 

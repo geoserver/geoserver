@@ -253,8 +253,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         if (hasGeom && featureBounding) {
             CoordinateReferenceSystem crs = null;
             ReferencedEnvelope e = null;
-            for (int i = 0; i < resultsList.size(); i++) {
-                FeatureCollection collection = resultsList.get(i);
+            for (FeatureCollection collection : resultsList) {
                 FeatureType schema = collection.getSchema();
                 if (crs == null && schema.getGeometryDescriptor() != null)
                     crs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
@@ -541,7 +540,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         if (crs != null) {
             Set<ReferenceIdentifier> ids = crs.getIdentifiers();
             // WKT defined crs might not have identifiers at all
-            if (ids != null && ids.size() > 0) {
+            if (ids != null && !ids.isEmpty()) {
                 NamedIdentifier namedIdent = (NamedIdentifier) ids.iterator().next();
                 String csStr = namedIdent.getCodeSpace().toUpperCase();
 

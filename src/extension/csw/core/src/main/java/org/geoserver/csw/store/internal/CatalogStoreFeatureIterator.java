@@ -59,7 +59,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected CatalogFacade catalogFacade;
 
-    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
+    protected Map<String, String> interpolationProperties = new HashMap<>();
 
     protected SortBy[] sortOrder;
 
@@ -269,7 +269,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         Matcher matcher = PROPERTY_INTERPOLATION_PATTERN.matcher(result);
         while (matcher.find()) {
             String propertyName = matcher.group(1);
-            String propertyValue = (String) properties.get(propertyName);
+            String propertyValue = properties.get(propertyName);
             if (propertyValue == null) {
                 throw new RuntimeException(
                         "Interpolation failed for missing property " + propertyName);
@@ -282,8 +282,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     protected static List<Object> interpolate(Map<String, String> properties, Collection<?> value) {
-        if (((Collection<?>) value).size() > 0) {
-            List<Object> elements = new ArrayList<Object>();
+        if (!value.isEmpty()) {
+            List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;
                 if (element instanceof Collection<?>) {

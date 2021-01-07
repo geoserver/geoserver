@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -268,14 +267,11 @@ public class CoverageStoreController extends AbstractCatalogController {
 
             @Override
             protected void wrapInternal(
-                    Map properties, SimpleHash model, CoverageStoreInfo dataStoreInfo) {
+                    Map<String, Object> properties,
+                    SimpleHash model,
+                    CoverageStoreInfo dataStoreInfo) {
                 if (properties == null) {
-                    try {
-                        properties = model.toMap();
-                    } catch (TemplateModelException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    properties = hashToProperties(model);
                 }
                 List<Map<String, Map<String, String>>> csProps = new ArrayList<>();
 

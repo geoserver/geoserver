@@ -18,6 +18,6 @@ public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroup
 
     @Override
     protected List<LayerGroupInfo.Mode> load() {
-        return new ArrayList<LayerGroupInfo.Mode>(Arrays.asList(LayerGroupInfo.Mode.values()));
+        return new ArrayList<>(Arrays.asList(LayerGroupInfo.Mode.values()));
     }
 }

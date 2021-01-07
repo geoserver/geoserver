@@ -44,7 +44,7 @@ public class GetStyles {
 
         try {
             StyleFactory factory = CommonFactoryFinder.getStyleFactory(null);
-            List<StyledLayer> layers = new ArrayList<StyledLayer>();
+            List<StyledLayer> layers = new ArrayList<>();
             for (String layerName : request.getLayers()) {
                 NamedLayer namedLayer = factory.createNamedLayer();
                 layers.add(namedLayer);
@@ -74,7 +74,7 @@ public class GetStyles {
             }
 
             StyledLayerDescriptor sld = factory.createStyledLayerDescriptor();
-            sld.setStyledLayers((StyledLayer[]) layers.toArray(new StyledLayer[layers.size()]));
+            sld.setStyledLayers(layers.toArray(new StyledLayer[layers.size()]));
 
             return sld;
         } catch (IOException e) {

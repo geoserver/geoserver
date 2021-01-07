@@ -290,10 +290,9 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         DropDownChoiceParamPanel dropDown = null;
         for (Component component : container) {
             if (component instanceof ListItem
-                    && ((ListItem) component).get("parameterPanel")
-                            instanceof DropDownChoiceParamPanel) {
+                    && component.get("parameterPanel") instanceof DropDownChoiceParamPanel) {
                 DropDownChoiceParamPanel panel =
-                        (DropDownChoiceParamPanel) ((ListItem) component).get("parameterPanel");
+                        (DropDownChoiceParamPanel) component.get("parameterPanel");
                 if (panel.getDefaultModelObject() == SslMode.DISABLE) {
                     dropDown = panel;
                 }

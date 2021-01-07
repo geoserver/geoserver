@@ -37,8 +37,8 @@ public class EditUserPage extends AbstractUserPage {
                 ugStore = new UserGroupStoreValidationWrapper(ugService.createStore());
 
                 Set<GeoServerUserGroup> orig = ugStore.getGroupsForUser(user);
-                Set<GeoServerUserGroup> add = new HashSet<GeoServerUserGroup>();
-                Set<GeoServerUserGroup> remove = new HashSet<GeoServerUserGroup>();
+                Set<GeoServerUserGroup> add = new HashSet<>();
+                Set<GeoServerUserGroup> remove = new HashSet<>();
                 userGroupPalette.diff(orig, add, remove);
 
                 ugStore.updateUser(user);
@@ -70,8 +70,8 @@ public class EditUserPage extends AbstractUserPage {
                 roleStore = new RoleStoreValidationWrapper(roleStore);
 
                 Set<GeoServerRole> orig = roleStore.getRolesForUser(user.getUsername());
-                Set<GeoServerRole> add = new HashSet<GeoServerRole>();
-                Set<GeoServerRole> remove = new HashSet<GeoServerRole>();
+                Set<GeoServerRole> add = new HashSet<>();
+                Set<GeoServerRole> remove = new HashSet<>();
                 rolePalette.diff(orig, add, remove);
 
                 for (GeoServerRole role : add) {

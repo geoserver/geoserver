@@ -35,6 +35,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
             "(" + RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE + ")+"; // "\\z";
     private static final Pattern RANGELIST_PATTERN = Pattern.compile(RANGELIST_REGEX);
 
+    @SuppressWarnings("unchecked")
     public Converter createConverter(Class source, Class target, Hints hints) {
         if (target.equals(Range.class) && source.equals(String.class)) {
             return new Converter() {
@@ -83,7 +84,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         if (min != null && max != null && min > max)
             throw new IllegalArgumentException("Bad min/max relation (" + sRange + ")");
 
-        return new Range<Double>(min, inclmin, max, inclmax);
+        return new Range<>(min, inclmin, max, inclmax);
     }
 
     /** Parses a list of ranges from a string */
@@ -96,7 +97,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         // fetch every single range
         m = RANGE_PATTERN.matcher(sRangeList);
 
-        List<Range<Double>> ret = new ArrayList<Range<Double>>();
+        List<Range<Double>> ret = new ArrayList<>();
         while (m.find()) {
             Range<Double> range = parseRangeInternal(m, sRangeList);
             ret.add(range);

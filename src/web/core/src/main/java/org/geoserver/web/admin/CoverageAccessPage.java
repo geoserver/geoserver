@@ -91,34 +91,32 @@ public class CoverageAccessPage extends ServerAdminPage {
 
         // form and submit
         Form<CoverageAccessInfo> form =
-                new Form<CoverageAccessInfo>(
-                        "form", new CompoundPropertyModel<CoverageAccessInfo>(coverageModel));
+                new Form<>("form", new CompoundPropertyModel<>(coverageModel));
         add(form);
         form.add(new PoolSizeValidator());
         // All the fields
         NumberTextField<Integer> corePoolSize =
-                new NumberTextField<Integer>("corePoolSize", Integer.class);
+                new NumberTextField<>("corePoolSize", Integer.class);
         corePoolSize.setMinimum(1);
         form.add(corePoolSize);
 
-        NumberTextField<Integer> maxPoolSize =
-                new NumberTextField<Integer>("maxPoolSize", Integer.class);
+        NumberTextField<Integer> maxPoolSize = new NumberTextField<>("maxPoolSize", Integer.class);
         maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
 
         NumberTextField<Integer> keepAliveTime =
-                new NumberTextField<Integer>("keepAliveTime", Integer.class);
+                new NumberTextField<>("keepAliveTime", Integer.class);
         keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
 
         final DropDownChoice<QueueType> queueType =
-                new DropDownChoice<QueueType>(
+                new DropDownChoice<>(
                         "queueType",
                         Arrays.asList(CoverageAccessInfo.QueueType.values()),
                         new QueueTypeRenderer());
         form.add(queueType);
 
-        TextField<String> imageIOCacheThreshold = new TextField<String>("imageIOCacheThreshold");
+        TextField<String> imageIOCacheThreshold = new TextField<>("imageIOCacheThreshold");
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
 
@@ -150,7 +148,7 @@ public class CoverageAccessPage extends ServerAdminPage {
     public void save(boolean doReturn) {
         GeoServer gs = (GeoServer) geoServerModel.getObject();
         GeoServerInfo global = gs.getGlobal();
-        global.setCoverageAccess((CoverageAccessInfo) coverageModel.getObject());
+        global.setCoverageAccess(coverageModel.getObject());
         gs.save(global);
         if (doReturn) doReturn();
     }

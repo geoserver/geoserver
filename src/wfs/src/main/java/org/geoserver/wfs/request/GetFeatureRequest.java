@@ -46,12 +46,14 @@ public abstract class GetFeatureRequest extends RequestObject {
         eSet(adaptee, "startIndex", startIndex);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Map<String, String>> getViewParams() {
         return eGet(adaptee, "viewParams", List.class);
     }
 
     public void setViewParams(List<Map<String, String>> viewParams) {
-        List l = eGet(adaptee, "viewParams", List.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> l = eGet(adaptee, "viewParams", List.class);
         l.clear();
         l.addAll(viewParams);
     }
@@ -107,7 +109,7 @@ public abstract class GetFeatureRequest extends RequestObject {
             // TODO: instead of creating a new list we should wrap the existing on in case the
             // client
             // code needs to modify
-            List<Query> list = new ArrayList<Query>();
+            List<Query> list = new ArrayList<>();
             for (Object o : getAdaptedQueries()) {
                 list.add(new Query.WFS11((EObject) o));
             }
@@ -116,6 +118,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<Object> getAdaptedQueries() {
             return eGet(adaptee, "query", List.class);
         }
@@ -203,7 +206,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         public static List<Query> getQueries(List<?> adaptedQueries) {
-            List<Query> list = new ArrayList<Query>();
+            List<Query> list = new ArrayList<>();
             for (Object o : adaptedQueries) {
                 list.add(new Query.WFS20((EObject) o));
             }
@@ -212,6 +215,7 @@ public abstract class GetFeatureRequest extends RequestObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<Object> getAdaptedQueries() {
             return eGet(adaptee, "abstractQueryExpression", List.class);
         }

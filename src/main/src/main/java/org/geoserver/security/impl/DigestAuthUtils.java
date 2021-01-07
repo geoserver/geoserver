@@ -45,7 +45,7 @@ public class DigestAuthUtils {
             return EMPTY_STRING_ARRAY;
         }
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
         int start = 0;
         boolean match = false;
@@ -161,15 +161,15 @@ public class DigestAuthUtils {
             return null;
         }
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
-        for (int i = 0; i < array.length; i++) {
+        for (String s : array) {
             String postRemove;
 
             if (removeCharacters == null) {
-                postRemove = array[i];
+                postRemove = s;
             } else {
-                postRemove = StringUtils.replace(array[i], removeCharacters, "");
+                postRemove = StringUtils.replace(s, removeCharacters, "");
             }
 
             String[] splitThisArrayElement = split(postRemove, delimiter);

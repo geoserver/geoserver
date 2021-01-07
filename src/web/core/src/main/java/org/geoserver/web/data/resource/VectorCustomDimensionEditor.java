@@ -43,10 +43,9 @@ public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCusto
     @Override
     protected void initComponents() {
         // name model
-        final PropertyModel<String> nameModel =
-                new PropertyModel<String>(getModel(), "keyNoPrefixed");
+        final PropertyModel<String> nameModel = new PropertyModel<>(getModel(), "keyNoPrefixed");
         // add name dimension input text
-        nameInput = new TextField<String>("customDimName", nameModel);
+        nameInput = new TextField<>("customDimName", nameModel);
         add(nameInput);
 
         // ajax button for removing

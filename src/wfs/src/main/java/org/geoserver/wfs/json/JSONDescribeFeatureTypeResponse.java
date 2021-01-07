@@ -69,8 +69,7 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
             jw.key("featureTypes");
             // in general one can describe more than one feature type
             jw.array();
-            for (int i = 0; i < featureTypeInfos.length; i++) {
-                FeatureTypeInfo ft = featureTypeInfos[i];
+            for (FeatureTypeInfo ft : featureTypeInfos) {
                 jw.object();
                 jw.key("typeName").value(ft.getName());
                 SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();

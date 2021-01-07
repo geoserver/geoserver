@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -36,7 +35,7 @@ public abstract class RegionatingTestSupport extends GeoServerSystemTestSupport 
         super.setUpTestData(data);
 
         // register some basic namespaces for xmlunit tests
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -51,12 +50,7 @@ public abstract class RegionatingTestSupport extends GeoServerSystemTestSupport 
 
         data.setUpVectorLayer(STACKED_FEATURES, null, "Stacked.properties", getClass());
         data.setUpVectorLayer(DISPERSED_FEATURES, null, "Dispersed.properties", getClass());
-
-        HashMap extra = new HashMap();
-        extra.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.FORCE_DECLARED.getCode());
-
         data.setUpVectorLayer(TILE_TESTS, null, "TileTests.properties", getClass());
-
         data.setUpVectorLayer(CENTERED_POLY, null, "CenteredPoly.properties", getClass());
     }
 }

@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.MetadataMap;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -45,7 +47,17 @@ class MosaicInfoBBoxHandler {
                         (StructuredGridCoverage2DReader)
                                 storeInfo.getGridCoverageReader(null, null);
             }
+            StructuredGridCoverage2DReader defaultReader = reader;
             for (CoverageInfo ci : coverages) {
+                MetadataMap metadata = ci.getMetadata();
+                if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+                    // I need to get the actual coverageView reader
+                    reader =
+                            (StructuredGridCoverage2DReader)
+                                    this.catalog.getResourcePool().getGridCoverageReader(ci, null);
+                } else {
+                    reader = defaultReader;
+                }
                 ReferencedEnvelope newBbox =
                         new ReferencedEnvelope(reader.getOriginalEnvelope(ci.getName()));
                 ci.setNativeBoundingBox(newBbox);

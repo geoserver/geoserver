@@ -7,7 +7,6 @@ package org.geoserver.web.security.ldap;
 
 import static org.junit.Assert.assertNull;
 
-import java.io.Serializable;
 import org.apache.directory.server.annotations.CreateLdapServer;
 import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
@@ -108,11 +107,10 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
                             public Component buildComponent(String id) {
 
                                 return current =
-                                        new LDAPUserGroupServicePanel(
-                                                id, new Model<LDAPUserGroupServiceConfig>(config));
+                                        new LDAPUserGroupServicePanel(id, new Model<>(config));
                             };
                         },
-                        new CompoundPropertyModel<Object>(config)) {
+                        new CompoundPropertyModel<>(config)) {
 
                     private static final long serialVersionUID = -4090244876841730821L;
 
@@ -145,12 +143,11 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         tester.newFormTester("form").submit();
 
         tester.assertErrorMessages(
-                (Serializable[])
-                        new String[] {
-                            "Field 'Server URL' is required.",
-                            "Field 'Group search base' is required.",
-                            "Field 'User search base' is required."
-                        });
+                new String[] {
+                    "Field 'Server URL' is required.",
+                    "Field 'Group search base' is required.",
+                    "Field 'User search base' is required."
+                });
     }
 
     @Test

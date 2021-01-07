@@ -6,6 +6,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -50,7 +51,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         List<String> names =
                 originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
         List<String> orderedNames = names.stream().sorted().collect(Collectors.toList());
-        assertTrue(orderedNames.equals(names));
+        assertEquals(orderedNames, names);
     }
 
     /** Test layer names order from GetCapabilities on workspace */
@@ -62,7 +63,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         assertFalse(originalList.isEmpty());
         assertTrue(originalList.stream().noneMatch(x -> x.indexOf(":") > -1));
         List<String> orderedNames = originalList.stream().sorted().collect(Collectors.toList());
-        assertTrue(orderedNames.equals(originalList));
+        assertEquals(orderedNames, originalList);
     }
 
     /** removes prefix from layer name */

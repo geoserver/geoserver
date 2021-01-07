@@ -15,6 +15,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geotools.util.Version;
 
 public class ServiceInfoImpl implements ServiceInfo {
 
@@ -38,11 +39,11 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected String fees;
 
-    protected List versions = new ArrayList();
+    protected List<Version> versions = new ArrayList<>();
 
-    protected List<KeywordInfo> keywords = new ArrayList();
+    protected List<KeywordInfo> keywords = new ArrayList<>();
 
-    protected List exceptionFormats = new ArrayList();
+    protected List<String> exceptionFormats = new ArrayList<>();
 
     protected MetadataLinkInfo metadataLink;
 
@@ -58,7 +59,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map clientProperties = new HashMap();
+    protected Map<Object, Object> clientProperties = new HashMap<>();
 
     public String getId() {
         return id;
@@ -151,7 +152,7 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     public List<String> keywordValues() {
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (keywords != null) {
             for (KeywordInfo kw : keywords) {
                 values.add(kw.getValue());
@@ -160,19 +161,19 @@ public class ServiceInfoImpl implements ServiceInfo {
         return values;
     }
 
-    public List getVersions() {
+    public List<Version> getVersions() {
         return versions;
     }
 
-    public void setVersions(List versions) {
+    public void setVersions(List<Version> versions) {
         this.versions = versions;
     }
 
-    public List getExceptionFormats() {
+    public List<String> getExceptionFormats() {
         return exceptionFormats;
     }
 
-    public void setExceptionFormats(List exceptionFormats) {
+    public void setExceptionFormats(List<String> exceptionFormats) {
         this.exceptionFormats = exceptionFormats;
     }
 
@@ -211,11 +212,11 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.metadata = metadata;
     }
 
-    public Map getClientProperties() {
+    public Map<Object, Object> getClientProperties() {
         return clientProperties;
     }
 
-    public void setClientProperties(Map clientProperties) {
+    public void setClientProperties(Map<Object, Object> clientProperties) {
         this.clientProperties = clientProperties;
     }
 

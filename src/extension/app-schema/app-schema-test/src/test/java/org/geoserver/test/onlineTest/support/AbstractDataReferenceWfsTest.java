@@ -49,7 +49,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
      * A static map which tracks which fixture files can not be found. This prevents continually
      * looking up the file and reporting it not found to the user.
      */
-    protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
+    protected static Map<String, Boolean> found = new HashMap<>();
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -107,7 +107,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
             setup.setFixture(fixture);
             // do an online/offline check
             Map<String, Boolean> online = setup.getOnlineMap();
-            Boolean available = (Boolean) online.get(fixtureId);
+            Boolean available = online.get(fixtureId);
             if (available == null || available.booleanValue()) {
                 // test the connection
                 try {

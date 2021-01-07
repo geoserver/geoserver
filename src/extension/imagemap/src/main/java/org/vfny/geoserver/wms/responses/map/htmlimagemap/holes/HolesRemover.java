@@ -6,6 +6,7 @@
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.vecmath.GVector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -66,9 +67,10 @@ public class HolesRemover {
     private LineString holeVerts = null;
     private GeometryFactory gFac = null;
 
-    private IndexableCyclicalLinkedList polygonVertices = new IndexableCyclicalLinkedList();
-    private CyclicalList convexVertices = new CyclicalList();
-    private CyclicalList reflexVertices = new CyclicalList();
+    private IndexableCyclicalLinkedList<Vertex> polygonVertices =
+            new IndexableCyclicalLinkedList<>();
+    private CyclicalList<Vertex> convexVertices = new CyclicalList<>();
+    private CyclicalList<Vertex> reflexVertices = new CyclicalList<>();
 
     // minimum area to consider a hole;
     // holes with a lesser area will be skipped
@@ -123,7 +125,7 @@ public class HolesRemover {
             polygonVertices.addLast(new Vertex(shapeVerts.getCoordinateN(i), i));
 
         // generate the cyclical list of vertices in the hole
-        CyclicalList holePolygon = new CyclicalList();
+        CyclicalList<Vertex> holePolygon = new CyclicalList<>();
         for (int i = 0; i < holeVerts.getNumPoints(); i++)
             holePolygon.add(new Vertex(holeVerts.getCoordinateN(i), i + polygonVertices.size()));
 
@@ -131,18 +133,17 @@ public class HolesRemover {
         findConvexAndReflexVertices();
 
         // find the hole vertex with the largest X value
-        Vertex rightMostHoleVertex = (Vertex) holePolygon.get(0);
-        for (int count = 0; count < holePolygon.size(); count++) {
-            Vertex v = (Vertex) holePolygon.get(count);
+        Vertex rightMostHoleVertex = holePolygon.get(0);
+        for (Vertex v : holePolygon) {
             if (v.getPosition().x > rightMostHoleVertex.getPosition().x) rightMostHoleVertex = v;
         }
         // construct a list of all line segments where at least one vertex
         // is to the right of the rightmost hole vertex with one vertex
         // above the hole vertex and one below
-        ArrayList segmentsToTest = new ArrayList();
+        List<LineSegment> segmentsToTest = new ArrayList<>();
         for (int i = 0; i < polygonVertices.size(); i++) {
-            Vertex a = (Vertex) polygonVertices.get(i);
-            Vertex b = (Vertex) polygonVertices.get(i + 1);
+            Vertex a = polygonVertices.get(i);
+            Vertex b = polygonVertices.get(i + 1);
 
             if ((a.getPosition().x > rightMostHoleVertex.getPosition().x
                             || b.getPosition().x > rightMostHoleVertex.getPosition().x)
@@ -157,8 +158,7 @@ public class HolesRemover {
         // our hole vertex.
         Float closestPoint = null;
         LineSegment closestSegment = new LineSegment();
-        for (int count = 0; count < segmentsToTest.size(); count++) {
-            LineSegment segment = (LineSegment) segmentsToTest.get(count);
+        for (LineSegment segment : segmentsToTest) {
             Float intersection =
                     segment.intersectsWithRay(
                             rightMostHoleVertex.getPosition(), new Coordinate(1.0, 0.0));
@@ -188,18 +188,16 @@ public class HolesRemover {
         // construct triangle MIP
         Triangle mip = new Triangle(rightMostHoleVertex, new Vertex(I, 1), P);
         // see if any of the reflex vertices lie inside of the MIP triangle
-        ArrayList interiorReflexVertices = new ArrayList();
-        for (int count = 0; count < reflexVertices.size(); count++) {
-            Vertex v = (Vertex) reflexVertices.get(count);
+        List<Vertex> interiorReflexVertices = new ArrayList<>();
+        for (Vertex v : reflexVertices) {
             if (mip.ContainsPoint(v)) interiorReflexVertices.add(v);
         }
 
         // if there are any interior reflex vertices, find the one that, when connected
         // to our rightMostHoleVertex, forms the line closest to Vector2.UnitX
-        if (interiorReflexVertices.size() > 0) {
+        if (!interiorReflexVertices.isEmpty()) {
             float closestDot = -1f;
-            for (int count = 0; count < interiorReflexVertices.size(); count++) {
-                Vertex v = (Vertex) interiorReflexVertices.get(count);
+            for (Vertex v : interiorReflexVertices) {
                 GVector n = new GVector(new double[] {v.getPosition().x, v.getPosition().y});
                 n.sub(
                         new GVector(
@@ -234,15 +232,13 @@ public class HolesRemover {
 
         Coordinate[] newShapeVerts = new Coordinate[polygonVertices.size()];
         for (int count = 0; count < polygonVertices.size(); count++)
-            newShapeVerts[count] = ((Vertex) polygonVertices.get(count)).getPosition();
+            newShapeVerts[count] = polygonVertices.get(count).getPosition();
 
         return gFac.createLineString(newShapeVerts);
     }
 
     private void findConvexAndReflexVertices() {
-        for (int i = 0; i < polygonVertices.size(); i++) {
-            Vertex v = (Vertex) polygonVertices.get(i);
-
+        for (Vertex v : polygonVertices) {
             if (isConvex(v)) {
                 convexVertices.add(v);
             } else {
@@ -252,8 +248,8 @@ public class HolesRemover {
     }
 
     private boolean isConvex(Vertex c) {
-        Vertex p = (Vertex) polygonVertices.get(polygonVertices.indexOf(c) - 1);
-        Vertex n = (Vertex) polygonVertices.get(polygonVertices.indexOf(c) + 1);
+        Vertex p = polygonVertices.get(polygonVertices.indexOf(c) - 1);
+        Vertex n = polygonVertices.get(polygonVertices.indexOf(c) + 1);
         Coordinate cc = c.getPosition();
         Coordinate pc = p.getPosition();
         Coordinate nc = n.getPosition();

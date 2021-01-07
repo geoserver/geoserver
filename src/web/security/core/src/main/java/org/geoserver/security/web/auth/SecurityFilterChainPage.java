@@ -59,8 +59,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
 
         RequestFilterChainWrapper wrapper = new RequestFilterChainWrapper(chain);
         Form<RequestFilterChainWrapper> theForm =
-                new Form<RequestFilterChainWrapper>(
-                        "form", new CompoundPropertyModel<RequestFilterChainWrapper>(wrapper));
+                new Form<>("form", new CompoundPropertyModel<>(wrapper));
 
         initialize(chain, secMgrConfig, isNew, theForm, wrapper);
     }
@@ -92,7 +91,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
                         "message",
                         isAdmin ? new Model() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
-            form.get("message").add(new AttributeAppender("class", new Model("info-link"), " "));
+            form.get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }
 
         setOutputMarkupId(true);
@@ -115,7 +114,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
                                     }
                                 }));
 
-        List<String> filterNames = new ArrayList<String>();
+        List<String> filterNames = new ArrayList<>();
         try {
             filterNames.addAll(getSecurityManager().listFilters(GeoServerRoleFilter.class));
             for (GeoServerRoleFilter filter :
@@ -123,10 +122,9 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
                 filterNames.add(filter.getName());
             }
             form.add(
-                    new DropDownChoice<String>(
+                    new DropDownChoice<>(
                                     "roleFilterName",
-                                    new PropertyModel<String>(
-                                            chainWrapper.getChain(), "roleFilterName"),
+                                    new PropertyModel<>(chainWrapper.getChain(), "roleFilterName"),
                                     filterNames)
                             .setNullValid(true));
         } catch (IOException e) {

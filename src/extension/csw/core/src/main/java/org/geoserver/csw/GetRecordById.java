@@ -26,6 +26,8 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -73,15 +75,13 @@ public class GetRecordById {
                 numberOfRecordsMatched += counts[i];
             }
 
-            FeatureCollection records = null;
+            FeatureCollection<FeatureType, Feature> records = null;
 
             // time to run the queries if we are not in hits mode
-
-            List<FeatureCollection> results = new ArrayList<FeatureCollection>();
-            for (int i = 0; i < queries.size(); i++) {
-                FeatureCollection collection =
-                        store.getRecords(
-                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
+            List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
+            for (WrappedQuery query : queries) {
+                FeatureCollection<FeatureType, Feature> collection =
+                        store.getRecords(query.query, Transaction.AUTO_COMMIT, query.rd);
                 if (collection != null && collection.size() > 0) {
                     results.add(collection);
                 }
@@ -90,7 +90,7 @@ public class GetRecordById {
             if (results.size() == 1) {
                 records = results.get(0);
             } else if (results.size() > 1) {
-                records = new CompositeFeatureCollection(results);
+                records = new CompositeFeatureCollection<>(results);
             }
 
             ElementSetType elementSet = getElementSetName(request);
@@ -125,7 +125,7 @@ public class GetRecordById {
             throws IOException {
         // prepare to build the queries
 
-        Set<FeatureId> fids = new HashSet<FeatureId>();
+        Set<FeatureId> fids = new HashSet<>();
         for (URI id : ids) {
             fids.add(FF.featureId(id.toString()));
         }
@@ -134,7 +134,7 @@ public class GetRecordById {
 
         // build queries
 
-        List<GetRecords.WrappedQuery> result = new ArrayList<GetRecords.WrappedQuery>();
+        List<GetRecords.WrappedQuery> result = new ArrayList<>();
 
         for (RecordDescriptor rd : rds) {
             Name typeName = rd.getFeatureDescriptor().getName();
@@ -170,7 +170,7 @@ public class GetRecordById {
             request.setOutputFormat(CSW.NAMESPACE);
         }
 
-        List<RecordDescriptor> list = new ArrayList<RecordDescriptor>();
+        List<RecordDescriptor> list = new ArrayList<>();
         for (RecordDescriptor rd : recordDescriptors) {
             if (outputSchema.equals(rd.getOutputSchema())) {
                 list.add(rd);

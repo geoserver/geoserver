@@ -133,7 +133,7 @@ public class WCSDefaultValuesHelper {
                 structuredReader.getDimensionDescriptors(coverageName);
         DimensionDescriptor timeDimension = null;
         DimensionDescriptor elevationDimension = null;
-        final List<DimensionDescriptor> customDimensions = new ArrayList<DimensionDescriptor>();
+        final List<DimensionDescriptor> customDimensions = new ArrayList<>();
         int dimensions = 0;
 
         // Collect dimension Descriptor info
@@ -187,8 +187,7 @@ public class WCSDefaultValuesHelper {
 
             // Get granules from query
             SimpleFeatureCollection granulesCollection = source.getGranules(query);
-            SimpleFeatureIterator features = granulesCollection.features();
-            try {
+            try (SimpleFeatureIterator features = granulesCollection.features()) {
                 if (features.hasNext()) {
                     final SimpleFeature feature = features.next();
 
@@ -210,10 +209,6 @@ public class WCSDefaultValuesHelper {
                         subsettingRequest.setDimensionsSubset(dimensionsSubset);
                     }
                 }
-            } finally {
-                if (features != null) {
-                    features.close();
-                }
             }
         }
         return subsettingRequest;
@@ -224,7 +219,7 @@ public class WCSDefaultValuesHelper {
      */
     private Map<String, List<Object>> setDefaultDimensionsSubset(
             List<DimensionDescriptor> customDimensions, SimpleFeature feature) {
-        Map<String, List<Object>> dimensionsSubset = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> dimensionsSubset = new HashMap<>();
         for (DimensionDescriptor dimensionDescriptor : customDimensions) {
 
             // TODO: Add support for ranged additional dimensions
@@ -232,7 +227,7 @@ public class WCSDefaultValuesHelper {
             Object value = feature.getAttribute(start);
 
             // Replace specified values since they have been anyway set in the filters
-            List<Object> dimensionValues = new ArrayList<Object>();
+            List<Object> dimensionValues = new ArrayList<>();
             dimensionValues.add(value);
             dimensionsSubset.put(dimensionDescriptor.getName().toUpperCase(), dimensionValues);
         }
@@ -249,7 +244,9 @@ public class WCSDefaultValuesHelper {
         if (end != null) {
             endTime = (Number) f.getAttribute(end);
         }
-        return new NumberRange(startTime.getClass(), startTime, endTime);
+        @SuppressWarnings("unchecked")
+        NumberRange<?> result = new NumberRange(startTime.getClass(), startTime, endTime);
+        return result;
     }
 
     /** Set default time value from the provided feature */
@@ -275,7 +272,7 @@ public class WCSDefaultValuesHelper {
             Query query,
             DimensionDescriptor timeDimension,
             DimensionDescriptor elevationDimension) {
-        final List<SortBy> clauses = new ArrayList<SortBy>();
+        final List<SortBy> clauses = new ArrayList<>();
         // TODO: Check sortBy clause is supported
         if (timeDimension != null) {
             clauses.add(
@@ -310,7 +307,7 @@ public class WCSDefaultValuesHelper {
             DimensionDescriptor elevationDimension,
             List<DimensionDescriptor> additionalDimensions)
             throws IOException {
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
 
         // Setting temporal filter
         Filter timeFilter =
@@ -398,9 +395,9 @@ public class WCSDefaultValuesHelper {
         if (additionalDimensions != null
                 && dimensionSubset != null
                 && additionalDimensions.size() != dimensionSubset.size()
-                && dimensionSubset.size() > 0) {
+                && !dimensionSubset.isEmpty()) {
 
-            List<Filter> additionalDimensionFilterList = new ArrayList<Filter>();
+            List<Filter> additionalDimensionFilterList = new ArrayList<>();
             Set<String> dimensionKeys = dimensionSubset.keySet();
             for (String dimension : dimensionKeys) {
                 // Look for the specified dimension
@@ -504,8 +501,10 @@ public class WCSDefaultValuesHelper {
             // use "min" as the default
             Number minElevation = accessor.getMinElevation();
             if (minElevation != null) {
-                elevationSubset =
+                @SuppressWarnings("unchecked")
+                NumberRange<?> cast =
                         new NumberRange(minElevation.getClass(), minElevation, minElevation);
+                elevationSubset = cast;
             }
         }
 
@@ -517,7 +516,7 @@ public class WCSDefaultValuesHelper {
             availableCustomDimensions = customDomains.size();
             specifiedCustomDimensions = dimensionSubset != null ? dimensionSubset.size() : 0;
             if (dimensionSubset == null) {
-                dimensionSubset = new HashMap<String, List<Object>>();
+                dimensionSubset = new HashMap<>();
             }
         }
         if (availableCustomDimensions != specifiedCustomDimensions) {
@@ -538,7 +537,7 @@ public class WCSDefaultValuesHelper {
         // Scan available custom dimensions
         for (String customDomain : customDomains) {
             if (!dimensionSubset.containsKey(customDomain)) {
-                List<Object> dimensionValue = new ArrayList<Object>();
+                List<Object> dimensionValue = new ArrayList<>();
 
                 // set default of the proper datatype (in case of known Domain datatype)
                 String defaultValue = accessor.getCustomDomainDefaultValue(customDomain);

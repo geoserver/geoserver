@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -196,14 +195,10 @@ public class NamespaceController extends AbstractCatalogController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<NamespaceInfo>(NamespaceInfo.class) {
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, NamespaceInfo namespace) {
+            protected void wrapInternal(
+                    Map<String, Object> properties, SimpleHash model, NamespaceInfo namespace) {
                 if (properties == null) {
-                    try {
-                        properties = model.toMap();
-                    } catch (TemplateModelException e) {
-                        // if the above threw an exception, properties will NPE below anyways
-                        throw new RuntimeException(e);
-                    }
+                    properties = hashToProperties(model);
                 }
 
                 NamespaceInfo def = catalog.getDefaultNamespace();

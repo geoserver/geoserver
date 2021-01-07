@@ -145,15 +145,13 @@ public class MosaicIndex {
                 new DirectoryDataStore(
                         mosaic.getFile(),
                         new ShapefileDataStoreFactory.ShpFileStoreFactory(
-                                shpFactory, new HashMap()));
+                                shpFactory, new HashMap<>()));
 
         try {
             dir.createSchema(typeBuilder.buildFeatureType());
 
-            FeatureWriter<SimpleFeatureType, SimpleFeature> w =
-                    dir.getFeatureWriterAppend(mosaic.getName(), Transaction.AUTO_COMMIT);
-
-            try {
+            try (FeatureWriter<SimpleFeatureType, SimpleFeature> w =
+                    dir.getFeatureWriterAppend(mosaic.getName(), Transaction.AUTO_COMMIT)) {
                 for (Granule g : mosaic.granules()) {
                     if (g.getEnvelope() == null) {
                         LOGGER.warning(
@@ -171,9 +169,6 @@ public class MosaicIndex {
                     // track total bounds
                     envelope.include(g.getEnvelope());
                 }
-
-            } finally {
-                w.close();
             }
         } finally {
             dir.dispose();

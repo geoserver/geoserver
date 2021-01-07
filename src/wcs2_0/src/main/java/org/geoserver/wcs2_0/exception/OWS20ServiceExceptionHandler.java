@@ -55,7 +55,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Constructor to be called if the exception is not for a particular service. */
     public OWS20ServiceExceptionHandler() {
-        super(Collections.EMPTY_LIST);
+        super(Collections.emptyList());
     }
 
     /**
@@ -63,7 +63,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
      *
      * @param services List of services this handler handles exceptions for.
      */
-    public OWS20ServiceExceptionHandler(List services) {
+    public OWS20ServiceExceptionHandler(List<Service> services) {
         super(services);
     }
 

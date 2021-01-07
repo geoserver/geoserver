@@ -22,6 +22,7 @@ public class WcsGetCapabilitiesRequestReader extends EMFKvpRequestReader {
         super(GetCapabilitiesType.class, Wcs111Factory.eINSTANCE);
     }
 
+    @SuppressWarnings("unchecked") // TODO: remove once KVPReader is generified
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // make sure we get the right accepts versions param -> workaround for GEOS-1719
         if (rawKvp.containsKey("acceptVersions")) {

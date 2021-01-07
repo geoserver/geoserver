@@ -36,20 +36,20 @@ public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Seriali
         super();
         this.service = service;
         this.method = method;
-        if (roles == null) this.roles = new HashSet<String>();
-        else this.roles = new HashSet<String>(roles);
+        if (roles == null) this.roles = new HashSet<>();
+        else this.roles = new HashSet<>(roles);
     }
 
     /** Builds a new rule */
     public ServiceAccessRule(String service, String method, String... roles) {
-        this(service, method, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+        this(service, method, roles == null ? null : new HashSet<>(Arrays.asList(roles)));
     }
 
     /** Copy constructor */
     public ServiceAccessRule(ServiceAccessRule other) {
         this.service = other.service;
         this.method = other.method;
-        this.roles = new HashSet<String>(other.roles);
+        this.roles = new HashSet<>(other.roles);
     }
 
     /** Builds the default rule: *.*.r=* */

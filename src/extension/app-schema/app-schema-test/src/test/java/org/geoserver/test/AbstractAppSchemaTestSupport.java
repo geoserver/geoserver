@@ -270,7 +270,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     private XpathEngine getXpathEngine() {
         if (xpathEngine == null) {
             xpathEngine = XMLUnit.newXpathEngine();
-            Map<String, String> namespaces = new HashMap<String, String>();
+            Map<String, String> namespaces = new HashMap<>();
             namespaces.putAll(WFS_NAMESPACES);
             namespaces.putAll(getTestData().getNamespaces());
             xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));

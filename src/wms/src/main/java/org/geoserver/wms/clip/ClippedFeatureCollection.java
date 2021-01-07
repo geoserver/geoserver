@@ -22,16 +22,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 /** @author ImranR */
-public class ClippedFeatureCollection extends DecoratingFeatureCollection {
+public class ClippedFeatureCollection<T extends FeatureType, F extends Feature>
+        extends DecoratingFeatureCollection<T, F> {
 
-    static final Logger LOGGER =
-            Logging.getLogger(ClippedFeatureCollection.class.getCanonicalName());
-    static final ClipProcess clipProcess = new ClipProcess();
+    static final Logger LOGGER = Logging.getLogger(ClippedFeatureCollection.class);
 
     Geometry clip;
 
-    public ClippedFeatureCollection(
-            FeatureCollection<FeatureType, Feature> delegate, Geometry clipGeometry) {
+    public ClippedFeatureCollection(FeatureCollection<T, F> delegate, Geometry clipGeometry) {
         super(delegate);
 
         this.clip = reproject(delegate.getSchema().getCoordinateReferenceSystem(), clipGeometry);
@@ -55,9 +53,8 @@ public class ClippedFeatureCollection extends DecoratingFeatureCollection {
     }
 
     @Override
-    public FeatureIterator<Feature> features() {
-
-        return getClippedCollection((SimpleFeatureCollection) delegate, clip);
+    public FeatureIterator<F> features() {
+        return getClippedCollection(delegate, clip);
     }
 
     @Override
@@ -66,8 +63,14 @@ public class ClippedFeatureCollection extends DecoratingFeatureCollection {
         return JTS.toEnvelope(clip.intersection(JTS.toGeometry(orignalBounds)));
     }
 
-    private static synchronized FeatureIterator<Feature> getClippedCollection(
-            SimpleFeatureCollection simpleFc, Geometry clipGeom) {
-        return (FeatureIterator) clipProcess.execute(simpleFc, clipGeom, false).features();
+    @SuppressWarnings("unchecked")
+    private FeatureIterator<F> getClippedCollection(FeatureCollection<T, F> fc, Geometry clipGeom) {
+        if (fc instanceof SimpleFeatureCollection) {
+            return ((FeatureCollection<T, F>)
+                            new ClipProcess()
+                                    .execute((SimpleFeatureCollection) fc, clipGeom, false))
+                    .features();
+        }
+        return fc.features();
     }
 }

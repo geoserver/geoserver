@@ -116,7 +116,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addStyle("raster", "raster.sld", SystemTestData.class, getCatalog());
-        Map properties = new HashMap();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),

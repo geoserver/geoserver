@@ -34,18 +34,18 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     /** The class of object being serialized. */
     Class<T> clazz;
 
-    Collection<Class> classesToExpand;
+    Collection<Class<?>> classesToExpand;
 
     /** Constructs an ObjectToMapWrapper for the provided clazz. */
     public ObjectToMapWrapper(Class<T> clazz) {
-        this(clazz, Collections.EMPTY_LIST);
+        this(clazz, Collections.emptyList());
     }
 
     /**
      * Constructs an ObjectToMapWrapper for the provided clazz. Any child properties that match
      * classesToExpand will be unwrapped to a map
      */
-    public ObjectToMapWrapper(Class<T> clazz, Collection<Class> classesToExpand) {
+    public ObjectToMapWrapper(Class<T> clazz, Collection<Class<?>> classesToExpand) {
         this.clazz = clazz;
         this.classesToExpand = classesToExpand;
     }
@@ -137,7 +137,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
             String key = Character.toLowerCase(p.charAt(0)) + p.substring(1);
             Class valueClass = getClassForUnwrapping(value);
             if (value instanceof Collection) {
-                List values = new ArrayList();
+                List<Object> values = new ArrayList<>();
                 for (Object o : (Collection) value) {
                     valueClass = getClassForUnwrapping(o);
                     if (valueClass == null) {
@@ -157,7 +157,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     }
 
     private Class getClassForUnwrapping(Object o) {
-        for (Class clazz : classesToExpand) {
+        for (Class<?> clazz : classesToExpand) {
             if (clazz.isAssignableFrom(o.getClass())) {
                 return clazz;
             }
@@ -192,4 +192,13 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @param object The object being serialized.
      */
     protected void wrapInternal(SimpleHash model, Collection<T> object) {}
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> hashToProperties(SimpleHash model) {
+        try {
+            return model.toMap();
+        } catch (TemplateModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

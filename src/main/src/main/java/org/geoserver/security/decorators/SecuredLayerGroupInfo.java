@@ -58,7 +58,7 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
     @Override
     public List<StyleInfo> getStyles() {
-        return new FilteredList<StyleInfo>(styles, delegate.getStyles());
+        return new FilteredList<>(styles, delegate.getStyles());
     }
 
     private static PublishedInfo unwrap(PublishedInfo pi) {

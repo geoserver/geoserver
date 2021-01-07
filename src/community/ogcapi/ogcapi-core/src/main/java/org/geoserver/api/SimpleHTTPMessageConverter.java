@@ -29,8 +29,9 @@ public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<
      * @param binding The bean meant to act as the model for the template
      * @param serviceConfigurationClass The class holding the configuration for the service
      * @param serviceClass The controller class, used to lookup the default templates
-     * @param loader A loader used to locate templates in the GeoServer data directory
+     * @param support support
      * @param geoServer The
+     * @param templateName templateName
      */
     public SimpleHTTPMessageConverter(
             Class binding,

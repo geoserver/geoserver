@@ -5,6 +5,10 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
@@ -52,7 +56,7 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
 
         assertEquals("1.0.0", er.getVersion());
         assertEquals(1, er.getException().size());
-        ExceptionType ex = (ExceptionType) er.getException().get(0);
+        ExceptionType ex = er.getException().get(0);
         assertEquals("InvalidParameterValue", ex.getExceptionCode());
         assertEquals("service", ex.getLocator());
         assertEquals(1, ex.getExceptionText().size());

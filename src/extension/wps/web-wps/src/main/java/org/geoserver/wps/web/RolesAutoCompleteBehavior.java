@@ -46,9 +46,8 @@ public class RolesAutoCompleteBehavior extends AutoCompleteBehavior<String> {
             realInput = input.substring(lastCommaIndex + 1);
         }
 
-        List<String> completions = new ArrayList<String>();
-        for (int i = 0; i < availableRoles.size(); i++) {
-            String role = availableRoles.get(i);
+        List<String> completions = new ArrayList<>();
+        for (String role : availableRoles) {
             if (realInput.isEmpty()
                     || role.startsWith(realInput.toUpperCase())
                     || role.startsWith(realInput.toLowerCase())) {

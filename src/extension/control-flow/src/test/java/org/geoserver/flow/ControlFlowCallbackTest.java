@@ -252,7 +252,7 @@ public class ControlFlowCallbackTest {
 
     /** A wide open configurator to be used for testing */
     static class TestingConfigurator implements ControlFlowConfigurator {
-        List<FlowController> controllers = new ArrayList<FlowController>();
+        List<FlowController> controllers = new ArrayList<>();
         long timeout;
         boolean stale = true;
 

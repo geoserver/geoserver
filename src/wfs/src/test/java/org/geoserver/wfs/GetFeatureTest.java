@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -47,8 +47,8 @@ public class GetFeatureTest extends WFSTestSupport {
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
 
-        data.addVectorLayer(NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
-        data.addVectorLayer(FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
+        data.addVectorLayer(FIFTEEN_DUPLICATE, Collections.emptyMap(), getClass(), getCatalog());
     }
 
     @Before
@@ -205,7 +205,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
     }
 
     @Test
@@ -238,7 +238,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
     }
 
     @Test
@@ -286,7 +286,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
     }
 
     @Test
@@ -470,6 +470,6 @@ public class GetFeatureTest extends WFSTestSupport {
 
         doc = getAsDOM(request);
         featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertTrue(featureMembers.getLength() == 0);
+        assertEquals(0, featureMembers.getLength());
     }
 }

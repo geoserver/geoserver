@@ -35,15 +35,15 @@ public class JobQueue {
     AtomicLong counter = new AtomicLong();
 
     /** recent jobs */
-    ConcurrentHashMap<Long, Task<?>> jobs = new ConcurrentHashMap<Long, Task<?>>();
+    ConcurrentHashMap<Long, Task<?>> jobs = new ConcurrentHashMap<>();
 
     /** job runner */
     ThreadPoolExecutor pool =
             new ThreadPoolExecutor(
-                    0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()) {
+                    0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
                 protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
-                        return new Task((Job) callable);
+                        return new Task<>((Job<T>) callable);
                     }
                     return super.newTaskFor(callable);
                 };
@@ -68,7 +68,7 @@ public class JobQueue {
         cleaner.scheduleAtFixedRate(
                 new Runnable() {
                     public void run() {
-                        List<Long> toremove = new ArrayList<Long>();
+                        List<Long> toremove = new ArrayList<>();
                         for (Map.Entry<Long, Task<?>> e : jobs.entrySet()) {
                             if (e.getValue().isCancelled()
                                     || (e.getValue()
@@ -130,7 +130,7 @@ public class JobQueue {
     }
 
     public List<Task<?>> getTasks() {
-        return new ArrayList<Task<?>>(jobs.values());
+        return new ArrayList<>(jobs.values());
     }
 
     public void shutdown() {

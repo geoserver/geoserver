@@ -23,7 +23,7 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
         if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
             String name = auth.getName();
             if (envVars == null) {
-                envVars = new HashMap<String, Object>();
+                envVars = new HashMap<>();
             }
             envVars.put("GSUSER", name);
         }

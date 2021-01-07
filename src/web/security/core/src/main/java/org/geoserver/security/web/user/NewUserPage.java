@@ -38,13 +38,7 @@ public class NewUserPage extends AbstractUserPage {
             }
             ugStore.store();
 
-        } catch (IOException ex) {
-            try {
-                ugStore.load();
-            } catch (IOException ex2) {
-            }
-            throw ex;
-        } catch (PasswordPolicyException ex) {
+        } catch (IOException | PasswordPolicyException ex) {
             try {
                 ugStore.load();
             } catch (IOException ex2) {

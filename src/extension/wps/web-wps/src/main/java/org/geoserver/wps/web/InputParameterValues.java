@@ -44,7 +44,7 @@ class InputParameterValues implements Serializable {
 
     String paramName;
 
-    List<ParameterValue> values = new ArrayList<ParameterValue>();
+    List<ParameterValue> values = new ArrayList<>();
 
     public InputParameterValues(Name processName, String paramName) {
         this.processName = processName;
@@ -72,7 +72,7 @@ class InputParameterValues implements Serializable {
         if (!isComplex()) {
             return Collections.singletonList(ParameterType.LITERAL);
         } else {
-            Set<ParameterType> result = new LinkedHashSet<ParameterType>();
+            Set<ParameterType> result = new LinkedHashSet<>();
             result.add(ParameterType.TEXT);
             result.add(ParameterType.REFERENCE);
             result.add(ParameterType.SUBPROCESS);
@@ -83,7 +83,7 @@ class InputParameterValues implements Serializable {
                     result.add(ParameterType.RASTER_LAYER);
                 }
             }
-            return new ArrayList<ParameterType>(result);
+            return new ArrayList<>(result);
         }
     }
 
@@ -96,7 +96,7 @@ class InputParameterValues implements Serializable {
     }
 
     public List<String> getSupportedMime() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (ProcessParameterIO ppio : getProcessParameterIO()) {
             ComplexPPIO cp = (ComplexPPIO) ppio;
             results.add(cp.getMimeType());
@@ -110,17 +110,17 @@ class InputParameterValues implements Serializable {
 
     public boolean isComplex() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof ComplexPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof ComplexPPIO;
     }
 
     public boolean isBoundingBox() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof BoundingBoxPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof BoundingBoxPPIO;
     }
 
     public boolean isCoordinateReferenceSystem() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof CoordinateReferenceSystemPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof CoordinateReferenceSystemPPIO;
     }
 
     List<ProcessParameterIO> getProcessParameterIO() {

@@ -27,7 +27,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
     @Test
     public void testStoreModel() throws Exception {
         DataStoreInfo s = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE).getStore();
-        StoreModel<DataStoreInfo> model = new StoreModel<DataStoreInfo>(s);
+        StoreModel<DataStoreInfo> model = new StoreModel<>(s);
 
         model = serializeDeserialize(model);
         assertEquals(s, model.getObject());
@@ -39,7 +39,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
     @Test
     public void testStoreModelSetNull() throws Exception {
         DataStoreInfo s = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE).getStore();
-        StoreModel<DataStoreInfo> model = new StoreModel<DataStoreInfo>(s);
+        StoreModel<DataStoreInfo> model = new StoreModel<>(s);
 
         model = serializeDeserialize(model);
         assertEquals(s, model.getObject());
@@ -77,6 +77,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
         }
     }
 
+    @SuppressWarnings("unchecked")
     <T extends IModel> T serializeDeserialize(T model) throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ObjectOutputStream objout = new ObjectOutputStream(bout);

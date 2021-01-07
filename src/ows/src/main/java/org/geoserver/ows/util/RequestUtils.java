@@ -53,7 +53,7 @@ public class RequestUtils {
      */
     public static String getVersionPreOws(List<String> providedList, List<String> acceptedList) {
         // first figure out which versions are provided
-        TreeSet<Version> provided = new TreeSet<Version>();
+        TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
@@ -62,7 +62,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        TreeSet<Version> accepted = new TreeSet<Version>();
+        TreeSet<Version> accepted = new TreeSet<>();
         for (String v : acceptedList) {
             checkVersionNumber(v, null);
 
@@ -71,7 +71,7 @@ public class RequestUtils {
 
         // prune out those not provided
         for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
-            Version version = (Version) v.next();
+            Version version = v.next();
 
             if (!provided.contains(version)) {
                 v.remove();
@@ -82,7 +82,7 @@ public class RequestUtils {
         String version = null;
         if (!accepted.isEmpty()) {
             // return the highest version provided
-            version = ((Version) accepted.last()).toString();
+            version = accepted.last().toString();
         } else {
             for (String v : acceptedList) {
                 accepted.add(new Version(v));
@@ -132,7 +132,7 @@ public class RequestUtils {
      */
     public static String getVersionOws11(List<String> providedList, List<String> acceptedList) {
         // first figure out which versions are provided
-        TreeSet<Version> provided = new TreeSet<Version>();
+        TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
@@ -141,7 +141,7 @@ public class RequestUtils {
         if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
-        List<Version> accepted = new ArrayList<Version>();
+        List<Version> accepted = new ArrayList<>();
         for (String v : acceptedList) {
             checkVersionNumber(v, "AcceptVersions");
 
@@ -151,9 +151,7 @@ public class RequestUtils {
         // from the specification "The server, upon receiving a GetCapabilities request, shall scan
         // through this list and find the first version number that it supports"
         Version negotiated = null;
-        for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
-            Version version = (Version) v.next();
-
+        for (Version version : accepted) {
             if (provided.contains(version)) {
                 negotiated = version;
                 break;

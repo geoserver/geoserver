@@ -1211,9 +1211,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 // tl.isInitialized();
                 foudAGF = true;
                 GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.getWorldEpsg4326().getName());
-                assertTrue(
-                        epsg4326.getGridSetBounds()
-                                .equals(new BoundingBox(-180.0, -90.0, 180.0, 90.0)));
+                assertEquals(
+                        epsg4326.getGridSetBounds(), new BoundingBox(-180.0, -90.0, 180.0, 90.0));
                 String mime = tl.getMimeTypes().get(1).getMimeType();
                 assertTrue(
                         mime.startsWith("image/")
@@ -1464,7 +1463,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         try {
             // collect all the layer names that are in the CITE workspace
-            List<String> layerNames = new ArrayList<String>();
+            List<String> layerNames = new ArrayList<>();
             for (LayerInfo layer : catalog.getLayers()) {
                 if (wsName.equals(layer.getResource().getStore().getWorkspace().getName())) {
                     String prefixedName = layer.prefixedName();

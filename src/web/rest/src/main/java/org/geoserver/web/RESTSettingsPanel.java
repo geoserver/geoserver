@@ -26,21 +26,20 @@ public class RESTSettingsPanel extends SettingsPluginPanel {
     public RESTSettingsPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         // TextField associated to the root directory to map
         TextField rootField =
-                new TextField(
+                new TextField<>(
                         "rootdir",
-                        new MetadataMapModel(metadata, RESTUtils.ROOT_KEY, String.class));
+                        new MetadataMapModel<>(metadata, RESTUtils.ROOT_KEY, String.class));
         add(rootField);
 
         // CheckBox associated to the root directory to map
         CheckBox quietCheckBox =
                 new CheckBox(
                         "quiet",
-                        new MetadataMapModel(
+                        new MetadataMapModel<>(
                                 metadata, RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class));
         add(quietCheckBox);
     }

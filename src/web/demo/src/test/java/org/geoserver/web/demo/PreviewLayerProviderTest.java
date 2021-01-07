@@ -55,10 +55,10 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
 
         String wmsLink = pl.getWmsLink();
         String[] wmsParams = wmsLink.substring(wmsLink.indexOf("?") + 1).split("&");
-        Set<String> wmsKeys = new HashSet<String>();
+        Set<String> wmsKeys = new HashSet<>();
 
-        for (int i = 0; i < wmsParams.length; i++) {
-            String[] wmsParam = wmsParams[i].split("=");
+        for (String param : wmsParams) {
+            String[] wmsParam = param.split("=");
 
             if (wmsParam.length > 0) {
                 wmsKeys.add(wmsParam[0]);
@@ -70,9 +70,7 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
                         "service", "version", "request", "layers", "bbox", "width", "height", "srs",
                         "styles");
 
-        for (int i = 0; i < keysToCheck.size(); i++) {
-            String key = keysToCheck.get(i);
-
+        for (String key : keysToCheck) {
             if (!wmsKeys.contains(key)) {
                 Assert.fail(
                         String.format(

@@ -163,7 +163,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(secMgr.role()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
 
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("test1", "test2", "test3", "test4")))
+                .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "test3", "test4")))
                 .anyTimes();
 
         replay(roleService1, roleService2, roleService3, roleService4, activeRoleService, secMgr);
@@ -356,7 +356,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
-        expect(secMgr.listAuthenticationProviders()).andReturn(new TreeSet<String>()).anyTimes();
+        expect(secMgr.listAuthenticationProviders()).andReturn(new TreeSet<>()).anyTimes();
 
         GeoServerUserGroupService ugService1 = createNiceMock(GeoServerUserGroupService.class);
         expect(ugService1.getName()).andReturn("test1").anyTimes();
@@ -372,7 +372,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(secMgr.loadUserGroupService("testModify")).andReturn(ugService2).anyTimes();
 
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("test1", "test2", "testModify")))
+                .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "testModify")))
                 .anyTimes();
 
         expect(secMgr.userGroup()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
@@ -381,7 +381,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                 .andReturn(getPlainTextPasswordEncoder())
                 .anyTimes();
         expect(secMgr.listPasswordValidators())
-                .andReturn(new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
                 .anyTimes();
         replay(ugService1, ugService2, ugServiceModify, secMgr);
 

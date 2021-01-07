@@ -239,15 +239,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     /** cached user groups */
     ConcurrentHashMap<String, GeoServerUserGroupService> userGroupServices =
-            new ConcurrentHashMap<String, GeoServerUserGroupService>();
+            new ConcurrentHashMap<>();
 
     /** cached role services */
-    ConcurrentHashMap<String, GeoServerRoleService> roleServices =
-            new ConcurrentHashMap<String, GeoServerRoleService>();
+    ConcurrentHashMap<String, GeoServerRoleService> roleServices = new ConcurrentHashMap<>();
 
     /** cached password validators services */
-    ConcurrentHashMap<String, PasswordValidator> passwordValidators =
-            new ConcurrentHashMap<String, PasswordValidator>();
+    ConcurrentHashMap<String, PasswordValidator> passwordValidators = new ConcurrentHashMap<>();
 
     /** some helper instances for storing/loading service config */
     RoleServiceHelper roleServiceHelper = new RoleServiceHelper();
@@ -262,7 +260,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     ConfigurationPasswordEncryptionHelper configPasswordEncryptionHelper;
 
     /** listeners */
-    List<SecurityManagerListener> listeners = new ArrayList<SecurityManagerListener>();
+    List<SecurityManagerListener> listeners = new ArrayList<>();
 
     /** cached flag determining is strong cryptography is available */
     Boolean strongEncryptionAvaialble;
@@ -478,6 +476,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                                         new Converter() {
 
                                             @Override
+                                            @SuppressWarnings("unchecked")
                                             public boolean canConvert(Class cls) {
                                                 return cls.isAssignableFrom(RoleSource.class);
                                             }
@@ -613,7 +612,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         setActiveRoleService(roleService);
 
         // set up authentication providers
-        this.authProviders = new ArrayList<GeoServerAuthenticationProvider>();
+        this.authProviders = new ArrayList<>();
 
         // first provider is for the root user
         GeoServerRootAuthenticationProvider rootAuthProvider =
@@ -633,7 +632,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
         }
 
-        List<AuthenticationProvider> allAuthProviders = new ArrayList<AuthenticationProvider>();
+        List<AuthenticationProvider> allAuthProviders = new ArrayList<>();
         allAuthProviders.addAll(authProviders);
 
         // anonymous, not needed  anymore
@@ -840,7 +839,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
 
         // fall back on including every group the user is part of
-        List<String> groupNames = new ArrayList<String>();
+        List<String> groupNames = new ArrayList<>();
         for (GeoServerUserGroupService ugService : loadUserGroupServices()) {
             GeoServerUser user = ugService.getUserByUsername(userDetails.getUsername());
             if (user != null) {
@@ -975,13 +974,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      */
     public <T extends GeoServerPasswordEncoder> List<T> loadPasswordEncoders(
             Class<T> filter, Boolean reversible, Boolean strong) {
+        filter = defaultFilterClass(filter);
 
-        filter = (Class<T>) (filter != null ? filter : GeoServerPasswordEncoder.class);
-
-        List list = GeoServerExtensions.extensions(filter);
-        for (Iterator it = list.iterator(); it.hasNext(); ) {
+        List<T> list = GeoServerExtensions.extensions(filter);
+        for (Iterator<T> it = list.iterator(); it.hasNext(); ) {
             boolean remove = false;
-            T pw = (T) it.next();
+            T pw = it.next();
             if (reversible != null && !reversible.equals(pw.isReversible())) {
                 remove = true;
             }
@@ -1006,6 +1004,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
         }
         return list;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends GeoServerPasswordEncoder> Class<T> defaultFilterClass(Class<T> filter) {
+        return (Class<T>) (filter != null ? filter : GeoServerPasswordEncoder.class);
     }
 
     /**
@@ -1135,7 +1138,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     /** Loads all available user group services. */
     public List<GeoServerUserGroupService> loadUserGroupServices() throws IOException {
-        List<GeoServerUserGroupService> ugServices = new ArrayList<GeoServerUserGroupService>();
+        List<GeoServerUserGroupService> ugServices = new ArrayList<>();
 
         for (String ugServiceName : listUserGroupServices()) {
             try {
@@ -1389,7 +1392,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * instance of the specified class.
      */
     public SortedSet<String> listFilters(Class<?> type) throws IOException {
-        SortedSet<String> configs = new TreeSet<String>();
+        SortedSet<String> configs = new TreeSet<>();
         for (String name : listFilters()) {
             SecurityFilterConfig config = loadFilterConfig(name);
             if (config.getClassName() == null) {
@@ -1695,11 +1698,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         // look for file
         Resource pwDigestFile = security().get(MASTER_PASSWD_DIGEST_FILENAME);
         if (pwDigestFile.getType() == Type.RESOURCE) {
-            InputStream fin = pwDigestFile.in();
-            try {
+            try (InputStream fin = pwDigestFile.in()) {
                 return IOUtils.toString(fin, "UTF-8");
-            } finally {
-                fin.close();
             }
         } else {
             // compute and store
@@ -1713,11 +1713,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     void saveMasterPasswordDigest(String masterPasswdDigest) throws IOException {
-        OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out();
-        try {
+        try (OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out()) {
             IOUtils.write(masterPasswdDigest, fout, "UTF-8");
-        } finally {
-            fout.close();
         }
     }
 
@@ -1858,7 +1855,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** @return the master password used for the migration */
     char[] extractMasterPasswordForMigration(Properties props) throws Exception {
 
-        Map<String, String> candidates = new HashMap<String, String>();
+        Map<String, String> candidates = new HashMap<>();
         String defaultPasswordAsString = new String(MASTER_PASSWD_DEFAULT);
 
         if (props != null) {
@@ -1866,8 +1863,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-            for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
-                String username = (String) iter.next();
+            for (Object o : props.keySet()) {
+                String username = (String) o;
 
                 configAttribEd.setAsText(props.getProperty(username));
                 UserAttribute attr = (UserAttribute) configAttribEd.getValue();
@@ -1896,7 +1893,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         String username = GeoServerUser.ADMIN_USERNAME;
         String masterPW = candidates.get(username);
-        if (masterPW == null && candidates.size() > 0) {
+        if (masterPW == null && !candidates.isEmpty()) {
             username = candidates.keySet().iterator().next();
             masterPW = candidates.get(username);
         }
@@ -2330,11 +2327,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-            for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
+            for (Object o : props.keySet()) {
                 // the attribute editors parses the list of strings into password, username and
                 // enabled
                 // flag
-                String username = (String) iter.next();
+                String username = (String) o;
                 configAttribEd.setAsText(props.getProperty(username));
 
                 // if the parsing succeeded turn that into a user object
@@ -2384,7 +2381,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (file.getType() == Type.UNDEFINED) {
                 continue;
             }
-            List<String> lines = new ArrayList<String>();
+            List<String> lines = new ArrayList<>();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -2620,7 +2617,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * looks up security plugins
      */
     public List<GeoServerSecurityProvider> lookupSecurityProviders() {
-        List<GeoServerSecurityProvider> list = new ArrayList<GeoServerSecurityProvider>();
+        List<GeoServerSecurityProvider> list = new ArrayList<>();
 
         for (GeoServerSecurityProvider provider :
                 GeoServerExtensions.extensions(GeoServerSecurityProvider.class, appContext)) {
@@ -2637,7 +2634,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * list files in a directory.
      */
     SortedSet<String> listFiles(Resource dir) {
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         List<Resource> dirs = dir.list();
         for (Resource d : dirs) {
             if (d.getType() == Type.DIRECTORY
@@ -2713,22 +2710,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** reads a config file from the specified directly using the specified xstream persister */
     <T extends SecurityConfig> T loadConfig(Class<T> config, Resource resource, XStreamPersister xp)
             throws IOException {
-        InputStream in = resource.in();
-        try {
+        try (InputStream in = resource.in()) {
             Object loaded = xp.load(in, SecurityConfig.class).clone(true);
             return config.cast(loaded);
-        } finally {
-            in.close();
         }
     }
     /** reads a config file from the specified directly using the specified xstream persister */
     SecurityConfig loadConfigFile(Resource directory, String filename, XStreamPersister xp)
             throws IOException {
-        InputStream fin = directory.get(filename).in();
-        try {
+        try (InputStream fin = directory.get(filename).in()) {
             return xp.load(fin, SecurityConfig.class).clone(true);
-        } finally {
-            fin.close();
         }
     }
 
@@ -2763,7 +2754,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
          * TODO: we should probably manage these better rather than just throwing them in a
          * list, repeated loads will cause this list to fill up with threads
          */
-        protected List<FileWatcher> fileWatchers = new ArrayList<FileWatcher>();
+        protected List<FileWatcher> fileWatchers = new ArrayList<>();
 
         public abstract T load(String name) throws IOException;
 
@@ -2778,7 +2769,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (migrationHelper != null) {
                 migrationHelper.migrationPersister(xp);
             }
-            return (C) loadConfigFile(dir, xp);
+            @SuppressWarnings("unchecked")
+            C config = (C) loadConfigFile(dir, xp);
+            return config;
         }
 
         /** loads the named entity config from persistence */
@@ -3101,7 +3094,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
         }
 
-        Set<Class<?>> configClasses = new HashSet<Class<?>>();
+        Set<Class<?>> configClasses = new HashSet<>();
 
         // filter the interesting classes ones
         for (GeoServerSecurityProvider prov : lookupSecurityProviders()) {
@@ -3412,7 +3405,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 }
 
                 // <filter
-                ArrayList<String> filterNames = new ArrayList<String>();
+                ArrayList<String> filterNames = new ArrayList<>();
                 while (reader.hasMoreChildren()) {
                     reader.moveDown();
                     filterNames.add(reader.getValue());
@@ -3479,7 +3472,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      */
     public SortedSet<GeoServerRole> getRolesForAccessControl() throws IOException {
 
-        SortedSet<GeoServerRole> allRoles = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> allRoles = new TreeSet<>();
         for (String serviceName : listRoleServices()) {
             // catch the IOException for each role service.
             // As an example, it does not make sense to throw an IOException if

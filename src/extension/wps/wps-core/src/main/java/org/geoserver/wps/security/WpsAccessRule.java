@@ -36,20 +36,20 @@ public class WpsAccessRule implements Comparable<WpsAccessRule>, Serializable {
         super();
         this.groupName = groupName;
         this.wpsName = wpsName;
-        if (roles == null) this.roles = new HashSet<String>();
-        else this.roles = new HashSet<String>(roles);
+        if (roles == null) this.roles = new HashSet<>();
+        else this.roles = new HashSet<>(roles);
     }
 
     /** Builds a new rule */
     public WpsAccessRule(String groupName, String wpsName, String... roles) {
-        this(groupName, wpsName, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+        this(groupName, wpsName, roles == null ? null : new HashSet<>(Arrays.asList(roles)));
     }
 
     /** Copy constructor */
     public WpsAccessRule(WpsAccessRule other) {
         this.groupName = other.groupName;
         this.wpsName = other.wpsName;
-        this.roles = new HashSet<String>(other.roles);
+        this.roles = new HashSet<>(other.roles);
     }
 
     /** Builds the default rule: *.*.r=* */

@@ -165,7 +165,7 @@ public class WPSInitializer implements GeoServerInitializer {
     }
 
     static void lookupNewProcessGroups(WPSInfo info, GeoServer geoServer) {
-        List<ProcessGroupInfo> newGroups = new ArrayList();
+        List<ProcessGroupInfo> newGroups = new ArrayList<>();
 
         for (ProcessGroupInfo available : lookupProcessGroups()) {
             boolean found = false;
@@ -189,15 +189,14 @@ public class WPSInitializer implements GeoServerInitializer {
     }
 
     static List<ProcessGroupInfo> lookupProcessGroups() {
-        List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
+        List<ProcessGroupInfo> processFactories = new ArrayList<>();
 
         // here we build a full list of process factories infos, covering all available
         // factories: this makes sure the available factories are availablefrom both
         // GUI and REST configuration
 
         // get the full list of factories
-        List<ProcessFactory> factories =
-                new ArrayList<ProcessFactory>(Processors.getProcessFactories());
+        List<ProcessFactory> factories = new ArrayList<>(Processors.getProcessFactories());
 
         // ensure there is a stable order across invocations, JDK and so on
         Collections.sort(

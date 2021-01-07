@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -274,7 +274,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         byte[][] bankData11 = db11.getBankData();
         byte[][] bankData13 = db13.getBankData();
         for (int i = 0; i < bankData11.length; i++) {
-            assertTrue(Arrays.equals(bankData11[i], bankData13[i]));
+            assertArrayEquals(bankData11[i], bankData13[i]);
         }
     }
 
@@ -282,7 +282,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     public void testOpenLayersProxy() throws Exception {
         NamespaceContext oldContext = XMLUnit.getXpathNamespaceContext();
         try {
-            Map<String, String> namespaces = new HashMap<String, String>();
+            Map<String, String> namespaces = new HashMap<>();
             namespaces.put("xhtml", "http://www.w3.org/1999/xhtml");
             registerNamespaces(namespaces);
             XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
@@ -401,7 +401,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         WMS wms = new WMS(getGeoServer());
         GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
         // asserts the a layerGroup can be created with null layer and a styleGroup sld
-        HashMap kvp = new HashMap();
+        HashMap<String, Object> kvp = new HashMap<>();
         kvp.put("layers", "BasicStyleGroup");
         kvp.put("styles", "");
 

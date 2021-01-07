@@ -16,21 +16,21 @@ import org.geoserver.web.GeoServerApplication;
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
-public class ResourceModel implements IModel {
+public class ResourceModel implements IModel<ResourceInfo> {
     ResourceInfo resourceInfo;
 
     public ResourceModel(ResourceInfo resourceInfo) {
         this.resourceInfo = resourceInfo;
     }
 
-    public Object getObject() {
+    public ResourceInfo getObject() {
         if (resourceInfo.getCatalog() == null)
             new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(resourceInfo);
         return resourceInfo;
     }
 
-    public void setObject(Object object) {
-        this.resourceInfo = (ResourceInfo) object;
+    public void setObject(ResourceInfo object) {
+        this.resourceInfo = object;
     }
 
     public void detach() {

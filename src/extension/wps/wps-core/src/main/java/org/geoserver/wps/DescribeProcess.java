@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -77,7 +76,7 @@ public class DescribeProcess {
     static final Map<Class, Class> PRIMITIVE_TO_WRAPPER;
 
     static {
-        PRIMITIVE_TO_WRAPPER = new HashMap<Class, Class>();
+        PRIMITIVE_TO_WRAPPER = new HashMap<>();
         PRIMITIVE_TO_WRAPPER.put(byte.class, Byte.class);
         PRIMITIVE_TO_WRAPPER.put(short.class, Short.class);
         PRIMITIVE_TO_WRAPPER.put(int.class, Integer.class);
@@ -102,14 +101,15 @@ public class DescribeProcess {
         ProcessDescriptionsType pds = wpsf.createProcessDescriptionsType();
         pds.setLang("en");
 
-        for (Iterator i = request.getIdentifier().iterator(); i.hasNext(); ) {
-            CodeType id = (CodeType) i.next();
+        for (Object o : request.getIdentifier()) {
+            CodeType id = (CodeType) o;
             processDescription(id, pds);
         }
 
         return pds;
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void processDescription(CodeType id, ProcessDescriptionsType pds) {
         Name name = Ows11Util.name(id);
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(name, true);
@@ -138,6 +138,7 @@ public class DescribeProcess {
         processOutputs(outputs, pf, name);
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void dataInputs(DataInputsType inputs, ProcessFactory pf, Name name) {
         Collection<String> outputMimeParameters =
                 AbstractRawData.getOutputMimeParameters(name, pf).values();
@@ -274,6 +275,7 @@ public class DescribeProcess {
         }
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     private void addAllowedValues(LiteralInputType literal, Object[] values) {
         AllowedValuesType allowed = owsf.createAllowedValuesType();
         for (Object value : values) {
@@ -284,6 +286,7 @@ public class DescribeProcess {
         literal.setAllowedValues(allowed);
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     private void addAllowedValues(LiteralInputType literal, Object min, Object max) {
         if (min == null && max == null) {
             literal.setAnyValue(owsf.createAnyValueType());
@@ -326,6 +329,7 @@ public class DescribeProcess {
         return supportedCRS;
     }
 
+    @SuppressWarnings("unchecked") // EMF mode without generics
     void processOutputs(ProcessOutputsType outputs, ProcessFactory pf, Name name) {
         Map<String, Parameter<?>> outs = pf.getResultInfo(name, null);
         for (Parameter p : outs.values()) {

@@ -48,7 +48,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
             private static final long serialVersionUID = 3182237972594668864L;
 
             public List<S> getObject() {
-                return new ArrayList<S>(wrapped.getObject());
+                return new ArrayList<>(wrapped.getObject());
             }
         };
     }
@@ -60,7 +60,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
             private static final long serialVersionUID = 7638792616781214296L;
 
             public Set<S> getObject() {
-                return new HashSet<S>(wrapped.getObject());
+                return new HashSet<>(wrapped.getObject());
             }
         };
     }

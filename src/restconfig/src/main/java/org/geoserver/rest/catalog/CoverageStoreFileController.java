@@ -5,8 +5,8 @@
 package org.geoserver.rest.catalog;
 
 import java.awt.RenderingHints;
-import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -110,14 +111,19 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
 
         StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-        // This method returns a List of the harvested files.
-        final List<File> uploadedFiles = new ArrayList<>();
-        for (Resource res :
-                doFileUpload(method, workspaceName, storeName, filename, format, request)) {
-            uploadedFiles.add(Resources.find(res));
+        // This method returns a List of the harvested sources.
+        final List<Object> harvestedResources = new ArrayList<>();
+        if (method == UploadMethod.remote) {
+            harvestedResources.add(handleRemoteUrl(request));
+
+        } else {
+            for (Resource res :
+                    doFileUpload(method, workspaceName, storeName, filename, format, request)) {
+                harvestedResources.add(Resources.find(res));
+            }
         }
         // File Harvesting
-        sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
+        sr.harvest(null, harvestedResources, GeoTools.getDefaultHints());
         if (updateBBox) new MosaicInfoBBoxHandler(catalog).updateNativeBBox(info, sr);
     }
 
@@ -243,7 +249,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             }
 
             // coverage read params
-            final Map customParameters = new HashMap();
+            final Map<String, Serializable> customParameters = new HashMap<>();
             if (useJaiImageRead != null) {
                 customParameters.put(
                         AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), useJaiImageRead);
@@ -319,7 +325,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             String nativeName,
             String coverageName,
             GridCoverage2DReader reader,
-            final Map customParameters)
+            final Map<String, Serializable> customParameters)
             throws Exception {
         CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
 
@@ -342,7 +348,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
                     existing = coverages.get(0);
                 }
                 // check if we have it or not
-                if (coverages.size() == 0) {
+                if (coverages.isEmpty()) {
                     // no coverages yet configured, change add flag and continue on
                     add = true;
                 } else {
@@ -451,5 +457,21 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
         return handleFileUpload(
                 storeName, workspaceName, filename, method, format, directory, request);
+    }
+
+    /** Return the remote URL provided in the request. */
+    protected URL handleRemoteUrl(HttpServletRequest request) {
+
+        try {
+            // get the URL to be harvested
+            final String stringURL = IOUtils.toString(request.getReader());
+            URL remoteUrl = new URL(stringURL);
+            return remoteUrl;
+        } catch (RestException re) {
+            throw re;
+        } catch (Throwable t) {
+            throw new RestException(
+                    "Error while retrieving the remote URL:", HttpStatus.INTERNAL_SERVER_ERROR, t);
+        }
     }
 }

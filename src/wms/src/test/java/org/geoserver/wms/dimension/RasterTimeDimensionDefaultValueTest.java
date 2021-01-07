@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.dimension;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -83,8 +84,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == todayMidnight);
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the closest one", d.getTime(), todayMidnight);
     }
 
     @Test
@@ -105,8 +106,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == todayMidnight);
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the closest one", d.getTime(), todayMidnight);
     }
 
     @Test
@@ -122,7 +123,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         // the default is a single value, as we get the nearest to the range
         java.util.Date curr = new java.util.Date();
         Range d = (Range) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default range", d != null);
+        assertNotNull("Returns a valid Default range", d);
         // check "now" it's in the same minute... should work for even the slowest build server
         assertDateEquals(curr, (java.util.Date) d.getMaxValue(), MILLIS_IN_MINUTE);
         // the beginning
@@ -145,8 +146,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the smallest one", d.getTime() == expected.getTime());
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the smallest one", d.getTime(), expected.getTime());
     }
 
     @Test
@@ -171,8 +172,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the biggest one", d.getTime() == oneYearInFuture);
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the biggest one", d.getTime(), oneYearInFuture);
     }
 
     @Test
@@ -189,8 +190,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the fixed one", d.getTime(), fixedTime);
     }
 
     @Test
@@ -208,8 +209,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
-        assertTrue("Returns a valid Default time", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
+        assertNotNull("Returns a valid Default time", d);
+        assertEquals("Default time should be the closest one", d.getTime(), expected.getTime());
     }
 
     public static void prepareFutureCoverageData(
@@ -312,13 +313,13 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         }
 
         // load the format/reader
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(file);
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
         GridCoverage2DReader reader = null;
         try {
-            reader = (GridCoverage2DReader) format.getReader(file);
+            reader = format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException(
                         "No reader for "

@@ -150,7 +150,7 @@ abstract class DimensionHelper {
             String unitSymbol = customDim.getValue().getUnitSymbol();
             final Optional<Class> dataTypeOpt = getDataType(values);
             if (dataTypeOpt.isPresent()) {
-                final Class<Object> type = dataTypeOpt.get();
+                final Class<?> type = dataTypeOpt.get();
                 if (Date.class.isAssignableFrom(type)) {
                     metadata = getTemporalDomainRepresentation(customDim.getValue(), values);
                 } else if (Number.class.isAssignableFrom(type)) {
@@ -202,7 +202,7 @@ abstract class DimensionHelper {
         try {
             // do we have time?
             WMTSLayerInfo wli = (WMTSLayerInfo) layerInfo.getResource();
-            WMTSLayer wl = (WMTSLayer) wli.getWMTSLayer(null);
+            WMTSLayer wl = wli.getWMTSLayer(null);
             for (String dimName : wl.getDimensions().keySet()) {
                 if (TIME.equalsIgnoreCase(dimName)) {
                     Dimension timeDimension = wl.getDimension(dimName);
@@ -240,7 +240,7 @@ abstract class DimensionHelper {
 
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
-        Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> customDimensions = new HashMap<>();
         GridCoverage2DReader reader = null;
 
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
@@ -635,7 +635,8 @@ abstract class DimensionHelper {
     }
 
     /** Builds a single Z range from the domain, be it made of Number or NumberRange objects */
-    private NumberRange<Double> getMinMaxZInterval(TreeSet<? extends Object> values) {
+    @SuppressWarnings("unchecked")
+    private NumberRange<? extends Number> getMinMaxZInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
         Number min, max;

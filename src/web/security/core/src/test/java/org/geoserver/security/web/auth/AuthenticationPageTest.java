@@ -35,6 +35,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.startPage(page = new AuthenticationPage());
         tester.assertComponent("form:providerChain:authProviderNames:recorder", Recorder.class);
 
+        @SuppressWarnings("unchecked")
         List<String> selected =
                 (List<String>)
                         (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();
@@ -50,7 +51,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         for (GeoServerAuthenticationProvider prov :
                 getSecurityManager().getAuthenticationProviders()) {
             if (UsernamePasswordAuthenticationProvider.class.isAssignableFrom(prov.getClass())) {
-                if (((UsernamePasswordAuthenticationProvider) prov).getName().equals("default2")) {
+                if (prov.getName().equals("default2")) {
                     authProvFound = true;
                     break;
                 }

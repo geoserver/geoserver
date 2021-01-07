@@ -553,7 +553,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return (T) SecuredObjects.secure(info, policy);
+        @SuppressWarnings("unchecked")
+        T result = SecuredObjects.secure(info, policy);
+        return result;
     }
 
     /**
@@ -598,7 +600,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 || store instanceof CoverageStoreInfo
                 || store instanceof WMSStoreInfo
                 || store instanceof WMTSStoreInfo) {
-            return (T) SecuredObjects.secure(store, policy);
+            @SuppressWarnings("unchecked")
+            T result = SecuredObjects.secure(store, policy);
+            return result;
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
         }
@@ -622,7 +626,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return (LayerInfo) SecuredObjects.secure(layer, policy);
+        return SecuredObjects.secure(layer, policy);
     }
 
     /** Given a layer group and a user, returns it back if the user can access it, null otherwise */
@@ -649,7 +653,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
         }
 
-        List<LayerGroupInfo> extendedContainers = new ArrayList<LayerGroupInfo>(containers);
+        List<LayerGroupInfo> extendedContainers = new ArrayList<>(containers);
         extendedContainers.add(group);
 
         final List<PublishedInfo> layers = group.getLayers();
@@ -991,7 +995,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     protected <T extends ResourceInfo> List<T> filterResources(
             Authentication user, List<T> resources) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T original : resources) {
             T secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1004,7 +1008,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * access
      */
     protected <T extends StoreInfo> List<T> filterStores(Authentication user, List<T> resources) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T original : resources) {
             T secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1017,7 +1021,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * access
      */
     protected List<LayerGroupInfo> filterGroups(Authentication user, List<LayerGroupInfo> groups) {
-        List<LayerGroupInfo> result = new ArrayList<LayerGroupInfo>();
+        List<LayerGroupInfo> result = new ArrayList<>();
         for (LayerGroupInfo original : groups) {
             LayerGroupInfo secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1029,7 +1033,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * Given a list of layers, returns a copy of it containing only the layers the user can access
      */
     protected List<LayerInfo> filterLayers(Authentication user, List<LayerInfo> layers) {
-        List<LayerInfo> result = new ArrayList<LayerInfo>();
+        List<LayerInfo> result = new ArrayList<>();
         for (LayerInfo original : layers) {
             LayerInfo secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1041,7 +1045,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * Given a list of styles, returns a copy of it containing only the styles the user can access.
      */
     protected List<StyleInfo> filterStyles(Authentication user, List<StyleInfo> styles) {
-        List<StyleInfo> result = new ArrayList<StyleInfo>();
+        List<StyleInfo> result = new ArrayList<>();
         for (StyleInfo original : styles) {
             StyleInfo secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1055,7 +1059,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     protected <T extends NamespaceInfo> List<T> filterNamespaces(
             Authentication user, List<T> namespaces) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T original : namespaces) {
             T secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1069,7 +1073,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     protected <T extends WorkspaceInfo> List<T> filterWorkspaces(
             Authentication user, List<T> workspaces) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T original : workspaces) {
             T secured = checkAccess(user, original, MixedModeBehavior.HIDE);
             if (secured != null) result.add(secured);
@@ -1279,12 +1283,18 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 
@@ -1470,7 +1480,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // out via a CatalogFilter - for example, this can happen with a
         // LocalWorkspaceCatalogFilter and a virtual service request
         return CloseableIteratorAdapter.filter(
-                filteredWrapped, com.google.common.base.Predicates.<T>notNull());
+                filteredWrapped, com.google.common.base.Predicates.notNull());
     }
 
     public <T extends CatalogInfo> CloseableIterator<T> list(
@@ -1495,7 +1505,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // out via a CatalogFilter - for example, this can happen with a
         // LocalWorkspaceCatalogFilter and a virtual service request
         return CloseableIteratorAdapter.filter(
-                filteredWrapped, com.google.common.base.Predicates.<T>notNull());
+                filteredWrapped, com.google.common.base.Predicates.notNull());
     }
 
     /**

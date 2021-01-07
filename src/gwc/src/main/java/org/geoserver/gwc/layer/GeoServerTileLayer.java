@@ -112,7 +112,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     public static final String GWC_SEED_INTERCEPT_TOKEN = "GWC_SEED_INTERCEPT";
 
-    public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<WebMap>();
+    public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<>();
 
     private String configErrorMessage;
 
@@ -261,7 +261,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     @Override
     public List<ParameterFilter> getParameterFilters() {
-        return new ArrayList<ParameterFilter>(info.getParameterFilters());
+        return new ArrayList<>(info.getParameterFilters());
     }
 
     public void resetParameterFilters() {
@@ -497,7 +497,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         Map<String, String> params = buildGetFeatureInfo(convTile, bbox, height, width, x, y);
         Resource response;
         try {
-            response = GWC.get().dispatchOwsRequest(params, (Cookie[]) null);
+            response = GWC.get().dispatchOwsRequest(params, null);
         } catch (Exception e) {
             throw new GeoWebCacheException(e);
         }
@@ -506,7 +506,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private Map<String, String> buildGetFeatureInfo(
             ConveyorTile convTile, BoundingBox bbox, int height, int width, int x, int y) {
-        Map<String, String> wmsParams = new HashMap<String, String>();
+        Map<String, String> wmsParams = new HashMap<>();
         wmsParams.put("SERVICE", "WMS");
         wmsParams.put("VERSION", "1.1.1");
         wmsParams.put("REQUEST", "GetFeatureInfo");
@@ -740,7 +740,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     private Map<String, String> buildGetMap(final ConveyorTile tile, final MetaTile metaTile)
             throws ParameterException {
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         final MimeType mimeType = tile.getMimeType();
         final String gridSetId = tile.getGridSetId();
@@ -855,7 +855,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     /** @see org.geowebcache.layer.TileLayer#getGridSubsets() */
     @Override
     public Set<String> getGridSubsets() {
-        return new HashSet<String>(gridSubsets().keySet());
+        return new HashSet<>(gridSubsets().keySet());
     }
 
     @Override
@@ -893,7 +893,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         gridSubsets();
         final GridSubset oldValue = gridSubsets().remove(gridSetId);
 
-        Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
+        Set<XMLGridSubset> gridSubsets = new HashSet<>(info.getGridSubsets());
         for (Iterator<XMLGridSubset> it = gridSubsets.iterator(); it.hasNext(); ) {
             if (it.next().getGridSetName().equals(gridSetId)) {
                 it.remove();
@@ -912,7 +912,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         if (gridSubset instanceof DynamicGridSubset) {
             gridSubsetInfo.setExtent(null);
         }
-        Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
+        Set<XMLGridSubset> gridSubsets = new HashSet<>(info.getGridSubsets());
         gridSubsets.add(gridSubsetInfo);
         info.setGridSubsets(gridSubsets);
         // reset lazy value
@@ -940,11 +940,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             throws ConfigurationException {
 
         Set<XMLGridSubset> cachedGridSets = info.getGridSubsets();
-        if (cachedGridSets.size() == 0) {
+        if (cachedGridSets.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        Map<String, GridSubset> grids = new HashMap<String, GridSubset>(2);
+        Map<String, GridSubset> grids = new HashMap<>(2);
         for (XMLGridSubset xmlGridSubset : cachedGridSets) {
             final String gridSetId = xmlGridSubset.getGridSetName();
             final GridSet gridSet = gridSetBroker.get(gridSetId);
@@ -1148,7 +1148,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     @Override
     public List<MimeType> getMimeTypes() {
         Set<String> mimeFormats = info.getMimeFormats();
-        List<MimeType> mimeTypes = new ArrayList<MimeType>(mimeFormats.size());
+        List<MimeType> mimeTypes = new ArrayList<>(mimeFormats.size());
         for (String format : mimeFormats) {
             try {
                 mimeTypes.add(MimeType.createFromFormat(format));
@@ -1294,7 +1294,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         // Get the formats WMS supports for GetFeatureInfo
         List<String> typeStrings =
                 ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
-        List<MimeType> types = new ArrayList<MimeType>(typeStrings.size());
+        List<MimeType> types = new ArrayList<>(typeStrings.size());
         for (String typeString : typeStrings) {
             try {
                 types.add(MimeType.createFromFormat(typeString));

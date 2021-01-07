@@ -18,18 +18,20 @@ import org.geotools.process.vector.ClipProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 /** @author ImranR */
-public class ClippedFeatureSource extends DecoratingFeatureSource {
-    static final Logger LOGGER = Logging.getLogger(ClippedFeatureSource.class.getCanonicalName());
-    static final ClipProcess clipProcess = new ClipProcess();
+public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
+        extends DecoratingFeatureSource<T, F> {
+    static final Logger LOGGER = Logging.getLogger(ClippedFeatureSource.class);
 
     Geometry clip;
 
-    public ClippedFeatureSource(FeatureSource delegate, Geometry clipGeometry) {
+    public ClippedFeatureSource(FeatureSource<T, F> delegate, Geometry clipGeometry) {
         super(delegate);
         this.clip = reproject(delegate.getInfo().getCRS(), clipGeometry);
     }
@@ -68,34 +70,27 @@ public class ClippedFeatureSource extends DecoratingFeatureSource {
     }
 
     @Override
-    public FeatureCollection getFeatures() throws IOException {
-        FeatureCollection fc = super.getFeatures();
-        if (SimpleFeatureCollection.class.isAssignableFrom(fc.getClass())) {
-            return getClippedCollection((SimpleFeatureCollection) fc, clip);
-        }
-        return fc;
+    public FeatureCollection<T, F> getFeatures() throws IOException {
+        return getClippedCollection(super.getFeatures(), clip);
     }
 
     @Override
-    public FeatureCollection getFeatures(Filter filter) throws IOException {
-        FeatureCollection fc = super.getFeatures(filter);
-        if (SimpleFeatureCollection.class.isAssignableFrom(fc.getClass())) {
-            return getClippedCollection((SimpleFeatureCollection) fc, clip);
-        }
-        return fc;
+    public FeatureCollection<T, F> getFeatures(Filter filter) throws IOException {
+        return getClippedCollection(super.getFeatures(filter), clip);
     }
 
     @Override
-    public FeatureCollection getFeatures(Query query) throws IOException {
-        FeatureCollection fc = super.getFeatures(query);
-        if (SimpleFeatureCollection.class.isAssignableFrom(fc.getClass())) {
-            return getClippedCollection((SimpleFeatureCollection) fc, clip);
-        }
-        return fc;
+    public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
+        return getClippedCollection(super.getFeatures(query), clip);
     }
 
-    private static synchronized FeatureCollection getClippedCollection(
-            SimpleFeatureCollection simpleFc, Geometry clipGeom) {
-        return clipProcess.execute(simpleFc, clipGeom, false);
+    @SuppressWarnings("unchecked")
+    private FeatureCollection<T, F> getClippedCollection(
+            FeatureCollection<T, F> fc, Geometry clipGeom) {
+        if (fc instanceof SimpleFeatureCollection) {
+            return (FeatureCollection<T, F>)
+                    new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false);
+        }
+        return fc;
     }
 }

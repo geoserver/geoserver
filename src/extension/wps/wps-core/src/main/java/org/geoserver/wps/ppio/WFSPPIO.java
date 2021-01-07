@@ -131,7 +131,7 @@ public class WFSPPIO extends XMLPPIO {
     private SimpleFeatureCollection eliminateFeatureBounds(SimpleFeatureCollection fc) {
         final SimpleFeatureType original = fc.getSchema();
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         boolean alternateGeometry = false;
         for (AttributeDescriptor ad : original.getAttributeDescriptors()) {
             final String name = ad.getLocalName();
@@ -197,6 +197,7 @@ public class WFSPPIO extends XMLPPIO {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public void encode(Object object, ContentHandler handler) throws Exception {
         FeatureCollection features = (FeatureCollection) object;
         SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();

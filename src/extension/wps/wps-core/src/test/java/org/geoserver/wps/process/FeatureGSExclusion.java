@@ -31,7 +31,7 @@ public class FeatureGSExclusion implements ProcessFilter {
         if (pf instanceof DeprecatedProcessFactory) {
             // strip out all the "gs" processes
 
-            Set<Name> disabled = new HashSet();
+            Set<Name> disabled = new HashSet<>();
             for (Name n : pf.getNames()) {
                 if ("gs".equals(n.getNamespaceURI())) {
                     disabled.add(n);

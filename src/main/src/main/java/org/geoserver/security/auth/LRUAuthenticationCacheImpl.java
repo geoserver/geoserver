@@ -50,7 +50,7 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         this.timeToIdleSeconds = timeToIdleSeconds;
         this.timeToLiveSeconds = timeToLiveSeconds;
         this.maxEntries = maxEntries;
-        cache = new LRUCache<AuthenticationCacheKey, AuthenticationCacheEntry>(maxEntries);
+        cache = new LRUCache<>(maxEntries);
     }
 
     public int getTimeToIdleSeconds() {
@@ -80,7 +80,7 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         if (filterName == null) return;
         writeLock.lock();
         try {
-            Set<AuthenticationCacheKey> toBeRemoved = new HashSet<AuthenticationCacheKey>();
+            Set<AuthenticationCacheKey> toBeRemoved = new HashSet<>();
             for (AuthenticationCacheKey key : cache.keySet()) {
                 if (filterName.equals(key.getFilterName())) toBeRemoved.add(key);
             }

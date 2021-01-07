@@ -55,7 +55,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
                 }
             };
 
-    static final Property<TileLayer> NAME = new BeanProperty<TileLayer>("name", "name");
+    static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
     static final Property<TileLayer> QUOTA_LIMIT =
             new AbstractProperty<TileLayer>("quotaLimit") {
@@ -85,10 +85,9 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
                 }
             };
 
-    static final Property<TileLayer> BLOBSTORE =
-            new BeanProperty<TileLayer>("blobstore", "blobStoreId");
+    static final Property<TileLayer> BLOBSTORE = new BeanProperty<>("blobstore", "blobStoreId");
 
-    static final Property<TileLayer> ENABLED = new BeanProperty<TileLayer>("enabled", "enabled");
+    static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final Property<TileLayer> PREVIEW_LINKS =
             new AbstractProperty<TileLayer>("preview") {
@@ -146,7 +145,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     @Override
     protected List<TileLayer> getItems() {
         final GWC gwc = GWC.get();
-        List<String> tileLayerNames = new ArrayList<String>(gwc.getTileLayerNames());
+        List<String> tileLayerNames = new ArrayList<>(gwc.getTileLayerNames());
 
         // Filtering String in order to avoid Un-Advertised Layers
         Predicate<? super String> predicate =
@@ -161,7 +160,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
                         return false;
                     }
                 };
-        tileLayerNames = new ArrayList<String>(Collections2.filter(tileLayerNames, predicate));
+        tileLayerNames = new ArrayList<>(Collections2.filter(tileLayerNames, predicate));
 
         return Lists.transform(
                 tileLayerNames,
@@ -182,7 +181,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object) */
     public IModel<TileLayer> newModel(final TileLayer tileLayer) {
-        return new TileLayerDetachableModel(((TileLayer) tileLayer).getName());
+        return new TileLayerDetachableModel(tileLayer.getName());
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator */

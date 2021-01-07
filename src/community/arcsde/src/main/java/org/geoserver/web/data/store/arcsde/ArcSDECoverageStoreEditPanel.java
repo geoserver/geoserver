@@ -42,7 +42,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
@@ -93,7 +92,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         }
 
         final IModel<Map<String, Object>> paramsModel =
-                new PropertyModel<Map<String, Object>>(model, "connectionParameters");
+                new PropertyModel<>(model, "connectionParameters");
 
         addConnectionPrototypePanel(storeInfo);
 
@@ -191,13 +190,12 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
              * catastrophic for the Catalog/ResourcePool as ability to get to the coverage is really
              * based on the Store's URL and the CoverageInfo is tied to it
              */
-            final IModel<String> paramValue = new MapModel<String>(paramsModel, TABLE_NAME);
+            final IModel<String> paramValue = new MapModel<>(paramsModel, TABLE_NAME);
             final String resourceKey = RESOURCE_KEY_PREFIX + "." + TABLE_NAME;
             final IModel<String> paramLabelModel = new ResourceModel(resourceKey, TABLE_NAME);
             final boolean required = true;
             TextParamPanel<String> tableNamePanel;
-            tableNamePanel =
-                    new TextParamPanel<String>(panelId, paramValue, paramLabelModel, required);
+            tableNamePanel = new TextParamPanel<>(panelId, paramValue, paramLabelModel, required);
             add(tableNamePanel);
 
             tableNameComponent = tableNamePanel.getFormComponent();
@@ -221,7 +219,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         final PasswordParamPanel pwdPanel =
                 new PasswordParamPanel(
                         paramName,
-                        new MapModel<String>(paramsModel, paramName),
+                        new MapModel<>(paramsModel, paramName),
                         new ResourceModel(resourceKey, paramName),
                         true);
         add(pwdPanel);
@@ -245,9 +243,9 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         final boolean required = param.required;
 
         final TextParamPanel<String> textParamPanel =
-                new TextParamPanel<String>(
+                new TextParamPanel<>(
                         paramName,
-                        new MapModel<String>(paramsModel, paramName),
+                        new MapModel<>(paramsModel, paramName),
                         new ResourceModel(resourceKey, paramName),
                         required);
         textParamPanel.getFormComponent().setType(param.type);
@@ -276,7 +274,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         existingArcSDECoverages =
                 new DropDownChoice<>(
                         "connectionPrototype",
-                        new Model<StoreInfo>(),
+                        new Model<>(),
                         new ArcSDEStoreListModel(),
                         new ArcSDEStoreListChoiceRenderer());
 
@@ -323,7 +321,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
             final Catalog catalog = storeInfo.getCatalog();
 
             List<StoreInfo> stores = catalog.getStores(StoreInfo.class);
-            stores = new ArrayList<StoreInfo>(stores);
+            stores = new ArrayList<>(stores);
 
             {
                 final String arcsdeCoverageType = ArcSDERasterFormat.getInstance().getName();
@@ -375,7 +373,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
 
     private Map<String, String> parseConnectionParameters(final StoreInfo storeInfo) {
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         if (storeInfo instanceof CoverageStoreInfo) {
             String url = ((CoverageStoreInfo) storeInfo).getURL();
@@ -400,8 +398,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
                 params.put(PORT_NUMBER_PARAM_NAME, "5151");
             }
         } else {
-            Map<String, Serializable> storeParams =
-                    ((DataStoreInfo) storeInfo).getConnectionParameters();
+            Map<String, Serializable> storeParams = storeInfo.getConnectionParameters();
             params.put(SERVER_NAME_PARAM_NAME, (String) storeParams.get(SERVER_NAME_PARAM_NAME));
             params.put(
                     PORT_NUMBER_PARAM_NAME,

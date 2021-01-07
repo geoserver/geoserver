@@ -5,10 +5,12 @@
 package org.geoserver.script.wps;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
@@ -23,6 +25,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
 
     protected abstract String getExtension();
 
+    @Test
     public void testMapResult() throws Exception {
         String ext = getExtension();
         String xml =

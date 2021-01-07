@@ -34,7 +34,7 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
             Collection<String> writableAttributes,
             Response response) {
         super(delegate);
-        this.writableAttributes = new HashSet<String>(writableAttributes);
+        this.writableAttributes = new HashSet<>(writableAttributes);
         this.response = response;
     }
 

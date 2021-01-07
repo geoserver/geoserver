@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -39,7 +38,7 @@ public class WicketHierarchyPrinter {
         printer.setClassDumpEnabled(dumpClass);
         printer.setValueDumpEnabled(dumpValue);
         if (c instanceof Page) {
-            printer.print((Page) c);
+            printer.print(c);
         } else {
             printer.print(c);
         }
@@ -80,8 +79,8 @@ public class WicketHierarchyPrinter {
         printComponent(c, level);
         if (c instanceof MarkupContainer) {
             MarkupContainer mc = (MarkupContainer) c;
-            for (Iterator<?> it = mc.iterator(); it.hasNext(); ) {
-                walkHierarchy((Component) it.next(), level + 1);
+            for (Component component : mc) {
+                walkHierarchy(component, level + 1);
             }
         }
     }

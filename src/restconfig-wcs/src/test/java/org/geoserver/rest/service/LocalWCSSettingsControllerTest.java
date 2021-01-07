@@ -8,6 +8,7 @@ package org.geoserver.rest.service;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
@@ -201,7 +202,7 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
         } catch (JSONException e) {
             thrown = true;
         }
-        assertEquals(true, thrown);
+        assertTrue(thrown);
     }
 
     private void removeLocalWorkspace() {

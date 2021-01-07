@@ -102,7 +102,7 @@ public class CatalogImpl implements Catalog {
     protected CatalogFacade facade;
 
     /** listeners */
-    protected List listeners = new CopyOnWriteArrayList<>();
+    protected List<CatalogListener> listeners = new CopyOnWriteArrayList<>();
 
     /** resources */
     protected ResourcePool resourcePool;
@@ -271,7 +271,9 @@ public class CatalogImpl implements Catalog {
         if (clazz != null
                 && clazz.isAssignableFrom(DataStoreInfo.class)
                 && (name == null || name.equals(Catalog.DEFAULT))) {
-            return (T) getDefaultDataStore(workspace);
+            @SuppressWarnings("unchecked")
+            T cast = (T) getDefaultDataStore(workspace);
+            return cast;
         }
 
         T store = facade.getStoreByName(ws, name, clazz);
@@ -298,7 +300,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 
@@ -311,24 +313,24 @@ public class CatalogImpl implements Catalog {
         return facade.getStoresByWorkspace(workspace, clazz);
     }
 
-    public List getStores(Class clazz) {
+    public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
         return facade.getStores(clazz);
     }
 
     public DataStoreInfo getDataStore(String id) {
-        return (DataStoreInfo) getStore(id, DataStoreInfo.class);
+        return getStore(id, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(String name) {
-        return (DataStoreInfo) getStoreByName(name, DataStoreInfo.class);
+        return getStoreByName(name, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(String workspaceName, String name) {
-        return (DataStoreInfo) getStoreByName(workspaceName, name, DataStoreInfo.class);
+        return getStoreByName(workspaceName, name, DataStoreInfo.class);
     }
 
     public DataStoreInfo getDataStoreByName(WorkspaceInfo workspace, String name) {
-        return (DataStoreInfo) getStoreByName(workspace, name, DataStoreInfo.class);
+        return getStoreByName(workspace, name, DataStoreInfo.class);
     }
 
     public List<DataStoreInfo> getDataStoresByWorkspace(String workspaceName) {
@@ -339,7 +341,7 @@ public class CatalogImpl implements Catalog {
         return getStoresByWorkspace(workspace, DataStoreInfo.class);
     }
 
-    public List getDataStores() {
+    public List<DataStoreInfo> getDataStores() {
         return getStores(DataStoreInfo.class);
     }
 
@@ -368,11 +370,11 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageStoreInfo getCoverageStore(String id) {
-        return (CoverageStoreInfo) getStore(id, CoverageStoreInfo.class);
+        return getStore(id, CoverageStoreInfo.class);
     }
 
     public CoverageStoreInfo getCoverageStoreByName(String name) {
-        return (CoverageStoreInfo) getStoreByName(name, CoverageStoreInfo.class);
+        return getStoreByName(name, CoverageStoreInfo.class);
     }
 
     public CoverageStoreInfo getCoverageStoreByName(String workspaceName, String name) {
@@ -391,7 +393,7 @@ public class CatalogImpl implements Catalog {
         return getStoresByWorkspace(workspace, CoverageStoreInfo.class);
     }
 
-    public List getCoverageStores() {
+    public List<CoverageStoreInfo> getCoverageStores() {
         return getStores(CoverageStoreInfo.class);
     }
 
@@ -532,11 +534,12 @@ public class CatalogImpl implements Catalog {
         }
     }
 
-    public List getResources(Class clazz) {
+    public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
         return facade.getResources(clazz);
     }
 
-    public List getResourcesByNamespace(NamespaceInfo namespace, Class clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            NamespaceInfo namespace, Class<T> clazz) {
         return facade.getResourcesByNamespace(namespace, clazz);
     }
 
@@ -551,7 +554,7 @@ public class CatalogImpl implements Catalog {
             ns = getNamespaceByURI(namespace);
         }
         if (ns == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return getResourcesByNamespace(ns, clazz);
@@ -567,11 +570,11 @@ public class CatalogImpl implements Catalog {
     }
 
     public FeatureTypeInfo getFeatureType(String id) {
-        return (FeatureTypeInfo) getResource(id, FeatureTypeInfo.class);
+        return getResource(id, FeatureTypeInfo.class);
     }
 
     public FeatureTypeInfo getFeatureTypeByName(String ns, String name) {
-        return (FeatureTypeInfo) getResourceByName(ns, name, FeatureTypeInfo.class);
+        return getResourceByName(ns, name, FeatureTypeInfo.class);
     }
 
     public FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name) {
@@ -583,14 +586,14 @@ public class CatalogImpl implements Catalog {
     }
 
     public FeatureTypeInfo getFeatureTypeByName(String name) {
-        return (FeatureTypeInfo) getResourceByName(name, FeatureTypeInfo.class);
+        return getResourceByName(name, FeatureTypeInfo.class);
     }
 
-    public List getFeatureTypes() {
+    public List<FeatureTypeInfo> getFeatureTypes() {
         return getResources(FeatureTypeInfo.class);
     }
 
-    public List getFeatureTypesByNamespace(NamespaceInfo namespace) {
+    public List<FeatureTypeInfo> getFeatureTypesByNamespace(NamespaceInfo namespace) {
         return getResourcesByNamespace(namespace, FeatureTypeInfo.class);
     }
 
@@ -611,15 +614,15 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageInfo getCoverage(String id) {
-        return (CoverageInfo) getResource(id, CoverageInfo.class);
+        return getResource(id, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(String ns, String name) {
-        return (CoverageInfo) getResourceByName(ns, name, CoverageInfo.class);
+        return getResourceByName(ns, name, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
-        return (CoverageInfo) getResourceByName(ns, name, CoverageInfo.class);
+        return getResourceByName(ns, name, CoverageInfo.class);
     }
 
     public CoverageInfo getCoverageByName(Name name) {
@@ -627,14 +630,14 @@ public class CatalogImpl implements Catalog {
     }
 
     public CoverageInfo getCoverageByName(String name) {
-        return (CoverageInfo) getResourceByName(name, CoverageInfo.class);
+        return getResourceByName(name, CoverageInfo.class);
     }
 
-    public List getCoverages() {
+    public List<CoverageInfo> getCoverages() {
         return getResources(CoverageInfo.class);
     }
 
-    public List getCoveragesByNamespace(NamespaceInfo namespace) {
+    public List<CoverageInfo> getCoveragesByNamespace(NamespaceInfo namespace) {
         return getResourcesByNamespace(namespace, CoverageInfo.class);
     }
 
@@ -892,7 +895,7 @@ public class CatalogImpl implements Catalog {
                         // validate style groups
                         StyledLayerDescriptor sld = styles.get(i).getSLD();
                         List<Exception> errors = SLDNamedLayerValidator.validate(this, sld);
-                        if (errors.size() > 0) {
+                        if (!errors.isEmpty()) {
                             throw new IllegalArgumentException(
                                     "Invalid style group: " + errors.get(0).getMessage(),
                                     errors.get(0));
@@ -1054,7 +1057,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 
@@ -1159,7 +1162,7 @@ public class CatalogImpl implements Catalog {
         return facade.getNamespaceByURI(uri);
     }
 
-    public List getNamespaces() {
+    public List<NamespaceInfo> getNamespaces() {
         return facade.getNamespaces();
     }
 
@@ -1472,7 +1475,7 @@ public class CatalogImpl implements Catalog {
         return style;
     }
 
-    public List getStyles() {
+    public List<StyleInfo> getStyles() {
         return facade.getStyles();
     }
 
@@ -1481,7 +1484,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 
@@ -1617,7 +1620,7 @@ public class CatalogImpl implements Catalog {
     }
 
     // Event methods
-    public Collection getListeners() {
+    public Collection<CatalogListener> getListeners() {
         return Collections.unmodifiableCollection(listeners);
     }
 
@@ -1690,7 +1693,10 @@ public class CatalogImpl implements Catalog {
     }
 
     public void fireModified(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogModifyEventImpl event = new CatalogModifyEventImpl();
 
         event.setSource(object);
@@ -1702,7 +1708,10 @@ public class CatalogImpl implements Catalog {
     }
 
     public void firePostModified(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogPostModifyEventImpl event = new CatalogPostModifyEventImpl();
         event.setSource(object);
         event.setPropertyNames(propertyNames);
@@ -1721,10 +1730,8 @@ public class CatalogImpl implements Catalog {
     protected void event(CatalogEvent event) {
         CatalogException toThrow = null;
 
-        for (Iterator l = listeners.iterator(); l.hasNext(); ) {
+        for (CatalogListener listener : listeners) {
             try {
-                CatalogListener listener = (CatalogListener) l.next();
-
                 if (event instanceof CatalogAddEvent) {
                     listener.handleAddEvent((CatalogAddEvent) event);
                 } else if (event instanceof CatalogRemoveEvent) {
@@ -1783,7 +1790,7 @@ public class CatalogImpl implements Catalog {
         facade.resolve();
 
         if (listeners == null) {
-            listeners = new ArrayList<CatalogListener>();
+            listeners = new ArrayList<>();
         }
 
         if (resourcePool == null) {
@@ -1836,7 +1843,7 @@ public class CatalogImpl implements Catalog {
         if (c.getDimensions() != null) {
             for (CoverageDimensionInfo dim : c.getDimensions()) {
                 if (dim.getNullValues() == null) {
-                    ((CoverageDimensionImpl) dim).setNullValues(new ArrayList<Double>());
+                    ((CoverageDimensionImpl) dim).setNullValues(new ArrayList<>());
                 }
             }
         }
@@ -1903,7 +1910,7 @@ public class CatalogImpl implements Catalog {
     }
 
     protected ValidationResult postValidate(CatalogInfo info, boolean isNew) {
-        List<RuntimeException> errors = new ArrayList<RuntimeException>();
+        List<RuntimeException> errors = new ArrayList<>();
 
         if (!extendedValidation) {
             return new ValidationResult(null);

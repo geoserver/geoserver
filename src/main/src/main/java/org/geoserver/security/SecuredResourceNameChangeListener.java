@@ -177,7 +177,7 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
 
     private List<DataAccessRule> getDataAccessRule(CatalogInfo catalogInfo, String oldName) {
         List<DataAccessRule> rules = this.dao.getRules();
-        List<DataAccessRule> rulesToUpdate = new ArrayList<DataAccessRule>();
+        List<DataAccessRule> rulesToUpdate = new ArrayList<>();
 
         for (DataAccessRule rule : rules) {
             if (catalogInfo instanceof WorkspaceInfo) {

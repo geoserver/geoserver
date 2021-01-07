@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
@@ -399,7 +400,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo lakes =
                 cat.getFeatureTypeByName(
                         MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        assertFalse("foo".equals(lakes.getTitle()));
+        assertNotEquals("foo", lakes.getTitle());
 
         GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
         File info = dd.config(lakes).file();
@@ -410,13 +411,10 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         Element title = ReaderUtils.getChildElement(dom, "title");
         title.getFirstChild().setNodeValue("foo");
 
-        OutputStream output = new FileOutputStream(info);
-        try {
+        try (OutputStream output = new FileOutputStream(info)) {
             TransformerFactory.newInstance()
                     .newTransformer()
                     .transform(new DOMSource(dom), new StreamResult(output));
-        } finally {
-            output.close();
         }
 
         getGeoServer().reload();
@@ -523,23 +521,19 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
             DataStoreInfo expandedDs = getCatalog().getResourcePool().clone(ds, true);
 
-            assertTrue(ds.getConnectionParameters().get("host").equals("${jdbc.host}"));
-            assertTrue(ds.getConnectionParameters().get("port").equals("${jdbc.port}"));
+            assertEquals("${jdbc.host}", ds.getConnectionParameters().get("host"));
+            assertEquals("${jdbc.port}", ds.getConnectionParameters().get("port"));
 
             if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("host")
-                                .equals(gsEnvironment.resolveValue("${jdbc.host}")));
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("port")
-                                .equals(gsEnvironment.resolveValue("${jdbc.port}")));
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("host"),
+                        gsEnvironment.resolveValue("${jdbc.host}"));
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("port"),
+                        gsEnvironment.resolveValue("${jdbc.port}"));
             } else {
-                assertTrue(expandedDs.getConnectionParameters().get("host").equals("${jdbc.host}"));
-                assertTrue(expandedDs.getConnectionParameters().get("port").equals("${jdbc.port}"));
+                assertEquals("${jdbc.host}", expandedDs.getConnectionParameters().get("host"));
+                assertEquals("${jdbc.port}", expandedDs.getConnectionParameters().get("port"));
             }
         } finally {
             getCatalog().remove(ds);
@@ -701,7 +695,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setWorkspace(ws);
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         File dbFile =
                 new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");

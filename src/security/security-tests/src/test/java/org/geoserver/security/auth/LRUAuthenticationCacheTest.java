@@ -5,6 +5,13 @@
  */
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -13,7 +20,7 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     @Test
     public void testLRUCache() {
 
-        LRUCache<String, String> cache = new LRUCache<String, String>(3);
+        LRUCache<String, String> cache = new LRUCache<>(3);
         cache.put("key1", "value1");
         cache.put("key2", "value2");
         cache.put("key3", "value3");
@@ -28,19 +35,19 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     @Test
     public void testAuthenticationKey() {
         AuthenticationCacheKey key11 = new AuthenticationCacheKey("f1", "k1");
-        assertTrue(key11.equals(key11));
+        assertEquals(key11, key11);
         assertTrue(key11.hashCode() != 0);
 
         AuthenticationCacheKey key12 = new AuthenticationCacheKey("f1", "k2");
-        assertFalse(key11.equals(key12));
+        assertNotEquals(key11, key12);
         assertFalse(key11.hashCode() == key12.hashCode());
 
         AuthenticationCacheKey key21 = new AuthenticationCacheKey("f2", "k1");
-        assertFalse(key11.equals(key21));
+        assertNotEquals(key11, key21);
         assertFalse(key11.hashCode() == key21.hashCode());
 
         AuthenticationCacheKey key22 = new AuthenticationCacheKey("f12", "k2");
-        assertFalse(key11.equals(key22));
+        assertNotEquals(key11, key22);
         assertFalse(key11.hashCode() == key22.hashCode());
     }
 
@@ -52,17 +59,17 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
         AuthenticationCacheEntry entry1 = new AuthenticationCacheEntry(t1, 10, 10);
         assertTrue(entry1.hashCode() != 0);
         assertEquals(t1.hashCode(), entry1.hashCode());
-        assertTrue(entry1.equals(entry1));
+        assertEquals(entry1, entry1);
 
         AuthenticationCacheEntry entry1_1 = new AuthenticationCacheEntry(t1, 20, 20);
         assertEquals(t1.hashCode(), entry1_1.hashCode());
-        assertTrue(entry1.equals(entry1_1));
+        assertEquals(entry1, entry1_1);
 
         UsernamePasswordAuthenticationToken t2 =
                 new UsernamePasswordAuthenticationToken("user2", "password2");
         AuthenticationCacheEntry entry2 = new AuthenticationCacheEntry(t2, 5, 10);
         // assertFalse(entry2.hashCode()==entry1.hashCode());
-        assertFalse(entry2.equals(entry1));
+        assertNotEquals(entry2, entry1);
 
         long currentTime = entry2.getCreated();
         // check live time

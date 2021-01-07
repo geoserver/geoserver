@@ -207,14 +207,14 @@ public class Log4JFormatter extends Formatter {
             final Handler[] handlers = parent.getHandlers();
 
             if (handlers != null) {
-                for (int i = 0; i < handlers.length; i++) {
+                for (Handler value : handlers) {
                     /*
                      * Search for a ConsoleHandler. Search is performed in the target
                      * handler and all its parent loggers. When a ConsoleHandler is
                      * found, it will be replaced by the Stdout handler for 'logger'
                      * only.
                      */
-                    Handler handler = handlers[i];
+                    Handler handler = value;
 
                     if (handler.getClass().equals(ConsoleHandler.class)) {
                         final Formatter formatter = handler.getFormatter();
@@ -228,9 +228,7 @@ public class Log4JFormatter extends Formatter {
                                 logger.removeHandler(handler);
                                 handler = new Stdout(handler, log4j);
                                 handler.setLevel(filterLevel);
-                            } catch (UnsupportedEncodingException exception) {
-                                unexpectedException(exception);
-                            } catch (SecurityException exception) {
+                            } catch (UnsupportedEncodingException | SecurityException exception) {
                                 unexpectedException(exception);
                             }
                         }

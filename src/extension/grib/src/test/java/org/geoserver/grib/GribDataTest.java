@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.spi.ImageReaderSpi;
-import junit.framework.TestCase;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.io.grib.GRIBFormat;
@@ -21,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /** Simple test class for checking if grib data are supported. */
-public class GribDataTest extends TestCase {
+public class GribDataTest {
 
     @Test
     public void testFormatSupported() throws FileNotFoundException, IOException {

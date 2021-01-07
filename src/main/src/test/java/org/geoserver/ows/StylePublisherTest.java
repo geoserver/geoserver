@@ -28,7 +28,7 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
 
     static StylePublisher publisher;
 
-    static List<String[]> paths = new ArrayList<String[]>();
+    static List<String[]> paths = new ArrayList<>();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -81,8 +81,8 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
         request.setContextPath("/geoserver");
         request.setMethod("GET");
         StringBuilder b = new StringBuilder("/geoserver");
-        for (int i = 0; i < path.length; i++) {
-            b.append('/').append(path[i]);
+        for (String s : path) {
+            b.append('/').append(s);
         }
         String uri = URLEncoder.encode(b.toString(), "UTF-8");
         request.setRequestURI(uri);

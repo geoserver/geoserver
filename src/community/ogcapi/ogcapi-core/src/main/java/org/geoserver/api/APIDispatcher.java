@@ -83,7 +83,7 @@ public class APIDispatcher extends AbstractController {
 
     // SHARE
     /** list of callbacks */
-    protected List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
+    protected List<DispatcherCallback> callbacks = Collections.emptyList();
 
     private List<DocumentCallback> documentCallbacks;
     private List<OpenAPICallback> apiCallbacks;
@@ -585,7 +585,7 @@ public class APIDispatcher extends AbstractController {
                 .map(
                         a -> {
                             try {
-                                return (String) a.getClass().getMethod("name").invoke(a);
+                                return (String) a.annotationType().getMethod("name").invoke(a);
                             } catch (Exception e) {
                                 LOGGER.log(
                                         Level.WARNING,

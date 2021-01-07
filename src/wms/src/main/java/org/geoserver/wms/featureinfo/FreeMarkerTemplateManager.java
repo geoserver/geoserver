@@ -163,6 +163,7 @@ public abstract class FreeMarkerTemplateManager {
             // if there is only one feature type loaded, we allow for header/footer customization,
             // otherwise we stick with the default ones for html, or for those
             // in the template directory for JSON
+            @SuppressWarnings("unchecked")
             List<FeatureCollection> collections = results.getFeature();
 
             ResourceInfo ri = null;

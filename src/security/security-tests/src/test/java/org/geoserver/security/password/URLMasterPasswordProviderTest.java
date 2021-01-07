@@ -5,12 +5,11 @@
  */
 package org.geoserver.security.password;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.test.SystemTest;
@@ -41,9 +40,9 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         mpp.doSetMasterPassword("geoserver".toCharArray());
 
         String encoded = IOUtils.toString(new FileInputStream(tmp), "UTF-8");
-        assertFalse("geoserver".equals(encoded));
+        assertNotEquals("geoserver", encoded);
 
         char[] passwd = mpp.doGetMasterPassword();
-        assertTrue(Arrays.equals("geoserver".toCharArray(), passwd));
+        assertArrayEquals("geoserver".toCharArray(), passwd);
     }
 }

@@ -20,7 +20,7 @@ public class MapInfoImpl implements MapInfo {
     List<LayerInfo> layers;
 
     public MapInfoImpl() {
-        layers = new ArrayList<LayerInfo>();
+        layers = new ArrayList<>();
     }
 
     public String getId() {

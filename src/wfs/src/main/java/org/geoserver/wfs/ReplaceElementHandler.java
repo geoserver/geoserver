@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +49,12 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             throws WFSTransactionException {
         Replace replace = (Replace) element;
 
-        List<QName> typeNames = new ArrayList();
+        List<QName> typeNames = new ArrayList<>();
 
         List features = replace.getFeatures();
         if (!features.isEmpty()) {
-            for (Iterator f = features.iterator(); f.hasNext(); ) {
-                SimpleFeature feature = (SimpleFeature) f.next();
+            for (Object o : features) {
+                SimpleFeature feature = (SimpleFeature) o;
 
                 String name = feature.getFeatureType().getTypeName();
                 String namespaceURI = feature.getFeatureType().getName().getNamespaceURI();
@@ -64,7 +63,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             }
         }
 
-        return (QName[]) typeNames.toArray(new QName[typeNames.size()]);
+        return typeNames.toArray(new QName[typeNames.size()]);
     }
 
     public void checkValidity(TransactionElement element, Map featureTypeInfos)
@@ -91,6 +90,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
 
         Replace replace = (Replace) element;
 
+        @SuppressWarnings("unchecked")
         List<SimpleFeature> newFeatures = replace.getFeatures();
         SimpleFeatureStore featureStore =
                 DataUtilities.simple((FeatureStore) featureStores.values().iterator().next());
@@ -99,7 +99,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         }
 
         // ids of replaced features
-        Collection<FeatureId> replaced = new ArrayList();
+        Collection<FeatureId> replaced = new ArrayList<>();
 
         try {
             SimpleFeatureCollection features = featureStore.getFeatures(replace.getFilter());
@@ -119,20 +119,17 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             // to actually update the ID's
 
             // load all the existing features into memory
-            Map<String, SimpleFeature> oldFeatures = new LinkedHashMap<String, SimpleFeature>();
+            Map<String, SimpleFeature> oldFeatures = new LinkedHashMap<>();
 
-            SimpleFeatureIterator it = features.features();
-            try {
+            try (SimpleFeatureIterator it = features.features()) {
                 while (it.hasNext()) {
                     SimpleFeature f = it.next();
                     oldFeatures.put(f.getID(), f);
                 }
-            } finally {
-                it.close();
             }
 
             // first pass update all the features that match by id
-            List<SimpleFeature> leftovers = new ArrayList();
+            List<SimpleFeature> leftovers = new ArrayList<>();
 
             for (SimpleFeature newFeature : newFeatures) {
                 SimpleFeature oldFeature = oldFeatures.get(newFeature.getID());

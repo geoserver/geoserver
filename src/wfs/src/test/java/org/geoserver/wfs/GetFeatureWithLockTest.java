@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLAssert;
@@ -41,7 +41,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
 
         // get a fid
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        assertFalse(dom.getElementsByTagName("cdf:Locks").getLength() == 0);
+        assertNotEquals(0, dom.getElementsByTagName("cdf:Locks").getLength());
 
         String fid = ((Element) dom.getElementsByTagName("cdf:Locks").item(0)).getAttribute("fid");
 
@@ -121,7 +121,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
 
         // get a fid
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        assertFalse(dom.getElementsByTagName("cdf:Locks").getLength() == 0);
+        assertNotEquals(0, dom.getElementsByTagName("cdf:Locks").getLength());
 
         String fid = ((Element) dom.getElementsByTagName("cdf:Locks").item(0)).getAttribute("fid");
 

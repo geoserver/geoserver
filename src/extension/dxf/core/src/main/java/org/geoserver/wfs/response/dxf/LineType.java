@@ -81,7 +81,7 @@ public class LineType {
         String name = parts[0];
         // get the pattern/description
         String description = name;
-        List<LineTypeItem> items = new ArrayList<LineTypeItem>();
+        List<LineTypeItem> items = new ArrayList<>();
         // default base length
         double baseLen = 0.125;
         if (parts.length > 1) {

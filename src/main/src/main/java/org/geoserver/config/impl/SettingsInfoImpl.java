@@ -38,7 +38,7 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<Object, Object>();
+    protected Map<Object, Object> clientProperties = new HashMap<>();
 
     private boolean localWorkspaceIncludesPrefix = false;
 

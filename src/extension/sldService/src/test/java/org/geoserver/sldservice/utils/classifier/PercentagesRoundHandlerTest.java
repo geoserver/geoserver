@@ -4,6 +4,7 @@
  */
 package org.geoserver.sldservice.utils.classifier;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -88,10 +89,10 @@ public class PercentagesRoundHandlerTest {
     }
 
     public void testSumTo100(double[] rounded) {
-        assertTrue(DoubleStream.of(rounded).sum() == 100.0);
+        assertEquals(100.0, DoubleStream.of(rounded).sum(), 0.0);
     }
 
     public void testSumTo100(List<Double> rounded) {
-        assertTrue(rounded.stream().mapToDouble(d -> d).sum() == 100.0);
+        assertEquals(100.0, rounded.stream().mapToDouble(d -> d).sum(), 0.0);
     }
 }

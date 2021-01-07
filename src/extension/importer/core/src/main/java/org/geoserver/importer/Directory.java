@@ -41,7 +41,7 @@ public class Directory extends FileData {
     private static final long serialVersionUID = 1L;
 
     /** list of files contained in directory */
-    protected List<FileData> files = new ArrayList<FileData>();
+    protected List<FileData> files = new ArrayList<>();
 
     /** flag controlling whether file look up should recurse into sub directories. */
     boolean recursive;
@@ -128,10 +128,10 @@ public class Directory extends FileData {
 
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
-        files = new ArrayList<FileData>();
+        files = new ArrayList<>();
 
         // recursively search for spatial files, maintain a queue of directories to recurse into
-        LinkedList<File> q = new LinkedList<File>();
+        LinkedList<File> q = new LinkedList<>();
         q.add(file);
 
         while (!q.isEmpty()) {
@@ -155,7 +155,7 @@ public class Directory extends FileData {
                 // dir is indeed a directory
                 continue;
             }
-            Set<File> all = new LinkedHashSet<File>(Arrays.asList(fileList));
+            Set<File> all = new LinkedHashSet<>(Arrays.asList(fileList));
 
             // scan all the files looking for spatial ones
             File[] files = dir.listFiles();
@@ -257,9 +257,9 @@ public class Directory extends FileData {
     }
 
     public List<Directory> flatten() {
-        List<Directory> flat = new ArrayList<Directory>();
+        List<Directory> flat = new ArrayList<>();
 
-        LinkedList<Directory> q = new LinkedList<Directory>();
+        LinkedList<Directory> q = new LinkedList<>();
         q.addLast(this);
         while (!q.isEmpty()) {
             Directory dir = q.removeFirst();
@@ -363,8 +363,7 @@ public class Directory extends FileData {
 
     private void logFormatMismatch() {
         StringBuilder buf = new StringBuilder("all files are not the same format:\n");
-        for (int i = 0; i < files.size(); i++) {
-            FileData f = files.get(i);
+        for (FileData f : files) {
             String format = "not recognized";
             if (f.getFormat() != null) {
                 format = f.getName();

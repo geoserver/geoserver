@@ -32,9 +32,9 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
     @Override
     public Set<Name> getNames() {
         // filter out the processes we want to hide
-        Set<Name> names = new LinkedHashSet<Name>(super.getNames());
+        Set<Name> names = new LinkedHashSet<>(super.getNames());
         for (Iterator<Name> it = names.iterator(); it.hasNext(); ) {
-            Name name = (Name) it.next();
+            Name name = it.next();
             if (!selector.allowProcess(name)) {
                 it.remove();
             }

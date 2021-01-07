@@ -58,23 +58,23 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     // -------------------------------------------------------------------
 
     public CoverageInfo getCoverage(String id) {
-        return (CoverageInfo) checkAccess(delegate.getCoverage(id));
+        return checkAccess(delegate.getCoverage(id));
     }
 
     public CoverageInfo getCoverageByName(String ns, String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(ns, name));
+        return checkAccess(delegate.getCoverageByName(ns, name));
     }
 
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(ns, name));
+        return checkAccess(delegate.getCoverageByName(ns, name));
     }
 
     public CoverageInfo getCoverageByName(Name name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
+        return checkAccess(delegate.getCoverageByName(name));
     }
 
     public CoverageInfo getCoverageByName(String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
+        return checkAccess(delegate.getCoverageByName(name));
     }
 
     public List<CoverageInfo> getCoverages() {
@@ -588,12 +588,18 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @SuppressWarnings("rawtypes")
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 

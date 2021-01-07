@@ -28,7 +28,7 @@ public class AnimatorFilterTest extends WMSTestSupport {
 
     @Override
     public List<Filter> getFilters() {
-        return Arrays.asList((Filter) new AnimatorFilter());
+        return Arrays.asList(new AnimatorFilter());
     }
 
     @Test
@@ -59,27 +59,15 @@ public class AnimatorFilterTest extends WMSTestSupport {
     }
 
     private int extractImageCountFromGIF(MockHttpServletResponse response) throws IOException {
-        InputStream is = null;
-        ImageInputStream iis = null;
         ImageReader r = null;
-        try {
-            is = getBinaryInputStream(response);
-            iis = ImageIO.createImageInputStream(is);
+        try (InputStream is = getBinaryInputStream(response);
+                ImageInputStream iis = ImageIO.createImageInputStream(is)) {
             r = ImageIO.getImageReadersBySuffix("gif").next();
             r.setInput(iis);
             return r.getNumImages(true);
         } finally {
             if (r != null) {
                 r.dispose();
-            }
-            if (iis != null) {
-                iis.close();
-            }
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignore) {
-                }
             }
         }
     }

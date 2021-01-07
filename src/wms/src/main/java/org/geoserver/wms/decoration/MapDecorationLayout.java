@@ -24,6 +24,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.util.logging.Logging;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -36,8 +37,7 @@ import org.jdom2.input.SAXBuilder;
  * @author David Winslow <dwinslow@opengeo.org>
  */
 public class MapDecorationLayout {
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+    private static Logger LOGGER = Logging.getLogger(MapDecorationLayout.class);
 
     /**
      * The Block class annotates a MapDecoration object with positioning and sizing information, and
@@ -235,7 +235,7 @@ public class MapDecorationLayout {
 
     /** Create a new MapDecorationLayout with no decorations in it yet. */
     public MapDecorationLayout() {
-        this.blocks = new ArrayList<Block>();
+        this.blocks = new ArrayList<>();
     }
 
     /**
@@ -277,9 +277,9 @@ public class MapDecorationLayout {
 
     private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile)
             throws Exception {
-        for (Element e : (List<Element>) confFile.getRootElement().getChildren("decoration")) {
-            Map<String, String> m = new HashMap<String, String>();
-            for (Element option : (List<Element>) e.getChildren("option")) {
+        for (Element e : confFile.getRootElement().getChildren("decoration")) {
+            Map<String, String> m = new HashMap<>();
+            for (Element option : e.getChildren("option")) {
                 String value = option.getAttributeValue("value");
                 if (value == null) {
                     // pick from body, useful if the content is large

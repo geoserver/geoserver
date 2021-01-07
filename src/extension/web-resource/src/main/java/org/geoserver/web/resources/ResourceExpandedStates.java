@@ -24,7 +24,7 @@ public class ResourceExpandedStates implements Serializable {
 
     private static final long serialVersionUID = 8635581624445593893L;
 
-    protected Set<String> expanded = new HashSet<String>();
+    protected Set<String> expanded = new HashSet<>();
 
     public IModel<Boolean> getResourceExpandedState(Resource res) {
         return new ResourceExpandedState(res);

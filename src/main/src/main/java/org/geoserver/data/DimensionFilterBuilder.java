@@ -32,11 +32,11 @@ public class DimensionFilterBuilder {
 
     public void appendFilters(
             String startAttributeName, String endAttributeName, List<Object> ranges) {
-        if (ranges == null || ranges.size() == 0) {
+        if (ranges == null || ranges.isEmpty()) {
             return;
         }
 
-        final List<Filter> timeFilters = new ArrayList<Filter>();
+        final List<Filter> timeFilters = new ArrayList<>();
         final PropertyName attribute = ff.property(startAttributeName);
         final PropertyName endAttribute =
                 endAttributeName == null ? null : ff.property(endAttributeName);

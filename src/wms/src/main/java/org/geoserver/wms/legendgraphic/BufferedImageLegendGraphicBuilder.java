@@ -11,7 +11,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -125,7 +124,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         // list of images to be rendered for the layers (more than one if
         // a layer group is given)
         setup(request);
-        List<RenderedImage> layersImages = new ArrayList<RenderedImage>();
+        List<RenderedImage> layersImages = new ArrayList<>();
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
 
@@ -222,7 +221,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                  * A legend graphic is produced for each applicable rule. They're being held here
                  * until the process is done and then painted on a "stack" like legend.
                  */
-                final List<RenderedImage> legendsStack = new ArrayList<RenderedImage>(ruleCount);
+                final List<RenderedImage> legendsStack = new ArrayList<>(ruleCount);
 
                 final SLDStyleFactory styleFactory = new SLDStyleFactory();
 
@@ -320,10 +319,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         MetaBufferEstimator estimator = new MetaBufferEstimator(sampleFeature);
         for (int i = 0; i < ruleCount; i++) {
 
-            final RenderedImage image =
-                    ImageUtils.createImage(w, h, (IndexColorModel) null, transparent);
-            final Map<RenderingHints.Key, Object> hintsMap =
-                    new HashMap<RenderingHints.Key, Object>();
+            final RenderedImage image = ImageUtils.createImage(w, h, null, transparent);
+            final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
             final Graphics2D graphics =
                     ImageUtils.prepareTransparency(
                             transparent, LegendUtils.getBackgroundColor(request), image, hintsMap);
@@ -378,7 +375,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                                                             minimumSymbolSize, h - symbolizerSize));
                             shape = getSampleShape(symbolizer, rescaledWidth, rescaledHeight, w, h);
 
-                            symbolizer = rescaleSymbolizer(symbolizer, w, (double) rescaledWidth);
+                            symbolizer = rescaleSymbolizer(symbolizer, w, rescaledWidth);
                         }
 
                         Style2D style2d = styleFactory.createStyle(sample, symbolizer, scaleRange);
@@ -459,8 +456,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             boolean transparent,
             GetLegendGraphicRequest request) {
         String title = legend.getTitle();
-        final BufferedImage image =
-                ImageUtils.createImage(w, h, (IndexColorModel) null, transparent);
+        final BufferedImage image = ImageUtils.createImage(w, h, null, transparent);
         return LegendMerger.getRenderedLabel(image, title, request);
     }
 
@@ -511,8 +507,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                                     ? titleImage
                                     : getLayerTitle(legend, w, h, transparent, request));
             final BufferedImage rescale =
-                    ImageUtils.createImage(
-                            image.getWidth(), image.getHeight(), (IndexColorModel) null, true);
+                    ImageUtils.createImage(image.getWidth(), image.getHeight(), null, true);
 
             Graphics2D g = (Graphics2D) rescale.getGraphics();
             g.setColor(new Color(255, 255, 255, 0));

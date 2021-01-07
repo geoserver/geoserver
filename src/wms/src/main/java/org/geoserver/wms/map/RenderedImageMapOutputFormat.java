@@ -160,6 +160,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
             "disableDatelineWrappingHeuristic";
 
+    /**
+     * Decorations Only option, which allows to get an empty request map output, but keeps visible
+     * associated decorations
+     */
+    public static final String DECORATIONS_ONLY_FORMAT_OPTION = "decorationsOnly";
+
     /** Disable Gutter key */
     public static final String DISABLE_GUTTER_KEY = "wms.raster.disableGutter";
 
@@ -201,8 +207,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private String extension = null;
 
     /** The known producer capabilities */
-    private final Map<String, MapProducerCapabilities> capabilities =
-            new HashMap<String, MapProducerCapabilities>();
+    private final Map<String, MapProducerCapabilities> capabilities = new HashMap<>();
 
     /** */
     public RenderedImageMapOutputFormat(WMS wms) {
@@ -281,6 +286,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // extra antialias setting
         final GetMapRequest request = mapContent.getRequest();
+
+        // check if vendoroption decorationsonly is true, so we will generate an empty map with only
+        // decorations applied
+        String decorationsOnly =
+                (String) request.getFormatOptions().get(DECORATIONS_ONLY_FORMAT_OPTION);
+        boolean emptyMap = false;
+        if (decorationsOnly != null && decorationsOnly.toLowerCase().equals("true")) {
+            emptyMap = true;
+        }
+
         String antialias = (String) request.getFormatOptions().get("antialias");
         if (antialias != null) antialias = antialias.toUpperCase();
 
@@ -293,8 +308,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                pe.visit(layers.get(i).getStyle());
+            for (Layer layer : layers) {
+                pe.visit(layer.getStyle());
                 if (!pe.canComputePalette()) break;
             }
             if (pe.canComputePalette()) potentialPalette = pe.getPalette();
@@ -339,7 +354,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && mapContent.layers().size() == 1
                 && mapContent.getAngle() == 0.0
                 && (layout == null || layout.isEmpty())) {
-            List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
+            List<GridCoverage2D> renderedCoverages = new ArrayList<>(2);
             try {
                 Interpolation interpolation = null;
                 if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
@@ -366,7 +381,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         boolean useAlpha = transparent || MetatileMapOutputFormat.isRequestTiled(request, this);
         final RenderedImage preparedImage =
                 prepareImage(paintArea.width, paintArea.height, palette, useAlpha);
-        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
+        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
 
         final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
 
@@ -429,7 +444,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         renderer.setJava2DHints(hints);
 
         // setup the renderer hints
-        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Map<Object, Object> rendererParams = new HashMap<>();
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
@@ -510,9 +525,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // raster image. Both are better served with the
             // placemarks.
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                if (layers.get(i) instanceof StyleLayer) {
-                    StyleLayer layer = (StyleLayer) layers.get(i);
+            for (Layer value : layers) {
+                if (value instanceof StyleLayer) {
+                    StyleLayer layer = (StyleLayer) value;
                     Style style = layer.getStyle();
                     style.accept(dupVisitor);
                     Style copy = (Style) dupVisitor.getCopy();
@@ -588,11 +603,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         timeout.start();
         try {
             // finally render the image;
-            renderer.paint(
-                    graphic,
-                    paintArea,
-                    mapContent.getRenderingArea(),
-                    mapContent.getRenderingTransform());
+            if (!emptyMap) {
+                renderer.paint(
+                        graphic,
+                        paintArea,
+                        mapContent.getRenderingArea(),
+                        mapContent.getRenderingTransform());
+            } else {
+                LOGGER.fine("we only want to get the layout, if it's not null");
+            }
 
             // apply watermarking
             if (layout != null) {
@@ -1721,7 +1740,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     || !foundBandIndices) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
-                List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+                List<GeneralParameterValue> paramList = new ArrayList<>();
                 paramList.addAll(Arrays.asList(readParams));
                 if (!foundGG && readGG != null) {
                     paramList.add(readGG);

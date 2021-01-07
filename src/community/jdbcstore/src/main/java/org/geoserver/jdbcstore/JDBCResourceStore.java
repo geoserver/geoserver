@@ -289,7 +289,7 @@ public class JDBCResourceStore implements ResourceStore {
         @Override
         public List<Resource> list() {
             if (getType() != Type.DIRECTORY) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
             List<Resource> list = new ArrayList<Resource>();

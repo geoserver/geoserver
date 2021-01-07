@@ -29,7 +29,7 @@ public class ScaleLineDecoration implements MapDecoration {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
-    private static Map<String, Double> INCHES_PER_UNIT = new HashMap<String, Double>();
+    private static Map<String, Double> INCHES_PER_UNIT = new HashMap<>();
 
     static {
         INCHES_PER_UNIT.put("inches", 1.0);
@@ -253,7 +253,7 @@ public class ScaleLineDecoration implements MapDecoration {
             String topText = topRounded + " " + topUnits;
             g2d.drawString(
                     topText,
-                    leftX + (int) ((topPx - metrics.stringWidth(topText)) / 2),
+                    leftX + ((topPx - metrics.stringWidth(topText)) / 2),
                     centerY - prongHeight + metrics.getAscent());
         }
 
@@ -279,7 +279,7 @@ public class ScaleLineDecoration implements MapDecoration {
             String bottomText = bottomRounded + " " + bottomUnits;
             g2d.drawString(
                     bottomText,
-                    leftX + (int) ((bottomPx - metrics.stringWidth(bottomText)) / 2),
+                    leftX + ((bottomPx - metrics.stringWidth(bottomText)) / 2),
                     centerY + metrics.getHeight());
         }
 

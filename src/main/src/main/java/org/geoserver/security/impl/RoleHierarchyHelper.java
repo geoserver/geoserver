@@ -41,7 +41,7 @@ public class RoleHierarchyHelper {
     /** Calculate an ordered list of ancestors, starting with the parent */
     public List<String> getAncestors(String roleName) {
         checkRole(roleName);
-        List<String> ancestors = new ArrayList<String>();
+        List<String> ancestors = new ArrayList<>();
         fillAncestors(parentMappings.get(roleName), ancestors);
         return ancestors;
     }
@@ -60,7 +60,7 @@ public class RoleHierarchyHelper {
     /** Return child roles */
     public List<String> getChildren(String roleName) {
         checkRole(roleName);
-        List<String> children = new ArrayList<String>();
+        List<String> children = new ArrayList<>();
         for (Entry<String, String> entry : parentMappings.entrySet()) {
             if (entry.getValue() != null && entry.getValue().equals(roleName)) {
                 if (roleName.equals(entry.getKey())) cycleDetected(roleName, null);
@@ -73,17 +73,17 @@ public class RoleHierarchyHelper {
     /** Get all descendant roles, the order is randomly */
     public List<String> getDescendants(String roleName) {
         checkRole(roleName);
-        Set<String> descendants = new HashSet<String>();
+        Set<String> descendants = new HashSet<>();
         fillDescendents(getChildren(roleName), descendants);
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.addAll(descendants);
         return result;
     }
 
     /** recursive method to fill the descendant list */
     protected void fillDescendents(List<String> children, Set<String> descendants) {
-        if (children == null || children.size() == 0) return; // end recursion
+        if (children == null || children.isEmpty()) return; // end recursion
         for (String childName : children) {
             if (descendants.contains(childName)) // cycle
             cycleDetected(childName, null);
@@ -119,7 +119,7 @@ public class RoleHierarchyHelper {
 
     /** Get a list of root roles */
     public List<String> getRootRoles() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         for (String roleName : parentMappings.keySet()) {
             if (isRoot(roleName)) result.add(roleName);
@@ -129,9 +129,9 @@ public class RoleHierarchyHelper {
 
     /** get a list of leaf roles */
     public List<String> getLeafRoles() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
-        Set<String> leafRoles = new HashSet<String>();
+        Set<String> leafRoles = new HashSet<>();
         leafRoles.addAll(parentMappings.keySet());
         for (String parentRoleName : parentMappings.values()) {
             if (parentRoleName != null) leafRoles.remove(parentRoleName);

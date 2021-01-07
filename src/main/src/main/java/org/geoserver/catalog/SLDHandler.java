@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
@@ -66,7 +67,7 @@ public class SLDHandler extends StyleHandler {
     public static final String MIMETYPE_10 = "application/vnd.ogc.sld+xml";
     public static final String MIMETYPE_11 = "application/vnd.ogc.se+xml";
 
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static final Map<StyleType, String> TEMPLATES = new HashMap<>();
 
     static {
         try {
@@ -160,11 +161,12 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     StyledLayerDescriptor parse10(
             Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
-        @SuppressWarnings("PMD.CloseResource") // conditionally initialized, actually gets closed
+        // reader is conditionally initialized, actually gets closed
         Reader reader = null;
         try {
             // we need to close the reader if we grab one, but if it's a file it has
@@ -304,7 +306,11 @@ public class SLDHandler extends StyleHandler {
         try (Reader reader = toReader(input)) {
             final SLDValidator validator = new SLDValidator();
             validator.setEntityResolver(entityResolver);
-            return validator.validateSLD(new InputSource(reader));
+            return validator
+                    .validateSLD(new InputSource(reader))
+                    .stream()
+                    .map(e -> (Exception) e)
+                    .collect(Collectors.toList());
         }
     }
 

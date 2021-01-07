@@ -17,7 +17,7 @@ class SVG {
 
     public static final Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(
-                    new HashSet<String>(Arrays.asList(MIME_TYPE, "image/svg xml", "image/svg")));
+                    new HashSet<>(Arrays.asList(MIME_TYPE, "image/svg xml", "image/svg")));
 
     private SVG() {
         //

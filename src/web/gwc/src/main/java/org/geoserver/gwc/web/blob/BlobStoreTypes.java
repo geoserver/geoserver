@@ -46,6 +46,6 @@ public final class BlobStoreTypes {
 
     /** Get all BlobStoreTypes */
     public static List<BlobStoreType<?>> getAll() {
-        return new ArrayList<BlobStoreType<?>>(getTypes().values());
+        return new ArrayList<>(getTypes().values());
     }
 }

@@ -79,26 +79,17 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
             }
         }
 
-        Connection con = null;
-        try {
-            con = DriverManager.getConnection(connectUrl, user, password);
+        try (Connection con = DriverManager.getConnection(connectUrl, user, password)) {
         } catch (SQLInvalidAuthorizationSpecException ex) {
             log(new BadCredentialsException("Bad credentials for " + user, ex));
             return null;
         } catch (SQLException ex) {
             log(new AuthenticationServiceException("JDBC connect error", ex));
             return null;
-        } finally {
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (SQLException ex2) {
-                    // do nothing, give up
-                }
-            }
         }
+        // do nothing, give up
         UsernamePasswordAuthenticationToken result = null;
-        Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> roles = new HashSet<>();
         if (details != null) {
             roles.addAll(details.getAuthorities());
         } else {

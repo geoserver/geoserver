@@ -7,6 +7,7 @@ package org.geoserver.wms.web.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -87,7 +88,8 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
 
         Catalog cat = getCatalog();
 
-        DataView view =
+        @SuppressWarnings("unchecked")
+        DataView<Object> view =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         // logged in as CITE, will only see styles in this workspace
@@ -96,12 +98,12 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         AdminRequest.start(new Object());
         assertEquals(expected, view.getItemCount());
 
-        for (Iterator<Item> it = view.getItems(); it.hasNext(); ) {
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) {
             String name =
                     it.next()
                             .get("itemProperties:0:component:link:label")
                             .getDefaultModelObjectAsString();
-            assertFalse("sf_style".equals(name));
+            assertNotEquals("sf_style", name);
         }
     }
 

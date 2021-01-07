@@ -47,10 +47,9 @@ public class MIMETypeMapper implements ApplicationContextAware {
 
     private Logger LOGGER = Logging.getLogger(MIMETypeMapper.class);
 
-    private final SoftValueHashMap<String, String> mimeTypeCache =
-            new SoftValueHashMap<String, String>(100);
+    private final SoftValueHashMap<String, String> mimeTypeCache = new SoftValueHashMap<>(100);
 
-    private final Set<String> outputMimeTypes = new HashSet<String>();
+    private final Set<String> outputMimeTypes = new HashSet<>();
 
     private List<CoverageMimeTypeMapper> mappers;
 

@@ -38,19 +38,19 @@ public class WFSCurvesTestSupport extends WFSTestSupport {
         testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
         testData.addVectorLayer(
                 CURVELINES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "curvelines.properties",
                 MockData.class,
                 getCatalog());
         testData.addVectorLayer(
                 CURVEMULTILINES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "curvemultilines.properties",
                 MockData.class,
                 getCatalog());
         testData.addVectorLayer(
                 CURVEPOLYGONS,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "curvepolygons.properties",
                 MockData.class,
                 getCatalog());

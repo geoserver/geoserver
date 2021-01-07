@@ -51,8 +51,8 @@ public class ImportTransformTest extends ImporterTestSupport {
 
         ImportContext context = importer.createContext(file, store);
         ImportTask importTask = context.getTasks().get(0);
-        importTask.getTransform().add(new ReprojectTransform(CRS.decode("EPSG:4326")));
-        importTask.getTransform().add(new IntegerFieldToDateTransform("pretendDateIntField"));
+        importTask.addTransform(new ReprojectTransform(CRS.decode("EPSG:4326")));
+        importTask.addTransform(new IntegerFieldToDateTransform("pretendDateIntField"));
         importer.changed(importTask);
     }
 

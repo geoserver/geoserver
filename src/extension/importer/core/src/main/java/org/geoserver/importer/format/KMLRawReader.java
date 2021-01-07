@@ -90,7 +90,7 @@ public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
         Map<Object, Object> userData = featureType.getUserData();
         if (userData.containsKey("schemanames")) {
             List<String> names = (List<String>) userData.get("schemanames");
-            List<QName> qnames = new ArrayList<QName>(names.size());
+            List<QName> qnames = new ArrayList<>(names.size());
             for (String name : names) {
                 qnames.add(new QName(name));
             }

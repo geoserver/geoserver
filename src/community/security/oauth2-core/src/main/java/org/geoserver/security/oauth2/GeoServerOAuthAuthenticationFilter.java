@@ -122,12 +122,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         final Collection<? extends GrantedAuthority> authorities =
                 (authentication != null ? authentication.getAuthorities() : null);
 
-        if (accessToken == null
-                && customSessionCookie == null
-                && (authentication != null
-                        && (authentication instanceof PreAuthenticatedAuthenticationToken)
-                        && !(authorities.size() == 1
-                                && authorities.contains(GeoServerRole.ANONYMOUS_ROLE)))) {
+        if (accessToken == null && customSessionCookie == null && authentication == null) {
             final AccessTokenRequest accessTokenRequest =
                     restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
             if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {

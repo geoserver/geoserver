@@ -20,7 +20,7 @@ public class RandomColorRamp implements ColorRamp {
 
     private int classNum = 0;
 
-    private List<Color> colors = new ArrayList<Color>();
+    private List<Color> colors = new ArrayList<>();
 
     public int getNumClasses() {
         return classNum;

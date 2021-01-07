@@ -453,7 +453,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
             // Add bounds variable for ranges
             if (isRange) {
-                final List<Dimension> boundsDimensions = new ArrayList<Dimension>();
+                final List<Dimension> boundsDimensions = new ArrayList<>();
                 boundsDimensions.add(netcdfDimension);
                 boundsDimensions.add(boundDimension);
                 final String boundName = dimensionName + NetCDFUtilities.BOUNDS_SUFFIX;
@@ -618,7 +618,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sample = (int) unitConverter.convert(sample);
                 }
                 if (dataPacker != null) {
-                    sample = dataPacker.pack((double) sample);
+                    sample = dataPacker.pack(sample);
                 }
                 setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 break;
@@ -704,6 +704,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // Get all the values for that dimension, looking for the one
                 // which matches the coverage's one
                 // TODO: Improve this search. Make it more smart/performant
+                @SuppressWarnings("unchecked")
                 final Set<Object> values = (Set<Object>) manager.getDimensionValues().getValues();
                 final Iterator<Object> it = values.iterator();
                 while (it.hasNext()) {

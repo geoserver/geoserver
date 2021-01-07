@@ -92,7 +92,7 @@ public class ElevationParser {
                                 final NumberRange left = (NumberRange) o1;
                                 if (o2Double) {
                                     // o2 date
-                                    return left.getMinValue().compareTo(((Double) o2));
+                                    return left.getMinValue().compareTo(o2);
                                 }
                                 // o2 daterange
                                 return left.getMinValue()
@@ -158,9 +158,8 @@ public class ElevationParser {
         }
     }
 
-    private void addValue(Collection result, Double step) {
-        for (Iterator it = result.iterator(); it.hasNext(); ) {
-            final Object element = it.next();
+    private void addValue(Collection<Double> result, Double step) {
+        for (final Object element : result) {
             if (element instanceof Double) {
                 // convert
                 final Double local = (Double) element;
@@ -174,8 +173,8 @@ public class ElevationParser {
         result.add(step);
     }
 
-    private void addPeriod(Collection result, NumberRange<Double> newRange) {
-        for (Iterator it = result.iterator(); it.hasNext(); ) {
+    private void addPeriod(Collection<Object> result, NumberRange<Double> newRange) {
+        for (Iterator<Object> it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
             if (element instanceof Double) {
                 // convert
@@ -184,6 +183,7 @@ public class ElevationParser {
                 }
             } else {
                 // convert
+                @SuppressWarnings("unchecked")
                 final NumberRange<Double> local = (NumberRange<Double>) element;
                 if (local.contains(newRange)) return;
                 if (newRange.contains(local)) it.remove();

@@ -43,11 +43,11 @@ public class SecuredSimpleFeatureCollection
             if (properties == null) {
                 this.readSchema = getSchema();
             } else {
-                List<String> names = new ArrayList<String>();
+                List<String> names = new ArrayList<>();
                 for (PropertyName property : properties) {
                     names.add(property.getPropertyName());
                 }
-                String[] nameArray = (String[]) names.toArray(new String[names.size()]);
+                String[] nameArray = names.toArray(new String[names.size()]);
                 try {
                     this.readSchema = DataUtilities.createSubType(getSchema(), nameArray);
                 } catch (SchemaException e) {

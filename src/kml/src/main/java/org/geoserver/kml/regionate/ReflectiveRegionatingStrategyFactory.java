@@ -42,7 +42,7 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
 
     public RegionatingStrategy createStrategy() {
         try {
-            Class clazz = getStrategyClass();
+            Class<?> clazz = getStrategyClass();
             Constructor c = clazz.getConstructor(GeoServer.class);
             if (c != null) {
                 return (RegionatingStrategy) c.newInstance(gs);

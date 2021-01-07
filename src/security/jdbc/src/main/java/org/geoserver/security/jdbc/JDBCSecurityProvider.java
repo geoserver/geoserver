@@ -38,9 +38,9 @@ public class JDBCSecurityProvider extends GeoServerSecurityProvider {
 
     @Override
     public Map<Class<?>, Set<String>> getFieldsForEncryption() {
-        Map<Class<?>, Set<String>> map = new HashMap<Class<?>, Set<String>>();
+        Map<Class<?>, Set<String>> map = new HashMap<>();
 
-        Set<String> fields = new HashSet<String>();
+        Set<String> fields = new HashSet<>();
         fields.add("password");
         map.put(JDBCSecurityServiceConfig.class, fields);
         return map;

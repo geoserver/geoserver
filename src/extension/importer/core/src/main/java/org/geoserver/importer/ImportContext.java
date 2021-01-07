@@ -75,7 +75,7 @@ public class ImportContext implements Serializable {
     StoreInfo targetStore;
 
     /** import tasks */
-    List<ImportTask> tasks = new ArrayList<ImportTask>();
+    List<ImportTask> tasks = new ArrayList<>();
 
     /** The default transformations that will be applied on task creation */
     List<ImportTransform> defaultTransforms = new ArrayList<>();
@@ -191,9 +191,9 @@ public class ImportContext implements Serializable {
         TransformChain chain = task.getTransform();
         for (ImportTransform tx : defaultTransforms) {
             if (chain instanceof RasterTransformChain && tx instanceof RasterTransform) {
-                chain.add(tx);
+                ((RasterTransformChain) chain).add((RasterTransform) tx);
             } else if (chain instanceof VectorTransformChain && tx instanceof VectorTransform) {
-                chain.add(tx);
+                ((VectorTransformChain) chain).add((VectorTransform) tx);
             }
         }
     }

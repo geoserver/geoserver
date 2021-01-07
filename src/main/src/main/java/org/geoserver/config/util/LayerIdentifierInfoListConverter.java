@@ -38,7 +38,7 @@ public class LayerIdentifierInfoListConverter {
             final JSONArray array;
             array = JSONArray.fromObject(str);
             final int size = array.size();
-            List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>(size);
+            List<LayerIdentifierInfo> list = new ArrayList<>(size);
             JSONObject jsonAuth;
             for (int i = 0; i < size; i++) {
                 jsonAuth = array.getJSONObject(i);

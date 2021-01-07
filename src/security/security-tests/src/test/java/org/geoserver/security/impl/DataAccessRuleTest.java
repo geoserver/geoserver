@@ -6,7 +6,7 @@
 package org.geoserver.security.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.geoserver.security.AccessMode;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class DataAccessRuleTest {
         DataAccessRule rule1 = new DataAccessRule("*", "*", AccessMode.READ);
         DataAccessRule rule2 = new DataAccessRule("*", "*", AccessMode.WRITE);
         assertEquals(-1, rule1.compareTo(rule2));
-        assertFalse(rule1.equals(rule2));
+        assertNotEquals(rule1, rule2);
     }
 
     @Test
@@ -35,6 +35,6 @@ public class DataAccessRuleTest {
         DataAccessRule rule1 = new DataAccessRule("topp", "layer1", AccessMode.READ);
         DataAccessRule rule2 = new DataAccessRule("topp", "layer2", AccessMode.READ);
         assertEquals(-1, rule1.compareTo(rule2));
-        assertFalse(rule1.equals(rule2));
+        assertNotEquals(rule1, rule2);
     }
 }

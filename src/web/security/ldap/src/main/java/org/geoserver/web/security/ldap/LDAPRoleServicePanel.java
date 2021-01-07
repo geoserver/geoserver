@@ -33,7 +33,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         private static final long serialVersionUID = 8919421089437979222L;
 
         public LDAPAuthenticationPanel(String id) {
-            super(id, new Model<String>());
+            super(id, new Model<>());
             add(new TextField<String>("user"));
 
             PasswordTextField pwdField = new PasswordTextField("password");

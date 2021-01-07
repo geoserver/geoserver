@@ -30,8 +30,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     public CSWLayerConfig(String id, IModel<LayerInfo> model) {
         super(id, model);
 
-        PropertyModel<MetadataMap> settingsMap =
-                new PropertyModel<MetadataMap>(model, "resource.metadata");
+        PropertyModel<MetadataMap> settingsMap = new PropertyModel<>(model, "resource.metadata");
 
         DirectDownloadSettings settings =
                 DirectDownloadSettings.getSettingsFromMetadata(settingsMap.getObject(), null);
@@ -45,7 +44,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                                             .getService(CSWInfo.class)));
         }
         IModel<DirectDownloadSettings> directDownloadModel =
-                new MetadataMapModel<DirectDownloadSettings>(
+                new MetadataMapModel<>(
                         settingsMap,
                         DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
                         DirectDownloadSettings.class);
@@ -53,13 +52,13 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         directDownloadEnabled =
                 new CheckBox(
                         "directDownloadEnabled",
-                        new PropertyModel<Boolean>(directDownloadModel, "directDownloadEnabled"));
+                        new PropertyModel<>(directDownloadModel, "directDownloadEnabled"));
         add(directDownloadEnabled);
 
         maxDownloadSize =
-                new TextField<Long>(
+                new TextField<>(
                         "maxDownloadSize",
-                        new PropertyModel<Long>(directDownloadModel, "maxDownloadSize"));
+                        new PropertyModel<>(directDownloadModel, "maxDownloadSize"));
         maxDownloadSize.add(RangeValidator.minimum(0l));
         add(maxDownloadSize);
     }

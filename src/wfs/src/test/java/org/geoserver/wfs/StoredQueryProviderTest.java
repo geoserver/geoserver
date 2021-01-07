@@ -188,12 +188,9 @@ public class StoredQueryProviderTest {
             throws Exception {
         Parser p = new Parser(new WFSConfiguration());
         p.setRootElementType(WFS.StoredQueryDescriptionType);
-        StringReader reader = new StringReader(MY_STORED_QUERY_DEFINITION);
-        try {
+        try (StringReader reader = new StringReader(MY_STORED_QUERY_DEFINITION)) {
 
             return (StoredQueryDescriptionType) p.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 

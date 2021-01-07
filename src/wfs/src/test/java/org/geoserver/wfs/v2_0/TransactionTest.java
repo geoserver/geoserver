@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -53,7 +54,7 @@ public class TransactionTest extends WFS20TestSupport {
         getTestData()
                 .addVectorLayer(
                         WITH_GML,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         org.geoserver.wfs.v1_1.TransactionTest.class,
                         getCatalog());
         getTestData()
@@ -62,7 +63,7 @@ public class TransactionTest extends WFS20TestSupport {
                                 SystemTestData.SF_URI,
                                 "PrimitiveGeoFeatureId",
                                 SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         TestData.class,
                         getCatalog());
     }
@@ -1035,7 +1036,7 @@ public class TransactionTest extends WFS20TestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         cat.add(ds);

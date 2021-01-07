@@ -271,10 +271,11 @@ paths:
         - name: method
           in: path
           required: true
-          description: The upload method. Can be "url", "file", "external". 
+          description: The upload method. Can be "url", "file", "external", "remote". 
                        "file" uploads a file from a local source. The body of the request is the file itself.
                        "url" uploads a file from a remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
                        "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+                       "remote" uses a direct reference to a remote url, i.e. a file on a cloud storage. No data copy will occur. The body of the request is a URL pointing to the remote dataset.
           type: string
         - name: format
           in: path
@@ -315,10 +316,11 @@ paths:
         - name: method
           in: path
           required: true
-          description: The upload method. Can be "url", "file", "external". 
+          description: The upload method. Can be "url", "file", "external", "remote". 
                        "file" uploads a file from a local source. The body of the request is the file itself.
                        "url" uploads a file from a remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
                        "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+                       "remote" uses a direct reference to a remote url, i.e. a file on a cloud storage. No data copy will occur. The body of the request is a URL pointing to the remote dataset.
           type: string
         - name: format
           in: path

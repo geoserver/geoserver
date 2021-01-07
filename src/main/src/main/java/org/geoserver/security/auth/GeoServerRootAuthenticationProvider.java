@@ -57,7 +57,7 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
         // check password
         if (token.getCredentials() != null) {
             if (getSecurityManager().checkMasterPassword(token.getCredentials().toString())) {
-                Collection<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+                Collection<GrantedAuthority> roles = new ArrayList<>();
                 roles.add(GeoServerRole.ADMIN_ROLE);
 
                 UsernamePasswordAuthenticationToken result =

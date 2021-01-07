@@ -69,7 +69,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
     /** Parses the rules contained in the property file */
     protected void loadRules(Properties props) {
-        TreeSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
+        TreeSet<DataAccessRule> result = new TreeSet<>();
         catalogMode = CatalogMode.HIDE;
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
@@ -102,7 +102,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         }
 
         // make sure the two basic rules if the set is empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new DataAccessRule(DataAccessRule.READ_ALL));
             result.add(new DataAccessRule(DataAccessRule.WRITE_ALL));
         }
@@ -213,7 +213,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     /** Parses workspace.layer.mode into an array of strings */
     static String[] parseElements(String path) {
         String[] rawParse = path.trim().split("\\s*\\.\\s*");
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         String prefix = null;
         for (String raw : rawParse) {
             if (prefix != null) raw = prefix + "." + raw;
@@ -226,7 +226,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             }
         }
 
-        return (String[]) result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
     }
 
     public void setCatalogMode(CatalogMode catalogMode) {
@@ -244,7 +244,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
     /** Returns a sorted set of rules associated to the role */
     public SortedSet<DataAccessRule> getRulesAssociatedWithRole(String role) {
-        SortedSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
+        SortedSet<DataAccessRule> result = new TreeSet<>();
         for (DataAccessRule rule : getRules()) if (rule.getRoles().contains(role)) result.add(rule);
         return result;
     }

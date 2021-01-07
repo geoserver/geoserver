@@ -295,7 +295,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         assertEquals(outputBandU.getCompositionType(), defaultComposition);
 
         // Test coverage views
-        final List<CoverageBand> bands = new ArrayList<CoverageBand>();
+        final List<CoverageBand> bands = new ArrayList<>();
         bands.add(outputBandU);
         bands.add(outputBandV);
 
@@ -439,7 +439,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private GeneralParameterValue[] buildFootprintBandParams(
             FootprintBehavior footprintBehavior, int[] bands) {
-        final List<ParameterValue<?>> parameters = new ArrayList<ParameterValue<?>>();
+        final List<ParameterValue<?>> parameters = new ArrayList<>();
         parameters.add(
                 new DefaultParameterDescriptor<>(
                                 AbstractGridFormat.FOOTPRINT_BEHAVIOR.getName().toString(),
@@ -454,8 +454,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                                 null,
                                 bands)
                         .createValue());
-        return (GeneralParameterValue[])
-                parameters.toArray(new GeneralParameterValue[parameters.size()]);
+        return parameters.toArray(new GeneralParameterValue[parameters.size()]);
     }
 
     /**

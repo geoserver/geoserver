@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -72,7 +71,7 @@ public class ExternalGraphicPanel extends Panel {
     private AjaxButton show;
     private AjaxButton hide;
 
-    private Model<String> showhideStyleModel = new Model<String>("");
+    private Model<String> showhideStyleModel = new Model<>("");
 
     public ExternalGraphicPanel(
             String id,
@@ -90,7 +89,7 @@ public class ExternalGraphicPanel extends Panel {
         table.setOutputMarkupId(true);
 
         IModel<String> bind = styleModel.bind("legend.onlineResource");
-        onlineResource = new TextField<String>("onlineResource", bind);
+        onlineResource = new TextField<>("onlineResource", bind);
         onlineResource.add(
                 new IValidator<String>() {
 
@@ -124,11 +123,6 @@ public class ExternalGraphicPanel extends Panel {
                                     input.error(error);
                                     return; // error message back!
                                 }
-                            } catch (MalformedURLException e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Unable to access image");
-                                error.addKey("imageUnavailable");
-                                input.error(error);
                             } catch (IOException e) {
                                 ValidationError error = new ValidationError();
                                 error.setMessage("Unable to access image");
@@ -280,17 +274,17 @@ public class ExternalGraphicPanel extends Panel {
 
         table.add(autoFill);
 
-        format = new TextField<String>("format", styleModel.bind("legend.format"));
+        format = new TextField<>("format", styleModel.bind("legend.format"));
         format.setOutputMarkupId(true);
         table.add(format);
 
-        width = new TextField<Integer>("width", styleModel.bind("legend.width"), Integer.class);
+        width = new TextField<>("width", styleModel.bind("legend.width"), Integer.class);
         width.add(RangeValidator.minimum(0));
         width.setRequired(true);
         width.setOutputMarkupId(true);
         table.add(width);
 
-        height = new TextField<Integer>("height", styleModel.bind("legend.height"), Integer.class);
+        height = new TextField<>("height", styleModel.bind("legend.height"), Integer.class);
         height.add(RangeValidator.minimum(0));
         height.setRequired(true);
         height.setOutputMarkupId(true);

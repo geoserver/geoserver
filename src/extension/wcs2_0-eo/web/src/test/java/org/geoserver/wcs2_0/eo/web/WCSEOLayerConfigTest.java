@@ -46,7 +46,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WCSEOLayerConfig(id, new Model(layer));
+                                return new WCSEOLayerConfig(id, new Model<>(layer));
                             }
                         }));
 
@@ -65,7 +65,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new WCSEOLayerConfig(id, new Model(layer));
+                                return new WCSEOLayerConfig(id, new Model<>(layer));
                             }
                         }));
 
@@ -81,10 +81,6 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
         // print(tester.getLastRenderedPage(), true, true);
 
         tester.assertModelValue("form:panel:dataset", true);
-        assertTrue(
-                (boolean)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(WCSEOMetadata.DATASET.key, Boolean.class));
+        assertTrue(layer.getResource().getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class));
     }
 }

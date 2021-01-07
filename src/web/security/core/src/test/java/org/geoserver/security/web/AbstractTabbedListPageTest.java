@@ -86,7 +86,7 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
                 (MarkupContainer) tester.getLastRenderedPage().get(getItemsPath());
 
         @SuppressWarnings("unchecked")
-        Iterator<Component> it = (Iterator<Component>) listView.iterator();
+        Iterator<Component> it = listView.iterator();
 
         while (it.hasNext()) {
             MarkupContainer m = (MarkupContainer) it.next();

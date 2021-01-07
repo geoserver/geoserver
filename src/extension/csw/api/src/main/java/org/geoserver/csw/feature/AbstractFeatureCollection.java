@@ -214,7 +214,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     //
     /** Set of open resource iterators */
     @SuppressWarnings("unchecked")
-    protected final Set open = new HashSet<Iterator<F>>();
+    protected final Set open = new HashSet<>();
 
     /**
      * Returns the set of open iterators.
@@ -296,7 +296,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
             for (iterator = iterator(); !progress.isCanceled() && iterator.hasNext(); ) {
                 if (size > 0) progress.progress(position++ / size);
                 try {
-                    Feature feature = (Feature) iterator.next();
+                    Feature feature = iterator.next();
                     visitor.visit(feature);
                 } catch (Exception erp) {
                     progress.exceptionOccurred(erp);

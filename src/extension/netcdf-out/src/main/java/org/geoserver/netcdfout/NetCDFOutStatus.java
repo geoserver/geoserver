@@ -56,7 +56,7 @@ public class NetCDFOutStatus implements ModuleStatus {
             // Nc4prototypes nc4 = (Nc4prototypes) Native.loadLibrary("netcdf",
             // Nc4prototypes.class);
             // return nc4.nc_inq_libvers();
-            Class jnaNativeClass = Class.forName("com.sun.jna.Native");
+            Class<?> jnaNativeClass = Class.forName("com.sun.jna.Native");
             Method loadLibraryMethod =
                     jnaNativeClass.getMethod("loadLibrary", String.class, Class.class);
             Object nc4 = loadLibraryMethod.invoke(null, "netcdf", Nc4prototypes.class);

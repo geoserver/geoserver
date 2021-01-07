@@ -17,7 +17,7 @@ public class AuthenticationFiltersProvider
 
     @Override
     protected List<SecurityAuthFilterConfig> getItems() {
-        List<SecurityAuthFilterConfig> result = new ArrayList<SecurityAuthFilterConfig>();
+        List<SecurityAuthFilterConfig> result = new ArrayList<>();
         try {
             for (String name :
                     getSecurityManager().listFilters(GeoServerAuthenticationFilter.class)) {

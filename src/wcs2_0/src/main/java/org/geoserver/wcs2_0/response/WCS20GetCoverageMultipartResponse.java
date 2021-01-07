@@ -86,7 +86,7 @@ public class WCS20GetCoverageMultipartResponse extends Response {
         }
 
         // extract additional extensions
-        final Map<String, String> encodingParameters = new HashMap<String, String>();
+        final Map<String, String> encodingParameters = new HashMap<>();
         final ExtensionType extension = getCoverage.getExtension();
         if (extension != null) {
             final EList<ExtensionItemType> extensions = extension.getContents();

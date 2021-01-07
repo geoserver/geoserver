@@ -5,6 +5,12 @@
  */
 package org.geoserver.script.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +22,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.script.ScriptIntTestSupport;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -35,6 +42,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     // Apps
 
+    @Test
     public void testGetApp() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/apps/app1/main.py");
         assertEquals(404, resp.getStatus());
@@ -47,6 +55,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getContentAsString());
     }
 
+    @Test
     public void testPutApp() throws Exception {
         assertNull(scriptMgr.findScriptFile("apps/app1/main.py"));
 
@@ -58,6 +67,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("apps/app1/main.py"));
     }
 
+    @Test
     public void testGetAllApps() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/script/scripts/apps.json");
@@ -102,6 +112,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(2, links.getLength());
     }
 
+    @Test
     public void testDeleteApp() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/apps/app1/main.py");
         assertEquals(404, resp.getStatus());
@@ -122,7 +133,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
     }
 
     // WFS TX
-
+    @Test
     public void testGetWfsTx() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wfs/tx/foo.py");
         assertEquals(404, resp.getStatus());
@@ -135,6 +146,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getContentAsString());
     }
 
+    @Test
     public void testPutWfsTx() throws Exception {
         assertNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
 
@@ -146,6 +158,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
     }
 
+    @Test
     public void testGetAllWfsTx() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/script/scripts/wfs/tx.json");
@@ -190,6 +203,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(2, links.getLength());
     }
 
+    @Test
     public void testDeleteWfsTx() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wfs/tx/foo.py");
         assertEquals(404, resp.getStatus());
@@ -209,7 +223,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
     }
 
     // Function
-
+    @Test
     public void testGetFunction() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/function/foo.py");
         assertEquals(404, resp.getStatus());
@@ -222,6 +236,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getContentAsString());
     }
 
+    @Test
     public void testPutFunction() throws Exception {
         assertNull(scriptMgr.findScriptFile("function/bar.py"));
 
@@ -233,6 +248,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("function/bar.py"));
     }
 
+    @Test
     public void testGetAllFunctions() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/script/scripts/function.json");
@@ -277,6 +293,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(2, links.getLength());
     }
 
+    @Test
     public void testDeleteFunction() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/function/foo.py");
         assertEquals(404, resp.getStatus());
@@ -296,7 +313,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
     }
 
     // WPS
-
+    @Test
     public void testGetWps() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/foo.py");
         assertEquals(404, resp.getStatus());
@@ -309,6 +326,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getContentAsString());
     }
 
+    @Test
     public void testGetWpsWithNamespace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/foo.py");
         assertEquals(404, resp.getStatus());
@@ -322,6 +340,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getContentAsString());
     }
 
+    @Test
     public void testPutWps() throws Exception {
         assertNull(scriptMgr.findScriptFile("wps/bar.py"));
 
@@ -333,6 +352,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
     }
 
+    @Test
     public void testPutWpsWithNamespace() throws Exception {
         assertNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
 
@@ -344,6 +364,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
     }
 
+    @Test
     public void testGetAllWps() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/script/scripts/wps.json");
@@ -395,6 +416,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(3, links.getLength());
     }
 
+    @Test
     public void testDeleteWps() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/foo.py");
         assertEquals(404, resp.getStatus());
@@ -413,6 +435,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(404, resp.getStatus());
     }
 
+    @Test
     public void testDeleteWpsWithNamespace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/bar:foo.py");
         assertEquals(404, resp.getStatus());

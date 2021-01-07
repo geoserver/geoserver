@@ -170,18 +170,18 @@ public class GeoServerTablePanelTest {
         }
 
         @Override
-        protected IModel getPropertyTitle(Property<Integer> property) {
-            return new Model(property.getName());
+        protected IModel<String> getPropertyTitle(Property<Integer> property) {
+            return new Model<>(property.getName());
         }
 
         @Override
-        IModel showingAllRecords(long first, long last, long size) {
-            return new Model(first + " -> " + last + " of " + size);
+        IModel<String> showingAllRecords(long first, long last, long size) {
+            return new Model<>(first + " -> " + last + " of " + size);
         }
 
         @Override
-        IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
-            return new Model(first + " -> " + last + " of " + size + "/" + fullSize);
+        IModel<String> matchedXOutOfY(long first, long last, long size, long fullSize) {
+            return new Model<>(first + " -> " + last + " of " + size + "/" + fullSize);
         }
     }
 
@@ -222,7 +222,7 @@ public class GeoServerTablePanelTest {
 
         @Override
         protected List<Integer> getItems() {
-            List<Integer> result = new ArrayList<Integer>();
+            List<Integer> result = new ArrayList<>();
             for (int i = 0; i < TOTAL_ITEMS; i++) {
                 result.add(i);
             }

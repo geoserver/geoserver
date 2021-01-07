@@ -39,16 +39,23 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     Function<T, Name> nameMapper;
     static final Predicate TRUE = x -> true;
 
+    /** Returns {@link CatalogInfoLookup#TRUE} in a type-safe way */
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> ptrue() {
+        return (Predicate<T>) TRUE;
+    }
+
     public CatalogInfoLookup(Function<T, Name> nameMapper) {
         super();
         this.nameMapper = nameMapper;
     }
 
+    @SuppressWarnings("unchecked")
     <K> Map<K, T> getMapForValue(ConcurrentHashMap<Class<T>, Map<K, T>> maps, T value) {
         Class<T> vc;
         if (Proxy.isProxyClass(value.getClass())) {
             ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(value);
-            Object po = (T) h.getProxyObject();
+            T po = (T) h.getProxyObject();
             vc = (Class<T>) po.getClass();
         } else {
             vc = (Class<T>) value.getClass();
@@ -57,14 +64,21 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return getMapForValue(maps, vc);
     }
 
+    @SuppressWarnings("unchecked")
+    // cannot get the layer lookup to work otherwise, "vc" cannot be parameterized to "T"
+    // or the LayerInfoLookup in DefaultCatalogFacade won't work. Issue being that the maps
+    // contains LayerInfoImpl (extracted from the values) but the container is parameterized
+    // by LayerInfo. I suppose it could be solved by having a mapping function going from class
+    // to key class (LayerInfoImpl to LayerInfo) and use it consistently across the lookup?
     protected <K> Map<K, T> getMapForValue(ConcurrentHashMap<Class<T>, Map<K, T>> maps, Class vc) {
         Map<K, T> vcMap = maps.get(vc);
         if (vcMap == null) {
-            vcMap = maps.computeIfAbsent(vc, k -> new ConcurrentSkipListMap<K, T>());
+            vcMap = maps.computeIfAbsent(vc, k -> new ConcurrentSkipListMap<>());
         }
         return vcMap;
     }
 
+    @SuppressWarnings("unchecked")
     public T add(T value) {
         if (Proxy.isProxyClass(value.getClass())) {
             ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(value);
@@ -95,6 +109,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     }
 
     /** Updates the value in the name map. The new value must be a ModificationProxy */
+    @SuppressWarnings("unchecked")
     public void update(T proxiedValue) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(proxiedValue);
         T actualValue = (T) h.getProxyObject();
@@ -122,12 +137,13 @@ class CatalogInfoLookup<T extends CatalogInfo> {
      * things going on)
      */
     <U extends CatalogInfo> List<U> list(Class<U> clazz, Predicate<U> predicate) {
-        ArrayList<U> result = new ArrayList<U>();
+        ArrayList<U> result = new ArrayList<>();
         for (Class<T> key : nameMultiMap.keySet()) {
             if (clazz.isAssignableFrom(key)) {
                 Map<Name, T> valueMap = nameMultiMap.get(key);
                 if (valueMap != null) {
                     for (T v : valueMap.values()) {
+                        @SuppressWarnings("unchecked")
                         final U u = (U) v;
                         if (predicate == TRUE || predicate.test(u)) {
                             result.add(u);
@@ -148,7 +164,9 @@ class CatalogInfoLookup<T extends CatalogInfo> {
                 if (valueMap != null) {
                     T t = valueMap.get(id);
                     if (t != null) {
-                        return (U) t;
+                        @SuppressWarnings("unchecked")
+                        U cast = (U) t;
+                        return cast;
                     }
                 }
             }
@@ -165,7 +183,9 @@ class CatalogInfoLookup<T extends CatalogInfo> {
                 if (valueMap != null) {
                     T t = valueMap.get(name);
                     if (t != null) {
-                        return (U) t;
+                        @SuppressWarnings("unchecked")
+                        U cast = (U) t;
+                        return cast;
                     }
                 }
             }
@@ -188,6 +208,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
                 Map<Name, T> valueMap = nameMultiMap.get(key);
                 if (valueMap != null) {
                     for (T v : valueMap.values()) {
+                        @SuppressWarnings("unchecked")
                         final U u = (U) v;
                         if (predicate == TRUE || predicate.test(u)) {
                             return u;
@@ -201,7 +222,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     }
 
     /** Sets the specified catalog into all CatalogInfo objects contained in this lookup */
-    public CatalogInfoLookup setCatalog(Catalog catalog) {
+    public CatalogInfoLookup<T> setCatalog(Catalog catalog) {
         for (Map<Name, T> valueMap : nameMultiMap.values()) {
             if (valueMap != null) {
                 for (T v : valueMap.values()) {

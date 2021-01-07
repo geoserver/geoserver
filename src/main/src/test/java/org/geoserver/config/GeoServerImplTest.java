@@ -12,8 +12,9 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -101,7 +102,7 @@ public class GeoServerImplTest {
         }
 
         ServiceInfo s = geoServer.getServiceByName("foo", ServiceInfo.class);
-        assertTrue(s != service);
+        assertNotSame(s, service);
         assertEquals(service, s);
     }
 
@@ -148,13 +149,13 @@ public class GeoServerImplTest {
 
     static class TestListener extends ConfigurationListenerAdapter {
 
-        List<String> gPropertyNames = new ArrayList();
-        List<Object> gOldValues = new ArrayList();
-        List<Object> gNewValues = new ArrayList();
+        List<String> gPropertyNames = new ArrayList<>();
+        List<Object> gOldValues = new ArrayList<>();
+        List<Object> gNewValues = new ArrayList<>();
 
-        List<String> sPropertyNames = new ArrayList();
-        List<Object> sOldValues = new ArrayList();
-        List<Object> sNewValues = new ArrayList();
+        List<String> sPropertyNames = new ArrayList<>();
+        List<Object> sOldValues = new ArrayList<>();
+        List<Object> sNewValues = new ArrayList<>();
 
         public void handleGlobalChange(
                 GeoServerInfo global,
@@ -183,11 +184,11 @@ public class GeoServerImplTest {
         GeoServerInfoImpl gsii = new GeoServerInfoImpl(geoServer);
         Map<Object, Object> before = gsii.getClientProperties();
 
-        Map<Object, Object> newProps = new HashMap<Object, Object>();
+        Map<Object, Object> newProps = new HashMap<>();
         newProps.put("123", "456");
         gsii.setClientProperties(newProps);
 
-        assertFalse(before.equals(newProps));
+        assertNotEquals(before, newProps);
     }
 
     @Test

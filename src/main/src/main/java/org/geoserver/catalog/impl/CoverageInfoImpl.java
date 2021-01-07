@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,19 +39,19 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     protected GridGeometry grid;
 
-    protected List<String> supportedFormats = new ArrayList<String>();
+    protected List<String> supportedFormats = new ArrayList<>();
 
-    protected List<String> interpolationMethods = new ArrayList<String>();
+    protected List<String> interpolationMethods = new ArrayList<>();
 
     protected String defaultInterpolationMethod;
 
-    protected List<CoverageDimensionInfo> dimensions = new ArrayList<CoverageDimensionInfo>();
+    protected List<CoverageDimensionInfo> dimensions = new ArrayList<>();
 
-    protected List<String> requestSRS = new ArrayList<String>();
+    protected List<String> requestSRS = new ArrayList<>();
 
-    protected List<String> responseSRS = new ArrayList<String>();
+    protected List<String> responseSRS = new ArrayList<>();
 
-    protected Map parameters = new HashMap();
+    protected Map<String, Serializable> parameters = new HashMap<>();
 
     protected String nativeCoverageName;
 
@@ -112,11 +113,11 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return responseSRS;
     }
 
-    public Map getParameters() {
+    public Map<String, Serializable> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map parameters) {
+    public void setParameters(Map<String, Serializable> parameters) {
         this.parameters = parameters;
     }
 

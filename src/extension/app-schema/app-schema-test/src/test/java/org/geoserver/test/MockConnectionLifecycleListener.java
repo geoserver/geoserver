@@ -23,8 +23,7 @@ class MockConnectionLifecycleListener implements ConnectionLifecycleListener {
         int rollbackCount = 0;
     }
 
-    Map<JDBCDataStore, ActionCount> actionCountByDataStore =
-            new HashMap<JDBCDataStore, ActionCount>();
+    Map<JDBCDataStore, ActionCount> actionCountByDataStore = new HashMap<>();
 
     private void initCountIfNecessary(JDBCDataStore store) {
         if (!actionCountByDataStore.containsKey(store)) {

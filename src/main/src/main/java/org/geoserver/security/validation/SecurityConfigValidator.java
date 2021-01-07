@@ -166,7 +166,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
         }
         // check for unique chain names
         for (RequestFilterChain requestChain : chain.getRequestChains()) {
-            Set<String> chainNames = new HashSet<String>();
+            Set<String> chainNames = new HashSet<>();
             // valid name
             if (isNotEmpty(requestChain.getName()) == false) {
                 throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY);

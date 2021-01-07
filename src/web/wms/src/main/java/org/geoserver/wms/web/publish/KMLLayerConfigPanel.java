@@ -34,22 +34,21 @@ public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
     public KMLLayerConfigPanel(String id, IModel<LayerInfo> model) {
         super(id, model);
 
-        PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "resource.metadata");
+        PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "resource.metadata");
         add(
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "kml.regionateAttribute",
-                        new MapModel(metadata, "kml.regionateAttribute"),
-                        new AttributeNamesModel(new PropertyModel(model, "resource"))));
+                        new MapModel<>(metadata, "kml.regionateAttribute"),
+                        new AttributeNamesModel(new PropertyModel<>(model, "resource"))));
         add(
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "kml.regionateStrategy",
-                        new MapModel(metadata, "kml.regionateStrategy"),
+                        new MapModel<>(metadata, "kml.regionateStrategy"),
                         KML_STRATEGIES));
         TextField<Integer> maxFeatures =
-                new TextField<Integer>(
+                new TextField<>(
                         "kml.regionateFeatureLimit",
-                        new MapModel(metadata, "kml.regionateFeatureLimit"),
+                        new MapModel<>(metadata, "kml.regionateFeatureLimit"),
                         Integer.class);
         maxFeatures.add(RangeValidator.minimum(1));
         add(maxFeatures);
@@ -68,7 +67,7 @@ public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
         protected List<String> load() {
             try {
                 FeatureTypeInfo fti = featureTypeInfo.getObject();
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 for (PropertyDescriptor property : fti.getFeatureType().getDescriptors()) {
                     result.add(property.getName().getLocalPart());
                 }

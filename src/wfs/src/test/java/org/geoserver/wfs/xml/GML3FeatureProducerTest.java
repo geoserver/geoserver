@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -51,7 +52,9 @@ public class GML3FeatureProducerTest extends WFSTestSupport {
         for (QName name : names) {
             QueryType queryType = WfsFactory.eINSTANCE.createQueryType();
             queryType.setTypeName(Collections.singletonList(name));
-            type.getQuery().add(queryType);
+            @SuppressWarnings("unchecked")
+            EList<QueryType> query = type.getQuery();
+            query.add(queryType);
         }
         Operation request = new Operation("wfs", service, null, new Object[] {type});
         return request;

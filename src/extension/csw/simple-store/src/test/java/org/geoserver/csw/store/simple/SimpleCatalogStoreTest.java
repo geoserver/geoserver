@@ -42,6 +42,7 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -95,12 +96,13 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testReadAllRecords() throws IOException {
-        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
+        @SuppressWarnings("unchecked")
+        FeatureCollection<FeatureType, Feature> records =
+                store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
 
-        FeatureIterator<Feature> fi = records.features();
-        try {
+        try (FeatureIterator<Feature> fi = records.features()) {
             while (fi.hasNext()) {
                 Feature f = fi.next();
 
@@ -110,7 +112,8 @@ public class SimpleCatalogStoreTest {
                 assertNotNull(id);
                 assertTrue(
                         id.matches(
-                                "urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"));
+                                "urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9"
+                                        + "]{12}"));
 
                 // check the feature id is the same as the id attribute
                 assertEquals(id, f.getIdentifier().getID());
@@ -120,8 +123,6 @@ public class SimpleCatalogStoreTest {
                 assertNotNull(type);
                 assertNotNull(type.getValue());
             }
-        } finally {
-            fi.close();
         }
     }
 
@@ -281,14 +282,14 @@ public class SimpleCatalogStoreTest {
 
         // check they were sorted
         final List<String> values = collectElement(records, "identifier");
-        List<String> sorted = new ArrayList<String>(values);
+        List<String> sorted = new ArrayList<>(values);
         Collections.sort(sorted);
         assertEquals(sorted, values);
     }
 
     private List<String> collectElement(FeatureCollection records, final String property)
             throws IOException {
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         records.accepts(
                 new FeatureVisitor() {
 
@@ -325,7 +326,7 @@ public class SimpleCatalogStoreTest {
         assertEquals(3, records.size());
 
         // check the properties and collect their identifier
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         records.accepts(
                 new FeatureVisitor() {
 

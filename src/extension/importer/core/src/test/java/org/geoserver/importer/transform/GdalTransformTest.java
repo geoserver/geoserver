@@ -42,7 +42,7 @@ public class GdalTransformTest extends ImporterTestSupport {
 
         // setup the transformation
         GdalTranslateTransform gtx = buildGdalTranslate();
-        task.getTransform().add(gtx);
+        task.addTransform(gtx);
 
         assertEquals("EmissiveCampania", task.getLayer().getResource().getName());
 
@@ -87,7 +87,7 @@ public class GdalTransformTest extends ImporterTestSupport {
 
         // setup the transformation
         GdalAddoTransform gad = buildGdalAddo();
-        task.getTransform().add(gad);
+        task.addTransform(gad);
 
         assertEquals("EmissiveCampania", task.getLayer().getResource().getName());
 
@@ -133,9 +133,9 @@ public class GdalTransformTest extends ImporterTestSupport {
         assertEquals(ImportTask.State.READY, task.getState());
 
         GdalTranslateTransform gtx = buildGdalTranslate();
-        task.getTransform().add(gtx);
+        task.addTransform(gtx);
         GdalAddoTransform gad = buildGdalAddo();
-        task.getTransform().add(gad);
+        task.addTransform(gad);
 
         assertEquals("EmissiveCampania", task.getLayer().getResource().getName());
 
@@ -180,7 +180,7 @@ public class GdalTransformTest extends ImporterTestSupport {
 
         // setup the transformation
         GdalWarpTransform warp = buildGdalWarp();
-        task.getTransform().add(warp);
+        task.addTransform(warp);
 
         assertEquals("box_gcp_fixed", task.getLayer().getResource().getName());
 

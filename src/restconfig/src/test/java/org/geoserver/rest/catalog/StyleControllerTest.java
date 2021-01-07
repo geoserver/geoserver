@@ -496,6 +496,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         JSONObject styleJson = ((JSONObject) json).getJSONObject("style");
         assertEquals("Ponds", styleJson.get("name"));
         assertEquals("Ponds.sld", styleJson.get("filename"));
+        @SuppressWarnings("unchecked")
         Collection<JSONObject> entryCollection =
                 JSONArray.toCollection(
                         styleJson.getJSONObject("metadata").getJSONArray("entry"),
@@ -538,7 +539,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Forests.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 1);
+        assertEquals(1, metadata.size());
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertNotNull(style.getDateModified());
     }
@@ -568,7 +569,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Ponds.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 2);
+        assertEquals(2, metadata.size());
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertEquals("test1", metadata.get("surename"));
         assertNotNull(style.getDateModified());

@@ -6,7 +6,6 @@
 package org.geoserver.config.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.ContactInfo;
@@ -62,12 +61,12 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
         return new LoggingInfoImpl();
     }
 
-    public Object create(Class clazz) {
+    public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
             Collection extensions =
                     applicationContext.getBeansOfType(GeoServerFactory.Extension.class).values();
-            for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-                Extension extension = (Extension) e.next();
+            for (Object o : extensions) {
+                Extension extension = (Extension) o;
                 if (extension.canCreate(clazz)) {
                     return extension.create(clazz);
                 }

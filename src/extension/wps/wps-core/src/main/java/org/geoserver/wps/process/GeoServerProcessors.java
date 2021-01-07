@@ -40,7 +40,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
      */
     public static Set<ProcessFactory> getProcessFactories() {
         Set<ProcessFactory> factories = Processors.getProcessFactories();
-        Set<ProcessFactory> result = new LinkedHashSet<ProcessFactory>();
+        Set<ProcessFactory> result = new LinkedHashSet<>();
 
         // scan filters and let them wrap and exclude as necessary
         for (ProcessFactory pf : factories) {

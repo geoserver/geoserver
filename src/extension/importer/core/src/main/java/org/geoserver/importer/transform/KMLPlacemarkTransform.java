@@ -77,7 +77,7 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
     private String serializeFolders(Object folderObject) {
         @SuppressWarnings("unchecked")
         List<Folder> folders = (List<Folder>) folderObject;
-        List<String> folderNames = new ArrayList<String>(folders.size());
+        List<String> folderNames = new ArrayList<>(folders.size());
         for (Folder folder : folders) {
             String name = folder.getName();
             if (!StringUtils.isEmpty(name)) {

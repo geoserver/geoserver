@@ -98,7 +98,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             // see if the user selected anything
             final List<ExecutionStatus> selection = table.getSelection();
-            if (selection.size() == 0) return;
+            if (selection.isEmpty()) return;
 
             dialog.setTitle(new ParamResourceModel("confirmDismissal", this));
 

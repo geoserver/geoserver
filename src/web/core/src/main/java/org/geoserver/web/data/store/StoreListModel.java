@@ -24,7 +24,7 @@ public class StoreListModel extends LoadableDetachableModel<List<StoreInfo>> {
     @Override
     protected List<StoreInfo> load() {
         List<StoreInfo> stores = GeoServerApplication.get().getCatalog().getStores(StoreInfo.class);
-        stores = new ArrayList<StoreInfo>(stores);
+        stores = new ArrayList<>(stores);
         Collections.sort(
                 stores,
                 new Comparator<StoreInfo>() {

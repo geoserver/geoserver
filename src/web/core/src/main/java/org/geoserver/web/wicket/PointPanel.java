@@ -32,13 +32,13 @@ public class PointPanel extends FormComponentPanel<Point> {
     protected DecimalTextField xInput, yInput;
 
     public PointPanel(String id) {
-        super(id, new Model<Point>(null));
+        super(id, new Model<>(null));
 
         initComponents();
     }
 
     public PointPanel(String id, Point p) {
-        this(id, new Model<Point>(p));
+        this(id, new Model<>(p));
     }
 
     public PointPanel(String id, IModel<Point> model) {
@@ -58,8 +58,8 @@ public class PointPanel extends FormComponentPanel<Point> {
         add(xLabel = new Label("xL", new ResourceModel("x")));
         add(yLabel = new Label("yL", new ResourceModel("y")));
 
-        add(xInput = new DecimalTextField("x", new PropertyModel<Double>(this, "x")));
-        add(yInput = new DecimalTextField("y", new PropertyModel<Double>(this, "y")));
+        add(xInput = new DecimalTextField("x", new PropertyModel<>(this, "x")));
+        add(yInput = new DecimalTextField("y", new PropertyModel<>(this, "y")));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     private void updateFields() {
-        Point p = (Point) getModelObject();
+        Point p = getModelObject();
         if (p != null) {
             this.x = p.getX();
             this.y = p.getY();

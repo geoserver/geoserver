@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.demo;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.web.GeoServerWicketTestSupport;

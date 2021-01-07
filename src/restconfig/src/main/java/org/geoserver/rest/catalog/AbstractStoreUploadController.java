@@ -26,7 +26,8 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
     protected enum UploadMethod {
         file(true),
         external(false),
-        url(true);
+        url(true),
+        remote(false); // Remote upload being only supported by structuredGridCoverage2DReader
 
         boolean inline;
 

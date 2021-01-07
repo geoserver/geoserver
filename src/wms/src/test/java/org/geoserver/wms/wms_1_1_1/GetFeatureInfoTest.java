@@ -140,11 +140,11 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("stacker", "stacker.sld", GetFeatureInfoTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 GetFeatureInfoTest.class,
                 catalog);
-        Map propertyMap = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 TASMANIA_BM, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
@@ -162,7 +162,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         setupRasterDimension(
                 TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
-        Map<LayerProperty, Object> properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(
@@ -188,7 +188,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 GetFeatureInfoTest.class,
                 catalog);
 
-        properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(
@@ -469,7 +469,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(request, "");
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
     }
 
     /**

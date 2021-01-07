@@ -107,7 +107,7 @@ public class QueryFunction extends FunctionImpl {
             }
             Filter filter;
             try {
-                filter = (Filter) ECQL.toFilter(cql);
+                filter = ECQL.toFilter(cql);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         "The third argument of the query "
@@ -121,7 +121,7 @@ public class QueryFunction extends FunctionImpl {
             query.setMaxFeatures(maxResults + 1);
             FeatureSource fs = ft.getFeatureSource(null, null);
             fi = fs.getFeatures(query).features();
-            List<Object> results = new ArrayList<Object>(maxResults);
+            List<Object> results = new ArrayList<>(maxResults);
             while (fi.hasNext()) {
                 Feature f = fi.next();
                 Object value = f.getProperty(attribute).getValue();
@@ -134,7 +134,7 @@ public class QueryFunction extends FunctionImpl {
                 results.add(value);
             }
 
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
                 return null;
             }
             if (maxResults > 0 && results.size() > maxResults && !single) {

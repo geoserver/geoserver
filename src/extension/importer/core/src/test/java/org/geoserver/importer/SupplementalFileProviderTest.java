@@ -5,35 +5,37 @@
 package org.geoserver.importer;
 
 import java.util.Set;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class SupplementalFileProviderTest extends TestCase {
+public class SupplementalFileProviderTest {
 
+    @Test
     public void testSupportedSupplementalFiles() throws Exception {
 
         SpatialFileExtensionsProvider provider = new SpatialFileExtensionsProvider();
 
         // Test some unsupported base extensions
-        assertFalse(provider.canHandle("txt"));
-        assertFalse(provider.canHandle("pdf"));
+        Assert.assertFalse(provider.canHandle("txt"));
+        Assert.assertFalse(provider.canHandle("pdf"));
 
         // Test some supported extensions
-        assertTrue(provider.canHandle("tif"));
+        Assert.assertTrue(provider.canHandle("tif"));
         Set<String> extensions = provider.getExtensions("tif");
-        assertTrue(extensions.contains("tfw"));
-        assertTrue(extensions.contains("prj"));
-        assertTrue(extensions.contains("wld"));
-        assertTrue(extensions.contains("rrd"));
+        Assert.assertTrue(extensions.contains("tfw"));
+        Assert.assertTrue(extensions.contains("prj"));
+        Assert.assertTrue(extensions.contains("wld"));
+        Assert.assertTrue(extensions.contains("rrd"));
 
-        assertTrue(provider.canHandle("jpg"));
+        Assert.assertTrue(provider.canHandle("jpg"));
         extensions = provider.getExtensions("jpg");
-        assertTrue(extensions.contains("jpw"));
-        assertTrue(extensions.contains("prj"));
-        assertTrue(extensions.contains("wld"));
+        Assert.assertTrue(extensions.contains("jpw"));
+        Assert.assertTrue(extensions.contains("prj"));
+        Assert.assertTrue(extensions.contains("wld"));
 
         // Test the UPPERCASE support
         extensions = provider.getExtensions("SHP");
-        assertTrue(extensions.contains("DBF"));
-        assertTrue(extensions.contains("SHX"));
+        Assert.assertTrue(extensions.contains("DBF"));
+        Assert.assertTrue(extensions.contains("SHX"));
     }
 }

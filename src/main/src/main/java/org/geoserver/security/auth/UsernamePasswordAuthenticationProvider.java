@@ -89,7 +89,7 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
                     .setUserGroupServiceName(userGroupServiceName);
         }
         if (auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE) == false) {
-            List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+            List<GrantedAuthority> roles = new ArrayList<>();
             roles.addAll(auth.getAuthorities());
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
             UsernamePasswordAuthenticationToken newAuth =

@@ -564,11 +564,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     filters,
                     contains(
                             allOf(
-                                    Matchers.<ParameterFilter>hasProperty("key", is("STYLES")),
+                                    Matchers.hasProperty("key", is("STYLES")),
                                     isA(
-                                            (Class<ParameterFilter>)
-                                                    StyleParameterFilter.class.asSubclass(
-                                                            ParameterFilter.class)))));
+                                            StyleParameterFilter.class.asSubclass(
+                                                    ParameterFilter.class)))));
         }
         {
             final String xml =
@@ -593,12 +592,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     not(
                             contains(
                                     allOf(
-                                            Matchers.<ParameterFilter>hasProperty(
-                                                    "key", is("STYLES")),
+                                            Matchers.hasProperty("key", is("STYLES")),
                                             isA(
-                                                    (Class<ParameterFilter>)
-                                                            StyleParameterFilter.class.asSubclass(
-                                                                    ParameterFilter.class))))));
+                                                    StyleParameterFilter.class.asSubclass(
+                                                            ParameterFilter.class))))));
         }
     }
 

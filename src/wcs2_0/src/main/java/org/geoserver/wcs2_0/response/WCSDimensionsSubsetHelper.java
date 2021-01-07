@@ -81,9 +81,9 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class WCSDimensionsSubsetHelper {
 
-    public static final Set<String> TIME_NAMES = new HashSet<String>();
+    public static final Set<String> TIME_NAMES = new HashSet<>();
 
-    public static final Set<String> ELEVATION_NAMES = new HashSet<String>();
+    public static final Set<String> ELEVATION_NAMES = new HashSet<>();
 
     private static final Logger LOGGER = Logging.getLogger(WCSDimensionsHelper.class);
 
@@ -248,7 +248,7 @@ public class WCSDimensionsSubsetHelper {
         // put aside the dimensions that we have for double checking
         final List<String> axesNames =
                 envelopeDimensionsMapper.getAxesNames(sourceEnvelopeInSubsettingCRS, true);
-        final List<String> foundDimensions = new ArrayList<String>();
+        final List<String> foundDimensions = new ArrayList<>();
 
         // === parse dimensions
         // the subsetting envelope is initialized with the source envelope in subsetting CRS
@@ -544,13 +544,18 @@ public class WCSDimensionsSubsetHelper {
                     NumberRange range = (NumberRange) curr;
                     if (range.contains(sliceNumber)) {
                         return true;
-                    } else if (range.getMaxValue().compareTo(sliceNumber) < 0) {
+                    } else if (compareNumbers(range.getMaxValue(), sliceNumber) < 0) {
                         return false;
                     }
                 }
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked") // we don't know what's in the Range max value
+    private int compareNumbers(Comparable maxValue, Number number) {
+        return maxValue.compareTo(number);
     }
 
     /** Parses a number range out of the dimension subsetting directives */
@@ -592,7 +597,7 @@ public class WCSDimensionsSubsetHelper {
                                 "subset");
                     }
 
-                    elevationSubset = new NumberRange<Double>(Double.class, low, high);
+                    elevationSubset = new NumberRange<>(Double.class, low, high);
                 } else if (dim instanceof DimensionSliceType) {
 
                     // SLICING
@@ -600,7 +605,7 @@ public class WCSDimensionsSubsetHelper {
                     final String slicePointS = slicing.getSlicePoint();
                     final Double slicePoint = PARSER.parseDouble(slicePointS);
 
-                    elevationSubset = new NumberRange<Double>(Double.class, slicePoint, slicePoint);
+                    elevationSubset = new NumberRange<>(Double.class, slicePoint, slicePoint);
                 } else {
                     throw new WCS20Exception(
                             "Invalid element found while attempting to parse dimension subsetting request: "
@@ -662,14 +667,14 @@ public class WCSDimensionsSubsetHelper {
             if (newSlicePoint == null) {
                 newSlicePoint = previous;
             }
-            elevationSubset = new NumberRange<Double>(Double.class, newSlicePoint, newSlicePoint);
+            elevationSubset = new NumberRange<>(Double.class, newSlicePoint, newSlicePoint);
         }
         return elevationSubset;
     }
 
     /** Extract custom dimension subset from the current helper */
     private Map<String, List<Object>> extractDimensionsSubset() throws IOException {
-        Map<String, List<Object>> dimensionSubset = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> dimensionSubset = new HashMap<>();
 
         if (enabledDimensions != null && !enabledDimensions.isEmpty()) {
             Set<String> dimensionKeys = enabledDimensions.keySet();
@@ -684,7 +689,7 @@ public class WCSDimensionsSubsetHelper {
                 // only care for custom dimensions
                 if (dimensionKeys.stream().anyMatch(dimension::equalsIgnoreCase)) {
                     dimension = dimension.toUpperCase(); // using uppercase with imagemosaic
-                    List<Object> selectedValues = new ArrayList<Object>();
+                    List<Object> selectedValues = new ArrayList<>();
 
                     // now decide what to do
                     if (dim instanceof DimensionTrimType) {
@@ -888,7 +893,7 @@ public class WCSDimensionsSubsetHelper {
         // single elements dimensions sets
         final SimpleFeatureCollection collection = source.getGranules(query);
         final SimpleFeatureIterator iterator = collection.features();
-        final List<GridCoverageRequest> requests = new ArrayList<GridCoverageRequest>();
+        final List<GridCoverageRequest> requests = new ArrayList<>();
         try {
             while (iterator.hasNext()) {
                 final SimpleFeature feature = iterator.next();
@@ -917,7 +922,7 @@ public class WCSDimensionsSubsetHelper {
             throws MismatchedDimensionException, UnsupportedOperationException, IOException,
                     TransformException, FactoryException {
         List<GridCoverageRequest> list = splitRequest();
-        Set<GridCoverageRequest> set = new HashSet<GridCoverageRequest>();
+        Set<GridCoverageRequest> set = new HashSet<>();
         for (GridCoverageRequest request : list) {
             set.add(request);
         }
@@ -974,6 +979,7 @@ public class WCSDimensionsSubsetHelper {
                     (endElevationAttribute != null)
                             ? (Number) feature.getAttribute(endElevationAttribute)
                             : startValue;
+            @SuppressWarnings("unchecked")
             NumberRange range = new NumberRange(startValue.getClass(), startValue, endValue);
             subRequest.setElevationSubset(range);
         }
@@ -981,10 +987,11 @@ public class WCSDimensionsSubsetHelper {
         // ---------------------------------
         // Updating custom dimensions subset
         // ---------------------------------
+        @SuppressWarnings("unchecked")
         List<String> customDomains =
                 (List<String>)
                         (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
-        Map<String, List<Object>> dimensionsSubset = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> dimensionsSubset = new HashMap<>();
         for (String customDomain : customDomains) {
             String startAttribute = null;
             String endAttribute = null;
@@ -1007,15 +1014,22 @@ public class WCSDimensionsSubsetHelper {
                     } else if (classDataType.endsWith("Date")) {
                         value = new DateRange((Date) value, (Date) endValue);
                     } else {
-                        value = new NumberRange(objectClass, (Number) value, (Number) endValue);
+                        value =
+                                newGenericNumberRange(
+                                        objectClass, (Number) value, (Number) endValue);
                     }
                 }
-                List<Object> dimensionValues = new ArrayList<Object>();
+                List<Object> dimensionValues = new ArrayList<>();
                 dimensionValues.add(value);
                 dimensionsSubset.put(descriptor.getName().toUpperCase(), dimensionValues);
             }
         }
         subRequest.setDimensionsSubset(dimensionsSubset);
+    }
+
+    @SuppressWarnings("unchecked") // used when the range class is not known at compile time
+    private NumberRange newGenericNumberRange(Class numberClass, Number start, Number end) {
+        return new NumberRange(numberClass, start, end);
     }
 
     /**
@@ -1257,10 +1271,11 @@ public class WCSDimensionsSubsetHelper {
             throw new UnsupportedOperationException(
                     "Only structuredGridCoverage2DReaders are currently supported");
         }
-        List<DimensionBean> dimensions = new ArrayList<DimensionBean>();
+        List<DimensionBean> dimensions = new ArrayList<>();
         if (accessor == null) {
             return dimensions;
         }
+        @SuppressWarnings("unchecked")
         List<String> customDimensions =
                 (List<String>)
                         (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
@@ -1348,7 +1363,9 @@ public class WCSDimensionsSubsetHelper {
      *     current coverage
      */
     public void setCoverageDimensionProperty(
-            Map properties, GridCoverageRequest coverageRequest, DimensionBean coverageDimension) {
+            Map<String, Object> properties,
+            GridCoverageRequest coverageRequest,
+            DimensionBean coverageDimension) {
         Utilities.ensureNonNull("properties", properties);
         Utilities.ensureNonNull("coverageDimension", coverageDimension);
         final DimensionType dimensionType = coverageDimension.getDimensionType();

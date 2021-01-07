@@ -35,7 +35,7 @@ public class WKTToCRSModel implements IModel<CoordinateReferenceSystem> {
     }
 
     public void setObject(CoordinateReferenceSystem object) {
-        CoordinateReferenceSystem crs = (CoordinateReferenceSystem) object;
+        CoordinateReferenceSystem crs = object;
         try {
             srsModel.setObject(crs.toString());
         } catch (Exception e) {

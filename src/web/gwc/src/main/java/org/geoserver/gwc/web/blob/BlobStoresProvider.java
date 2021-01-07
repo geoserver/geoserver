@@ -21,16 +21,13 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
     private static final long serialVersionUID = 4400431816195261839L;
 
-    public static final Property<BlobStoreInfo> ID = new BeanProperty<BlobStoreInfo>("id", "id");
+    public static final Property<BlobStoreInfo> ID = new BeanProperty<>("id", "id");
 
-    public static final Property<BlobStoreInfo> TYPE =
-            new BeanProperty<BlobStoreInfo>("type", "class");
+    public static final Property<BlobStoreInfo> TYPE = new BeanProperty<>("type", "class");
 
-    public static final Property<BlobStoreInfo> ENABLED =
-            new BeanProperty<BlobStoreInfo>("enabled", "enabled");
+    public static final Property<BlobStoreInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
-    public static final Property<BlobStoreInfo> DEFAULT =
-            new BeanProperty<BlobStoreInfo>("default", "default");
+    public static final Property<BlobStoreInfo> DEFAULT = new BeanProperty<>("default", "default");
 
     @Override
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>>
@@ -61,6 +58,6 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
     @Override
     protected List<BlobStoreInfo> getItems() {
-        return (List<BlobStoreInfo>) GWC.get().getBlobStores();
+        return GWC.get().getBlobStores();
     }
 }

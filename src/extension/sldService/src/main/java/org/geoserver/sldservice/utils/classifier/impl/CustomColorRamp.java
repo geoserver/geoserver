@@ -20,7 +20,7 @@ public class CustomColorRamp implements ColorRamp {
 
     private int classNum = 0;
 
-    private List<Color> colors = new ArrayList<Color>();
+    private List<Color> colors = new ArrayList<>();
 
     private Color startColor = null;
 
@@ -76,7 +76,7 @@ public class CustomColorRamp implements ColorRamp {
             } else if (classes > inputColors.size()) {
                 int slices = inputColors.size() - 1;
                 int sliceSize = classes / slices;
-                colors = new ArrayList<Color>();
+                colors = new ArrayList<>();
                 int total = 0;
                 for (int i = 0; i < slices - 1; i++) {
                     total += sliceSize - 1;

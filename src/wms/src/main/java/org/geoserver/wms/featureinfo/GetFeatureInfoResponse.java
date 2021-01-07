@@ -62,8 +62,7 @@ public class GetFeatureInfoResponse extends Response {
         Assert.isTrue(value instanceof FeatureCollectionType, "unrecognized result type:");
 
         GetFeatureInfoRequest request =
-                (GetFeatureInfoRequest)
-                        OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
+                OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
 
         Assert.notNull(request, "request");
 
@@ -124,8 +123,7 @@ public class GetFeatureInfoResponse extends Response {
     public String getCharset(Operation operation) {
         Assert.notNull(operation, "operation is null");
         GetFeatureInfoRequest request =
-                (GetFeatureInfoRequest)
-                        OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
+                OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
         GetFeatureInfoOutputFormat outputFormat = getRequestedOutputFormat(request);
         return outputFormat.getCharset();
     }

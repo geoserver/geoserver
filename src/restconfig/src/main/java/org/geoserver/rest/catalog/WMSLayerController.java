@@ -428,8 +428,7 @@ public class WMSLayerController extends AbstractCatalogController {
                     @Override
                     protected CatalogInfo getCatalogObject() {
                         @SuppressWarnings("unchecked")
-                        Map<String, String> uriTemplateVars =
-                                (Map<String, String>) getURITemplateVariables();
+                        Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String workspaceName = uriTemplateVars.get("workspaceName");
                         String storeName = uriTemplateVars.get("storeName");
                         String layerName = uriTemplateVars.get("layerName");

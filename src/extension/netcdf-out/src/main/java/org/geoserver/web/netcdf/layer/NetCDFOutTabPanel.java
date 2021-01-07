@@ -25,18 +25,17 @@ public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
         super(id, model);
 
         // Selection of the IModel associated to the metadata map
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(resourceModel, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(resourceModel, "metadata");
         // Selection of the CoverageInfo model
         IModel<CoverageInfo> cmodel = null;
         if (resourceModel.getObject() instanceof CoverageInfo) {
-            CoverageInfo cinfo = (CoverageInfo) resourceModel.getObject();
-            cmodel = new Model<CoverageInfo>(cinfo);
+            CoverageInfo cinfo = resourceModel.getObject();
+            cmodel = new Model<>(cinfo);
         }
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
         IModel<NetCDFLayerSettingsContainer> netcdfModel =
-                new MetadataMapModel<NetCDFLayerSettingsContainer>(
+                new MetadataMapModel<>(
                         metadata,
                         NetCDFSettingsContainer.NETCDFOUT_KEY,
                         NetCDFLayerSettingsContainer.class);

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,10 +123,10 @@ public class AuthenticationKeyFilterPanel
                 }.setDefaultFormProcessing(true));
     }
 
-    class ParamsPanel extends FormComponentPanel {
+    class ParamsPanel extends FormComponentPanel<Serializable> {
 
         public ParamsPanel(String id, String authMapperName, Map<String, String> parameters) {
-            super(id, new Model());
+            super(id, new Model<>());
             updateParameters(authMapperName, parameters);
         }
 
@@ -135,8 +136,7 @@ public class AuthenticationKeyFilterPanel
             removeAll();
             add(
                     new ListView<String>(
-                            "parametersList",
-                            new Model(new ArrayList<String>(parameters.keySet()))) {
+                            "parametersList", new Model<>(new ArrayList<>(parameters.keySet()))) {
                         @Override
                         protected void populateItem(ListItem<String> item) {
                             item.add(
@@ -152,7 +152,8 @@ public class AuthenticationKeyFilterPanel
                             item.add(
                                     new TextField<String>(
                                             "parameterField",
-                                            new MapModel(parameters, item.getModel().getObject())));
+                                            new MapModel<>(
+                                                    parameters, item.getModel().getObject())));
                         }
                     });
         }
@@ -175,6 +176,6 @@ public class AuthenticationKeyFilterPanel
                 return mapper.getMapperConfiguration();
             }
         }
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 }

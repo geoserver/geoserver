@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class SecurityNamedServicePanel<T extends SecurityNamedServiceConfig>
-        extends FormComponentPanel {
+        extends FormComponentPanel<T> {
 
     /** logger */
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.web.security");
@@ -37,7 +37,7 @@ public abstract class SecurityNamedServicePanel<T extends SecurityNamedServiceCo
     protected GeoServerDialog dialog;
 
     public SecurityNamedServicePanel(String id, IModel<T> model) {
-        super(id, new Model());
+        super(id, new Model<>());
         this.configModel = model;
 
         // check for administrator, if not disable the panel and emit warning message
@@ -49,7 +49,7 @@ public abstract class SecurityNamedServicePanel<T extends SecurityNamedServiceCo
                         "message",
                         isAdmin ? new Model() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
-            get("message").add(new AttributeAppender("class", new Model("info-link"), " "));
+            get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }
 
         setOutputMarkupId(true);

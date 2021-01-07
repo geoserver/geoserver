@@ -59,14 +59,12 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
                 xp.load(
                         getClass().getResourceAsStream("featuretype.xml"),
                         FeatureTypeInfoImpl.class);
-        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        ftInfo.setStore(storeInfo);
         getCatalog().add(ftInfo);
 
         DataAccess<? extends FeatureType, ? extends Feature> store = storeInfo.getDataStore(null);
 
-        if (store instanceof Wrapper) {
-            store = ((Wrapper) store).unwrap(DataAccess.class);
-        }
+        store = unwrap(store);
 
         assertTrue(store instanceof WFSDataStore);
 
@@ -79,5 +77,14 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
             String expectedMessage = "Unknown type sf_archsites";
             assertEquals("Exception message must be correct", expectedMessage, e.getMessage());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataAccess<? extends FeatureType, ? extends Feature> unwrap(
+            DataAccess<? extends FeatureType, ? extends Feature> store) {
+        if (store instanceof Wrapper) {
+            store = ((Wrapper) store).unwrap(DataAccess.class);
+        }
+        return store;
     }
 }

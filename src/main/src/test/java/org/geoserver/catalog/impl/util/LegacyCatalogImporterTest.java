@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog.impl.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
@@ -15,6 +17,7 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerAbstractTestSupport;
+import org.junit.Test;
 
 public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
 
@@ -35,6 +38,7 @@ public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
         return dataDirectory;
     }
 
+    @Test
     public void testMissingFeatureTypes() throws Exception {
         MockData mockData = (MockData) getTestData();
 
@@ -43,6 +47,7 @@ public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
         importer.imprt(mockData.getDataDirectoryRoot());
     }
 
+    @Test
     public void testMissingCoverages() throws Exception {
         MockData mockData = (MockData) getTestData();
 
@@ -55,6 +60,7 @@ public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
      * As per GEOS-3513, make sure the old SRS codes are imported by adding the EPSG: prefix where
      * needed
      */
+    @Test
     public void testCRSPrefix() throws Exception {
         MockData mockData = (MockData) getTestData();
 

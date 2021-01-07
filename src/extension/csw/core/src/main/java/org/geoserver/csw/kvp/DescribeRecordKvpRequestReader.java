@@ -27,7 +27,8 @@ public class DescribeRecordKvpRequestReader extends CSWKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         // at this point the namespace and type names are separated, we need to merge them and build
         // QNames
         String typename = (String) rawKvp.get("typename");

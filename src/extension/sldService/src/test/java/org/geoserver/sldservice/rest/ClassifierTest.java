@@ -282,7 +282,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -323,7 +323,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&strokeColor=0xFF0000&strokeWeight=5";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -347,7 +347,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&customClasses=1,10,#FF0000;10,20,#00FF00;20,30,#0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -369,7 +369,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&ramp=custom&colors=#FF0000,#00FF00,#0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -391,7 +391,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=2&ramp=custom&colors=#FF0000,#00FF00,#0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -412,7 +412,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=15&ramp=custom&colors=#FF0000,#00FF00,#0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -447,7 +447,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&fullSLD=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -464,7 +464,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=id&intervals=3&open=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -486,7 +486,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=false&stddevs=-1&fullSLD=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 400);
+        assertEquals(400, response.getStatus());
         assertThat(
                 response.getContentAsString(),
                 containsString("stddevs must be a positive floating point number"));
@@ -501,7 +501,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
 
         // stddev filter cuts 4 and 90 away leaving 8 and 61 as the extremes
         // System.out.println(response.getContentAsString());
@@ -524,7 +524,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true&bbox=6,5,50,45";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
 
         // bbox leaves 8,12,20,29,43, stddev filter leaves 12,20,29
         // System.out.println(response.getContentAsString());
@@ -548,7 +548,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=false&stddevs=3&fullSLD=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
 
         // stddev filter cuts 4 and 90 away leaving 8 and 61 as the extremes
         // System.out.println(response.getContentAsString());
@@ -576,7 +576,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=true&method=quantile";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -599,7 +599,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true&method=quantile";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
 
         // stddev filter cuts 4 and 90 away
         // System.out.println(response.getContentAsString());
@@ -622,7 +622,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=5&open=true&method=equalArea";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -670,7 +670,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=5&open=true&method=equalArea&bbox=20,20,150,150";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -694,7 +694,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=true&method=jenks";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -718,7 +718,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&open=true&method=equalInterval";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -742,7 +742,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=name&intervals=3&method=uniqueInterval";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -753,7 +753,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[0], "#690000", PropertyIsEqualTo.class);
         checkRule(rules[1], "#B40000", PropertyIsEqualTo.class);
         checkRule(rules[2], "#FF0000", PropertyIsEqualTo.class);
-        TreeSet<String> orderedRules = new TreeSet<String>();
+        TreeSet<String> orderedRules = new TreeSet<>();
         orderedRules.add(rules[0].getDescription().getTitle().toString());
         orderedRules.add(rules[1].getDescription().getTitle().toString());
         orderedRules.add(rules[2].getDescription().getTitle().toString());
@@ -835,7 +835,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=name&intervals=3&method=uniqueInterval&ramp=blue";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -858,7 +858,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=name&intervals=3&method=uniqueInterval&ramp=blue&reverse=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -881,7 +881,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=id&intervals=3&open=true&normalize=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -904,7 +904,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=name&intervals=3&method=uniqueInterval&ramp=custom&startColor=0xFF0000&endColor=0x0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -927,7 +927,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=1&method=jenks&ramp=custom&open=false&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -949,7 +949,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=2&method=jenks&ramp=custom&open=true&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -972,7 +972,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "attribute=foo&intervals=3&method=jenks&ramp=custom&open=true&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -1767,12 +1767,12 @@ public class ClassifierTest extends SLDServiceBaseTest {
         delta[2] = env1.getMinimum(1) - env2.getMinimum(1);
         delta[3] = env1.getMaximum(1) - env2.getMaximum(1);
 
-        for (int i = 0; i < delta.length; i++) {
+        for (double v : delta) {
             /*
              * As per Envelope2D#boundsEquals we use ! here to
              * catch any NaN values
              */
-            if (!(Math.abs(delta[i]) <= eps)) {
+            if (!(Math.abs(v) <= eps)) {
                 fail("Envelopes have not same 2D bounds: " + env1 + ", " + env2);
             }
         }
@@ -1935,7 +1935,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 4);
+        assertEquals(4, rules.length);
         checkRuleLineSymbolizer(rules[0], "#FF071C");
         checkRuleLineSymbolizer(rules[1], "#CC0616");
         checkRuleLineSymbolizer(rules[2], "#82040E");
@@ -1955,7 +1955,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
         Rule[] rulesJenks =
                 checkSLD(resultJenks.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 3);
+        assertEquals(3, rulesJenks.length);
         checkRuleLineSymbolizer(rulesJenks[0], "#FF071C");
         checkRuleLineSymbolizer(rulesJenks[1], "#CC0616");
         checkRuleLineSymbolizer(rulesJenks[2], "#82040E");
@@ -1977,7 +1977,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 5);
+        assertEquals(5, rules.length);
         checkRuleLineSymbolizer(rules[0], "#FF071C");
         checkRuleLineSymbolizer(rules[1], "#CC0616");
         checkRuleLineSymbolizer(rules[2], "#82040E");
@@ -1997,7 +1997,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
         Rule[] rulesJenks =
                 checkSLD(resultJenks.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 3);
+        assertEquals(3, rulesJenks.length);
         checkRuleLineSymbolizer(rulesJenks[0], "#FF071C");
         checkRuleLineSymbolizer(rulesJenks[1], "#CC0616");
         checkRuleLineSymbolizer(rulesJenks[2], "#82040E");
@@ -2019,7 +2019,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 4);
+        assertEquals(4, rules.length);
         checkRuleLineSymbolizer(rules[0], "#FF071C");
         checkRuleLineSymbolizer(rules[1], "#CC0616");
         checkRuleLineSymbolizer(rules[2], "#82040E");
@@ -2050,7 +2050,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 2);
+        assertEquals(2, rules.length);
         assertTrue(rules[0].getFilter() instanceof PropertyIsEqualTo);
         assertTrue(rules[1].getFilter() instanceof PropertyIsGreaterThan);
         checkNotOverlappingRules(rules[0], rules[1]);
@@ -2070,7 +2070,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlJenks
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 2);
+        assertEquals(2, rulesJenks.length);
         assertTrue(rulesJenks[0].getFilter() instanceof PropertyIsEqualTo);
         assertTrue(rulesJenks[1].getFilter() instanceof PropertyIsGreaterThan);
         checkNotOverlappingRules(rulesJenks[0], rulesJenks[1]);
@@ -2091,7 +2091,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 2);
+        assertEquals(2, rules.length);
         Rule first = rules[0];
         Rule second = rules[1];
         checkNotOverlappingRules(first, second);
@@ -2111,7 +2111,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlJenks
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 2);
+        assertEquals(2, rulesJenks.length);
         Rule firstJenks = rulesJenks[0];
         Rule secondJenks = rulesJenks[1];
         checkNotOverlappingRules(firstJenks, secondJenks);
@@ -2132,7 +2132,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 3);
+        assertEquals(3, rules.length);
         Rule first = rules[0];
         Rule second = rules[1];
         checkNotOverlappingRules(first, second);
@@ -2152,7 +2152,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlJenks
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 2);
+        assertEquals(2, rulesJenks.length);
         Rule firstJenks = rulesJenks[0];
         Rule secondJenks = rulesJenks[1];
         checkNotOverlappingRules(firstJenks, secondJenks);
@@ -2185,7 +2185,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baosQuantile.toString().replace("\r", "").replace("\n", "");
         Rule[] rulesQuantile =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rulesQuantile.length == 3);
+        assertEquals(3, rulesQuantile.length);
         for (Rule r : rulesQuantile) {
             Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
             assertTrue(rgxMatcher.find());
@@ -2285,7 +2285,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlJenks
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 3);
+        assertEquals(3, rulesJenks.length);
         for (Rule r : rulesJenks) {
             Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
             assertTrue(rgxMatcher.find());
@@ -2313,7 +2313,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlUnique
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesUnique.length == 8);
+        assertEquals(8, rulesUnique.length);
         for (Rule r : rulesUnique) {
             Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
             assertTrue(rgxMatcher.find());
@@ -2332,14 +2332,14 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + "attribute=foo&customClasses=1,30,#FF0000;30,50,#00FF00;50,90,#0000FF"
                         + "&percentages=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 3);
+        assertEquals(3, rules.length);
         for (Rule r : rules) {
             Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
             assertTrue(rgxMatcher.find());
@@ -2399,7 +2399,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 matcher.find();
             }
         }
-        assertTrue(100.0 == percentagesSum);
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2477,7 +2477,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 assertTrue(matcher.find());
             }
         }
-        assertTrue(100.0 == percentagesSum);
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2523,7 +2523,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 3);
+        assertEquals(3, rules.length);
         double percentagesSum = 0.0;
         for (Rule r : rules) {
             String title = r.getDescription().getTitle().toString();
@@ -2533,7 +2533,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
             Matcher rgxMatcher = rgx.matcher(title);
             assertTrue(rgxMatcher.find());
         }
-        assertTrue(percentagesSum == 100.0);
+        assertEquals(100.0, percentagesSum, 0.0);
         final String restPathJenks =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/cite:ClassificationPoints2/"
@@ -2551,7 +2551,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXmlJenks
                                 .replace("<Rules>", sldPrefix)
                                 .replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 2);
+        assertEquals(2, rulesJenks.length);
         percentagesSum = 0.0;
         for (Rule r : rulesJenks) {
             String title = r.getDescription().getTitle().toString();
@@ -2561,7 +2561,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
             Matcher rgxMatcher = rgx.matcher(title);
             assertTrue(rgxMatcher.find());
         }
-        assertTrue(percentagesSum == 100.0);
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2602,14 +2602,14 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + "attribute=foo&customClasses=10000,30000,#FF0000;30000,50000,#00FF00"
                         + "&percentages=true";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules =
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rules.length == 2);
+        assertEquals(2, rules.length);
         for (Rule r : rules) {
             r.getDescription().getTitle().toString().contains("(0.0%)");
         }

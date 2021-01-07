@@ -21,8 +21,8 @@ public class SymbolizerCollector extends AbstractStyleVisitor {
 
     SimpleFeature sf;
 
-    List<Symbolizer> symbolizers = new ArrayList<Symbolizer>();
-    List<Symbolizer> elseSymbolizers = new ArrayList<Symbolizer>();
+    List<Symbolizer> symbolizers = new ArrayList<>();
+    List<Symbolizer> elseSymbolizers = new ArrayList<>();
 
     public SymbolizerCollector(SimpleFeature sf) {
         this.sf = sf;
@@ -39,7 +39,7 @@ public class SymbolizerCollector extends AbstractStyleVisitor {
 
     public List<Symbolizer> getSymbolizers() {
         // the else filters are activated only if the regular rules are not catching the style
-        if (symbolizers.size() == 0) {
+        if (symbolizers.isEmpty()) {
             return elseSymbolizers;
         } else {
             return symbolizers;

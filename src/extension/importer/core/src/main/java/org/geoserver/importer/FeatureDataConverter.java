@@ -43,7 +43,7 @@ public class FeatureDataConverter {
     private static final Set<String> ORACLE_RESERVED_WORDS;
 
     static {
-        final HashSet<String> words = new HashSet<String>();
+        final HashSet<String> words = new HashSet<>();
         final InputStream wordStream =
                 FeatureDataConverter.class.getResourceAsStream("oracle_reserved_words.txt");
         final Reader wordReader = new InputStreamReader(wordStream, Charset.forName("UTF-8"));
@@ -123,7 +123,7 @@ public class FeatureDataConverter {
     protected Set<String> attributeNames(SimpleFeature feature) {
         List<AttributeDescriptor> attributeDescriptors =
                 feature.getType().getAttributeDescriptors();
-        Set<String> attrNames = new HashSet<String>(attributeDescriptors.size());
+        Set<String> attrNames = new HashSet<>(attributeDescriptors.size());
         for (AttributeDescriptor attr : attributeDescriptors) {
             attrNames.add(attr.getLocalName());
         }
@@ -152,16 +152,13 @@ public class FeatureDataConverter {
                         Class binding = gd.getType().getBinding();
                         if (Geometry.class.equals(binding)) {
                             try {
-                                FeatureReader r = (FeatureReader) format.read(data, item);
-                                try {
+                                try (FeatureReader r = format.read(data, item)) {
                                     if (r.hasNext()) {
                                         SimpleFeature f = (SimpleFeature) r.next();
                                         if (f.getDefaultGeometry() != null) {
                                             binding = f.getDefaultGeometry().getClass();
                                         }
                                     }
-                                } finally {
-                                    r.close();
                                 }
                             } catch (IOException e) {
                                 LOGGER.warning("Unable to determine concrete geometry type");

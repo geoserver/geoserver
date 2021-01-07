@@ -142,7 +142,8 @@ public class AboutController extends RestBaseController {
         if (AboutModel.class.isAssignableFrom(clazz)) {
             return new ObjectToMapWrapper<AboutModel>(AboutModel.class) {
                 @Override
-                protected void wrapInternal(Map properties, SimpleHash model, AboutModel object) {
+                protected void wrapInternal(
+                        Map<String, Object> properties, SimpleHash model, AboutModel object) {
                     final List<Map<String, Object>> manifests = new ArrayList<>();
                     for (ManifestModel manifest : object.getManifests()) {
                         final Map<String, Object> map = new HashMap<>();

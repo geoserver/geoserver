@@ -63,7 +63,7 @@ public class StyleGeneratorTest {
     @Test
     public void testGenericStyle() throws Exception {
         ResourcePool rp = createNiceMock(ResourcePool.class);
-        rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
+        rp.writeStyle(anyObject(), (InputStream) anyObject());
         expectLastCall()
                 .andAnswer(
                         new IAnswer<Void>() {
@@ -140,7 +140,7 @@ public class StyleGeneratorTest {
     @Test
     public void testRasterStyle() throws Exception {
         ResourcePool rp = createNiceMock(ResourcePool.class);
-        rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
+        rp.writeStyle(anyObject(), (InputStream) anyObject());
         expectLastCall()
                 .andAnswer(
                         new IAnswer<Void>() {

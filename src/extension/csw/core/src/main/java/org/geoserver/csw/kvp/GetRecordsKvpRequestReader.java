@@ -60,7 +60,8 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         // fix distributed search before we get into EMF reflection mode
         String ds = (String) kvp.remove("distributedSearch");
         Integer hopCount = (Integer) kvp.remove("hopCount");
@@ -186,7 +187,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        descriptors = new HashMap<String, RecordDescriptor>();
+        descriptors = new HashMap<>();
 
         // gather all the prefix to namespace associations in the set of records we are going to
         // support, we will use them to qualify the property names in the filters

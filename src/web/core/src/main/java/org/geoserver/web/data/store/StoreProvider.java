@@ -8,16 +8,15 @@ package org.geoserver.web.data.store;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Lists;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -44,12 +43,12 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> DATA_TYPE =
             new AbstractProperty<StoreInfo>("datatype") {
 
-                public IModel getModel(final IModel itemModel) {
-                    return new Model(itemModel) {
+                public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
+                    return new AbstractReadOnlyModel<String>() {
 
                         @Override
-                        public Serializable getObject() {
-                            StoreInfo si = (StoreInfo) itemModel.getObject();
+                        public String getObject() {
+                            StoreInfo si = itemModel.getObject();
                             return (String) getPropertyValue(si);
                         }
                     };
@@ -61,10 +60,9 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                 }
             };
 
-    static final Property<StoreInfo> WORKSPACE =
-            new BeanProperty<StoreInfo>("workspace", "workspace.name");
+    static final Property<StoreInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
-    static final Property<StoreInfo> NAME = new BeanProperty<StoreInfo>("name", "name");
+    static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
     final Property<StoreInfo> TYPE =
             new AbstractProperty<StoreInfo>("type") {
@@ -96,7 +94,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                 }
             };
 
-    static final Property<StoreInfo> ENABLED = new BeanProperty<StoreInfo>("enabled", "enabled");
+    static final Property<StoreInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final Property<StoreInfo> MODIFIED_TIMESTAMP =
             new BeanProperty<>("datemodfied", "dateModified");
@@ -146,15 +144,15 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return super.getComparator(sort);
     }
 
-    public IModel newModel(StoreInfo object) {
-        return new StoreInfoDetachableModel((StoreInfo) object);
+    public IModel<StoreInfo> newModel(StoreInfo object) {
+        return new StoreInfoDetachableModel(object);
     }
 
     /**
      * A StoreInfo detachable model that holds the store id to retrieve it on demand from the
      * catalog
      */
-    static class StoreInfoDetachableModel extends LoadableDetachableModel {
+    static class StoreInfoDetachableModel extends LoadableDetachableModel<StoreInfo> {
 
         private static final long serialVersionUID = -6829878983583733186L;
 
@@ -166,10 +164,9 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         }
 
         @Override
-        protected Object load() {
+        protected StoreInfo load() {
             Catalog catalog = GeoServerApplication.get().getCatalog();
-            StoreInfo storeInfo = catalog.getStore(id, StoreInfo.class);
-            return storeInfo;
+            return catalog.getStore(id, StoreInfo.class);
         }
     }
 
@@ -190,6 +187,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
 
     @Override
+    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
     public Iterator<StoreInfo> iterator(final long first, final long count) {
         Iterator<StoreInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {

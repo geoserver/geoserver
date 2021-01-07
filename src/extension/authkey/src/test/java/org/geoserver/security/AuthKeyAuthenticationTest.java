@@ -6,6 +6,7 @@ package org.geoserver.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -154,7 +155,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName(authKeyUrlParam);
         config.setAuthKeyMapperName("fakeMapper");
 
-        Map<String, String> mapperParams = new HashMap<String, String>();
+        Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("param1", "value1");
         mapperParams.put("param2", "value2");
         config.setMapperParameters(mapperParams);
@@ -186,7 +187,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         System.setProperty("authkey_param1", "value1");
         System.setProperty("authkey_param2", "value2");
         try {
-            Map<String, String> mapperParams = new HashMap<String, String>();
+            Map<String, String> mapperParams = new HashMap<>();
             mapperParams.put("param1", "${authkey_param1}");
             mapperParams.put("param2", "${authkey_param2}");
             config.setMapperParameters(mapperParams);
@@ -218,7 +219,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName("authkey");
         config.setAuthKeyMapperName("fakeMapper");
 
-        Map<String, String> mapperParams = new HashMap<String, String>();
+        Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("param1", "value1");
         mapperParams.put("param2", "value2");
 
@@ -298,7 +299,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         SecurityContext ctx =
                 (SecurityContext)
@@ -403,7 +404,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
@@ -650,7 +651,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertEquals(2, props.size());
 
         for (Entry<Object, Object> entry : props.entrySet()) {
-            if ("user2".equals(entry.getValue())) assertEquals(user2KeyA, (String) entry.getKey());
+            if ("user2".equals(entry.getValue())) assertEquals(user2KeyA, entry.getKey());
             if ("user3".equals(entry.getValue())) user3KeyA = (String) entry.getKey();
         }
         assertNotNull(user3KeyA);
@@ -723,11 +724,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
     private void loadPropFile(File authKeyFile, Properties props)
             throws FileNotFoundException, IOException {
-        FileInputStream propFile = new FileInputStream(authKeyFile);
-        try {
+        try (FileInputStream propFile = new FileInputStream(authKeyFile)) {
             props.load(propFile);
-        } finally {
-            propFile.close();
         }
     }
 }

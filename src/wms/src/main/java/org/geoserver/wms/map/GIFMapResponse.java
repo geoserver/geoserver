@@ -170,7 +170,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
         param.setCompressionQuality(0.75f);
 
         ImageOutputStream otStream = null;
-        List<RenderedImage> images = new ArrayList<RenderedImage>();
+        List<RenderedImage> images = new ArrayList<>();
         try {
             otStream = ImageIO.createImageOutputStream(outStream);
             gifWriter.setOutput(otStream);

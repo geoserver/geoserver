@@ -8,6 +8,8 @@ package org.vfny.geoserver.util;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -15,6 +17,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
@@ -38,7 +41,7 @@ public class URLProxifyingTest {
             String forwardedPath,
             String forwarded) {
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put(
                 ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase(), forwardedHeader);
         headers.put(
@@ -58,12 +61,18 @@ public class URLProxifyingTest {
                 .andReturn(
                         new HttpServletRequestWrapper(new MockHttpServletRequest()) {
                             public String getHeader(String name) {
-                                return headers.get(name.toLowerCase());
+                                return headers.get(name);
+                            }
+
+                            @Override
+                            public Enumeration<String> getHeaderNames() {
+                                return Collections.enumeration(headers.keySet());
                             }
                         })
                 .anyTimes();
         replay(request);
         Dispatcher.REQUEST.set(request);
+        new HTTPHeadersCollector().init(request);
 
         GeoServer geoServer = createNiceMock(GeoServer.class);
         expect(geoServer.getGlobal())
@@ -104,10 +113,7 @@ public class URLProxifyingTest {
         createAppContext(null, null, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("", baseURL.toString());
     }
 
@@ -116,10 +122,7 @@ public class URLProxifyingTest {
         createAppContext(null, false, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("", baseURL.toString());
     }
 
@@ -128,10 +131,7 @@ public class URLProxifyingTest {
         createAppContext("http://foo.org/geoserver", false, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://foo.org/geoserver", baseURL.toString());
     }
 
@@ -140,10 +140,7 @@ public class URLProxifyingTest {
         createAppContext("http://foo.org/geoserver", true, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://foo.org/geoserver", baseURL.toString());
     }
 
@@ -160,10 +157,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("", baseURL.toString());
     }
 
@@ -180,10 +174,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("", baseURL.toString());
     }
 
@@ -192,10 +183,7 @@ public class URLProxifyingTest {
         createAppContext("", true, null, null, null, "example.com:8080", null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("", baseURL.toString());
     }
 
@@ -212,10 +200,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/geoserver", baseURL.toString());
     }
 
@@ -232,10 +217,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
     }
 
@@ -252,10 +234,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
     }
 
@@ -272,10 +251,7 @@ public class URLProxifyingTest {
                 "for=192.0.2.60; proto=http; by=203.0.113.43; host=example.com:8080");
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/geoserver", baseURL.toString());
     }
 
@@ -292,10 +268,7 @@ public class URLProxifyingTest {
                 "proto=http; host=example.com:8080; path=public");
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
     }
 
@@ -314,10 +287,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
     }
 
@@ -336,10 +306,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.org/public/geoserver", baseURL.toString());
     }
 
@@ -356,10 +323,7 @@ public class URLProxifyingTest {
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
-                baseURL,
-                new StringBuilder(),
-                new HashMap<String, String>(),
-                URLMangler.URLType.SERVICE);
+                baseURL, new StringBuilder(), new HashMap<>(), URLMangler.URLType.SERVICE);
         assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
     }
 }

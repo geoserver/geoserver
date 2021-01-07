@@ -23,8 +23,8 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
     public static final String NAME = "memory";
 
-    Queue<RequestData> live = new ConcurrentLinkedQueue<RequestData>();
-    Queue<RequestData> history = new ConcurrentLinkedQueue<RequestData>();
+    Queue<RequestData> live = new ConcurrentLinkedQueue<>();
+    Queue<RequestData> history = new ConcurrentLinkedQueue<>();
 
     AtomicLong REQUEST_ID_GEN = new AtomicLong(1);
 
@@ -66,7 +66,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
     }
 
     public List<RequestData> getRequests() {
-        List<RequestData> requests = new LinkedList();
+        List<RequestData> requests = new LinkedList<>();
         requests.addAll(live);
         requests.addAll(history);
         return requests;
@@ -75,7 +75,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
     public List<RequestData> getRequests(Query q) {
         List<RequestData> requests = getRequests();
 
-        List<Predicate> predicates = new ArrayList();
+        List<Predicate> predicates = new ArrayList<>();
         if (q.getFilter() != null) {
             Filter f = q.getFilter();
             predicates.add(new PropertyCompare(f.getLeft(), f.getType(), f.getRight()));
@@ -252,24 +252,29 @@ public class MemoryMonitorDAO implements MonitorDAO {
             }
 
             if (o instanceof Comparable) {
-                int c = ((Comparable) o).compareTo(value);
-                switch (compare) {
-                    case LT:
-                        return c < 0;
-                    case LTE:
-                        return c <= 0;
-                    case GT:
-                        return c > 0;
-                    case GTE:
-                        return c >= 0;
-                }
-                return false;
+                return compare(value, (Comparable) o);
             } else {
                 throw new UnsupportedOperationException(
                         "Values of type "
                                 + value.getClass().getName()
                                 + " only support equality and non-equality comparison.");
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        private boolean compare(Object value, Comparable o) {
+            int c = o.compareTo(value);
+            switch (compare) {
+                case LT:
+                    return c < 0;
+                case LTE:
+                    return c <= 0;
+                case GT:
+                    return c > 0;
+                case GTE:
+                    return c >= 0;
+            }
+            return false;
         }
     }
 
@@ -288,6 +293,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             return order == SortOrder.ASC ? c : -1 * c;
         }
 
+        @SuppressWarnings("unchecked")
         public int compareInternal(RequestData r1, RequestData r2) {
             Object o1 = OwsUtils.get(r1, property);
             Object o2 = OwsUtils.get(r2, property);

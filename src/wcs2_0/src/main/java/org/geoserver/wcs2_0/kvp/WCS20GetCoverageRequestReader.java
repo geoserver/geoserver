@@ -45,7 +45,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         GetCoverageType gc = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // handle dimension subsets
@@ -180,6 +181,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     protected void setValue(EObject eObject, String property, Object value) {
         if ("sortBy".equalsIgnoreCase(property)) {
             // we get an arraylist of arraylists

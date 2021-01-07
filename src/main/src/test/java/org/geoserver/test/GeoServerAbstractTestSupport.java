@@ -5,6 +5,9 @@
  */
 package org.geoserver.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -121,19 +123,19 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         return testData;
     }
 
-    /** Override runTest so that the test will be skipped if the TestData is not available */
-    protected void runTest() throws Throwable {
-        if (getTestData().isTestDataAvailable()) {
-            super.runTest();
-        } else {
-            LOGGER.warning(
-                    "Skipping "
-                            + getClass()
-                            + "."
-                            + getName()
-                            + " since test data is not available");
-        }
-    }
+    //    /** Override runTest so that the test will be skipped if the TestData is not available */
+    //    protected void runTest() throws Throwable {
+    //        if (getTestData().isTestDataAvailable()) {
+    //            super.runTest();
+    //        } else {
+    //            LOGGER.warning(
+    //                    "Skipping "
+    //                            + getClass()
+    //                            + "."
+    //                            + getName()
+    //                            + " since test data is not available");
+    //        }
+    //    }
 
     @Override
     protected void tearDownInternal() throws Exception {
@@ -517,8 +519,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected MockHttpServletRequest createRequest(String path, Map kvp) {
         StringBuffer q = new StringBuffer();
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
+        for (Object o : kvp.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             q.append(entry.getKey()).append("=").append(entry.getValue());
             q.append("&");
         }
@@ -632,8 +634,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
-        return putAsServletResponse(
-                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+        return putAsServletResponse(path, body != null ? body.getBytes() : null, contentType);
     }
 
     protected MockHttpServletResponse putAsServletResponse(
@@ -885,7 +886,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected void checkValidationErrors(Document dom, Schema schema)
             throws SAXException, IOException {
         final Validator validator = schema.newValidator();
-        final List<Exception> validationErrors = new ArrayList<Exception>();
+        final List<Exception> validationErrors = new ArrayList<>();
         validator.setErrorHandler(
                 new ErrorHandler() {
 
@@ -1108,8 +1109,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                             Collection interceptors =
                                     GeoServerExtensions.extensions(
                                             HandlerInterceptor.class, applicationContext);
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object value : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) value;
                                 interceptor.preHandle(request, response, dispatcher);
                             }
 
@@ -1118,15 +1119,11 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                             dispatcher.service(request, response);
 
                             // execute the post handler step
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object o : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) o;
                                 interceptor.postHandle(request, response, dispatcher, null);
                             }
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (IOException e) {
-                            throw e;
-                        } catch (ServletException e) {
+                        } catch (RuntimeException | ServletException | IOException e) {
                             throw e;
                         } catch (Exception e) {
                             throw (IOException)
@@ -1137,9 +1134,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         List<Filter> filterList = getFilters();
         MockFilterChain chain;
         if (filterList != null) {
-            chain =
-                    new MockFilterChain(
-                            servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+            chain = new MockFilterChain(servlet, filterList.toArray(new Filter[filterList.size()]));
         } else {
             chain = new MockFilterChain(servlet);
         }

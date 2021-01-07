@@ -138,7 +138,7 @@ public class RequestData implements Serializable {
     private String subOperation;
 
     /** The requested resources */
-    private List<String> resources = new ArrayList<String>(1);
+    private List<String> resources = new ArrayList<>(1);
 
     /** The HTTP response length, in bytes */
     private long responseLength;
@@ -400,11 +400,11 @@ public class RequestData implements Serializable {
     }
 
     public String getResourcesList() {
-        if (resources != null && resources.size() > 0) {
+        if (resources == null || resources.isEmpty()) {
+            return null;
+        } else {
             String result = resources.toString();
             return result.substring(1, result.length() - 1);
-        } else {
-            return null;
         }
     }
 
@@ -464,7 +464,7 @@ public class RequestData implements Serializable {
         clone.setOperation(operation);
         clone.setSubOperation(subOperation);
         clone.setOwsVersion(owsVersion);
-        clone.setResources(new ArrayList(resources));
+        clone.setResources(new ArrayList<>(resources));
         clone.setResponseLength(responseLength);
         clone.setResponseContentType(responseContentType);
         clone.setErrorMessage(errorMessage);
@@ -528,11 +528,11 @@ public class RequestData implements Serializable {
     }
 
     public String getResourcesProcessingTimeList() {
-        if (resourcesProcessingTime != null && resourcesProcessingTime.size() > 0) {
+        if (resourcesProcessingTime == null || resourcesProcessingTime.isEmpty()) {
+            return null;
+        } else {
             String times = resourcesProcessingTime.toString();
             return times.substring(1, times.length() - 1);
-        } else {
-            return null;
         }
     }
 

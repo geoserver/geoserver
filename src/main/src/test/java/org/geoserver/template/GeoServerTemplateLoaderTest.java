@@ -73,8 +73,8 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
 
-            for (int i = 0; i < files.length; i++) {
-                delete(files[i]);
+            for (File value : files) {
+                delete(value);
             }
         }
 

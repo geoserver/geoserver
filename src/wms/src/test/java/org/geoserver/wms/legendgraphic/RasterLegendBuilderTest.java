@@ -202,7 +202,7 @@ public class RasterLegendBuilderTest {
         assertEquals(colourToTest, midRow.getRuleManager().borderColor);
 
         // Change legend border colour to red
-        Map<String, Object> legendOptions = new HashMap<String, Object>();
+        Map<String, Object> legendOptions = new HashMap<>();
 
         colourToTest = Color.red;
 

@@ -10,7 +10,9 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
+import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.type.FeatureType;
 
 /**
  * Simple interface allowing access to the original main {@link FeatureTypeInfo} behind a feature
@@ -18,19 +20,23 @@ import org.opengis.feature.FeatureVisitor;
  */
 public interface TypeInfoCollectionWrapper {
 
-    static FeatureCollection wrap(FeatureCollection delegate, FeatureTypeInfo featureTypeInfo) {
+    @SuppressWarnings("unchecked")
+    static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> wrap(
+            FeatureCollection<T, F> delegate, FeatureTypeInfo featureTypeInfo) {
         if (delegate instanceof SimpleFeatureCollection) {
-            return new Simple((SimpleFeatureCollection) delegate, featureTypeInfo);
+            return (FeatureCollection<T, F>)
+                    new Simple((SimpleFeatureCollection) delegate, featureTypeInfo);
         } else {
-            return new Complex(delegate, featureTypeInfo);
+            return new Complex<>(delegate, featureTypeInfo);
         }
     }
 
-    class Complex extends DecoratingFeatureCollection implements TypeInfoCollectionWrapper {
+    class Complex<T extends FeatureType, F extends Feature>
+            extends DecoratingFeatureCollection<T, F> implements TypeInfoCollectionWrapper {
 
         private final FeatureTypeInfo featureTypeInfo;
 
-        protected Complex(FeatureCollection delegate, FeatureTypeInfo featureTypeInfo) {
+        protected Complex(FeatureCollection<T, F> delegate, FeatureTypeInfo featureTypeInfo) {
             super(delegate);
             this.featureTypeInfo = featureTypeInfo;
         }

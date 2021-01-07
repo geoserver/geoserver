@@ -41,7 +41,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
 
     private Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     MIME_TYPE, /* NL_KML_MIME_TYPE, */
                                     "application/vnd.google-earth.kml",

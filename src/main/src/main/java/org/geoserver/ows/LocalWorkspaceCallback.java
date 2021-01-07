@@ -93,7 +93,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             } else {
                 LOGGER.log(
                         Level.FINE,
-                        "Could not lookup context {0] as a workspace, trying as group",
+                        "Could not lookup context {0} as a workspace, trying as group",
                         first);
                 lg = catalog.getLayerGroupByName((WorkspaceInfo) null, first);
                 if (lg != null) {

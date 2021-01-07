@@ -84,7 +84,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         this.storeId = storeId;
 
         // the store selector, used when no store is initially known
-        Form<?> selector = new Form<Void>("selector");
+        Form<?> selector = new Form<>("selector");
         selector.add(storesDropDown());
         selector.setVisible(storeId == null);
         add(selector);
@@ -281,7 +281,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         if (stores.getModelObject() != null) {
-                            StoreInfo store = (StoreInfo) stores.getModelObject();
+                            StoreInfo store = stores.getModelObject();
                             NewLayerPage.this.storeId = store.getId();
                             provider.setStoreId(store.getId());
                             storeName.setDefaultModelObject(store.getName());

@@ -15,9 +15,9 @@ public class CaseInsensitiveMapTest {
 
     @Test
     public void testWholeMap() {
-        Map source = new HashMap();
+        Map<String, String> source = new HashMap<>();
         source.put("AbC", "test");
-        CaseInsensitiveMap cim = new CaseInsensitiveMap(source);
+        CaseInsensitiveMap<String, String> cim = new CaseInsensitiveMap<>(source);
         assertEquals("test", cim.get("abc"));
     }
 }

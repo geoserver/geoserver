@@ -71,7 +71,7 @@ public class TransformTest {
         SimpleFeature f =
                 transformType(
                         new ReprojectTransform(crs),
-                        (SimpleFeatureType) type,
+                        type,
                         new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
         Point p = (Point) f.getAttribute("geom");
         assertEquals(111319.49079327357, p.getX(), 0d);

@@ -197,8 +197,8 @@ public class InternalUserResolver implements UserResolver {
     @Override
     public Set<String> getRoles(String username) {
         try {
-            SortedSet<GeoServerRole> roleSet = new TreeSet<GeoServerRole>();
-            SortedSet<String> stringSet = new TreeSet<String>();
+            SortedSet<GeoServerRole> roleSet = new TreeSet<>();
+            SortedSet<String> stringSet = new TreeSet<>();
             if (getDefaultSecurityService() instanceof GeoServerRoleService) {
                 roleSet =
                         ((GeoServerRoleService) getDefaultSecurityService())

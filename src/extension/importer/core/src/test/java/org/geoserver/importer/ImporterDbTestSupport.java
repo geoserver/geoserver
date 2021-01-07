@@ -8,6 +8,7 @@ package org.geoserver.importer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -34,7 +35,7 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
         return ((DbmsTestData) getTestData()).getConnection();
     }
 
-    protected Map getConnectionParams() throws IOException {
+    protected Map<String, Serializable> getConnectionParams() throws IOException {
         return ((DbmsTestData) getTestData()).getConnectionParams();
     }
 
@@ -73,13 +74,11 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
             return DriverManager.getConnection(url, user, passwd);
         }
 
-        public Map getConnectionParams() throws IOException {
+        @SuppressWarnings("unchecked")
+        public Map<String, Serializable> getConnectionParams() throws IOException {
             Properties props = new Properties();
-            FileInputStream fin = new FileInputStream(getFixture());
-            try {
+            try (FileInputStream fin = new FileInputStream(getFixture())) {
                 props.load(fin);
-            } finally {
-                fin.close();
             }
 
             return new HashMap(props);

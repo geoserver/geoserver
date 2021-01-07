@@ -63,6 +63,7 @@ public class GeofenceServerAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GeofenceServerAdminPage.class);
 
         // check the rules model
+        @SuppressWarnings("unchecked")
         GeoServerTablePanel<ShortAdminRule> rulesPanel =
                 (GeoServerTablePanel<ShortAdminRule>)
                         tester.getComponentFromLastRenderedPage("rulesPanel");

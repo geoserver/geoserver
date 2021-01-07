@@ -19,6 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.SchemaException;
@@ -85,10 +86,10 @@ public class ImportTask implements Serializable {
     Exception error;
 
     /** transform to apply to this import item */
-    TransformChain transform;
+    TransformChain<? extends ImportTransform> transform;
 
     /** messages logged during proessing */
-    List<LogRecord> messages = new ArrayList<LogRecord>();
+    List<LogRecord> messages = new ArrayList<>();
 
     /** various metadata */
     transient Map<Object, Object> metadata;
@@ -175,11 +176,21 @@ public class ImportTask implements Serializable {
         this.error = error;
     }
 
-    public TransformChain getTransform() {
+    public TransformChain<? extends ImportTransform> getTransform() {
         return transform;
     }
 
-    public void setTransform(TransformChain transform) {
+    @SuppressWarnings("unchecked")
+    public void addTransform(ImportTransform tx) {
+        ((TransformChain) this.transform).add(tx);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeTransform(ImportTransform tx) {
+        ((TransformChain) this.transform).remove(tx);
+    }
+
+    public void setTransform(TransformChain<? extends ImportTransform> transform) {
         this.transform = transform;
     }
 
@@ -190,7 +201,7 @@ public class ImportTask implements Serializable {
      */
     public Map<Object, Object> getMetadata() {
         if (metadata == null) {
-            metadata = new HashMap<Object, Object>();
+            metadata = new HashMap<>();
         }
         return metadata;
     }
@@ -203,7 +214,7 @@ public class ImportTask implements Serializable {
 
     public void addMessage(Level level, String msg) {
         if (messages == null) {
-            messages = new ArrayList<LogRecord>();
+            messages = new ArrayList<>();
         }
         messages.add(new LogRecord(level, msg));
     }

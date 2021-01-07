@@ -34,7 +34,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new HTTPLayerConfig(id, new Model(polygons));
+                                return new HTTPLayerConfig(id, new Model<>(polygons));
                             }
                         });
         tester.startPage(page);
@@ -62,7 +62,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
 
                             public Component buildComponent(String id) {
-                                return new HTTPLayerConfig(id, new Model(polygons));
+                                return new HTTPLayerConfig(id, new Model<>(polygons));
                             }
                         });
         tester.startPage(page);

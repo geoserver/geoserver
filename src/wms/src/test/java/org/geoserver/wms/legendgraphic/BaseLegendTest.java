@@ -10,7 +10,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -41,7 +40,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
                 new QName("http://www.geo-solutions.it", "world", "gs"),
                 "world.tiff",
                 "tiff",
-                new HashMap(),
+                new HashMap<>(),
                 MockData.class,
                 catalog);
         testData.addStyle("rainfall", MockData.class, catalog);
@@ -53,7 +52,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
                 new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),
                 "tazdem.tiff",
                 "tiff",
-                new HashMap(),
+                new HashMap<>(),
                 MockData.class,
                 catalog);
 
@@ -70,11 +69,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
 
     protected int getTitleHeight(GetLegendGraphicRequest req) {
         final BufferedImage image =
-                ImageUtils.createImage(
-                        req.getWidth(),
-                        req.getHeight(),
-                        (IndexColorModel) null,
-                        req.isTransparent());
+                ImageUtils.createImage(req.getWidth(), req.getHeight(), null, req.isTransparent());
         return getRenderedLabel(image, "TESTTITLE", req).getHeight();
     }
 

@@ -378,7 +378,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             layersById.put(newValue.getId(), newValue.clone());
         } catch (Exception e) {
             if (e instanceof ExecutionException) {
-                throwIfUnchecked(((ExecutionException) e).getCause());
+                throwIfUnchecked(e.getCause());
             }
             throwIfUnchecked(e);
         }
@@ -400,11 +400,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         }
         final Resource tmp = file.parent().get(file.name() + ".tmp");
         try {
-            final Writer writer = new OutputStreamWriter(tmp.out(), "UTF-8");
-            try {
+            try (Writer writer = new OutputStreamWriter(tmp.out(), "UTF-8")) {
                 serializer.toXML(real, writer);
-            } finally {
-                writer.close();
             }
         } catch (Exception e) {
             tmp.delete();

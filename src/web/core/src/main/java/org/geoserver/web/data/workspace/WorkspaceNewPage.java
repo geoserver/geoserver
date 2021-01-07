@@ -50,18 +50,18 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     TextField<String> nsUriTextField;
     AccessDataRulePanel accessdataPanel;
     WsNewInfoPanel infoPanel;
-    TabbedPanel tabbedPanel;
+    TabbedPanel<ITab> tabbedPanel;
 
     CompoundPropertyModel<WorkspaceInfo> model;
 
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
-        this.model = new CompoundPropertyModel<WorkspaceInfo>(ws);
+        this.model = new CompoundPropertyModel<>(ws);
         Form form = new Form("form");
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         tabs.add(
-                new AbstractTab(new Model<String>("Basic Info")) {
+                new AbstractTab(new Model<>("Basic Info")) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -98,7 +98,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         }
 
         tabbedPanel =
-                new TabbedPanel("tabs", tabs) {
+                new TabbedPanel<ITab>("tabs", tabs) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -154,7 +154,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     private void handleOnSubmit() {
         Catalog catalog = getCatalog();
         // get the workspace information from the form
-        WorkspaceInfo workspace = (WorkspaceInfo) model.getObject();
+        WorkspaceInfo workspace = model.getObject();
         NamespaceInfo namespace = catalog.getFactory().createNamespace();
         namespace.setPrefix(workspace.getName());
         namespace.setURI(nsUriTextField.getDefaultModelObjectAsString());
@@ -227,7 +227,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
      */
     private void cleanAndReport(Exception exception) {
         Catalog catalog = getCatalog();
-        WorkspaceInfo workspace = (WorkspaceInfo) model.getObject();
+        WorkspaceInfo workspace = model.getObject();
         // let's see if both the workspace and associated namespace exists
         WorkspaceInfo foundWorkspace = catalog.getWorkspaceByName(workspace.getName());
         if (foundWorkspace != null) {
@@ -248,7 +248,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         public WsNewInfoPanel(String id, IModel<WorkspaceInfo> model) {
             super(id, model);
-            TextField<String> nameTextField = new TextField<String>("name");
+            TextField<String> nameTextField = new TextField<>("name");
             nameTextField.setRequired(true);
             nameTextField.add(new XMLNameValidator());
             nameTextField.add(
@@ -267,14 +267,13 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                     });
             add(nameTextField.setRequired(true));
 
-            nsUriTextField = new TextField<String>("uri", new Model<String>());
+            nsUriTextField = new TextField<>("uri", new Model<>());
             // maybe a bit too restrictive, but better than not validation at all
             nsUriTextField.setRequired(true);
             nsUriTextField.add(new URIValidator());
             add(nsUriTextField);
 
-            CheckBox defaultChk =
-                    new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+            CheckBox defaultChk = new CheckBox("default", new PropertyModel<>(this, "defaultWs"));
             add(defaultChk);
 
             // add checkbox for isolated workspaces

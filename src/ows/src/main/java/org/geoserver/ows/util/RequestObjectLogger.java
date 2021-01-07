@@ -34,10 +34,10 @@ public class RequestObjectLogger implements MethodInterceptor {
             Object requestBean = null;
 
             for (int i = 0; i < invocation.getArguments().length; i++) {
-                Object argument = (Object) invocation.getArguments()[i];
+                Object argument = invocation.getArguments()[i];
 
                 if (isRequestObject(argument)) {
-                    requestBean = (Object) argument;
+                    requestBean = argument;
                     break;
                 }
             }

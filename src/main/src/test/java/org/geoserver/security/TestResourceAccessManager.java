@@ -18,8 +18,7 @@ import org.springframework.security.core.Authentication;
  */
 public class TestResourceAccessManager extends AbstractResourceAccessManager {
 
-    Map<String, Map<String, AccessLimits>> limits =
-            new HashMap<String, Map<String, AccessLimits>>();
+    Map<String, Map<String, AccessLimits>> limits = new HashMap<>();
 
     WorkspaceAccessLimits defaultWorkspaceAccessLimits = null;
 
@@ -99,7 +98,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
     Map<String, AccessLimits> getUserMap(String userName) {
         Map<String, AccessLimits> userMap = limits.get(userName);
         if (userMap == null) {
-            userMap = new HashMap<String, AccessLimits>();
+            userMap = new HashMap<>();
             limits.put(userName, userMap);
         }
         return userMap;

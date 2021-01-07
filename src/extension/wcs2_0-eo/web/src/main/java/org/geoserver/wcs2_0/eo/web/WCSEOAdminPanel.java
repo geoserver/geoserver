@@ -20,16 +20,16 @@ public class WCSEOAdminPanel extends AdminPagePanel {
     public WCSEOAdminPanel(String id, IModel<?> model) {
         super(id, model);
 
-        PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
+        PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         CheckBox enabled =
-                new CheckBox("enabled", new MapModel(metadata, WCSEOMetadata.ENABLED.key));
+                new CheckBox("enabled", new MapModel<>(metadata, WCSEOMetadata.ENABLED.key));
         add(enabled);
 
         TextField<Integer> defaultCount =
-                new TextField<Integer>(
+                new TextField<>(
                         "defaultCount",
-                        new MapModel(metadata, WCSEOMetadata.COUNT_DEFAULT.key),
+                        new MapModel<>(metadata, WCSEOMetadata.COUNT_DEFAULT.key),
                         Integer.class);
         defaultCount.add(RangeValidator.minimum(1));
         add(defaultCount);

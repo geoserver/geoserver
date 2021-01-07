@@ -46,8 +46,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
      * necessary to perform any action on the cache based on the changed properties
      */
-    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT =
-            new ThreadLocal<CatalogModifyEvent>();
+    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT = new ThreadLocal<>();
 
     private final GWC mediator;
 
@@ -137,7 +136,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 tl.resetParameterFilters();
                 // pity, we don't have a way to just rename a style in GWC
                 mediator.truncateByLayerAndStyle(tl.getName(), oldStyleName);
-                Set<String> newStyles = new HashSet<String>(styleNames);
+                Set<String> newStyles = new HashSet<>(styleNames);
                 newStyles.remove(oldStyleName);
                 newStyles.add(newStyleName);
                 LayerInfo layerInfo = (LayerInfo) tl.getPublishedInfo();
@@ -191,9 +190,9 @@ public class CatalogStyleChangeListener implements CatalogListener {
         String newWorkspaceName = (String) preModifyEvent.getNewValues().get(nameIdx);
 
         // grab the styles
-        CloseableIterator<StyleInfo> styles =
-                catalog.list(StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName));
-        try {
+        try (CloseableIterator<StyleInfo> styles =
+                catalog.list(
+                        StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName))) {
             while (styles.hasNext()) {
                 StyleInfo style = styles.next();
                 String oldStyleName = oldWorkspaceName + ":" + style.getName();
@@ -201,8 +200,6 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
                 handleStyleRenamed(oldStyleName, newStyleName);
             }
-        } finally {
-            styles.close();
         }
     }
 

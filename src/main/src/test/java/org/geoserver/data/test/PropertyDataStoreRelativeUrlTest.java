@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataAccess;
@@ -33,7 +35,7 @@ public class PropertyDataStoreRelativeUrlTest extends GeoServerSystemTestSupport
         File testDS = new File(testData.getDataDirectoryRoot(), "testDS").getCanonicalFile();
         testDS.mkdir();
 
-        HashMap params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(PropertyDataStoreFactory.DIRECTORY.key, "file:./testDS");
         params.put(PropertyDataStoreFactory.NAMESPACE.key, "http://www.geotools.org/test");
 

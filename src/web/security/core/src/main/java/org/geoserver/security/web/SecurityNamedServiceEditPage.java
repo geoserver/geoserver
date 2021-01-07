@@ -68,7 +68,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         public ContentPanel(String id, IModel<T> config) {
             super(id, new Model());
 
-            Form form = new Form("form", new CompoundPropertyModel<T>(config));
+            Form<T> form = new Form<>("form", new CompoundPropertyModel<>(config));
             add(form);
             form.add(panel = createPanel("panel", panelInfo, config));
 
@@ -110,7 +110,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         public TabbedLayoutPanel(String id, final IModel<T> config) {
             super(id, new Model());
 
-            List<ITab> tabs = new ArrayList<ITab>();
+            List<ITab> tabs = new ArrayList<>();
 
             // add the primary panel to the first tab
             tabs.add(
@@ -122,11 +122,14 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
                     });
 
             // add tabs contributed by the server
-            tabs.addAll(((SecurityNamedServiceTabbedPanel) panel).createTabs(config));
+            @SuppressWarnings("unchecked")
+            SecurityNamedServiceTabbedPanel<T> cast =
+                    (SecurityNamedServiceTabbedPanel) SecurityNamedServiceEditPage.this.panel;
+            tabs.addAll(cast.createTabs(config));
 
             // add the error tab that displays any exceptions currently associated with the service
             try {
-                panel.doLoad(config.getObject());
+                SecurityNamedServiceEditPage.this.panel.doLoad(config.getObject());
             } catch (final Exception e) {
                 // add the error tab
                 tabs.add(
@@ -137,7 +140,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
                             }
                         });
             }
-            add(new TabbedPanel("panel", tabs));
+            add(new TabbedPanel<>("panel", tabs));
         }
     }
 
@@ -146,8 +149,8 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         public ErrorPanel(String id, final Exception error) {
             super(id, new Model());
 
-            add(new Label("message", new PropertyModel(error, "message")));
-            add(new TextArea("stackTrace", new Model(handleStackTrace(error))));
+            add(new Label("message", new PropertyModel<>(error, "message")));
+            add(new TextArea<>("stackTrace", new Model<>(handleStackTrace(error))));
             add(
                     new AjaxLink("copy") {
                         @Override
@@ -178,17 +181,18 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
 
     SecurityNamedServicePanelInfo lookupPanelInfo(IModel<T> model) {
         T config = model.getObject();
-        Class serviceClass = null;
+        Class<?> serviceClass = null;
         try {
             serviceClass = Class.forName(config.getClassName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        List<SecurityNamedServicePanelInfo> panelInfos = new ArrayList();
+        List<SecurityNamedServicePanelInfo> panelInfos = new ArrayList<>();
         for (SecurityNamedServicePanelInfo pageInfo :
                 GeoServerApplication.get().getBeansOfType(SecurityNamedServicePanelInfo.class)) {
-            if (pageInfo.getServiceClass().isAssignableFrom(serviceClass)) {
+            Class<?> psc = pageInfo.getServiceClass();
+            if (psc.isAssignableFrom(serviceClass)) {
                 panelInfos.add(pageInfo);
             }
         }
@@ -202,7 +206,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
         }
         if (panelInfos.size() > 1) {
             // filter by strict equals
-            List<SecurityNamedServicePanelInfo> l = new ArrayList(panelInfos);
+            List<SecurityNamedServicePanelInfo> l = new ArrayList<>(panelInfos);
             for (Iterator<SecurityNamedServicePanelInfo> it = l.iterator(); it.hasNext(); ) {
                 final SecurityNamedServicePanelInfo targetPanelInfo = it.next();
                 if (!targetPanelInfo.getServiceClass().equals(serviceClass)) {

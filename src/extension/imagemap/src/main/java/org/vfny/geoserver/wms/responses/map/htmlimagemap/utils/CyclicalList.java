@@ -10,7 +10,7 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap.utils;
  *
  * @author m.bartolomeoli
  */
-public class CyclicalList extends java.util.ArrayList {
+public class CyclicalList<T> extends java.util.ArrayList<T> {
 
     private static final long serialVersionUID = 5468175713393008920L;
 
@@ -21,11 +21,11 @@ public class CyclicalList extends java.util.ArrayList {
         return index;
     }
 
-    public Object get(int index) {
+    public T get(int index) {
         return super.get(wrapIndex(index));
     }
 
-    public Object set(int index, Object value) {
+    public T set(int index, T value) {
         return super.set(wrapIndex(index), value);
     }
 

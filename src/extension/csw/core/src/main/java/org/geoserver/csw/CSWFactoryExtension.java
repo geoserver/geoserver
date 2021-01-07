@@ -14,6 +14,7 @@ public class CSWFactoryExtension extends ServiceFactoryExtension<CSWInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T create(Class<T> clazz) {
         return (T) new CSWInfoImpl();
     }

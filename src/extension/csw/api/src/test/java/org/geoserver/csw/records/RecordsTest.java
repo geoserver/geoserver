@@ -7,16 +7,17 @@ package org.geoserver.csw.records;
 
 import java.util.Collection;
 import java.util.List;
-import junit.framework.TestCase;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Assert;
+import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 
-public class RecordsTest extends TestCase {
+public class RecordsTest {
 
     /**
      * Trying to build <code>
@@ -47,6 +48,7 @@ public class RecordsTest extends TestCase {
      * </Record>
      * </code>
      */
+    @Test
     public void testBuildCSWRecord() throws Exception {
         CSWRecordBuilder rb = new CSWRecordBuilder();
         rb.addElement("identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
@@ -83,7 +85,7 @@ public class RecordsTest extends TestCase {
                         p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {
-            assertEquals(envelopes[i], featureEnvelopes.get(i));
+            Assert.assertEquals(envelopes[i], featureEnvelopes.get(i));
             ReferencedEnvelope re = envelopes[i].transform(CSWRecordDescriptor.DEFAULT_CRS, true);
             if (total == null) {
                 total = re;
@@ -92,19 +94,18 @@ public class RecordsTest extends TestCase {
             }
         }
 
-        assertTrue(total.contains(geometry.getEnvelopeInternal()));
+        Assert.assertTrue(total.contains(geometry.getEnvelopeInternal()));
     }
 
     private void assertRecordElement(Feature f, String elementName, Object... values) {
         AttributeDescriptor identifierDescriptor = CSWRecordDescriptor.getDescriptor(elementName);
         Collection<Property> propertyList = f.getProperties(identifierDescriptor.getName());
-        Property[] properties =
-                (Property[]) propertyList.toArray(new Property[propertyList.size()]);
-        assertEquals(properties.length, values.length);
+        Property[] properties = propertyList.toArray(new Property[propertyList.size()]);
+        Assert.assertEquals(properties.length, values.length);
         for (int i = 0; i < properties.length; i++) {
             ComplexAttribute cad = (ComplexAttribute) properties[i];
-            assertEquals(identifierDescriptor, cad.getDescriptor());
-            assertEquals(
+            Assert.assertEquals(identifierDescriptor, cad.getDescriptor());
+            Assert.assertEquals(
                     values[i],
                     cad.getProperty(CSWRecordDescriptor.SIMPLE_LITERAL_VALUE).getValue());
         }

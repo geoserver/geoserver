@@ -72,12 +72,9 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         ToolConfiguration configuration = getDefaultConfiguration();
         try {
             if (configFile.getType() == Type.RESOURCE) {
-                InputStream in = configFile.in();
-                try {
+                try (InputStream in = configFile.in()) {
                     XStream xstream = buildXStream();
                     configuration = (ToolConfiguration) xstream.fromXML(in);
-                } finally {
-                    in.close();
                 }
             }
         } catch (Exception e) {
@@ -108,7 +105,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         Set<String> supported = wrapper.getSupportedFormats();
         of.setExecutable(configuration.getExecutable());
         of.setEnvironment(configuration.getEnvironment());
-        List<Format> toBeAdded = new ArrayList<Format>();
+        List<Format> toBeAdded = new ArrayList<>();
         for (Format format : configuration.getFormats()) {
             if (supported.contains(format.getToolFormat())) {
                 toBeAdded.add(format);

@@ -108,16 +108,13 @@ public class EncodeHTMLImageMap extends WebMap {
             // ie. SELECT * FROM ... WHERE (the_geom && BBOX) AND (filter1 OR
             // filter2 OR filter3);
 
-            final List<Filter> filtersToDS = new ArrayList<Filter>();
-
-            final int stylesLength = styles.length;
+            final List<Filter> filtersToDS = new ArrayList<>();
 
             FeatureTypeStyle style;
-
-            for (int t = 0; t < stylesLength; t++) // look at each
+            // look at each
             // featuretypestyle
-            {
-                style = styles[t];
+            for (FeatureTypeStyle featureTypeStyle : styles) {
+                style = featureTypeStyle;
 
                 for (Rule r : style.rules()) {
                     if (r.getFilter() == null) return null; // uh-oh has no filter (want all rows)
@@ -212,7 +209,7 @@ public class EncodeHTMLImageMap extends WebMap {
 
     /** Filter given rules, to consider only the rules compatible with the current scale. */
     private Rule[] filterRules(List<Rule> rules) {
-        List<Rule> result = new ArrayList<Rule>();
+        List<Rule> result = new ArrayList<>();
         for (Rule rule : rules) {
             double scaleDenominator;
             try {
@@ -227,10 +224,7 @@ public class EncodeHTMLImageMap extends WebMap {
                 if (EncodeHTMLImageMap.isWithInScale(rule, scaleDenominator)) {
                     result.add(rule);
                 }
-            } catch (TransformException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (FactoryException e) {
+            } catch (TransformException | FactoryException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -291,12 +285,9 @@ public class EncodeHTMLImageMap extends WebMap {
                 LOGGER.info("Definition Query: " + definitionQuery.toString());
                 if (!definitionQuery.equals(Query.ALL)) {
                     if (q.equals(Query.ALL)) {
-                        q = (Query) definitionQuery;
+                        q = definitionQuery;
                     } else {
-                        q =
-                                (Query)
-                                        DataUtilities.mixQueries(
-                                                definitionQuery, q, "HTMLImageMapEncoder");
+                        q = DataUtilities.mixQueries(definitionQuery, q, "HTMLImageMapEncoder");
                     }
                 }
 

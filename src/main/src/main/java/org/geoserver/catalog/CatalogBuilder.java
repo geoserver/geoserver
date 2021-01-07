@@ -8,8 +8,8 @@ package org.geoserver.catalog;
 import java.awt.image.ColorModel;
 import java.awt.image.SampleModel;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,7 +20,6 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
@@ -65,7 +64,6 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.geometry.Envelope;
-import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -502,7 +500,7 @@ public class CatalogBuilder {
         if (rinfo != null && (ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty())) {
             if (rinfo.getKeywords() != null) {
                 if (ftinfo.getKeywords() == null) {
-                    ((FeatureTypeInfoImpl) ftinfo).setKeywords(new ArrayList());
+                    ((FeatureTypeInfoImpl) ftinfo).setKeywords(new ArrayList<>());
                 }
                 for (String kw : rinfo.getKeywords()) {
                     if (kw == null || "".equals(kw.trim())) {
@@ -972,14 +970,17 @@ public class CatalogBuilder {
     }
 
     /** Builds a coverage from a geotools grid coverage reader. */
-    public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters)
+    public CoverageInfo buildCoverage(
+            GridCoverage2DReader reader, Map<String, Serializable> customParameters)
             throws Exception {
         return buildCoverage(reader, null, customParameters);
     }
 
     /** Builds a coverage from a geotools grid coverage reader. */
     public CoverageInfo buildCoverage(
-            GridCoverage2DReader reader, String coverageName, Map customParameters)
+            GridCoverage2DReader reader,
+            String coverageName,
+            Map<String, Serializable> customParameters)
             throws Exception {
         return buildCoverageInternal(reader, coverageName, customParameters, null);
     }
@@ -987,7 +988,7 @@ public class CatalogBuilder {
     private CoverageInfo buildCoverageInternal(
             GridCoverage2DReader reader,
             String nativeCoverageName,
-            Map customParameters,
+            Map<String, Serializable> customParameters,
             String specifiedName)
             throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
@@ -1097,16 +1098,14 @@ public class CatalogBuilder {
         if (nativeCRS != null
                 && (nativeCRS.getIdentifiers() != null)
                 && !nativeCRS.getIdentifiers().isEmpty()) {
-            cinfo.getRequestSRS()
-                    .add(((Identifier) nativeCRS.getIdentifiers().toArray()[0]).toString());
-            cinfo.getResponseSRS()
-                    .add(((Identifier) nativeCRS.getIdentifiers().toArray()[0]).toString());
+            cinfo.getRequestSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
+            cinfo.getResponseSRS().add(nativeCRS.getIdentifiers().toArray()[0].toString());
         }
 
         // supported formats
         final List formats = CoverageStoreUtils.listDataFormats();
-        for (Iterator i = formats.iterator(); i.hasNext(); ) {
-            final Format fTmp = (Format) i.next();
+        for (Object o : formats) {
+            final Format fTmp = (Format) o;
             final String fName = fTmp.getName();
 
             if (fName.equalsIgnoreCase("WorldImage")) {
@@ -1138,12 +1137,12 @@ public class CatalogBuilder {
     }
 
     private GridSampleDimension[] getCoverageSampleDimensions(
-            GridCoverage2DReader reader, Map customParameters)
+            GridCoverage2DReader reader, Map<String, Serializable> customParameters)
             throws TransformException, IOException, Exception {
         GridEnvelope originalRange = reader.getOriginalGridRange();
         Format format = reader.getFormat();
         final ParameterValueGroup readParams = format.getReadParameters();
-        final Map parameters = CoverageUtils.getParametersKVP(readParams);
+        final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
         final int minX = originalRange.getLow(0);
         final int minY = originalRange.getLow(1);
         final int width = originalRange.getSpan(0);
@@ -1233,12 +1232,11 @@ public class CatalogBuilder {
 
     List<CoverageDimensionInfo> getCoverageDimensions(GridSampleDimension[] sampleDimensions) {
 
-        final int length = sampleDimensions.length;
-        List<CoverageDimensionInfo> dims = new ArrayList<CoverageDimensionInfo>();
+        List<CoverageDimensionInfo> dims = new ArrayList<>();
 
-        for (int i = 0; i < length; i++) {
+        for (GridSampleDimension sampleDimension : sampleDimensions) {
             CoverageDimensionInfo dim = catalog.getFactory().createCoverageDimension();
-            GridSampleDimension sd = sampleDimensions[i];
+            GridSampleDimension sd = sampleDimension;
             String name = sd.getDescription().toString(Locale.getDefault());
             dim.setName(name);
 
@@ -1731,7 +1729,7 @@ public class CatalogBuilder {
     /** Reattaches a serialized {@link ResourceInfo} to the catalog */
     public void attach(ResourceInfo resourceInfo) {
         resourceInfo = ModificationProxy.unwrap(resourceInfo);
-        ((ResourceInfoImpl) resourceInfo).setCatalog(catalog);
+        resourceInfo.setCatalog(catalog);
     }
 
     /** Reattaches a serialized {@link LayerInfo} to the catalog */
@@ -1793,7 +1791,7 @@ public class CatalogBuilder {
      * @param info The optional feature type info from which all the attributes belong to
      */
     public List<AttributeTypeInfo> getAttributes(FeatureType ft, FeatureTypeInfo info) {
-        List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
+        List<AttributeTypeInfo> attributes = new ArrayList<>();
         for (PropertyDescriptor pd : ft.getDescriptors()) {
             AttributeTypeInfo att = catalog.getFactory().createAttribute();
             att.setFeatureType(info);

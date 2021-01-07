@@ -66,7 +66,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         {
             String version = String.valueOf(new ResourceModel("version").getObject());
             String contactEmail = contact.getContactEmail();
-            HashMap<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<>();
             params.put("version", version);
             params.put(
                     "contactEmail",

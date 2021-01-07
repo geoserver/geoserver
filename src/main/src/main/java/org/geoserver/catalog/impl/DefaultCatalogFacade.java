@@ -104,6 +104,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             Name oldName = RESOURCE_NAME_MAPPER.apply(actualValue);
             Name newName = RESOURCE_NAME_MAPPER.apply(proxiedValue);
             if (!oldName.equals(newName)) {
+                @SuppressWarnings("unchecked")
                 Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
                 LayerInfo value = nameMap.remove(oldName);
                 // handle case of feature type without a corresponding layer
@@ -124,8 +125,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected CatalogInfoLookup<StoreInfo> stores = new CatalogInfoLookup<>(STORE_NAME_MAPPER);
 
     /** The default store keyed by workspace id */
-    protected Map<String, DataStoreInfo> defaultStores =
-            new ConcurrentHashMap<String, DataStoreInfo>();
+    protected Map<String, DataStoreInfo> defaultStores = new ConcurrentHashMap<>();
 
     /** resources */
     protected CatalogInfoLookup<ResourceInfo> resources =
@@ -149,7 +149,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected LayerInfoLookup layers = new LayerInfoLookup();
 
     /** maps */
-    protected List<MapInfo> maps = new CopyOnWriteArrayList<MapInfo>();
+    protected List<MapInfo> maps = new CopyOnWriteArrayList<>();
 
     /** layer groups */
     protected CatalogInfoLookup<LayerGroupInfo> layerGroups =
@@ -242,7 +242,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
-        return ModificationProxy.createList(stores.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        List<T> list = stores.list(clazz, CatalogInfoLookup.ptrue());
+        return ModificationProxy.createList(list, clazz);
     }
 
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
@@ -336,7 +337,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
-        return ModificationProxy.createList(resources.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        return ModificationProxy.createList(
+                resources.list(clazz, CatalogInfoLookup.ptrue()), clazz);
     }
 
     public <T extends ResourceInfo> List<T> getResourcesByNamespace(
@@ -519,7 +521,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public List<MapInfo> getMaps() {
-        return ModificationProxy.createList(new ArrayList(maps), MapInfo.class);
+        return ModificationProxy.createList(new ArrayList<>(maps), MapInfo.class);
     }
 
     //
@@ -946,7 +948,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         // maps
         if (maps == null) {
-            maps = new ArrayList<MapInfo>();
+            maps = new ArrayList<>();
         }
         for (MapInfo m : maps) {
             resolve(m);
@@ -1080,7 +1082,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         Iterator<T> iterator = iterable.iterator();
 
-        return new CloseableIteratorAdapter<T>(iterator);
+        return new CloseableIteratorAdapter<>(iterator);
     }
 
     @SuppressWarnings("unchecked")
@@ -1089,23 +1091,23 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         List<T> all;
 
         if (NamespaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) namespaces.list(of, toPredicate(filter));
+            all = namespaces.list(of, toPredicate(filter));
         } else if (WorkspaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) workspaces.list(of, toPredicate(filter));
+            all = workspaces.list(of, toPredicate(filter));
         } else if (StoreInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) stores.list(of, toPredicate(filter));
+            all = stores.list(of, toPredicate(filter));
         } else if (ResourceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) resources.list(of, toPredicate(filter));
+            all = resources.list(of, toPredicate(filter));
         } else if (LayerInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layers.list(of, toPredicate(filter));
+            all = layers.list(of, toPredicate(filter));
         } else if (LayerGroupInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layerGroups.list(of, toPredicate(filter));
+            all = layerGroups.list(of, toPredicate(filter));
         } else if (PublishedInfo.class.isAssignableFrom(of)) {
             all = new ArrayList<>();
             all.addAll((List<T>) layers.list(LayerInfo.class, toPredicate(filter)));
             all.addAll((List<T>) layerGroups.list(LayerGroupInfo.class, toPredicate(filter)));
         } else if (StyleInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) styles.list(of, toPredicate(filter));
+            all = styles.list(of, toPredicate(filter));
         } else if (MapInfo.class.isAssignableFrom(of)) {
             all = (List<T>) new ArrayList<>(maps);
         } else {
@@ -1130,10 +1132,11 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         if (filter != null && filter != Filter.INCLUDE) {
             return o -> filter.evaluate(o);
         } else {
-            return CatalogInfoLookup.TRUE;
+            return CatalogInfoLookup.ptrue();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Comparator<Object> comparator(final SortBy sortOrder) {
         return new Comparator<Object>() {
             @Override

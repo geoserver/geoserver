@@ -38,7 +38,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
      *
      * @return the Class of the non-secure wrapped ResourceInfo type.
      */
-    abstract Class getDelegateClass();
+    abstract Class<?> getDelegateClass();
 
     /**
      * Wraps a non-Secured ResourceInfo with an appropriate security {@link Wrapper}.
@@ -53,7 +53,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
      *
      * @return the Class of the secure wrapped ResourceInfo type.
      */
-    abstract Class getSecuredDecoratorClass();
+    abstract Class<?> getSecuredDecoratorClass();
 
     /**
      * Retrieves the Class of the secure wrapped StoreInfo type associated with the secure wrapped
@@ -62,7 +62,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
      * @return the Class of the secure wrapped StoreInfo type associated with the secure wrapped
      *     ResourceInfo type.
      */
-    abstract Class getSecuredStoreInfoClass();
+    abstract Class<?> getSecuredStoreInfoClass();
 
     /**
      * Retrieves the minimum number of times a secure {@link Wrapper} needs to re-wrap an object to
@@ -123,7 +123,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
         // get a delegate
         final D delegate = createDelegate();
         // wrap the delegate in a ModificationProxy
-        ResourceInfo proxy = ModificationProxy.create(delegate, getDelegateClass());
+        ResourceInfo proxy = (ResourceInfo) ModificationProxy.create(delegate, getDelegateClass());
         // secure it
         Object secure = SecuredObjects.secure(proxy, policy);
         assertTrue(

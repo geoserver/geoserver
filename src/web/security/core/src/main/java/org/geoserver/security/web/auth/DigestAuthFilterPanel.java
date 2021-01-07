@@ -26,6 +26,6 @@ public class DigestAuthFilterPanel
         super(id, model);
 
         add(new UserGroupServiceChoice("userGroupServiceName"));
-        add(new TextField("nonceValiditySeconds").setType(Integer.class));
+        add(new TextField<Integer>("nonceValiditySeconds").setType(Integer.class));
     }
 }

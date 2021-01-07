@@ -24,7 +24,8 @@ public class DirectDownloadKvpRequestReader extends KvpRequestReader {
     }
 
     @Override
-    public Object read(Object req, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object req, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
 
         // Force the ResourceID element to be a simple String instead of an array
         Object resourceId = kvp.get(DownloadLinkHandler.RESOURCE_ID_PARAMETER);

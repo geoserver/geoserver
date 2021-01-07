@@ -42,7 +42,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         prefixMap.put("gml", "http://www.opengis.net/gml");
@@ -54,7 +54,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReader() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("request", "GetCapabilities");
         raw.put("acceptVersions", "2.0.2,2.0.0,0.7.2");
@@ -97,7 +97,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetCapabilitiesType caps =
                 (GetCapabilitiesType)
-                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), null);
         assertReturnedCapabilitiesComplete(caps);
     }
 
@@ -113,7 +113,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                             "2.0.2",
                             new CSWConfiguration(),
                             EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-            reader.read(null, new StringReader(capRequest), (Map) null);
+            reader.read(null, new StringReader(capRequest), null);
             fail("the parsing should have failed, the document is invalid");
         } catch (ServiceException e) {
             // it is a validation exception right?
@@ -239,9 +239,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         // this one is mandatory, cannot be skipped
         assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        == 0);
+        assertEquals(
+                0,
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 

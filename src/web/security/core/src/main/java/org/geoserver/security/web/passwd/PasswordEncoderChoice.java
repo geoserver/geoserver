@@ -51,7 +51,7 @@ public class PasswordEncoderChoice extends DropDownChoice<String> {
         }
 
         PasswordEncoderNamesModel(List<GeoServerPasswordEncoder> encoders) {
-            encoderNames = new ArrayList<String>();
+            encoderNames = new ArrayList<>();
             for (GeoServerPasswordEncoder pe : encoders) {
                 encoderNames.add(pe.getName());
             }

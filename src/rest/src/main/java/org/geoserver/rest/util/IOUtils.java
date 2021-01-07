@@ -56,10 +56,9 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
     /** Background to perform file deletions. */
     private static final FileCleaner FILE_CLEANER = new FileCleaner();
 
-    private static final Set<String> FILES_PATH =
-            Collections.synchronizedSet(new HashSet<String>());
+    private static final Set<String> FILES_PATH = Collections.synchronizedSet(new HashSet<>());
     private static final Map<String, Integer> FILE_ATTEMPTS_COUNTS =
-            Collections.synchronizedMap(new HashMap<String, Integer>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** 30 seconds is the default period beteen two checks. */
     private static long DEFAULT_PERIOD = 5L;
@@ -498,7 +497,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             try {
                 channel = new FileInputStream(source).getChannel();
             } catch (Exception e) {
-                channel = null;
+                // continue
             }
         }
         return channel;

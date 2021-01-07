@@ -21,8 +21,7 @@ class EPSGCodeLookupCache {
     static final Integer FAILED_LOOKUP = Integer.MIN_VALUE;
 
     /** The lookup cache */
-    SoftValueHashMap<CoordinateReferenceSystem, Integer> cache =
-            new SoftValueHashMap<CoordinateReferenceSystem, Integer>(100);
+    SoftValueHashMap<CoordinateReferenceSystem, Integer> cache = new SoftValueHashMap<>(100);
 
     public Integer lookupEPSGCode(CoordinateReferenceSystem crs) throws FactoryException {
         Integer code = cache.get(crs);

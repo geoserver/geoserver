@@ -54,7 +54,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     protected Catalog catalog;
     protected CatalogStoreMapping mapping;
     protected RecordDescriptor rd;
-    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
+    protected Map<String, String> interpolationProperties = new HashMap<>();
 
     /**
      * Create new CatalogStoreFeatureCollection
@@ -105,12 +105,12 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
 
     @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        return new FilteringFeatureCollection<FeatureType, Feature>(this, filter);
+        return new FilteringFeatureCollection<>(this, filter);
     }
 
     @Override
     public FeatureCollection<FeatureType, Feature> sort(SortBy order) {
-        List<Feature> features = new ArrayList<Feature>();
+        List<Feature> features = new ArrayList<>();
         MemoryFeatureCollection memory = new MemoryFeatureCollection(getSchema(), features);
         return memory.sort(order);
     }

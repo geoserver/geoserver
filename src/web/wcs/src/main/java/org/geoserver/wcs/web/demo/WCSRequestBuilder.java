@@ -80,7 +80,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                                         URLType.SERVICE);
                         request.setRequestUrl(url);
                         request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model(request));
+                        return new DemoRequestResponse(new Model<>(request));
                     }
                 });
 
@@ -89,7 +89,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        responseWindow.setDefaultModel(new Model(getRequestXML()));
+                        responseWindow.setDefaultModel(new Model<>(getRequestXML()));
                         responseWindow.show(target);
                     }
 

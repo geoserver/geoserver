@@ -29,7 +29,7 @@ public class ConfirmRemovalGroupPanelTest
                             private static final long serialVersionUID = 1L;
 
                             public Component buildComponent(String id) {
-                                Model<Boolean> model = new Model<Boolean>(disassociateRoles);
+                                Model<Boolean> model = new Model<>(disassociateRoles);
                                 return new ConfirmRemovalGroupPanel(
                                         id,
                                         model,

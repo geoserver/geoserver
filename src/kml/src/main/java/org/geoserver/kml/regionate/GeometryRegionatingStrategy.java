@@ -80,7 +80,7 @@ public class GeometryRegionatingStrategy extends ExternalSortRegionatingStrategy
     protected Double getSortAttributeValue(SimpleFeature f) {
         Geometry g = (Geometry) f.getAttribute(attribute);
 
-        if (g instanceof MultiPoint) return (double) ((MultiPoint) g).getNumGeometries();
+        if (g instanceof MultiPoint) return (double) g.getNumGeometries();
         if (g instanceof Polygon || g instanceof MultiPolygon) return g.getArea();
         else return g.getLength();
     }

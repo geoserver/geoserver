@@ -69,7 +69,7 @@ public class ClassProperties {
      * @return A list of string.
      */
     public List<String> properties() {
-        ArrayList<String> properties = new ArrayList<String>();
+        ArrayList<String> properties = new ArrayList<>();
         for (String key : getters.keySet()) {
             if (key.equals("Resource")) {
                 properties.add(0, key);
@@ -95,7 +95,7 @@ public class ClassProperties {
             if (type == null) {
                 return setter;
             } else {
-                Class target = setter.getParameterTypes()[0];
+                Class<?> target = setter.getParameterTypes()[0];
                 if (target.isAssignableFrom(type)
                         || (target.isPrimitive() && type == wrapper(target))
                         || (type.isPrimitive() && target == wrapper(type))) {
@@ -122,14 +122,14 @@ public class ClassProperties {
      * @param type The type of the property.
      * @return The getter for the property, or null if it does not exist.
      */
-    public Method getter(String property, Class type) {
+    public Method getter(String property, Class<?> type) {
         Collection<Method> methods = getters.get(property);
         if (methods != null) {
             for (Method getter : methods) {
                 if (type == null) {
                     return getter;
                 } else {
-                    Class target = getter.getReturnType();
+                    Class<?> target = getter.getReturnType();
                     if (type.isAssignableFrom(target)
                             || (target.isPrimitive() && type == wrapper(target))
                             || (type.isPrimitive() && target == wrapper(type))) {

@@ -67,10 +67,10 @@ public class FloatParameterFilterSubform
                         return null;
                     } else {
                         String[] strings = StringUtils.split(value, "\r\n");
-                        List<Float> floats = new ArrayList<Float>(strings.length);
+                        List<Float> floats = new ArrayList<>(strings.length);
 
                         for (String s : strings) {
-                            floats.add((Float) FLOAT.convertToObject(s, locale));
+                            floats.add(FLOAT.convertToObject(s, locale));
                         }
                         return floats;
                     }
@@ -96,15 +96,12 @@ public class FloatParameterFilterSubform
 
         final Component defaultValue;
 
-        defaultValue =
-                new TextField<String>(
-                        "defaultValue", new PropertyModel<String>(model, "defaultValue"));
+        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final TextArea<List<Float>> values;
         values =
-                new TextArea<List<Float>>(
-                        "values", new PropertyModel<List<Float>>(model, "values")) {
+                new TextArea<List<Float>>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
 
@@ -122,7 +119,7 @@ public class FloatParameterFilterSubform
 
         final Component threshold;
         threshold =
-                new TextField<Float>("threshold", new PropertyModel<Float>(model, "threshold")) {
+                new TextField<Float>("threshold", new PropertyModel<>(model, "threshold")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
 

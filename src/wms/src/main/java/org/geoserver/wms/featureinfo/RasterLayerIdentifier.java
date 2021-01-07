@@ -201,12 +201,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
         // now set the extra request parameters for this request
         String[] propertyNames = requestParams.getPropertyNames();
-        for (int k = 0; k < parameters.length; k++) {
-            if (!(parameters[k] instanceof Parameter<?>)) {
+        for (GeneralParameterValue generalParameterValue : parameters) {
+            if (!(generalParameterValue instanceof Parameter<?>)) {
                 continue;
             }
 
-            final Parameter<?> parameter = (Parameter<?>) parameters[k];
+            final Parameter<?> parameter = (Parameter<?>) generalParameterValue;
             ReferenceIdentifier name = parameter.getDescriptor().getName();
             if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
                 //
@@ -406,7 +406,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(coverageName);
-        final Set<String> bandNames = new HashSet<String>();
+        final Set<String> bandNames = new HashSet<>();
         for (int i = 0; i < sampleDimensions.length; i++) {
             String name = descriptionToNcName(sampleDimensions[i].getDescription().toString());
             // GEOS-2518

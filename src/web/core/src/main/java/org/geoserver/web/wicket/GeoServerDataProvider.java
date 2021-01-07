@@ -194,7 +194,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             return filterByKeywords(items);
         } else {
             // make a deep copy anyways, the catalog does not do that for us
-            return new ArrayList<T>(items);
+            return new ArrayList<>(items);
         }
     }
 
@@ -214,7 +214,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     private List<T> filterByKeywords(List<T> items) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
 
         final Matcher[] matchers = getMatchers();
 
@@ -244,7 +244,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /** Returns only the properties that have been marked as visible */
     List<Property<T>> getVisibleProperties() {
-        List<Property<T>> results = new ArrayList<Property<T>>();
+        List<Property<T>> results = new ArrayList<>();
         for (Property<T> p : getProperties()) {
             if (p.isVisible()) results.add(p);
         }
@@ -271,7 +271,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         if (property != null) {
             Comparator<T> comparator = property.getComparator();
             if (comparator != null) {
-                if (!sort.isAscending()) return new ReverseComparator<T>(comparator);
+                if (!sort.isAscending()) return new ReverseComparator<>(comparator);
                 else return comparator;
             }
         }
@@ -301,7 +301,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             IModel<T> result = modelCache.get(object);
             if (result == null) {
                 result = newModel(object);
-                modelCache.put((T) object, result);
+                modelCache.put(object, result);
             }
             return result;
         } else {
@@ -339,7 +339,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      */
     @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
-        return (IModel<T>) new Model<Serializable>((Serializable) object);
+        return (IModel<T>) new Model<>((Serializable) object);
     }
 
     /**
@@ -388,7 +388,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         }
 
         public Comparator<T> getComparator() {
-            return new PropertyComparator<T>(this);
+            return new PropertyComparator<>(this);
         }
 
         /**
@@ -397,11 +397,11 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * implementation ( {@link BeanProperty} provides a good example)
          */
         public IModel<?> getModel(IModel<T> itemModel) {
-            Object value = getPropertyValue((T) itemModel.getObject());
+            Object value = getPropertyValue(itemModel.getObject());
             if (value instanceof IModel) {
                 return (IModel<?>) value;
             } else {
-                return new Model<Serializable>((Serializable) value);
+                return new Model<>((Serializable) value);
             }
         }
 
@@ -452,7 +452,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * immutable values contained in it (think a String property)
          */
         public IModel<T> getModel(IModel<T> itemModel) {
-            return new PropertyModel<T>(itemModel, propertyPath);
+            return new PropertyModel<>(itemModel, propertyPath);
         }
 
         public Object getPropertyValue(T bean) {

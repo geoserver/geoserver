@@ -20,11 +20,10 @@ public class PasswordPolicyProvider extends SecurityNamedServiceProvider<Passwor
 
     @Override
     protected List<PasswordPolicyConfig> getItems() {
-        List<PasswordPolicyConfig> result = new ArrayList<PasswordPolicyConfig>();
+        List<PasswordPolicyConfig> result = new ArrayList<>();
         try {
             for (String name : getSecurityManager().listPasswordValidators()) {
-                result.add(
-                        (PasswordPolicyConfig) getSecurityManager().loadPasswordPolicyConfig(name));
+                result.add(getSecurityManager().loadPasswordPolicyConfig(name));
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);

@@ -73,7 +73,8 @@ public abstract class RequestObject {
         return eGet(adaptee, "extendedProperties", Map.class);
     }
 
-    public Map getFormatOptions() {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getFormatOptions() {
         return eGet(adaptee, "formatOptions", Map.class);
     }
 
@@ -93,12 +94,14 @@ public abstract class RequestObject {
         eSet(adaptee, "typeName", typeName);
     }
 
+    @SuppressWarnings("unchecked")
     public List<QName> getTypeNames() {
         return eGet(adaptee, "typeName", List.class);
     }
 
     public void setTypeNames(List<QName> typeNames) {
-        List l = eGet(adaptee, "typeName", List.class);
+        @SuppressWarnings("unchecked")
+        List<QName> l = eGet(adaptee, "typeName", List.class);
         l.clear();
         l.addAll(typeNames);
     }
@@ -137,7 +140,7 @@ public abstract class RequestObject {
             }
             obj = EMFUtils.get((EObject) obj, prop);
         }
-        return (T) obj;
+        return type.cast(obj);
     }
 
     protected void eSet(Object obj, String property, Object value) {

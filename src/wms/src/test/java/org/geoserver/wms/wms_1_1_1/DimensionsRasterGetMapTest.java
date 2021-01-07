@@ -855,11 +855,13 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         getCatalog().save(info);
 
         TimeParser parser = new TimeParser();
+        @SuppressWarnings("unchecked")
         List<Object> queryRanges = (List<Object>) parser.parse("2014-01-01/2019-01-01/P1Y");
         // 1Y Period is 365.25 days so the parsing will result in days not aligned to 1st of January
         // at 00:00:00
 
         // Add a duplicate
+        @SuppressWarnings("unchecked")
         Date duplicate = (Date) ((List<Object>) parser.parse("2014-01-01T00:00:00.000Z")).get(0);
         queryRanges.add(duplicate);
         assertEquals(7, queryRanges.size());
@@ -868,7 +870,9 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         TreeSet<Date> times = wms.queryCoverageNearestMatchTimes(info, queryRanges);
         assertEquals(6, times.size());
         for (int i = 2014; i < 2020; i++) {
-            Date date = (Date) ((List<Object>) parser.parse(i + "-01-01T00:00:00.000Z")).get(0);
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) parser.parse(i + "-01-01T00:00:00.000Z");
+            Date date = (Date) list.get(0);
             assertTrue(times.contains(date));
         }
     }

@@ -98,7 +98,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
 
             ConcurrentLinkedQueue<SoftReference<?>> arrays = get(key);
             if (arrays == null) {
-                arrays = new ConcurrentLinkedQueue<SoftReference<?>>();
+                arrays = new ConcurrentLinkedQueue<>();
                 arrays.add(getBankReference(db));
                 put(key, arrays);
                 return;
@@ -111,7 +111,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
         private static SoftReference<?> getBankReference(DataBuffer db) {
             try {
                 Object array = PropertyUtils.getProperty(db, "bankData");
-                return new SoftReference<Object>(array);
+                return new SoftReference<>(array);
             } catch (Exception e) {
                 throw new UnsupportedOperationException("Unknown data buffer type " + db);
             }

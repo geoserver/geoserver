@@ -30,11 +30,11 @@ public class GeometryTextArea extends TextArea<Geometry> {
     protected TextArea<String> geometry;
 
     public GeometryTextArea(String id) {
-        this(id, new Model<Geometry>(null));
+        this(id, new Model<>(null));
     }
 
     public GeometryTextArea(String id, Geometry g) {
-        this(id, new Model<Geometry>(g));
+        this(id, new Model<>(g));
     }
 
     public GeometryTextArea(String id, IModel<Geometry> model) {

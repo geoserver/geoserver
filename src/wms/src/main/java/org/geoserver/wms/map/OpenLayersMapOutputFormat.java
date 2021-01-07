@@ -28,7 +28,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
 
     /** The formats accepted in a GetMap request for this producer and stated in getcaps */
     private static final Set<String> OUTPUT_FORMATS =
-            new HashSet<String>(Arrays.asList("application/openlayers", "openlayers", MIME_TYPE));
+            new HashSet<>(Arrays.asList("application/openlayers", "openlayers", MIME_TYPE));
 
     private final OpenLayers2MapOutputFormat ol2Format;
     private final OpenLayers3MapOutputFormat ol3Format;

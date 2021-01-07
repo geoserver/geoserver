@@ -68,7 +68,7 @@ public class DescribeFeatureType {
     }
 
     public FeatureTypeInfo[] run(DescribeFeatureTypeRequest request) throws WFSException {
-        List<QName> names = new ArrayList<QName>(request.getTypeNames());
+        List<QName> names = new ArrayList<>(request.getTypeNames());
 
         final boolean citeConformance = getWFS().isCiteCompliant();
         if (!citeConformance) {
@@ -78,7 +78,7 @@ public class DescribeFeatureType {
             // namespace". Yet, the xml parser did its job and since TypeName is
             // of QName type, not having a ns prefix means it got parsed as a
             // QName in the default namespace. That is, in the wfs namespace.
-            List<QName> hackedNames = new ArrayList<QName>(names.size());
+            List<QName> hackedNames = new ArrayList<>(names.size());
             final NamespaceInfo defaultNameSpace = catalog.getDefaultNamespace();
             if (defaultNameSpace == null) {
                 throw new IllegalStateException("No default namespace configured in GeoServer");
@@ -99,7 +99,7 @@ public class DescribeFeatureType {
         }
 
         // list of catalog handles
-        List<FeatureTypeInfo> requested = new ArrayList<FeatureTypeInfo>(names.size());
+        List<FeatureTypeInfo> requested = new ArrayList<>(names.size());
 
         if (names.isEmpty()) {
             // if there are no specific requested types then get all the ones that
@@ -108,8 +108,7 @@ public class DescribeFeatureType {
                     ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                             getWFS().getGeoServer().getGlobal().getResourceErrorHandling());
 
-            for (FeatureTypeInfo ftInfo :
-                    new ArrayList<FeatureTypeInfo>(catalog.getFeatureTypes())) {
+            for (FeatureTypeInfo ftInfo : new ArrayList<>(catalog.getFeatureTypes())) {
                 if (ftInfo.enabled()) {
                     try {
                         ftInfo.getFeatureType(); // check that we can get a connection to this ftype
@@ -158,6 +157,6 @@ public class DescribeFeatureType {
             }
         }
 
-        return (FeatureTypeInfo[]) requested.toArray(new FeatureTypeInfo[requested.size()]);
+        return requested.toArray(new FeatureTypeInfo[requested.size()]);
     }
 }

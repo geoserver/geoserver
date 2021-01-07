@@ -55,7 +55,7 @@ public class WCSDimensionsValueParser {
             if (l > h) {
                 throwInvalidRangeException(low, high);
             }
-            selectedValues.add(new NumberRange(Integer.class, l, h));
+            selectedValues.add(new NumberRange<>(Integer.class, l, h));
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ public class WCSDimensionsValueParser {
             if (l > h) {
                 throwInvalidRangeException(low, high);
             }
-            selectedValues.add(new NumberRange(Double.class, l, h));
+            selectedValues.add(new NumberRange<>(Double.class, l, h));
             return true;
         }
         return false;
@@ -132,7 +132,7 @@ public class WCSDimensionsValueParser {
                     String max = range[1];
                     final Double minValue = XML_CONVERTER.parseDouble(min);
                     final Double maxValue = XML_CONVERTER.parseDouble(max);
-                    return new NumberRange<Double>(Double.class, minValue, maxValue);
+                    return new NumberRange<>(Double.class, minValue, maxValue);
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -202,7 +202,7 @@ public class WCSDimensionsValueParser {
 
     /** Get the domain set as a set of number. */
     public TreeSet<Double> getDomainNumber(TreeSet<Object> domain) {
-        TreeSet<Double> results = new TreeSet<Double>();
+        TreeSet<Double> results = new TreeSet<>();
         for (Object item : domain) {
             if (item instanceof Number) {
                 Double number = (Double) item;

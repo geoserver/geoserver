@@ -6,7 +6,6 @@
 package org.geoserver.platform;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,7 +40,7 @@ public class ServiceException extends RuntimeException {
     protected String locator;
 
     /** List of text recording information about the exception */
-    List exceptionText = new ArrayList();
+    List<String> exceptionText = new ArrayList<>();
 
     /**
      * Constructs the exception from a message.
@@ -203,18 +202,17 @@ public class ServiceException extends RuntimeException {
      *
      * @return A list of String recording information about the exception.
      */
-    public List getExceptionText() {
+    public List<String> getExceptionText() {
         return exceptionText;
     }
 
     @Override
     public String toString() {
         String msg = super.toString();
-        if (exceptionText == null || exceptionText.size() == 0) return msg;
+        if (exceptionText == null || exceptionText.isEmpty()) return msg;
 
         StringBuffer sb = new StringBuffer(msg);
-        for (Iterator it = exceptionText.iterator(); it.hasNext(); ) {
-            String extraMessage = (String) it.next();
+        for (String extraMessage : exceptionText) {
             sb.append(NEW_LINE).append(extraMessage);
         }
         return sb.toString();

@@ -40,6 +40,7 @@ class PropertyComparator<T> implements Comparator<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private int compareAscending(T f1, T f2) {
         Object a1 = propertyName.evaluate(f1);
         Comparable o1, o2;

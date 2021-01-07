@@ -37,7 +37,6 @@ import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                                 createRoleStore("test1", secMgr, "duplicated");
 
                         expect(secMgr.listRoleServices())
-                                .andReturn(new TreeSet<String>(Arrays.asList("test", "test1")))
+                                .andReturn(new TreeSet<>(Arrays.asList("test", "test1")))
                                 .anyTimes();
 
                         replay(roleStore1, roleStore2, secMgr);
@@ -210,24 +209,23 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                         expect(dataAccessRule.compareTo(dataAccessRule)).andReturn(0).anyTimes();
                         expect(dataAccessRule.getKey()).andReturn("foo").anyTimes();
                         expect(dataAccessRule.getRoles())
-                                .andReturn(new TreeSet<String>(Arrays.asList("role1")))
+                                .andReturn(new TreeSet<>(Arrays.asList("role1")))
                                 .anyTimes();
                         replay(dataAccessRule);
 
                         DataAccessRuleDAO dataAccessDAO = createNiceMock(DataAccessRuleDAO.class);
                         expect(dataAccessDAO.getRulesAssociatedWithRole("role1"))
-                                .andReturn(
-                                        new TreeSet<DataAccessRule>(Arrays.asList(dataAccessRule)))
+                                .andReturn(new TreeSet<>(Arrays.asList(dataAccessRule)))
                                 .anyTimes();
                         expect(dataAccessDAO.getRulesAssociatedWithRole("parent1"))
-                                .andReturn(new TreeSet<DataAccessRule>())
+                                .andReturn(new TreeSet<>())
                                 .anyTimes();
                         expect(secMgr.getDataAccessRuleDAO()).andReturn(dataAccessDAO).anyTimes();
 
                         ServiceAccessRuleDAO serviceAccessDAO =
                                 createNiceMock(ServiceAccessRuleDAO.class);
-                        expect(serviceAccessDAO.getRulesAssociatedWithRole((String) anyObject()))
-                                .andReturn(new TreeSet<ServiceAccessRule>())
+                        expect(serviceAccessDAO.getRulesAssociatedWithRole(anyObject()))
+                                .andReturn(new TreeSet<>())
                                 .anyTimes();
                         expect(secMgr.getServiceAccessRuleDAO())
                                 .andReturn(serviceAccessDAO)
@@ -273,7 +271,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
                         GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "role1");
                         expect(roleStore.getGroupNamesForRole(new GeoServerRole("role1")))
-                                .andReturn(new TreeSet<String>(Arrays.asList("group1", "group2")))
+                                .andReturn(new TreeSet<>(Arrays.asList("group1", "group2")))
                                 .anyTimes();
 
                         replay(ugStore1, ugStore2, roleStore, secMgr);

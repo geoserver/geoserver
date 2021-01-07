@@ -54,7 +54,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.wms.responses.map.htmlimagemap.holes.HolesRemover;
 
@@ -127,7 +126,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
 
     /** Initializes every type of writer (one for every kind of geometry). */
     private void initWriters() {
-        writers = new HashMap<Class<?>, HTMLImageMapFeatureWriter>();
+        writers = new HashMap<>();
         writers.put(Point.class, new PointWriter());
         writers.put(LineString.class, new LineStringWriter());
         writers.put(LinearRing.class, new LineStringWriter());
@@ -176,7 +175,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                 }
                 // retrieves the right feature writer (based on the geometry type of the feature)
                 HTMLImageMapFeatureWriter featureWriter =
-                        (HTMLImageMapFeatureWriter) writers.get(ft.getDefaultGeometry().getClass());
+                        writers.get(ft.getDefaultGeometry().getClass());
                 // encodes a single feature, using the supplied style and the current featureWriter
                 featureWriter.writeFeature(ft, ftsList);
                 ft = null;
@@ -210,7 +209,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * @param feature The feature being filtered against.
      */
     List<Rule> filterRules(FeatureTypeStyle featureTypeStyle, SimpleFeature feature) {
-        List<Rule> filtered = new ArrayList<Rule>();
+        List<Rule> filtered = new ArrayList<>();
 
         // process the rules, keep track of the need to apply an else filters
         boolean match = false;
@@ -274,7 +273,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
     private abstract class HTMLImageMapFeatureWriter {
 
         // stores a series of attributes to append to the feature tag definition
-        Map<String, String> extraAttributes = new HashMap<String, String>();
+        Map<String, String> extraAttributes = new HashMap<>();
 
         StringBuffer buffer = new StringBuffer();
 
@@ -460,7 +459,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param ft current feature to encode
          */
         protected void reset(SimpleFeature ft) {
-            extraAttributes = new HashMap<String, String>();
+            extraAttributes = new HashMap<>();
             buffer = new StringBuffer();
         }
 
@@ -476,8 +475,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList)
                 throws IOException {
             int total = 0;
-            for (int i = 0; i < ftsList.length; i++) {
-                FeatureTypeStyle fts = ftsList[i];
+            for (FeatureTypeStyle fts : ftsList) {
                 List<Rule> rules = filterRules(fts, ft);
                 total += rules.size();
 
@@ -567,8 +565,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         protected void writePathContent(Coordinate[] coords, StringBuffer buf) throws IOException {
             StringBuffer tempBuf = new StringBuffer();
             int nCoords = coords.length;
-            for (int i = 0; i < nCoords; i++) {
-                Coordinate curr = coords[i];
+            for (Coordinate curr : coords) {
                 String p = getPoint(curr);
 
                 tempBuf.append(" " + p);
@@ -596,12 +593,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                 xform = f.createAffineTransform(new GeneralMatrix(worldToScreen.createInverse()));
                 Decimator decimator = new Decimator(xform, mapArea);
                 geom = decimator.decimate(geom);
-            } catch (FactoryException e1) {
-
-            } catch (NoninvertibleTransformException e1) {
-
-            } catch (Exception e1) {
-
+            } catch (Exception e) {
+                // in case of failure, do not simplify
             }
             return geom;
         }
@@ -823,7 +816,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                     Class<?> gtype = geom.getClass();
 
                     // retrieves the right feature writer (based on the current geometry type)
-                    delegateWriter = (HTMLImageMapFeatureWriter) writers.get(gtype);
+                    delegateWriter = writers.get(gtype);
                     if (processStyle(ft, fts)) {
                         try {
                             startElement(ft, "." + i);
@@ -867,7 +860,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             if (delegateWriter.processStyle(ft, ftsList)) {
                 Iterator<String> iter = delegateWriter.extraAttributes.keySet().iterator();
                 while (iter.hasNext()) {
-                    String attrName = (String) iter.next();
+                    String attrName = iter.next();
                     extraAttributes.put(attrName, delegateWriter.extraAttributes.get(attrName));
                 }
                 return true;

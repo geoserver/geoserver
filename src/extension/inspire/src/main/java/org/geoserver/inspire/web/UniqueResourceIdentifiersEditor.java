@@ -79,8 +79,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             codeFragment.add(codeBorder);
                             TextField<String> code =
-                                    new TextField<String>(
-                                            "txt", new PropertyModel<String>(itemModel, "code"));
+                                    new TextField<>("txt", new PropertyModel<>(itemModel, "code"));
                             code.setLabel(
                                     new ParamResourceModel(
                                             "th.code", UniqueResourceIdentifiersEditor.this));
@@ -97,9 +96,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             nsFragment.add(namespaceBorder);
                             TextField<String> namespace =
-                                    new TextField<String>(
-                                            "txt",
-                                            new PropertyModel<String>(itemModel, "namespace"));
+                                    new TextField<>(
+                                            "txt", new PropertyModel<>(itemModel, "namespace"));
                             namespace.setLabel(
                                     new ParamResourceModel(
                                             "th.namespace", UniqueResourceIdentifiersEditor.this));
@@ -116,9 +114,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             urlFragment.add(namespaceBorder);
                             TextField<String> url =
-                                    new TextField<String>(
-                                            "txt",
-                                            new PropertyModel<String>(itemModel, "metadataURL"));
+                                    new TextField<>(
+                                            "txt", new PropertyModel<>(itemModel, "metadataURL"));
                             url.add(new URIValidator());
                             namespaceBorder.add(url);
                             return urlFragment;
@@ -136,9 +133,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                                 AjaxRequestTarget target, Form form) {
                                             UniqueResourceIdentifiers identifiers =
                                                     provider.getItems();
-                                            UniqueResourceIdentifier sdi =
-                                                    (UniqueResourceIdentifier)
-                                                            itemModel.getObject();
+                                            UniqueResourceIdentifier sdi = itemModel.getObject();
                                             identifiers.remove(sdi);
                                             target.add(container);
                                         }

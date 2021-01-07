@@ -50,7 +50,6 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -117,10 +116,10 @@ public class MockCreator implements Callback {
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
         expect(catalog.getResourceLoader()).andReturn(loader).anyTimes();
 
-        catalog.removeListeners((Class) EasyMock.anyObject());
+        catalog.removeListeners(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
-        catalog.addListener((CatalogListener) EasyMock.anyObject());
+        catalog.addListener(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
         expect(catalog.getResourcePool())
@@ -222,7 +221,7 @@ public class MockCreator implements Callback {
                 .andReturn(MasterPasswordProvider.DEFAULT_NAME)
                 .anyTimes();
         expect(secMgr.listMasterPasswordProviders())
-                .andReturn(new TreeSet<String>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME)))
                 .anyTimes();
 
         final File mrPwdFolder = new File(testData.getDataDirectoryRoot(), "master-pwd");
@@ -246,7 +245,7 @@ public class MockCreator implements Callback {
                 .anyTimes();
         expect(secMgr.listPasswordValidators())
                 .andReturn(
-                        new TreeSet<String>(
+                        new TreeSet<>(
                                 Arrays.asList(
                                         PasswordValidator.DEFAULT_NAME,
                                         PasswordValidator.MASTERPASSWORD_NAME)))
@@ -257,7 +256,7 @@ public class MockCreator implements Callback {
         GeoServerUserGroupStore ugStore =
                 createUserGroupStore(XMLUserGroupService.DEFAULT_NAME, secMgr);
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList(XMLUserGroupService.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(XMLUserGroupService.DEFAULT_NAME)))
                 .anyTimes();
 
         SecurityUserGroupServiceConfig ugConfig =
@@ -273,7 +272,7 @@ public class MockCreator implements Callback {
         // default role store
         GeoServerRoleStore roleStore = createRoleStore(XMLRoleService.DEFAULT_NAME, secMgr);
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList(XMLRoleService.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(XMLRoleService.DEFAULT_NAME)))
                 .anyTimes();
         expect(secMgr.getActiveRoleService()).andReturn(roleStore).anyTimes();
 
@@ -302,8 +301,7 @@ public class MockCreator implements Callback {
                 .anyTimes();
         expect(secMgr.listAuthenticationProviders())
                 .andReturn(
-                        new TreeSet<String>(
-                                Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
+                        new TreeSet<>(Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
                 .anyTimes();
         expect(secMgr.getAuthenticationProviders())
                 .andReturn(Arrays.asList(authProvider))
@@ -450,13 +448,12 @@ public class MockCreator implements Callback {
                         new IAnswer<List<GeoServerPasswordEncoder>>() {
                             @Override
                             public List<GeoServerPasswordEncoder> answer() throws Throwable {
-                                return (List)
-                                        Arrays.asList(
-                                                createEmptyPasswordEncoder(secMgr),
-                                                createPlainTextPasswordEncoder(secMgr),
-                                                createPbePasswordEncoder(secMgr),
-                                                createStrongPbePasswordEncoder(secMgr),
-                                                createDigestPasswordEncoder(secMgr));
+                                return Arrays.asList(
+                                        createEmptyPasswordEncoder(secMgr),
+                                        createPlainTextPasswordEncoder(secMgr),
+                                        createPbePasswordEncoder(secMgr),
+                                        createStrongPbePasswordEncoder(secMgr),
+                                        createDigestPasswordEncoder(secMgr));
                             }
                         })
                 .anyTimes();

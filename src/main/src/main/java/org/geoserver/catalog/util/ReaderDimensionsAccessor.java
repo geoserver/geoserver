@@ -96,6 +96,7 @@ public class ReaderDimensionsAccessor {
             };
 
     /** Comparator for TreeSet made either by Double objects, or by NumberRange objects */
+    @SuppressWarnings("unchecked")
     private static final Comparator<Object> ELEVATION_COMPARATOR =
             new Comparator<Object>() {
 
@@ -105,8 +106,8 @@ public class ReaderDimensionsAccessor {
                         if (o2 instanceof Double) {
                             return ((Double) o1).compareTo((Double) o2);
                         } else if (o2 instanceof NumberRange) {
-                            return ((Double) o1)
-                                    .compareTo(((NumberRange<Double>) o2).getMinValue());
+                            NumberRange<Double> nrd = (NumberRange<Double>) o2;
+                            return ((Double) o1).compareTo(nrd.getMinValue());
                         }
                     } else if (o1 instanceof NumberRange) {
                         if (o2 instanceof NumberRange) {
@@ -127,7 +128,7 @@ public class ReaderDimensionsAccessor {
 
     private final GridCoverage2DReader reader;
 
-    private final List<String> metadataNames = new ArrayList<String>();
+    private final List<String> metadataNames = new ArrayList<>();
 
     public ReaderDimensionsAccessor(GridCoverage2DReader reader) throws IOException {
         Utilities.ensureNonNull("reader", reader);
@@ -155,7 +156,7 @@ public class ReaderDimensionsAccessor {
         final SimpleDateFormat df = getTimeFormat();
         String domain = reader.getMetadataValue(TIME_DOMAIN);
         String[] timeInstants = domain.split("\\s*,\\s*");
-        TreeSet<Object> values = new TreeSet<Object>(TEMPORAL_COMPARATOR);
+        TreeSet<Object> values = new TreeSet<>(TEMPORAL_COMPARATOR);
         for (String tp : timeInstants) {
             try {
                 values.add(parseTimeOrRange(df, tp));
@@ -185,7 +186,7 @@ public class ReaderDimensionsAccessor {
 
         // if we got here, the optimization did not work, do the normal path
         if (result == null) {
-            result = new TreeSet<Object>();
+            result = new TreeSet<>();
             TreeSet<Object> fullDomain = getTimeDomain();
 
             for (Object o : fullDomain) {
@@ -239,7 +240,7 @@ public class ReaderDimensionsAccessor {
             }
             double start = Double.parseDouble(strStart);
             double end = Double.parseDouble(strEnd);
-            return new NumberRange<Double>(Double.class, start, end);
+            return new NumberRange<>(Double.class, start, end);
         } else {
             return Double.parseDouble(val);
         }
@@ -304,7 +305,7 @@ public class ReaderDimensionsAccessor {
         }
         // parse the values from the reader, they are exposed as strings...
         String[] elevationValues = reader.getMetadataValue(ELEVATION_DOMAIN).split(",");
-        TreeSet<Object> elevations = new TreeSet<Object>(ELEVATION_COMPARATOR);
+        TreeSet<Object> elevations = new TreeSet<>(ELEVATION_COMPARATOR);
         for (String val : elevationValues) {
             try {
                 elevations.add(parseNumberOrRange(val));
@@ -321,6 +322,7 @@ public class ReaderDimensionsAccessor {
      * in the specified range. They are either {@link Double} objects, or {@link NumberRange}
      * objects, according to what the underlying reader provides.
      */
+    @SuppressWarnings("unchecked")
     public TreeSet<Object> getElevationDomain(NumberRange range, int maxEntries)
             throws IOException {
         if (!hasElevation()) {
@@ -336,7 +338,7 @@ public class ReaderDimensionsAccessor {
 
         // if we got here, the optimization did not work, do the normal path
         if (result == null) {
-            result = new TreeSet<Object>();
+            result = new TreeSet<>();
             TreeSet<Object> fullDomain = getElevationDomain();
 
             for (Object o : fullDomain) {
@@ -385,6 +387,7 @@ public class ReaderDimensionsAccessor {
                 // unique visitor)
                 UniqueVisitor visitor = new UniqueVisitor(attribute);
                 collection.accepts(visitor, null);
+                @SuppressWarnings("unchecked")
                 TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
                 return result;
             }
@@ -432,8 +435,8 @@ public class ReaderDimensionsAccessor {
         if (metadataNames.isEmpty()) {
             return Collections.emptyList();
         }
-        Set<String> names = new HashSet<String>(metadataNames);
-        TreeSet<String> result = new TreeSet<String>();
+        Set<String> names = new HashSet<>(metadataNames);
+        TreeSet<String> result = new TreeSet<>();
         for (String name : names) {
             if (name.startsWith("HAS_") && name.endsWith("_DOMAIN")) {
                 String dimension = name.substring(4, name.length() - 7);
@@ -445,7 +448,7 @@ public class ReaderDimensionsAccessor {
             }
         }
 
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
 
     /** Return the domain datatype (if available) */
@@ -463,7 +466,7 @@ public class ReaderDimensionsAccessor {
     /** Returns the full set of values for the given dimension */
     public List<String> getDomain(String name) throws IOException {
         String[] values = reader.getMetadataValue(name.toUpperCase() + "_DOMAIN").split(",");
-        List<String> valueSet = new ArrayList<String>();
+        List<String> valueSet = new ArrayList<>();
         for (String val : values) {
             valueSet.add(val);
         }
@@ -502,13 +505,15 @@ public class ReaderDimensionsAccessor {
     }
 
     public Collection<Object> convertDimensionValue(String name, String value) {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         try {
             String typeName = getDomainDatatype(name);
             if (typeName != null) {
                 Class<?> type = Class.forName(typeName);
                 if (type == java.util.Date.class) {
-                    result.addAll(new TimeParser().parse(value));
+                    @SuppressWarnings("unchecked")
+                    Collection<Object> parsed = new TimeParser().parse(value);
+                    result.addAll(parsed);
                 } else if (Number.class.isAssignableFrom(type) && !value.contains(",")) {
                     result.add(parseNumberOrRange(value));
                 } else {
@@ -528,7 +533,7 @@ public class ReaderDimensionsAccessor {
     }
 
     public List<Object> convertDimensionValue(String name, List<String> value) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
 
         for (String val : value) {
             list.addAll(convertDimensionValue(name, val));

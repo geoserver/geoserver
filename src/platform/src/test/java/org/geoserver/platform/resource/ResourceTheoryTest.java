@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -503,7 +504,7 @@ public abstract class ResourceTheoryTest {
     public void theoryRootSlashIsIgnored(String path) throws Exception {
         final Resource res = getResource(path);
         final Resource res2 = getResource("/" + path);
-        assertTrue(res.equals(res2));
-        assertTrue(res.path().equals(res2.path()));
+        assertEquals(res, res2);
+        assertEquals(res.path(), res2.path());
     }
 }

@@ -38,7 +38,7 @@ public class RasterZonalStatsTest extends WPSTestSupport {
         // add extra data used by this test
         addWcs11Coverages(testData);
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.SRS, 26713);
 
         testData.addRasterLayer(DEM, "sfdem.tiff", ".tiff", props, getClass(), getCatalog());

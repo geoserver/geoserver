@@ -154,7 +154,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             logger.debug("Getting authorities for user " + userDn);
         }
 
-        final List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
+        final List<GrantedAuthority> result = new ArrayList<>();
 
         // password included -> authenticate before search
         if (password != null) {
@@ -198,10 +198,10 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
     public Set<GrantedAuthority> getGroupMembershipRoles(
             Consumer<Consumer<DirContext>> ctxConsumer, String userDn, String username) {
         if (getGroupSearchBase() == null) {
-            return new HashSet<GrantedAuthority>();
+            return new HashSet<>();
         }
 
-        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
         if (logger.isDebugEnabled()) {
             logger.debug(
@@ -220,8 +220,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
         ctxConsumer.accept(
                 (ctx) -> {
                     SpringSecurityLdapTemplate authTemplate =
-                            (SpringSecurityLdapTemplate)
-                                    LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
+                            LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
 
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
@@ -291,8 +290,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
         ctxConsumer.accept(
                 (ctx) -> {
                     SpringSecurityLdapTemplate authTemplate =
-                            (SpringSecurityLdapTemplate)
-                                    LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
+                            LDAPUtils.getLdapTemplateInContext(ctx, ldapTemplate);
                     // Get ldap groups in form of Pair<String,String> -> Pair<name,dn>
                     final String formattedFilter =
                             MessageFormat.format(nestedGroupSearchFilter, groupDn, groupName);

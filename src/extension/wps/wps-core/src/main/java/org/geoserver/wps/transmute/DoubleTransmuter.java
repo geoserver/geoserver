@@ -34,7 +34,7 @@ public class DoubleTransmuter implements LiteralTransmuter {
 
     /** @see LiteralTransmuter#encode(Object) */
     public String encode(Object value) {
-        return ((Double) value).toString();
+        return value.toString();
     }
 
     /** @see LiteralTransmuter#getEncodedType() */

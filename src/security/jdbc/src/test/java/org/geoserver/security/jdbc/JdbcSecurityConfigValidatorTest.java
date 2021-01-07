@@ -172,7 +172,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("default", "jdbc")))
+                .andReturn(new TreeSet<>(Arrays.asList("default", "jdbc")))
                 .anyTimes();
         replay(secMgr);
         validator = new JdbcSecurityConfigValidator(secMgr);
@@ -338,13 +338,13 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("default", "jdbc")))
+                .andReturn(new TreeSet<>(Arrays.asList("default", "jdbc")))
                 .anyTimes();
 
         GeoServerPlainTextPasswordEncoder pwEncoder = getPlainTextPasswordEncoder();
         expect(secMgr.loadPasswordEncoder(pwEncoder.getName())).andReturn(pwEncoder).anyTimes();
         expect(secMgr.listPasswordValidators())
-                .andReturn(new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
                 .anyTimes();
         replay(secMgr);
 

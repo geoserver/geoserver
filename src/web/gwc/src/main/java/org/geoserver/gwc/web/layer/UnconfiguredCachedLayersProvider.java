@@ -64,9 +64,9 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
                 }
             };
 
-    static final Property<TileLayer> NAME = new BeanProperty<TileLayer>("name", "name");
+    static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<TileLayer> ENABLED = new BeanProperty<TileLayer>("enabled", "enabled");
+    static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final List<Property<TileLayer>> PROPERTIES =
             Collections.unmodifiableList(Arrays.asList(TYPE, NAME, ENABLED));
@@ -114,7 +114,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     @Override
     public Iterator<TileLayer> iterator(long first, long count) {
         final Stream<TileLayer> stream = tileLayerStream(first, count);
-        return new CloseableIteratorAdapter<TileLayer>(stream.iterator(), () -> stream.close());
+        return new CloseableIteratorAdapter<>(stream.iterator(), () -> stream.close());
     }
 
     private Stream<TileLayer> tileLayerStream(long first, long count) {
@@ -210,7 +210,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object) */
     public IModel<TileLayer> newModel(final TileLayer tileLayer) {
-        return new UnconfiguredTileLayerDetachableModel(((TileLayer) tileLayer).getName());
+        return new UnconfiguredTileLayerDetachableModel(tileLayer.getName());
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator */

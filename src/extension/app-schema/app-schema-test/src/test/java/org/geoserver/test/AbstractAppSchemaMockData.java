@@ -115,18 +115,16 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     static final Envelope DEFAULT_ENVELOPE = new Envelope(-180, 180, -90, 90);
 
     /** Map of data store name to data store connection parameters map. */
-    private final Map<String, Map<String, Serializable>> datastoreParams =
-            new LinkedHashMap<String, Map<String, Serializable>>();
+    private final Map<String, Map<String, Serializable>> datastoreParams = new LinkedHashMap<>();
 
     /** Map of data store name to namespace prefix. */
-    private final Map<String, String> datastoreNamespacePrefixes =
-            new LinkedHashMap<String, String>();
+    private final Map<String, String> datastoreNamespacePrefixes = new LinkedHashMap<>();
 
     private final Map<String, String> namespaces;
 
     private final List<String> isolatedNamespaces = new ArrayList<>();
 
-    private final Map<String, String> layerStyles = new LinkedHashMap<String, String>();
+    private final Map<String, String> layerStyles = new LinkedHashMap<>();
 
     private File styles;
 
@@ -164,7 +162,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     public AbstractAppSchemaMockData(Map<String, String> namespaces) {
         super(newRandomDirectory());
-        this.namespaces = new LinkedHashMap<String, String>(namespaces);
+        this.namespaces = new LinkedHashMap<>(namespaces);
 
         // create a featureTypes directory
         featureTypesBaseDir = new File(data, "featureTypes");
@@ -174,7 +172,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         styles = new File(data, "styles");
         styles.mkdir();
 
-        propertiesFiles = new HashMap<String, File>();
+        propertiesFiles = new HashMap<>();
 
         addContent();
         // create corresponding tables in the test db using the properties files
@@ -397,7 +395,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     private static void writeInfoFile(
             String namespacePrefix, String typeName, File featureTypeDir, String dataStoreName) {
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_SRS_HANDLINGS, 2);
         params.put(KEY_ALIAS, null);

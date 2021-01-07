@@ -5,9 +5,9 @@
  */
 package org.geoserver.wcs2_0;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
@@ -16,13 +16,11 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -79,7 +77,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema WCS20_SCHEMA;
 
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<>();
 
     protected static final String VERSION = WCS20Const.CUR_VERSION;
 
@@ -241,7 +239,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wcs", "http://www.opengis.net/wcs/2.0");
         namespaces.put("crs", "http://www.opengis.net/wcs/crs/1.0");
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");
@@ -268,8 +266,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
                 System.out.println(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
@@ -408,7 +406,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             if (geometry != null) {
                 final MathTransform gridToCRS;
                 if (geometry instanceof GridGeometry2D) {
-                    gridToCRS = ((GridGeometry2D) geometry).getGridToCRS();
+                    gridToCRS = geometry.getGridToCRS();
                 } else {
                     gridToCRS = geometry.getGridToCRS();
                 }
@@ -434,7 +432,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
     }

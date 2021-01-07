@@ -62,7 +62,6 @@ import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.ColorMapEntryImpl;
-import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
@@ -301,7 +300,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     private List<Color> getCustomColors(String customClasses) {
-        List<Color> colors = new ArrayList<Color>();
+        List<Color> colors = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             colors.add(Color.decode(parts[2]));
@@ -311,8 +310,8 @@ public class ClassifierController extends BaseSLDServiceController {
 
     private RangedClassifier getCustomClassifier(
             String customClasses, Class<?> propertyType, boolean normalize) {
-        List<Comparable> min = new ArrayList<Comparable>();
-        List<Comparable> max = new ArrayList<Comparable>();
+        List<Comparable> min = new ArrayList<>();
+        List<Comparable> max = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             if (parts.length != 3) {
@@ -332,7 +331,7 @@ public class ClassifierController extends BaseSLDServiceController {
                 min.toArray(new Comparable[] {}), max.toArray(new Comparable[] {}));
     }
 
-    private Class normalizePropertyType(Class<?> propertyType, boolean normalize) {
+    private Class<?> normalizePropertyType(Class<?> propertyType, boolean normalize) {
         if (normalize
                 && (Integer.class.isAssignableFrom(propertyType)
                         || Long.class.isAssignableFrom(propertyType))) {
@@ -457,8 +456,7 @@ public class ClassifierController extends BaseSLDServiceController {
         rasterSymbolizer.setColorMap(colorMap);
         if (bandSelected) {
             SelectedChannelType grayChannel =
-                    SF.createSelectedChannelType(
-                            String.valueOf(selectedBand), (ContrastEnhancement) null);
+                    SF.createSelectedChannelType(String.valueOf(selectedBand), null);
             ChannelSelection channelSelection =
                     SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
             rasterSymbolizer.setChannelSelection(channelSelection);
@@ -650,7 +648,7 @@ public class ClassifierController extends BaseSLDServiceController {
                             : builder.closedRangedRules(groups, property, propertyType, normalize);
         }
 
-        final Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
+        final Class<?> geomT = ftType.getGeometryDescriptor().getType().getBinding();
         if (geomT.isAssignableFrom(Point.class) && strokeColor != null) {
             builder.setIncludeStrokeForPoints(true);
         }
@@ -699,7 +697,7 @@ public class ClassifierController extends BaseSLDServiceController {
         }
         final double standardDeviation = standardDeviationVisitor.getResult().toDouble();
 
-        return new NumberRange(
+        return new NumberRange<>(
                 Double.class,
                 mean - standardDeviation * numStandardDeviations,
                 mean + standardDeviation * numStandardDeviations);
@@ -769,9 +767,9 @@ public class ClassifierController extends BaseSLDServiceController {
     private Hints getQueryHints(String viewParams) {
         if (viewParams != null && !viewParams.isEmpty()) {
             FormatOptionsKvpParser parser = new FormatOptionsKvpParser();
-            Map<String, String> params;
             try {
-                params = (Map<String, String>) parser.parse(viewParams);
+                @SuppressWarnings("unchecked")
+                Map<String, String> params = (Map<String, String>) parser.parse(viewParams);
                 return new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, params);
             } catch (Exception e) {
                 throw new RestException("Invalid viewparams", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -784,7 +782,7 @@ public class ClassifierController extends BaseSLDServiceController {
     public class RulesList {
         private String layerName;
 
-        private List<JSONObject> rules = new ArrayList<JSONObject>();
+        private List<JSONObject> rules = new ArrayList<>();
 
         public RulesList(final String layer) {
             setLayerName(layer);

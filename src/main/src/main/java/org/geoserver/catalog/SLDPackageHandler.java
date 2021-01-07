@@ -4,13 +4,13 @@
  */
 package org.geoserver.catalog;
 
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -81,7 +81,7 @@ public class SLDPackageHandler extends StyleHandler {
 
     /** Unzips a SLD package to a temporal folder, returning the SLD file path. */
     private File unzipSldPackage(Object input) throws IOException {
-        File myTempDir = Files.createTempDir();
+        File myTempDir = Files.createTempDirectory("_sld").toFile();
 
         org.geoserver.util.IOUtils.decompress((InputStream) input, myTempDir);
 

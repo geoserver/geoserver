@@ -32,8 +32,7 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
     protected String adminRoleName, groupAdminRoleName;
     protected RoleStoreHelper helper;
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected AbstractRoleService() {
         helper = new RoleStoreHelper();

@@ -24,7 +24,7 @@ public abstract class AbstractAxisValueKvpParser<T> extends KvpParser {
         // clean up extra space
         spec = spec.trim();
 
-        List<T> results = new ArrayList<T>();
+        List<T> results = new ArrayList<>();
         int base = 0;
         for (; ; ) {
             // search the open parenthesis

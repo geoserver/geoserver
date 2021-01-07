@@ -94,19 +94,19 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
         testData.addVectorLayer(
                 GRID,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "grid.properties",
                 RenderingBasedFeatureInfoTest.class,
                 getCatalog());
         testData.addVectorLayer(
                 REPEATED,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "repeated_lines.properties",
                 RenderingBasedFeatureInfoTest.class,
                 getCatalog());
         testData.addVectorLayer(
                 GIANT_POLYGON,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());
@@ -496,7 +496,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         ReferencedEnvelope mapEnvelope =
                 new ReferencedEnvelope(mapbbox, DefaultGeographicCRS.WGS84);
 
-        final HashMap<String, String> hints = new HashMap<String, String>();
+        final HashMap<String, String> hints = new HashMap<>();
 
         double originalScale =
                 RendererUtilities.calculateScale(mapEnvelope, mapWidth, mapHeight, hints);
@@ -534,9 +534,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                                                     referencedEnvelope,
                                                     mapContent.getMapWidth(),
                                                     hints));
-                                } catch (TransformException e) {
-                                    throw new ServiceException(e);
-                                } catch (FactoryException e) {
+                                } catch (TransformException | FactoryException e) {
                                     throw new ServiceException(e);
                                 }
                                 return null;
@@ -552,7 +550,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
         GetMapRequest getMapRequest = new GetMapRequest();
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> layers = new ArrayList<>();
 
         layers.add(
                 new MapLayerInfo(

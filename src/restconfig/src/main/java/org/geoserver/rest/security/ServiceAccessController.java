@@ -14,27 +14,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/services")
-public class ServiceAccessController extends AbstractAclController {
+public class ServiceAccessController
+        extends AbstractAclController<ServiceAccessRule, ServiceAccessRuleDAO> {
 
     public ServiceAccessController() {
         super(ServiceAccessRuleDAO.get());
     }
 
     @Override
-    protected void addRuleToMap(Comparable rule, Map map) {
-        ServiceAccessRule ruleObject = (ServiceAccessRule) rule;
-        map.put(ruleObject.getKey(), ruleObject.getValue());
+    protected void addRuleToMap(ServiceAccessRule rule, Map<String, String> map) {
+        map.put(rule.getKey(), rule.getValue());
     }
 
     @Override
-    protected String keyFor(Comparable rule) {
-        return ((ServiceAccessRule) rule).getKey();
+    protected String keyFor(ServiceAccessRule rule) {
+        return rule.getKey();
     }
 
     @Override
-    protected Comparable convertEntryToRule(Entry entry) {
-        String[] parts = parseElements((String) entry.getKey());
-        return new ServiceAccessRule(parts[0], parts[1], parseRoles((String) entry.getValue()));
+    protected ServiceAccessRule convertEntryToRule(Entry<String, String> entry) {
+        String[] parts = parseElements(entry.getKey());
+        return new ServiceAccessRule(parts[0], parts[1], parseRoles(entry.getValue()));
     }
 
     @Override

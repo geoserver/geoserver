@@ -111,7 +111,7 @@ public class IOUtils {
         // prepare the escaped ${key} keys so that it won't be necessary to do
         // it over and over
         // while parsing the file
-        Map<String, String> escapedMap = new HashMap<String, String>();
+        Map<String, String> escapedMap = new HashMap<>();
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             escapedMap.put("${" + entry.getKey() + "}", entry.getValue());
         }
@@ -326,15 +326,12 @@ public class IOUtils {
                         ZipEntry entry = new ZipEntry(prefix + file.getName());
                         zipout.putNextEntry(entry);
 
-                        InputStream in = new FileInputStream(file);
-                        int c;
-                        try {
+                        try (InputStream in = new FileInputStream(file)) {
+                            int c;
                             while (-1 != (c = in.read(buffer))) {
                                 zipout.write(buffer, 0, c);
                             }
                             zipout.closeEntry();
-                        } finally {
-                            in.close();
                         }
                     }
                 }

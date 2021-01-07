@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
@@ -201,6 +200,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType query = wfsfactory.createQueryType();
 
@@ -208,11 +208,10 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         // &lt;xsd:element ref="wfs:PropertyName"&gt;
         if (node.hasChild("PropertyName")) {
             // HACK, stripping of namespace prefix
-            for (Iterator p = node.getChildValues("PropertyName").iterator(); p.hasNext(); ) {
-                Object property = p.next();
+            for (Object property : node.getChildValues("PropertyName")) {
                 String propertyName;
                 if (property instanceof String) propertyName = (String) property;
-                else propertyName = (String) ((PropertyName) property).getPropertyName();
+                else propertyName = ((PropertyName) property).getPropertyName();
 
                 query.getPropertyName().add(propertyName);
             }
@@ -227,14 +226,14 @@ public class QueryTypeBinding extends AbstractComplexBinding {
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"&gt;
         if (node.hasChild(Filter.class)) {
-            query.setFilter((Filter) node.getChildValue(Filter.class));
+            query.setFilter(node.getChildValue(Filter.class));
         }
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:SortBy"&gt;
         if (node.hasChild(SortBy[].class)) {
-            SortBy[] sortBy = (SortBy[]) node.getChildValue(SortBy[].class);
+            SortBy[] sortBy = node.getChildValue(SortBy[].class);
 
-            for (int i = 0; i < sortBy.length; i++) query.getSortBy().add(sortBy[i]);
+            for (SortBy by : sortBy) query.getSortBy().add(by);
         }
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;

@@ -46,7 +46,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
 
     FeatureStore<T, F> storeDelegate;
 
-    public SecuredFeatureStore(FeatureStore delegate, WrapperPolicy policy) {
+    public SecuredFeatureStore(FeatureStore<T, F> delegate, WrapperPolicy policy) {
         super(delegate, policy);
         this.storeDelegate = delegate;
     }
@@ -65,7 +65,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
             // check if any of the inserted features does not pass the write filters
             if (writeQuery.getFilter() != null && writeQuery.getFilter() != Filter.INCLUDE) {
                 final FilteringFeatureCollection<T, F> filtered =
-                        new FilteringFeatureCollection<T, F>(collection, writeQuery.getFilter());
+                        new FilteringFeatureCollection<>(collection, writeQuery.getFilter());
                 if (filtered.size() < collection.size()) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.response == Response.CHALLENGE) {
@@ -136,19 +136,18 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
             storeDelegate.modifyFeatures(names, values, mixed.getFilter());
         } else {
             // get the writable attribute set
-            Set<String> queryNames =
-                    new HashSet<String>(Arrays.asList(writeQuery.getPropertyNames()));
+            Set<String> queryNames = new HashSet<>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
-            for (int i = 0; i < names.length; i++) {
-                final String localName = names[i].getLocalPart();
+            for (Name name : names) {
+                final String localName = name.getLocalPart();
                 if (queryNames.contains(localName)) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.getResponse() == Response.CHALLENGE) {
                         throw SecureCatalogImpl.unauthorizedAccess(typeName);
                     } else {
                         throw new UnsupportedOperationException(
-                                "Trying to write on the write protected attribute " + names[i]);
+                                "Trying to write on the write protected attribute " + name);
                     }
                 }
             }

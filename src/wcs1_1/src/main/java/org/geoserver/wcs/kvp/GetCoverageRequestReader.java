@@ -30,7 +30,8 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // grab coverage info to perform further checks
@@ -95,8 +96,8 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
             gridCS = gridCRS.getGridCS();
         }
         gridCRS.setGridCS(gridCS);
-        gridCRS.setGridOrigin((Double[]) kvp.get("GridOrigin"));
-        gridCRS.setGridOffsets((Double[]) kvp.get("GridOffsets"));
+        gridCRS.setGridOrigin(kvp.get("GridOrigin"));
+        gridCRS.setGridOffsets(kvp.get("GridOffsets"));
 
         return output;
     }

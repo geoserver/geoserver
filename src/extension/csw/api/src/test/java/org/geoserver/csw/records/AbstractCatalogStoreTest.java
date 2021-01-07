@@ -20,6 +20,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
 import org.junit.Test;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.FeatureTypeFactory;
@@ -40,7 +41,7 @@ public class AbstractCatalogStoreTest {
                     }
 
                     @Override
-                    public FeatureCollection getRecordsInternal(
+                    public FeatureCollection<FeatureType, Feature> getRecordsInternal(
                             RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
                             throws IOException {
                         if (rd == GSRecordDescriptor.getInstance()) {

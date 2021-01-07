@@ -127,10 +127,10 @@ public class FeatureInfoRequestParameters {
      */
     private List<Style> getStyles(final GetFeatureInfoRequest request, List<MapLayerInfo> layers) {
         List<Style> getMapStyles = request.getGetMapRequest().getStyles();
-        List<Style> styles = new ArrayList<Style>();
+        List<Style> styles = new ArrayList<>();
         List<MapLayerInfo> getMapLayers = request.getGetMapRequest().getLayers();
-        for (int i = 0; i < layers.size(); i++) {
-            final String targetLayer = layers.get(i).getName();
+        for (MapLayerInfo layer : layers) {
+            final String targetLayer = layer.getName();
             Style s = null;
             for (int j = 0; j < getMapLayers.size(); j++) {
                 if (getMapLayers.get(j).getName().equals(targetLayer)) {
@@ -212,7 +212,7 @@ public class FeatureInfoRequestParameters {
     /** The property names for the specified layer (if any, null otherwise) */
     public String[] getPropertyNames() {
         if (propertyNames == null
-                || propertyNames.size() == 0
+                || propertyNames.isEmpty()
                 || propertyNames.get(currentLayer) == null) {
             return Query.ALL_NAMES;
         } else {

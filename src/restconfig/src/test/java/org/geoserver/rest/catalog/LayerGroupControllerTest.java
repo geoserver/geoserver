@@ -253,14 +253,19 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertThat(keywordsObject.containsKey("string"), is(true));
         JSONArray keywords = keywordsObject.getJSONArray("string");
         assertThat(keywords.size(), is(2));
-        // created a list of keywords so we can check is content with hamcrest
-        List<Object> keywordsList = new ArrayList<>();
-        keywordsList.addAll(keywords);
         assertThat(
-                keywordsList,
+                toList(keywords),
                 containsInAnyOrder(
                         "keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;",
                         "keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;"));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Object> toList(JSONArray keywords) {
+        // created a list of keywords so we can check is content with hamcrest
+        List<Object> keywordsList = new ArrayList<>();
+        keywordsList.addAll(keywords);
+        return keywordsList;
     }
 
     @Test

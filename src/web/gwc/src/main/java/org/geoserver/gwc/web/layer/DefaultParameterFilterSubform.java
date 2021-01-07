@@ -6,7 +6,6 @@
 
 package org.geoserver.gwc.web.layer;
 
-import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -35,8 +34,7 @@ public class DefaultParameterFilterSubform extends AbstractParameterFilterSubfor
         final Component legalValueList;
 
         legalValueList =
-                new ListView<String>(
-                        "legalValueList", new PropertyModel<List<String>>(model, "legalValues")) {
+                new ListView<String>("legalValueList", new PropertyModel<>(model, "legalValues")) {
 
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;

@@ -145,7 +145,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                         "//ows:Operation[@name=\"GetFeature\"]/ows:Parameter[@name=\"outputFormat\"]/ows:AllowedValues/ows:Value",
                         doc);
 
-        Set<String> s1 = new TreeSet<String>();
+        Set<String> s1 = new TreeSet<>();
         for (int i = 0; i < formats.getLength(); i++) {
             String format = formats.item(i).getFirstChild().getNodeValue();
             s1.add(format);
@@ -154,9 +154,8 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         List<WFSGetFeatureOutputFormat> extensions =
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
-        Set<String> s2 = new TreeSet<String>();
-        for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) e.next();
+        Set<String> s2 = new TreeSet<>();
+        for (WFSGetFeatureOutputFormat extension : extensions) {
             s2.addAll(extension.getOutputFormats());
         }
 
@@ -191,7 +190,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                         "//fes:Spatial_Capabilities/fes:SpatialOperators/fes:SpatialOperator/@name",
                         doc);
 
-        Set<String> ops = new TreeSet<String>();
+        Set<String> ops = new TreeSet<>();
         for (int i = 0; i < spatialOperators.getLength(); i++) {
             String format = spatialOperators.item(i).getFirstChild().getNodeValue();
             ops.add(format);
@@ -268,8 +267,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals("WFS_Capabilities", e.getLocalName());
 
         final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-        for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-            FeatureTypeInfo ft = it.next();
+        for (FeatureTypeInfo ft : enabledTypes) {
             if (ft.isEnabled()) {
                 String prefixedName = ft.prefixedName();
 
@@ -309,7 +307,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         p.setValidating(true);
         p.validate(in);
 
-        for (Exception e : (List<Exception>) p.getValidationErrors()) {
+        for (Exception e : p.getValidationErrors()) {
             // System.out.println(e.getLocalizedMessage());
         }
         assertTrue(p.getValidationErrors().isEmpty());
@@ -483,8 +481,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
             // for each enabled type, check we added the otherSRS
             final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-            for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-                FeatureTypeInfo ft = it.next();
+            for (FeatureTypeInfo ft : enabledTypes) {
                 if (ft.enabled()) {
                     String prefixedName = ft.prefixedName();
 

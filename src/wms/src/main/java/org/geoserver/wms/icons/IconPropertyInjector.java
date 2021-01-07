@@ -45,10 +45,10 @@ public final class IconPropertyInjector {
     }
 
     private List<List<MiniRule>> injectProperties(List<List<MiniRule>> ftStyles) {
-        List<List<MiniRule>> result = new ArrayList<List<MiniRule>>();
+        List<List<MiniRule>> result = new ArrayList<>();
         for (int ftIdx = 0; ftIdx < ftStyles.size(); ftIdx++) {
             List<MiniRule> origRules = ftStyles.get(ftIdx);
-            List<MiniRule> resultRules = new ArrayList<MiniRule>();
+            List<MiniRule> resultRules = new ArrayList<>();
             for (int ruleIdx = 0; ruleIdx < origRules.size(); ruleIdx++) {
                 MiniRule origRule = origRules.get(ruleIdx);
                 List<Symbolizer> resultSymbolizers = new ArrayList<>();
@@ -106,8 +106,8 @@ public final class IconPropertyInjector {
         }
 
         if (!original.graphicalSymbols().isEmpty()) {
-            List<Mark> markList = new ArrayList<Mark>();
-            List<ExternalGraphic> externalGraphicList = new ArrayList<ExternalGraphic>();
+            List<Mark> markList = new ArrayList<>();
+            List<ExternalGraphic> externalGraphicList = new ArrayList<>();
             for (GraphicalSymbol symbol : original.graphicalSymbols()) {
                 if (symbol instanceof Mark) {
                     markList.add(injectMark(key, (Mark) symbol));

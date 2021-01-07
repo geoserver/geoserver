@@ -43,7 +43,7 @@ public class MasterPasswordProviderChoice extends DropDownChoice<String> {
         MasterPasswordProviderNamesModel() {
             try {
                 providerNames =
-                        new ArrayList(
+                        new ArrayList<>(
                                 GeoServerApplication.get()
                                         .getSecurityManager()
                                         .listMasterPasswordProviders());

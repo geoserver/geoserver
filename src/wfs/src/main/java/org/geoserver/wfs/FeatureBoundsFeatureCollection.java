@@ -73,7 +73,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         }
     }
 
-    protected Iterator openIterator() {
+    protected Iterator<SimpleFeature> openIterator() {
         return new BoundsIterator(wrapped.features(), schema);
     }
 
@@ -124,8 +124,8 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         public List<Object> getAttributes() {
             List<Object> result = new ArrayList<>();
             List<AttributeDescriptor> descriptors = type.getAttributeDescriptors();
-            for (int i = 0; i < descriptors.size(); i++) {
-                result.add(delegate.getAttribute(descriptors.get(i).getName()));
+            for (AttributeDescriptor descriptor : descriptors) {
+                result.add(delegate.getAttribute(descriptor.getName()));
             }
             return result;
         }

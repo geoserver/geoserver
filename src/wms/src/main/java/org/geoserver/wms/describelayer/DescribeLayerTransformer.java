@@ -9,7 +9,6 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -126,8 +125,8 @@ public class DescribeLayerTransformer extends TransformerBase {
             AttributesImpl queryAtts = new AttributesImpl();
             queryAtts.addAttribute("", "typeName", "typeName", "", "");
 
-            for (Iterator it = layers.iterator(); it.hasNext(); ) {
-                layer = (MapLayerInfo) it.next();
+            for (Object o : layers) {
+                layer = (MapLayerInfo) o;
 
                 AttributesImpl layerAtts = new AttributesImpl();
                 layerAtts.addAttribute("", "name", "name", "", "");

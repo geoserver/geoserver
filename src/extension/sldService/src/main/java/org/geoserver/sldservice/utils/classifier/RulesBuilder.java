@@ -354,7 +354,7 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
         PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
         try {
@@ -440,7 +440,7 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
         PercentagesManager percMan = null;
         percMan = new PercentagesManager(groups.getPercentages());
@@ -510,7 +510,7 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         PropertyName att = FF.property(property);
         String szFilter = "";
         String szTitle = "";

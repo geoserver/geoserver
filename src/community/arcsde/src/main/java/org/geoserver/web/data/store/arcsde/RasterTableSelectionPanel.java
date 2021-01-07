@@ -91,15 +91,15 @@ public class RasterTableSelectionPanel extends Panel {
         this.userComponent = user;
         this.passwordComponent = password;
 
-        final MapModel<String> tableNameModel = new MapModel<String>(paramsModel, TABLE_NAME);
+        final MapModel<String> tableNameModel = new MapModel<>(paramsModel, TABLE_NAME);
 
-        List<String> choices = new ArrayList<String>();
+        List<String> choices = new ArrayList<>();
         if (tableNameModel.getObject() != null) {
             Object currentTableName = tableNameModel.getObject();
             choices.add(String.valueOf(currentTableName));
         }
 
-        choice = new DropDownChoice<String>("rasterTable", tableNameModel, choices);
+        choice = new DropDownChoice<>("rasterTable", tableNameModel, choices);
 
         /*
          * Make table name match the option id
@@ -209,7 +209,7 @@ public class RasterTableSelectionPanel extends Panel {
         final ISessionPool pool;
         {
             final ArcSDEConnectionConfig connectionConfig;
-            Map<String, Serializable> params = new HashMap<String, Serializable>();
+            Map<String, Serializable> params = new HashMap<>();
             params.put(SERVER_NAME_PARAM_NAME, server);
             params.put(PORT_NUMBER_PARAM_NAME, port);
             params.put(INSTANCE_NAME_PARAM_NAME, instance);
@@ -229,9 +229,7 @@ public class RasterTableSelectionPanel extends Panel {
         ISession session;
         try {
             session = pool.getSession();
-        } catch (IOException e) {
-            throw new IllegalAccessError(e.getMessage());
-        } catch (UnavailableConnectionException e) {
+        } catch (IOException | UnavailableConnectionException e) {
             throw new IllegalAccessError(e.getMessage());
         }
 

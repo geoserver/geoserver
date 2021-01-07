@@ -6,6 +6,7 @@ package org.geoserver.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -134,7 +135,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
             assertNotNull(f);
 
             FeatureSource mappedSource = mappingIt.getMappedSource();
-            assertTrue(mappedSource.getDataStore() == mfSourceDataStore);
+            assertSame(mappedSource.getDataStore(), mfSourceDataStore);
             assertNotNull(mappingIt.getTransaction());
             mfTransaction = mappingIt.getTransaction();
 
@@ -152,6 +153,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertEquals(8, nestedFeaturesCount);
     }
 
+    @SuppressWarnings("unchecked")
     private MappingFeatureSource unwrap(FeatureSource fs) {
         MappingFeatureSource mfFs;
         if (fs instanceof DecoratingFeatureSource) {
@@ -172,7 +174,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
             Transaction parentTx)
             throws IOException {
         List<AttributeMapping> attrs = mapping.getAttributeMappings();
-        assertTrue(attrs != null);
+        assertNotNull(attrs);
         assertTrue(attrs.size() > 0);
 
         for (AttributeMapping attr : attrs) {

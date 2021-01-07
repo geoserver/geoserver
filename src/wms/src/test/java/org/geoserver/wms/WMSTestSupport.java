@@ -5,13 +5,13 @@
  */
 package org.geoserver.wms;
 
-import static junit.framework.TestCase.fail;
 import static org.geoserver.data.test.MockData.WORLD;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -27,7 +27,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -63,7 +62,6 @@ import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
-import org.junit.Assert;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -112,7 +110,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -266,11 +264,11 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl("http://localhost:8080/geoserver");
 
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>(layerNames.length);
-        List styles = new ArrayList();
+        List<MapLayerInfo> layers = new ArrayList<>(layerNames.length);
+        List<Style> styles = new ArrayList<>();
 
-        for (int i = 0; i < layerNames.length; i++) {
-            LayerInfo layerInfo = getCatalog().getLayerByName(layerNames[i].getLocalPart());
+        for (QName layerName : layerNames) {
+            LayerInfo layerInfo = getCatalog().getLayerByName(layerName.getLocalPart());
             try {
                 styles.add(layerInfo.getDefaultStyle().getStyle());
             } catch (IOException e) {
@@ -284,7 +282,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         request.setBbox(new Envelope(-180, -90, 180, 90));
         request.setCrs(DefaultGeographicCRS.WGS84);
         request.setSRS("EPSG:4326");
-        request.setRawKvp(new HashMap());
+        request.setRawKvp(new HashMap<>());
         return request;
     }
 
@@ -491,7 +489,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected int getRawTopLayerCount() {
         Catalog rawCatalog = (Catalog) GeoServerExtensions.bean("rawCatalog");
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(rawCatalog.getLayers());
+        List<LayerInfo> layers = new ArrayList<>(rawCatalog.getLayers());
         for (ListIterator<LayerInfo> it = layers.listIterator(); it.hasNext(); ) {
             LayerInfo next = it.next();
             if (!next.enabled() || next.getName().equals(MockData.GEOMETRYLESS.getLocalPart())) {
@@ -518,8 +516,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
                 System.out.println(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
@@ -544,7 +542,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         try {
             value = Double.parseDouble(rawValue);
         } catch (NumberFormatException exception) {
-            Assert.fail(String.format("Value '%s' is not a number.", rawValue));
+            fail(String.format("Value '%s' is not a number.", rawValue));
         }
         // compare the parsed double value with the expected one
         double difference = Math.abs(expected - value);

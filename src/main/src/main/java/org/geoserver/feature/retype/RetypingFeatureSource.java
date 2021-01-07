@@ -5,6 +5,7 @@
  */
 package org.geoserver.feature.retype;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
 
     RetypingDataStore store;
 
-    Map listeners = new HashMap();
+    Map<FeatureListener, FeatureListener> listeners = new HashMap<>();
 
     /**
      * Builds a retyping wrapper
@@ -98,10 +99,8 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                     @Override
                     public String[] getTypeNames() throws IOException {
                         // Populate local hashmaps with new values.
-                        Map<String, FeatureTypeMap> forwardMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
-                        Map<String, FeatureTypeMap> backwardsMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
+                        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+                        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
                         forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
                         backwardsMapLocal.put(typeMap.getName(), typeMap);
@@ -134,7 +133,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     }
 
     public void removeFeatureListener(FeatureListener listener) {
-        FeatureListener wrapper = (FeatureListener) listeners.get(listener);
+        FeatureListener wrapper = listeners.get(listener);
         if (wrapper != null) {
             wrapped.removeFeatureListener(wrapper);
             listeners.remove(listener);
@@ -168,7 +167,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         if (query.getTypeName() == null) {
             query = new Query(query);
-            ((Query) query).setTypeName(typeMap.getName());
+            query.setTypeName(typeMap.getName());
         } else if (!typeMap.getName().equals(query.getTypeName())) {
             throw new IOException(
                     "Cannot query this feature source with "
@@ -192,7 +191,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
         return typeMap.getFeatureType();
     }
 
-    public Set getSupportedHints() {
+    public Set<RenderingHints.Key> getSupportedHints() {
         return wrapped.getSupportedHints();
     }
 

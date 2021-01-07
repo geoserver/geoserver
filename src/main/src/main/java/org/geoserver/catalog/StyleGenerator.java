@@ -238,7 +238,7 @@ public class StyleGenerator {
             }
         }
 
-        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
         int position;
 
         /**

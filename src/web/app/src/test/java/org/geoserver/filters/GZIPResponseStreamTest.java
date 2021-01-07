@@ -36,7 +36,7 @@ public class GZIPResponseStreamTest {
     private byte[] unzip(byte[] zipped) throws Exception {
         InputStream stream = new GZIPInputStream(new ByteArrayInputStream(zipped));
         int character;
-        ArrayList<Byte> builder = new ArrayList<Byte>();
+        ArrayList<Byte> builder = new ArrayList<>();
         while ((character = stream.read()) != -1) {
             builder.add((byte) character);
         }

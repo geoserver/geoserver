@@ -60,8 +60,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
-        WMTSStoreInfo expandedStore =
-                (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, true);
+        WMTSStoreInfo expandedStore = getCatalog().getResourcePool().clone(info, true);
         WMTSStoreInfo savedStore = getCatalog().getFactory().createWebMapTileServer();
 
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
@@ -73,7 +72,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
             validate.throwIfInvalid();
 
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
-            savedStore = (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, false);
+            savedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {
@@ -107,11 +106,11 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
         setResponsePage(layerChooserPage);
     }
 
-    final class WMTSCapabilitiesURLValidator implements IValidator {
+    final class WMTSCapabilitiesURLValidator implements IValidator<String> {
 
         @Override
-        public void validate(IValidatable validatable) {
-            String url = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String url = validatable.getValue();
             try {
                 HTTPClient client = new SimpleHttpClient();
                 usernamePanel.getFormComponent().processInput();

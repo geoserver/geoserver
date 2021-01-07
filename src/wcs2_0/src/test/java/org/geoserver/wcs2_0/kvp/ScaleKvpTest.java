@@ -4,9 +4,9 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -516,7 +516,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                     sourceCoverage.getCoordinateReferenceSystem());
 
             // get extrema
-            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0]);
+            assertEquals(
+                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             try {
                 readerTarget.dispose();
@@ -851,7 +852,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
             // get extrema
-            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0]);
+            assertEquals(
+                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             try {
                 readerTarget.dispose();
@@ -944,7 +946,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(999, targetCoverage.getGridGeometry().getGridRange().getHigh(1));
 
             // get extrema
-            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0]);
+            assertEquals(
+                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             try {
                 readerTarget.dispose();

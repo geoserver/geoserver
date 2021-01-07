@@ -398,7 +398,7 @@ public abstract class GeoServerLoader {
         catalog.removeListeners(ResourcePool.CacheClearingListener.class);
         catalog.removeListeners(GeoServerConfigPersister.class);
         catalog.removeListeners(GeoServerResourcePersister.class);
-        List<CatalogListener> listeners = new ArrayList<CatalogListener>(catalog.getListeners());
+        List<CatalogListener> listeners = new ArrayList<>(catalog.getListeners());
 
         // look for catalog.xml, if it exists assume we are dealing with
         // an old data directory
@@ -928,8 +928,9 @@ public abstract class GeoServerLoader {
             }
 
             // load services
-            final List<XStreamServiceLoader> loaders =
-                    GeoServerExtensions.extensions(XStreamServiceLoader.class);
+            @SuppressWarnings("unchecked")
+            final List<XStreamServiceLoader<ServiceInfo>> loaders =
+                    (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
             loadServices(resourceLoader.get(""), true, loaders, geoServer);
 
             // load services specific to workspace
@@ -1001,7 +1002,7 @@ public abstract class GeoServerLoader {
     void loadServices(
             Resource directory,
             boolean global,
-            List<XStreamServiceLoader> loaders,
+            List<XStreamServiceLoader<ServiceInfo>> loaders,
             GeoServer geoServer) {
         for (XStreamServiceLoader<ServiceInfo> l : loaders) {
             try {

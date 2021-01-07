@@ -137,7 +137,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
         if (null == rawList) {
             return Collections.emptySet();
         }
-        Set<String> ipAddresses = new HashSet<String>();
+        Set<String> ipAddresses = new HashSet<>();
         for (String ip : rawList.split(",")) {
             ipAddresses.add(ip.trim().replaceAll("\\*", "(.{0,1}[0-9]+.{0,1}){0,4}"));
         }

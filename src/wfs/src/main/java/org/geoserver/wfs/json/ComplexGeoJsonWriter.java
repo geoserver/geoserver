@@ -18,7 +18,6 @@ import java.util.Spliterators;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
-import org.checkerframework.checker.units.qual.K;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -477,8 +476,9 @@ class ComplexGeoJsonWriter {
                 if (isGMLPropertyType(complexAttribute)) {
                     Collection<? extends Property> value = complexAttribute.getValue();
                     Property nested = value.iterator().next();
+                    @SuppressWarnings("unchecked")
                     Map<NameImpl, Object> nestedAttributes =
-                            (Map<NameImpl, Object>) nested.getUserData().get(Attributes.class);
+                            (Map) nested.getUserData().get(Attributes.class);
                     Map<NameImpl, Object> mergedAttributes =
                             mergeMaps(attributes, nestedAttributes);
                     encodeProperty(attributeName, nested, mergedAttributes);
@@ -571,7 +571,8 @@ class ComplexGeoJsonWriter {
             // not a feature or list of features
             return null;
         }
-        Collection collection = (Collection) value;
+        @SuppressWarnings("unchecked")
+        Collection<Object> collection = (Collection) value;
         if (collection.isEmpty()) {
             // we cannot be sure that this is a list of features
             return Collections.emptyList();

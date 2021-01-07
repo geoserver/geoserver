@@ -45,8 +45,10 @@ import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -242,7 +244,7 @@ public class WMSMockData {
         } catch (IOException e) {
             throw new RuntimeException("shouldn't happen", e);
         }
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
         request.setBaseUrl("http://example.geoserver.org/geoserver");
 
         return request;
@@ -262,7 +264,8 @@ public class WMSMockData {
                      * Override to avoid going down to the catalog and geoserver resource loader etc
                      */
                     @Override
-                    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
+                    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+                            ProgressListener listener, Hints hints) {
                         try {
                             return dataStore.getFeatureSource(getQualifiedName());
                         } catch (IOException e) {

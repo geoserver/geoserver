@@ -101,7 +101,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         testData.addVectorLayer(
                 LINES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "null_srid_line.properties",
                 ResourceConfigurationPageTest.class,
                 getCatalog());
@@ -202,7 +202,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertTrue(page2.getPublishedInfo() instanceof LayerInfo);
         assertEquals(layer.prefixedName(), page2.getPublishedInfo().prefixedName());
         // the crucial test: the layer is attached to the catalog
-        assertNotNull(((LayerInfo) page2.getPublishedInfo()).getResource().getCatalog());
+        assertNotNull(page2.getPublishedInfo().getResource().getCatalog());
     }
 
     @Test
@@ -326,7 +326,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 (ListView)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:theList:1:content:parameters");
-        AtomicReference ref = new AtomicReference(null);
+        AtomicReference<Object> ref = new AtomicReference<>(null);
         parametersList.visitChildren(
                 ParamPanel.class,
                 (c, v) -> {
@@ -404,17 +404,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         DataStoreInfo storeInfo = cb.buildDataStore("MockWFSDataStore");
         ((DataStoreInfoImpl) storeInfo).setId("1");
-        ((DataStoreInfoImpl) storeInfo).setType("Web Feature Server (NG)");
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put(WFSDataStoreFactory.URL.key, url);
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put("usedefaultsrs", Boolean.FALSE);
-        ((DataStoreInfoImpl) storeInfo)
-                .getConnectionParameters()
-                .put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
-        ((DataStoreInfoImpl) storeInfo).getConnectionParameters().put("TESTING", Boolean.TRUE);
+        storeInfo.setType("Web Feature Server (NG)");
+        storeInfo.getConnectionParameters().put(WFSDataStoreFactory.URL.key, url);
+        storeInfo.getConnectionParameters().put("usedefaultsrs", Boolean.FALSE);
+        storeInfo.getConnectionParameters().put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
+        storeInfo.getConnectionParameters().put("TESTING", Boolean.TRUE);
         getCatalog().add(storeInfo);
 
         // MOCKING Feature Type
@@ -423,7 +417,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 xp.load(
                         getClass().getResourceAsStream("/featuretype.xml"),
                         FeatureTypeInfoImpl.class);
-        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        ftInfo.setStore(storeInfo);
         final String actualNativeSRS = ftInfo.getSRS();
         getCatalog().add(ftInfo);
         // setting mock feature type as resource of Layer from Test Data
@@ -519,7 +513,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         try {
             TabbedPanel tabs =
                     (TabbedPanel) tester.getComponentFromLastRenderedPage("publishedinfo:tabs");
-            assertTrue(tabs.getTabs().size() == 3);
+            assertEquals(3, tabs.getTabs().size());
         } finally {
             applicationContext.getBeanFactory().destroyBean("secureCatalog");
             GeoServerExtensionsHelper.clear();

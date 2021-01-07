@@ -21,9 +21,7 @@ public class GetFeatureCallbackTest extends WFSTestSupport {
 
     @Before
     public void getTester() throws Exception {
-        tester =
-                (GetFeatureCallbackTester)
-                        applicationContext.getBean(GetFeatureCallbackTester.class);
+        tester = applicationContext.getBean(GetFeatureCallbackTester.class);
         tester.clear();
     }
 

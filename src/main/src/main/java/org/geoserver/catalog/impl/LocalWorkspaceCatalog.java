@@ -481,7 +481,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
 
         public static <T> List<T> createList(List<T> object, Class<T> clazz) {
-            return new ProxyList(object, clazz) {
+            return new ProxyList<T>(object, clazz) {
                 @Override
                 protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
                     return create(proxyObject, proxyInterface);
@@ -512,7 +512,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
-        return list(of, filter, (Integer) null, (Integer) null, (SortBy) null);
+        return list(of, filter, null, null, null);
     }
 
     /**
@@ -539,7 +539,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         return iterator;
     }
 
-    public void removeListeners(Class listenerClass) {
+    public void removeListeners(Class<?> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

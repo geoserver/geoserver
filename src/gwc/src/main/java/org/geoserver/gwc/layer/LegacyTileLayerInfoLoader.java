@@ -142,7 +142,7 @@ public class LegacyTileLayerInfoLoader {
     }
 
     private static Set<String> unmarshalSet(final String listStr) {
-        Set<String> unmarshalled = new HashSet<String>(Arrays.asList(listStr.split(",")));
+        Set<String> unmarshalled = new HashSet<>(Arrays.asList(listStr.split(",")));
         return unmarshalled;
     }
 
@@ -167,7 +167,7 @@ public class LegacyTileLayerInfoLoader {
     private static Set<XMLGridSubset> unmarshalGridSubsets(String gridSubsetsStr)
             throws IllegalArgumentException {
 
-        Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>();
+        Set<XMLGridSubset> gridSubsets = new HashSet<>();
         // backwards compatibility check for when str comes in as "EPSG:XXX,EPSG:YYY"
         String[] epsgCodes = gridSubsetsStr.split(",");
         for (String code : epsgCodes) {
@@ -212,7 +212,7 @@ public class LegacyTileLayerInfoLoader {
 
         metadata.put(CONFIG_KEY_ENABLED, Boolean.valueOf(enabled));
         metadata.put(CONFIG_KEY_GUTTER, Integer.valueOf(gutter));
-        Collection<String> subsetNames = new ArrayList<String>();
+        Collection<String> subsetNames = new ArrayList<>();
         for (XMLGridSubset s : cachedGridSubsets) {
             subsetNames.add(s.getGridSetName());
         }
@@ -223,10 +223,10 @@ public class LegacyTileLayerInfoLoader {
         metadata.put(CONFIG_KEY_AUTO_CACHE_STYLES, autoCacheStyles);
         metadata.put(CONFIG_KEY_IN_MEMORY_CACHED, inMemoryCached);
 
-        if (cachedStyles.size() > 0) {
-            metadata.put(CONFIG_KEY_CACHED_STYLES, marshalList(cachedStyles));
-        } else {
+        if (cachedStyles.isEmpty()) {
             metadata.remove(CONFIG_KEY_CACHED_STYLES);
+        } else {
+            metadata.put(CONFIG_KEY_CACHED_STYLES, marshalList(cachedStyles));
         }
     }
 }

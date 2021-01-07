@@ -30,22 +30,19 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
     private static final long serialVersionUID = 1L;
 
     /** name of the config */
-    public static final Property<RequestFilterChain> NAME =
-            new BeanProperty<RequestFilterChain>("name", "name");
+    public static final Property<RequestFilterChain> NAME = new BeanProperty<>("name", "name");
 
-    public static Property<RequestFilterChain> POSITION =
-            new PropertyPlaceholder<RequestFilterChain>("position");
-    public static Property<RequestFilterChain> REMOVE =
-            new PropertyPlaceholder<RequestFilterChain>("remove");
+    public static Property<RequestFilterChain> POSITION = new PropertyPlaceholder<>("position");
+    public static Property<RequestFilterChain> REMOVE = new PropertyPlaceholder<>("remove");
 
     public static final Property<RequestFilterChain> DISABLED =
-            new BeanProperty<RequestFilterChain>("disabled", "disabled");
+            new BeanProperty<>("disabled", "disabled");
     public static final Property<RequestFilterChain> ALLOWSESSIONCREATION =
-            new BeanProperty<RequestFilterChain>("allowSessionCreation", "allowSessionCreation");
+            new BeanProperty<>("allowSessionCreation", "allowSessionCreation");
     public static final Property<RequestFilterChain> REQUIRESSL =
-            new BeanProperty<RequestFilterChain>("requireSSL", "requireSSL");
+            new BeanProperty<>("requireSSL", "requireSSL");
     public static final Property<RequestFilterChain> MATCHHTTPMETHOD =
-            new BeanProperty<RequestFilterChain>("matchHTTPMethod", "matchHTTPMethod");
+            new BeanProperty<>("matchHTTPMethod", "matchHTTPMethod");
 
     public static final Property<RequestFilterChain> PATTERNS =
             new AbstractProperty<RequestFilterChain>("patternString") {
@@ -73,7 +70,7 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
 
     @Override
     protected List<Property<RequestFilterChain>> getProperties() {
-        List<Property<RequestFilterChain>> result = new ArrayList<Property<RequestFilterChain>>();
+        List<Property<RequestFilterChain>> result = new ArrayList<>();
         result.add(POSITION);
         result.add(NAME);
         result.add(PATTERNS);

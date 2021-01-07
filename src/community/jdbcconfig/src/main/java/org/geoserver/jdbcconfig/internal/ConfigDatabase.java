@@ -525,7 +525,8 @@ public class ConfigDatabase {
 
         byte[] value = binding.objectToEntry(info);
         final String blob = new String(value, StandardCharsets.UTF_8);
-        final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
+        @SuppressWarnings("unchecked")
+        final Class<T> interf = (Class) ClassMappings.fromImpl(info.getClass()).getInterface();
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
@@ -837,7 +838,8 @@ public class ConfigDatabase {
 
         updateQueryableProperties(oldObject, objectId, changedProperties);
 
-        Class<T> clazz = ClassMappings.fromImpl(oldObject.getClass()).getInterface();
+        @SuppressWarnings("unchecked")
+        Class<T> clazz = (Class) ClassMappings.fromImpl(oldObject.getClass()).getInterface();
 
         // / <HACK>
         // we're explicitly changing the resourceinfo's layer name property here because

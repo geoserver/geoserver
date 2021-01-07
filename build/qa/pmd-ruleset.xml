@@ -23,13 +23,8 @@ under the License.
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
     <description>
-        The default ruleset used by the Maven PMD Plugin, when no other ruleset is specified.
-        It contains the rules of the old (pre PMD 6.0.0) rulesets java-basic, java-empty, java-imports,
-        java-unnecessary, java-unusedcode.
-
-        This ruleset might be used as a starting point for an own customized ruleset [0].
-
-        [0] https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
+        The GeoServer ruleset used by the Maven PMD Plugin.
+        See https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
     </description>
 
     <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
@@ -40,6 +35,11 @@ under the License.
     <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
     <rule ref="category/java/bestpractices.xml/SystemPrintln" />
+    <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
+    <rule ref="category/java/bestpractices.xml/UseAssertEqualsInsteadOfAssertTrue" />
+    <rule ref="category/java/bestpractices.xml/UseAssertNullInsteadOfAssertTrue" />
+    <rule ref="category/java/bestpractices.xml/UseAssertSameInsteadOfAssertTrue" />
+    <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
 
     <rule ref="category/java/codestyle.xml/DontImportJavaLang" />
     <rule ref="category/java/codestyle.xml/DuplicateImports" />
@@ -51,6 +51,9 @@ under the License.
     <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
     <rule ref="category/java/codestyle.xml/UselessParentheses" />
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
+    <rule ref="category/java/codestyle.xml/UnnecessaryCast" />
+    <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
+    <rule ref="category/java/codestyle.xml/IdenticalCatchBranches" />
 
     <!-- rule ref="category/java/design.xml/CollapsibleIfStatements" / -->
     <!-- rule ref="category/java/design.xml/SimplifiedTernary" / -->
@@ -113,4 +116,5 @@ under the License.
         </property>
       </properties>
     </rule>
+    <rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty" />
 </ruleset>

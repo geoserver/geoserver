@@ -38,7 +38,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         implements GeoServerUserGroupService {
 
     static final SortedSet<GeoServerUser> emptyUserSet =
-            Collections.unmodifiableSortedSet(new TreeSet<GeoServerUser>());
+            Collections.unmodifiableSortedSet(new TreeSet<>());
 
     private boolean convertToUpperCase = true;
 
@@ -46,8 +46,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     private static final String groupPrefix = "GROUP_";
 
-    protected Set<UserGroupLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected String passwordEncoderName, passwordValidatorName;
 
@@ -56,7 +55,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     // optional static list of available Groups from the webservice response
     protected SortedSet<GeoServerUserGroup> availableGroups =
-            Collections.synchronizedSortedSet(new TreeSet<GeoServerUserGroup>());
+            Collections.synchronizedSortedSet(new TreeSet<>());
 
     private String roleServiceName;
 
@@ -146,7 +145,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     private Set<? extends GrantedAuthority> extractRoles(final String responseBody)
             throws IOException {
-        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        final Set<GrantedAuthority> authorities = new HashSet<>();
 
         Matcher matcher = searchRolesRegex.matcher(responseBody);
         if (matcher.find()) {
@@ -156,7 +155,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                 }
             }
         }
-        if (authorities.size() == 0) {
+        if (authorities.isEmpty()) {
             LOGGER.log(
                     Level.WARNING,
                     "Error in WebServiceAuthenticationKeyMapper, cannot find any Role in response adding anonymous role");
@@ -165,7 +164,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
         RoleCalculator calc = new RoleCalculator(this, getDefaultSecurityService());
         if (calc != null) {
-            final SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+            final SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
             for (GrantedAuthority authority : authorities) {
                 groups.add(createGroupObject(authority.getAuthority(), true));
             }
@@ -182,7 +181,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         }
 
         // Check if Role Admin and Anonymous are present other than other roles
-        if (authorities.size() > 0) {
+        if (!authorities.isEmpty()) {
             for (GrantedAuthority authority : authorities) {
                 if (authority.equals(GeoServerRole.ADMIN_ROLE)
                         || authority.equals(GeoServerRole.GROUP_ADMIN_ROLE)
@@ -280,7 +279,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
-        final SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        final SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
 
         if (user.getAuthorities() != null) {
             for (GrantedAuthority authority : user.getAuthorities()) {

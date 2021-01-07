@@ -133,7 +133,7 @@ public final class Decimator {
 
         } else if (geom instanceof LineString) {
             LineString line = (LineString) geom;
-            CoordinateSequence seq = (CoordinateSequence) line.getCoordinateSequence();
+            CoordinateSequence seq = line.getCoordinateSequence();
             LiteCoordinateSequence lseq = new LiteCoordinateSequence(seq.toCoordinateArray());
 
             if (decimateOnEnvelope(line, lseq)) {
@@ -149,7 +149,7 @@ public final class Decimator {
                 LinearRing ring = gFac.createLinearRing(exterior);
 
                 final int numRings = line.getNumInteriorRing();
-                List<LinearRing> rings = new ArrayList<LinearRing>();
+                List<LinearRing> rings = new ArrayList<>();
 
                 for (int i = 0; i < numRings; i++) {
                     Coordinate[] interior = decimate(line.getInteriorRingN(i)).getCoordinates();

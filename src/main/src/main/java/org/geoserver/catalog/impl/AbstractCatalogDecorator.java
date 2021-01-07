@@ -628,12 +628,18 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 
@@ -674,7 +680,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         return delegate.list(of, filter, offset, count, sortOrder);
     }
 
-    public void removeListeners(Class listenerClass) {
+    public void removeListeners(Class<?> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class Layer extends AbstractParametricEntity {
 
     String capabilities;
+    String decorationName;
 
     @XmlElement(name = "Capabilities")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -23,5 +24,15 @@ public class Layer extends AbstractParametricEntity {
 
     public void setCapabilities(String capabilities) {
         this.capabilities = capabilities;
+    }
+
+    @XmlElement(name = "DecorationName")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    public String getDecorationName() {
+        return decorationName;
+    }
+
+    public void setDecorationName(String decorationName) {
+        this.decorationName = decorationName;
     }
 }

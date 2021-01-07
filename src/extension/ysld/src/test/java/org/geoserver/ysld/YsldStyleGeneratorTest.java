@@ -44,7 +44,7 @@ public class YsldStyleGeneratorTest {
     public void testYsldStyleGenerator() throws Exception {
         final YsldHandler handler = new YsldHandler();
         ResourcePool rp = createNiceMock(ResourcePool.class);
-        rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
+        rp.writeStyle(anyObject(), (InputStream) anyObject());
         expectLastCall()
                 .andAnswer(
                         new IAnswer<Void>() {

@@ -56,7 +56,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
                             @Override
                             public Component buildComponent(String id) {
-                                return new InspireAdminPanel(id, new Model(serviceInfo));
+                                return new InspireAdminPanel(id, new Model<>(serviceInfo));
                             }
                         }));
     }

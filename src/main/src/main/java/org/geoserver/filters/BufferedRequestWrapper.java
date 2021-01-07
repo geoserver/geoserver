@@ -33,7 +33,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     protected String charset;
     protected ServletInputStream myStream = null;
     protected BufferedReader myReader = null;
-    protected Map myParameterMap;
+    protected Map<String, List<String>> myParameterMap;
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
 
     public BufferedRequestWrapper(HttpServletRequest req, String charset, byte[] buff) {
@@ -72,36 +72,38 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
     public String getParameter(String name) {
         parseParameters();
-        List allValues = (List) myParameterMap.get(name);
-        if (allValues != null && allValues.size() > 0) {
-            return (String) allValues.get(0);
-        } else return null;
+        List<String> allValues = myParameterMap.get(name);
+        if (allValues == null || allValues.isEmpty()) {
+            return null;
+        } else {
+            return allValues.get(0);
+        }
     }
 
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
         parseParameters();
-        Map toArrays = new TreeMap();
-        Iterator it = myParameterMap.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            toArrays.put(entry.getKey(), ((List) entry.getValue()).toArray(new String[0]));
+        Map<String, String[]> toArrays = new TreeMap<>();
+        for (Map.Entry<String, List<String>> entry : myParameterMap.entrySet()) {
+            String[] value = entry.getValue().toArray(new String[0]);
+            toArrays.put(entry.getKey(), value);
         }
 
         return Collections.unmodifiableMap(toArrays);
     }
 
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         parseParameters();
-        return new IteratorAsEnumeration(myParameterMap.keySet().iterator());
+        return new IteratorAsEnumeration<>(myParameterMap.keySet().iterator());
     }
 
     public String[] getParameterValues(String name) {
         parseParameters();
-        List allValues = (List) myParameterMap.get(name);
-        if (allValues != null && allValues.size() > 0) {
-            return (String[]) allValues.toArray(new String[0]);
-        } else return null;
+        List<String> allValues = myParameterMap.get(name);
+        if (allValues == null || allValues.isEmpty()) {
+            return null;
+        } else {
+            return allValues.toArray(new String[0]);
+        }
     }
 
     protected void parseParameters() {
@@ -112,21 +114,24 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
                 && contentType.startsWith("application/x-www-form-urlencoded")) {
             parseFormBody();
         } else {
-            myParameterMap = new HashMap(super.getParameterMap());
+            Map<String, String[]> superParameters = super.getParameterMap();
+            myParameterMap = new HashMap<>();
 
-            for (Object key : myParameterMap.keySet()) {
-                Object value = myParameterMap.get(key);
+            for (String key : superParameters.keySet()) {
+                Object value = superParameters.get(key);
                 if (value instanceof String[]) {
                     myParameterMap.put(key, Arrays.asList(((String[]) value)));
                 } else if (!(value instanceof List)) {
-                    myParameterMap.put(key, Converters.convert(value, List.class));
+                    @SuppressWarnings("unchecked")
+                    List<String> converted = Converters.convert(value, List.class);
+                    myParameterMap.put(key, converted);
                 }
             }
         }
     }
 
     protected void parseFormBody() {
-        myParameterMap = new TreeMap();
+        myParameterMap = new TreeMap<>();
 
         // parse the body
         String[] pairs;
@@ -137,16 +142,16 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < pairs.length; i++) {
-            parsePair(pairs[i]);
+        for (String s : pairs) {
+            parsePair(s);
         }
 
         // we should also parse parameters that came into the request thought
         if (myWrappedRequest.getQueryString() != null) {
             pairs = myWrappedRequest.getQueryString().split("\\&");
 
-            for (int i = 0; i < pairs.length; i++) {
-                parsePair(pairs[i]);
+            for (String pair : pairs) {
+                parsePair(pair);
             }
         }
     }
@@ -158,10 +163,10 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             String value = (split.length > 1 ? URLDecoder.decode(split[1], "UTF-8") : "");
 
             if (!myParameterMap.containsKey(key)) {
-                myParameterMap.put(key, new ArrayList());
+                myParameterMap.put(key, new ArrayList<>());
             }
 
-            ((List) myParameterMap.get(key)).add(value);
+            myParameterMap.get(key).add(value);
 
         } catch (UnsupportedEncodingException e) {
             logger.severe("Failed to decode form values in LoggingFilter");
@@ -169,10 +174,10 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         }
     }
 
-    private class IteratorAsEnumeration implements Enumeration {
-        Iterator it;
+    private static class IteratorAsEnumeration<T> implements Enumeration<T> {
+        Iterator<T> it;
 
-        public IteratorAsEnumeration(Iterator it) {
+        public IteratorAsEnumeration(Iterator<T> it) {
             this.it = it;
         }
 
@@ -180,7 +185,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             return it.hasNext();
         }
 
-        public Object nextElement() {
+        public T nextElement() {
             return it.next();
         }
     }

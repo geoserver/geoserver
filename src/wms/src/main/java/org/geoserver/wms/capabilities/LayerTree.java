@@ -7,7 +7,6 @@ package org.geoserver.wms.capabilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import org.geoserver.catalog.LayerInfo;
 
 /**
@@ -24,25 +23,24 @@ class LayerTree {
 
     public LayerTree() {
         this.name = "";
-        this.childrens = new ArrayList<LayerTree>();
-        this.data = new ArrayList<LayerInfo>();
+        this.childrens = new ArrayList<>();
+        this.data = new ArrayList<>();
     }
 
     /** @param name String */
     public LayerTree(String name) {
         this.name = name;
-        this.childrens = new ArrayList<LayerTree>();
-        this.data = new ArrayList<LayerInfo>();
+        this.childrens = new ArrayList<>();
+        this.data = new ArrayList<>();
     }
 
     /** @param c Collection */
     public LayerTree(Collection<LayerInfo> c) {
         this.name = "";
-        this.childrens = new ArrayList<LayerTree>();
-        this.data = new ArrayList<LayerInfo>();
+        this.childrens = new ArrayList<>();
+        this.data = new ArrayList<>();
 
-        for (Iterator<LayerInfo> it = c.iterator(); it.hasNext(); ) {
-            LayerInfo layer = it.next();
+        for (LayerInfo layer : c) {
             add(layer);
         }
     }

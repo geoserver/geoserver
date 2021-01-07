@@ -46,7 +46,7 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
         AuthenticationKeyMapperNamesModel() {
             List<AuthenticationKeyMapper> mappers =
                     GeoServerExtensions.extensions(AuthenticationKeyMapper.class);
-            this.mapperNames = new ArrayList<String>();
+            this.mapperNames = new ArrayList<>();
             for (AuthenticationKeyMapper mapper : mappers) {
                 this.mapperNames.add(mapper.getBeanName());
             }

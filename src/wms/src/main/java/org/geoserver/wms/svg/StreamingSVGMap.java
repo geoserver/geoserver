@@ -111,12 +111,9 @@ public class StreamingSVGMap extends WebMap {
     /** @task TODO: respect layer filtering given by their Styles */
     private void writeLayers() throws IOException {
         List<Layer> layers = mapContent.layers();
-        int nLayers = layers.size();
-
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-        for (int i = 0; i < nLayers; i++) {
-            Layer layer = layers.get(i);
+        for (Layer layer : layers) {
             SimpleFeatureIterator featureReader = null;
             SimpleFeatureSource fSource;
             fSource = (SimpleFeatureSource) layer.getFeatureSource();

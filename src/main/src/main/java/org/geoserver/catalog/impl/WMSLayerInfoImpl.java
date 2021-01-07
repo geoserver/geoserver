@@ -45,9 +45,9 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     protected String forcedRemoteStyle = "";
     protected String preferredFormat = DEFAULT_FORMAT;
 
-    private List<String> selectedRemoteFormats = new ArrayList<String>();
+    private List<String> selectedRemoteFormats = new ArrayList<>();
 
-    private List<String> selectedRemoteStyles = new ArrayList<String>();
+    private List<String> selectedRemoteStyles = new ArrayList<>();
 
     private Double minScale = null;
 
@@ -55,7 +55,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private boolean metadataBBoxRespected = false;
 
-    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<>();
 
     protected WMSLayerInfoImpl() {}
 
@@ -136,7 +136,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                     Level.SEVERE,
                     "Unable to fetch available formats for cascaded layer " + getNativeName());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -208,7 +208,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override
@@ -299,7 +299,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     }
 
     public List<StyleInfo> getAllAvailableRemoteStyles() {
-        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<>();
         return allAvailableRemoteStyles;
     }
 

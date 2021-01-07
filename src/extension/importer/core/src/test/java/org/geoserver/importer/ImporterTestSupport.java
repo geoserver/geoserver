@@ -76,7 +76,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         ImporterTestUtils.setComparisonTolerance();
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -214,7 +214,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         ds.setName(dsName);
         ds.setType("H2");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName);
         params.put("dbtype", "h2");
         ds.getConnectionParameters().putAll(params);
@@ -309,7 +309,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         }
 
         public JSONObject buildObject() {
-            return JSONObject.fromObject(((StringWriter) writer).toString());
+            return JSONObject.fromObject(writer.toString());
         }
     }
 

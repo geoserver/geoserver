@@ -306,7 +306,7 @@ public class GMLFileFormat extends VectorFormat {
                 String name = ad.getLocalName();
                 Class<?> binding = ad.getType().getBinding();
                 boolean valid = false;
-                for (Class validAttributeType : VALID_ATTRIBUTE_TYPES) {
+                for (Class<?> validAttributeType : VALID_ATTRIBUTE_TYPES) {
                     if (validAttributeType.isAssignableFrom(binding)) {
                         valid = true;
                         break;
@@ -347,7 +347,7 @@ public class GMLFileFormat extends VectorFormat {
 
         // if we have already established it's a string, bail out
         AttributeDescriptor ad = guessedTypes.get(name);
-        Class target = null;
+        Class<?> target = null;
         if (ad != null) {
             target = ad.getType().getBinding();
         }
@@ -379,7 +379,7 @@ public class GMLFileFormat extends VectorFormat {
         } else {
             Hints hints = new Hints(ConverterFactory.SAFE_CONVERSION, true);
             if (target == null) {
-                for (Class c : TYPE_GUESS_TARGETS) {
+                for (Class<?> c : TYPE_GUESS_TARGETS) {
                     Object converted = Converters.convert(value, c, hints);
                     if (converted != null) {
                         target = c;

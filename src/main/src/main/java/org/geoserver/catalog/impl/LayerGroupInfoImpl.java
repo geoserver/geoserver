@@ -50,11 +50,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      * This property is here for compatibility purpose, in 2.3.x series it has been replaced by
      * 'publishables'
      */
-    protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
+    protected List<LayerInfo> layers = new ArrayList<>();
 
-    protected List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
-    protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
-    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
+    protected List<PublishedInfo> publishables = new ArrayList<>();
+    protected List<StyleInfo> styles = new ArrayList<>();
+    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<>();
 
     protected ReferencedEnvelope bounds;
 
@@ -68,7 +68,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      *
      * @since 2.1.3
      */
-    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(2);
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -76,7 +76,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      *
      * @since 2.1.3
      */
-    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<>(2);
 
     private List<KeywordInfo> keywords = new ArrayList<>();
 
@@ -101,8 +101,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
-        publishables = new ArrayList<PublishedInfo>();
-        styles = new ArrayList<StyleInfo>();
+        publishables = new ArrayList<>();
+        styles = new ArrayList<>();
         metadata = new MetadataMap();
     }
 
@@ -246,7 +246,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      */
     public void convertLegacyLayers() {
         if (layers != null && publishables == null) {
-            publishables = new ArrayList<PublishedInfo>();
+            publishables = new ArrayList<>();
             for (LayerInfo layer : layers) {
                 publishables.add(layer);
             }

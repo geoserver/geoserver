@@ -23,7 +23,7 @@ abstract class FileItemCache<T> {
     Map<String, CacheItem<T>> cache;
 
     public FileItemCache(int maxHardReferences) {
-        cache = new SoftValueHashMap<String, CacheItem<T>>(maxHardReferences);
+        cache = new SoftValueHashMap<>(maxHardReferences);
     }
 
     /** Clears the cache contents */
@@ -44,7 +44,7 @@ abstract class FileItemCache<T> {
         if (item == null) {
             return null;
         }
-        ci = new CacheItem<T>(item, file);
+        ci = new CacheItem<>(item, file);
         cache.put(key, ci);
 
         return item;
@@ -69,7 +69,7 @@ abstract class FileItemCache<T> {
 
     /** Manually updates the contents of the cache */
     public void put(T item, Resource file) {
-        CacheItem ci = new CacheItem<T>(item, file);
+        CacheItem<T> ci = new CacheItem<>(item, file);
         String key = getFileKey(file);
         cache.put(key, ci);
     }

@@ -49,15 +49,15 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
 
     FeatureType schema;
 
-    Set<Expression> geometriesOnPolygonSymbolizer = new HashSet<Expression>();
+    Set<Expression> geometriesOnPolygonSymbolizer = new HashSet<>();
 
-    Set<Expression> geometriesOnLineSymbolizer = new HashSet<Expression>();
+    Set<Expression> geometriesOnLineSymbolizer = new HashSet<>();
 
-    Set<Expression> geometriesOnPointSymbolizer = new HashSet<Expression>();
+    Set<Expression> geometriesOnPointSymbolizer = new HashSet<>();
 
-    Set<Expression> geometriesOnTextSymbolizer = new HashSet<Expression>();
+    Set<Expression> geometriesOnTextSymbolizer = new HashSet<>();
 
-    Set<Rule> extraRules = new HashSet<Rule>();
+    Set<Rule> extraRules = new HashSet<>();
 
     private PropertyName defaultGeometryExpression;
 
@@ -163,7 +163,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         Style copy = (Style) pages.peek();
         // merge the feature type styles sharing the same transformation
         List<FeatureTypeStyle> featureTypeStyles = copy.featureTypeStyles();
-        List<FeatureTypeStyle> reduced = new ArrayList<FeatureTypeStyle>();
+        List<FeatureTypeStyle> reduced = new ArrayList<>();
         FeatureTypeStyle current = null;
         for (FeatureTypeStyle fts : featureTypeStyles) {
             if (current == null
@@ -191,7 +191,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     public void visit(FeatureTypeStyle fts) {
         extraRules.clear();
         super.visit(fts);
-        if (extraRules.size() > 0) {
+        if (!extraRules.isEmpty()) {
             FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
             copy.rules().addAll(extraRules);
         }
@@ -314,7 +314,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         if (stroke != null) {
             List<Expression> dashArray = stroke.dashArray();
             Graphic graphicStroke = stroke.getGraphicStroke();
-            if (graphicStroke != null || dashArray != null && dashArray.size() > 0) {
+            if (graphicStroke != null || dashArray != null && !dashArray.isEmpty()) {
                 addSolidLineSymbolier = true;
             }
         }

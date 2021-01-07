@@ -13,7 +13,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,14 +99,14 @@ public class ColorMapLegendCreator {
      */
     public static class Builder {
 
-        private final Queue<ColorMapEntryLegendBuilder> bodyRows =
-                new LinkedList<ColorMapEntryLegendBuilder>();
+        private final Queue<ColorMapEntryLegendBuilder> bodyRows = new LinkedList<>();
 
         private ColorMapType colorMapType;
 
         private ColorMapEntry previousCMapEntry;
 
-        private final CaseInsensitiveMap additionalOptions = new CaseInsensitiveMap();
+        private final CaseInsensitiveMap<String, Object> additionalOptions =
+                new CaseInsensitiveMap<>();
 
         private Color backgroundColor;
 
@@ -491,10 +490,9 @@ public class ColorMapLegendCreator {
 
     private Color labelFontColor;
 
-    private final Queue<ColorMapEntryLegendBuilder> bodyRows =
-            new LinkedList<ColorMapEntryLegendBuilder>();
+    private final Queue<ColorMapEntryLegendBuilder> bodyRows = new LinkedList<>();
 
-    private final List<Cell> footerRows = new ArrayList<Cell>();
+    private final List<Cell> footerRows = new ArrayList<>();
 
     private HAlign hAlign = HAlign.LEFT;
 
@@ -625,8 +623,8 @@ public class ColorMapLegendCreator {
         //
         // create a sample image for computing dimensions of text strings
         //
-        BufferedImage image = ImageUtils.createImage(1, 1, (IndexColorModel) null, transparent);
-        final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+        BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
+        final Map<Key, Object> hintsMap = new HashMap<>();
         Graphics2D graphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
@@ -755,14 +753,13 @@ public class ColorMapLegendCreator {
 
         // creating a backbuffer image on which we should draw the bkgColor for this colormap
         // element
-        final BufferedImage image =
-                ImageUtils.createImage(1, 1, (IndexColorModel) null, transparent);
-        final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+        final BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
+        final Map<Key, Object> hintsMap = new HashMap<>();
         final Graphics2D graphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // list where we store the rows for the footer
-        final Queue<BufferedImage> queue = new LinkedList<BufferedImage>();
+        final Queue<BufferedImage> queue = new LinkedList<>();
         // //the height is already fixed
         // final int rowHeight=(int)Math.round(rowH);
         final int rowWidth = (int) Math.round(footerW);
@@ -799,7 +796,7 @@ public class ColorMapLegendCreator {
 
     private Queue<BufferedImage> createBody() {
 
-        final Queue<BufferedImage> queue = new LinkedList<BufferedImage>();
+        final Queue<BufferedImage> queue = new LinkedList<>();
 
         //
         // draw the various elements
@@ -874,7 +871,7 @@ public class ColorMapLegendCreator {
                     //
                     //
 
-                    final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+                    final Map<Key, Object> hintsMap = new HashMap<>();
                     queue.add(
                             LegendUtils.hMergeBufferedImages(
                                     colorCellLegend,
@@ -885,7 +882,7 @@ public class ColorMapLegendCreator {
                                     backgroundColor,
                                     dx));
                 } else {
-                    final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+                    final Map<Key, Object> hintsMap = new HashMap<>();
                     queue.add(
                             LegendUtils.hMergeBufferedImages(
                                     colorCellLegend,
@@ -903,7 +900,7 @@ public class ColorMapLegendCreator {
                 //
                 //
 
-                final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+                final Map<Key, Object> hintsMap = new HashMap<>();
                 queue.add(
                         LegendUtils.hMergeBufferedImages(
                                 colorCellLegend,
@@ -933,15 +930,14 @@ public class ColorMapLegendCreator {
         final int totalWidth = (int) finalDimension.getWidth();
         final int totalHeight = (int) finalDimension.getHeight();
         BufferedImage finalLegend =
-                ImageUtils.createImage(
-                        totalWidth, totalHeight, (IndexColorModel) null, transparent);
+                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
 
         /*
          * For RAMP type, only HORIZONTAL or VERTICAL condition is valid
          */
         if (colorMapType == ColorMapType.RAMP) {
 
-            final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+            final Map<Key, Object> hintsMap = new HashMap<>();
             Graphics2D finalGraphics =
                     ImageUtils.prepareTransparency(
                             transparent, backgroundColor, finalLegend, hintsMap);
@@ -968,7 +964,7 @@ public class ColorMapLegendCreator {
                 finalGraphics.dispose();
             }
         } else {
-            List<RenderedImage> imgs = new ArrayList<RenderedImage>(legendsQueue);
+            List<RenderedImage> imgs = new ArrayList<>(legendsQueue);
 
             LegendMerger.MergeOptions options =
                     new LegendMerger.MergeOptions(

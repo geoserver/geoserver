@@ -45,19 +45,16 @@ public class LayerGroupEntryPanel extends Panel {
     private static final long serialVersionUID = -5483938812185582866L;
 
     public static final Property<LayerGroupEntry> LAYER_TYPE =
-            new PropertyPlaceholder<LayerGroupEntry>("layerType");
+            new PropertyPlaceholder<>("layerType");
 
-    public static final Property<LayerGroupEntry> LAYER =
-            new PropertyPlaceholder<LayerGroupEntry>("layer");
+    public static final Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<>("layer");
 
     public static final Property<LayerGroupEntry> DEFAULT_STYLE =
-            new PropertyPlaceholder<LayerGroupEntry>("defaultStyle");
+            new PropertyPlaceholder<>("defaultStyle");
 
-    public static final Property<LayerGroupEntry> STYLE =
-            new PropertyPlaceholder<LayerGroupEntry>("style");
+    public static final Property<LayerGroupEntry> STYLE = new PropertyPlaceholder<>("style");
 
-    public static final Property<LayerGroupEntry> REMOVE =
-            new PropertyPlaceholder<LayerGroupEntry>("remove");
+    public static final Property<LayerGroupEntry> REMOVE = new PropertyPlaceholder<>("remove");
 
     static final List<Property<LayerGroupEntry>> PROPERTIES =
             Arrays.asList(LAYER_TYPE, LAYER, DEFAULT_STYLE, STYLE, REMOVE);
@@ -71,7 +68,7 @@ public class LayerGroupEntryPanel extends Panel {
             String id, LayerGroupInfo layerGroup, IModel<WorkspaceInfo> groupWorkspace) {
         super(id);
 
-        items = new ArrayList<LayerGroupEntry>();
+        items = new ArrayList<>();
         for (int i = 0; i < layerGroup.getLayers().size(); i++) {
             PublishedInfo layer = layerGroup.getLayers().get(i);
             StyleInfo style = layerGroup.getStyles().get(i);
@@ -234,9 +231,9 @@ public class LayerGroupEntryPanel extends Panel {
     }
 
     Component defaultStyleCheckbox(String id, IModel<LayerGroupEntry> itemModel) {
-        final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
+        final LayerGroupEntry entry = itemModel.getObject();
         Fragment f = new Fragment(id, "defaultStyle", this);
-        CheckBox ds = new CheckBox("checkbox", new Model<Boolean>(entry.isDefaultStyle()));
+        CheckBox ds = new CheckBox("checkbox", new Model<>(entry.isDefaultStyle()));
         ds.add(
                 new OnChangeAjaxBehavior() {
 
@@ -270,7 +267,7 @@ public class LayerGroupEntryPanel extends Panel {
 
         // build and returns the link, but disable it if the style is the default
         SimpleAjaxLink<String> link =
-                new SimpleAjaxLink<String>(id, new Model<String>(styleName)) {
+                new SimpleAjaxLink<String>(id, new Model<>(styleName)) {
 
                     private static final long serialVersionUID = 4677068931971673637L;
 
@@ -289,8 +286,7 @@ public class LayerGroupEntryPanel extends Panel {
                                             StyleInfo style, AjaxRequestTarget target) {
                                         popupWindow.close(target);
 
-                                        LayerGroupEntry entry =
-                                                (LayerGroupEntry) itemModel.getObject();
+                                        LayerGroupEntry entry = itemModel.getObject();
                                         entry.setStyle(style);
 
                                         // redraw
@@ -332,7 +328,6 @@ public class LayerGroupEntryPanel extends Panel {
     Component positionPanel(String id, IModel<LayerGroupEntry> itemModel) {
         ParamResourceModel upTitle = new ParamResourceModel("moveToBottom", this);
         ParamResourceModel downTitle = new ParamResourceModel("moveToBottom", this);
-        return new UpDownPanel<LayerGroupEntry>(
-                id, itemModel.getObject(), items, layerTable, upTitle, downTitle);
+        return new UpDownPanel<>(id, itemModel.getObject(), items, layerTable, upTitle, downTitle);
     }
 }

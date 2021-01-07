@@ -48,7 +48,7 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     GeoServerFacade facade;
 
     /** listeners */
-    List<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
+    List<ConfigurationListener> listeners = new ArrayList<>();
 
     public GeoServerImpl() {
         this.facade = new DefaultGeoServerFacade(this);
@@ -161,7 +161,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void fireSettingsModified(
-            SettingsInfo settings, List<String> changed, List oldValues, List newValues) {
+            SettingsInfo settings,
+            List<String> changed,
+            List<Object> oldValues,
+            List<Object> newValues) {
         for (ConfigurationListener l : listeners) {
             try {
                 l.handleSettingsModified(settings, changed, oldValues, newValues);
@@ -329,7 +332,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void fireGlobalModified(
-            GeoServerInfo global, List<String> changed, List oldValues, List newValues) {
+            GeoServerInfo global,
+            List<String> changed,
+            List<Object> oldValues,
+            List<Object> newValues) {
 
         for (ConfigurationListener l : getListeners()) {
             try {
@@ -344,7 +350,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void fireLoggingModified(
-            LoggingInfo logging, List<String> changed, List oldValues, List newValues) {
+            LoggingInfo logging,
+            List<String> changed,
+            List<Object> oldValues,
+            List<Object> newValues) {
 
         for (ConfigurationListener l : getListeners()) {
             try {
@@ -385,7 +394,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void fireServiceModified(
-            ServiceInfo service, List<String> changed, List oldValues, List newValues) {
+            ServiceInfo service,
+            List<String> changed,
+            List<Object> oldValues,
+            List<Object> newValues) {
 
         for (ConfigurationListener l : getListeners()) {
             try {

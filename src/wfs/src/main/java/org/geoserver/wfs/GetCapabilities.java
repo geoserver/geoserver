@@ -96,7 +96,7 @@ public class GetCapabilities {
 
     public static String version(GetCapabilitiesRequest request) {
         // do the version negotiation dance
-        List<String> provided = new ArrayList<String>();
+        List<String> provided = new ArrayList<>();
         provided.add("1.0.0");
         provided.add("1.1.0");
 

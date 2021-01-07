@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs2_0;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -49,11 +49,13 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         try {
             Field field = GetCoverage.class.getDeclaredField("mdFormats");
             field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
-        } catch (NoSuchFieldException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
+            @SuppressWarnings("unchecked")
+            Set<String> values = (Set<String>) field.get(null);
+            values.add(WCSResponseInterceptor.MIME_TYPE);
+        } catch (NoSuchFieldException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | SecurityException e) {
         }
 
         super.onSetUp(testData);
@@ -109,8 +111,8 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
                     applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
 
             assertEquals(
-                    (Object) sourceCoverage.getCoordinateReferenceSystem(),
-                    (Object) targetCoverage.getCoordinateReferenceSystem());
+                    sourceCoverage.getCoordinateReferenceSystem(),
+                    targetCoverage.getCoordinateReferenceSystem());
 
             assertTrue(targetCoverage instanceof GranuleStack);
             GridCoverage2D firstResult = ((GranuleStack) targetCoverage).getGranules().get(0);

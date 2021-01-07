@@ -97,7 +97,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     protected void initializeVariables() {
 
         // group the dimensions to be added to the variable
-        List<Dimension> netCDFDimensions = new LinkedList<Dimension>();
+        List<Dimension> netCDFDimensions = new LinkedList<>();
         for (NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             netCDFDimensions.add(dimension.getNetCDFDimension());
         }
@@ -155,7 +155,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             }
             if (inputUoM != null && hasDefinedUoM) {
                 try {
-                    Unit outputUoM = NetCDFUnitFormat.parse(variableUoM);
+                    Unit<?> outputUoM = NetCDFUnitFormat.parse(variableUoM);
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)) {
                             if (LOGGER.isLoggable(Level.WARNING)) {
@@ -167,7 +167,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                                                 + " are incompatible.\nNo unit conversion will be performed");
                             }
                         } else {
-                            unitConverter = inputUoM.getConverterTo(outputUoM);
+                            unitConverter = getConverter(inputUoM, outputUoM);
                         }
                     }
                 } catch (UnconvertibleException ce) {
@@ -310,6 +310,12 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                 writer.addVariableAttribute(var, buildAttribute(att.getKey(), att.getValue()));
             }
         }
+    }
+
+    /** Makes conversion compile when the two units are of an unknown quantity */
+    @SuppressWarnings("unchecked")
+    private UnitConverter getConverter(Unit<?> inputUoM, Unit<?> outputUoM) {
+        return inputUoM.getConverterTo((Unit) outputUoM);
     }
 
     /** Set the variables values */

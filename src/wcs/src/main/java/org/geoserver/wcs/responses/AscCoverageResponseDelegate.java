@@ -69,6 +69,8 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 || ARCGRID_COMPRESSED_MIME_TYPE.equals(outputFormat);
     }
 
+    // gzipOut is just a wrapper, output closing managed outside
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,
@@ -82,7 +84,6 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
                             .toString());
         }
 
-        @SuppressWarnings("PMD.CloseResource") // just a wrapper, output closing managed outside
         GZIPOutputStream gzipOut = null;
         if (isOutputCompressed(outputFormat)) {
             gzipOut = new GZIPOutputStream(output);

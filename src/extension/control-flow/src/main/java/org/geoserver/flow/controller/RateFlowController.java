@@ -75,7 +75,7 @@ public class RateFlowController implements FlowController {
     }
 
     /** Thread local holding the current user id */
-    static ThreadLocal<String> USER_ID = new ThreadLocal<String>();
+    static ThreadLocal<String> USER_ID = new ThreadLocal<>();
 
     /** Generates a unique key identifying the user making the request */
     KeyGenerator keyGenerator;

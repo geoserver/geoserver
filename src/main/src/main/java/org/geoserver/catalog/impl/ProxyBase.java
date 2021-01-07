@@ -79,7 +79,7 @@ public class ProxyBase implements InvocationHandler {
                 return properties;
             }
 
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
         }
 
         return properties;

@@ -127,22 +127,22 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
 
     @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
-        return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsers()));
+        return filterUsers(new TreeSet<>(delegate.getUsers()));
     }
 
     @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
-        return filterGroups(new TreeSet<GeoServerUserGroup>(delegate.getUserGroups()));
+        return filterGroups(new TreeSet<>(delegate.getUserGroups()));
     }
 
     @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException {
-        return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersForGroup(group)));
+        return filterUsers(new TreeSet<>(delegate.getUsersForGroup(group)));
     }
 
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
-        return filterGroups(new TreeSet<GeoServerUserGroup>(delegate.getGroupsForUser(user)));
+        return filterGroups(new TreeSet<>(delegate.getGroupsForUser(user)));
     }
 
     @Override
@@ -247,7 +247,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
 
     @Override
     public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
-        return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersHavingProperty(propname)));
+        return filterUsers(new TreeSet<>(delegate.getUsersHavingProperty(propname)));
     }
 
     @Override
@@ -257,8 +257,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
 
     @Override
     public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
-        return filterUsers(
-                new TreeSet<GeoServerUser>(delegate.getUsersNotHavingProperty(propname)));
+        return filterUsers(new TreeSet<>(delegate.getUsersNotHavingProperty(propname)));
     }
 
     @Override
@@ -270,8 +269,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
             throws IOException {
         return filterUsers(
-                new TreeSet<GeoServerUser>(
-                        delegate.getUsersHavingPropertyValue(propname, propvalue)));
+                new TreeSet<>(delegate.getUsersHavingPropertyValue(propname, propvalue)));
     }
 
     @Override

@@ -54,7 +54,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * List of file paths (relative to the source data directory) that will be subjected to token
      * filtering. By default only <code>catalog.xml</code> will be filtered.
      */
-    protected List<String> filteredPaths = new ArrayList<String>(Arrays.asList("catalog.xml"));
+    protected List<String> filteredPaths = new ArrayList<>(Arrays.asList("catalog.xml"));
 
     protected File sqlScript;
 
@@ -133,7 +133,8 @@ public class LiveDbmsData extends LiveSystemTestData {
         // Map<String, String>
         Properties p = new Properties();
         p.load(new FileInputStream(fixture));
-        Map<String, String> filters = new HashMap(p);
+        Map<String, String> filters = new HashMap<>();
+        p.forEach((k, v) -> filters.put((String) k, (String) v));
 
         // replace the keys contained in catalog.xml with the actual values
         if (filteredPaths != null && filteredPaths.size() > 0) {

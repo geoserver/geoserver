@@ -7,7 +7,6 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.TransformerException;
 import net.opengis.wcs11.GetCapabilitiesType;
@@ -44,8 +43,8 @@ public class GetCapabilitiesResponse extends Response {
             // look for an accepted format
             List formats = request.getAcceptFormats().getOutputFormat();
 
-            for (Iterator f = formats.iterator(); f.hasNext(); ) {
-                String format = (String) f.next();
+            for (Object o : formats) {
+                String format = (String) o;
 
                 if (format.endsWith("/xml")) {
                     return format;

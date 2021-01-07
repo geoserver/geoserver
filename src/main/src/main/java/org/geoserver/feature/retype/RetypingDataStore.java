@@ -49,11 +49,9 @@ public class RetypingDataStore extends DecoratingDataStore {
 
     private DataStore wrapped;
 
-    protected volatile Map<String, FeatureTypeMap> forwardMap =
-            new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> forwardMap = new ConcurrentHashMap<>();
 
-    protected volatile Map<String, FeatureTypeMap> backwardsMap =
-            new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> backwardsMap = new ConcurrentHashMap<>();
 
     public RetypingDataStore(DataStore wrapped) throws IOException {
         super(wrapped);
@@ -122,17 +120,14 @@ public class RetypingDataStore extends DecoratingDataStore {
         // here we transform the names, and also refresh the type maps so that
         // they don't contain stale elements
         String[] names = wrapped.getTypeNames();
-        List<String> transformedNames = new ArrayList<String>();
-        Map<String, FeatureTypeMap> backup = new HashMap<String, FeatureTypeMap>(forwardMap);
+        List<String> transformedNames = new ArrayList<>();
+        Map<String, FeatureTypeMap> backup = new HashMap<>(forwardMap);
 
         // Populate local hashmaps with new values.
-        Map<String, FeatureTypeMap> forwardMapLocal =
-                new ConcurrentHashMap<String, FeatureTypeMap>();
-        Map<String, FeatureTypeMap> backwardsMapLocal =
-                new ConcurrentHashMap<String, FeatureTypeMap>();
+        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
-        for (int i = 0; i < names.length; i++) {
-            String original = names[i];
+        for (String original : names) {
             String transformedName = transformFeatureTypeName(original);
             if (transformedName != null) {
                 transformedNames.add(transformedName);
@@ -150,7 +145,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         forwardMap = forwardMapLocal;
         backwardsMap = backwardsMapLocal;
 
-        return (String[]) transformedNames.toArray(new String[transformedNames.size()]);
+        return transformedNames.toArray(new String[transformedNames.size()]);
     }
 
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
@@ -186,7 +181,7 @@ public class RetypingDataStore extends DecoratingDataStore {
     /** Returns the type map given the external type name */
     FeatureTypeMap getTypeMapBackwards(String externalTypeName, boolean checkMap)
             throws IOException {
-        FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(externalTypeName);
+        FeatureTypeMap map = backwardsMap.get(externalTypeName);
         if (map == null && checkMap)
             throw new IOException(
                     "Type mapping has not been established for type  "
@@ -259,7 +254,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         if (!joins.isEmpty()) {
             modified.getJoins().clear();
             for (Join join : joins) {
-                FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(join.getTypeName());
+                FeatureTypeMap map = backwardsMap.get(join.getTypeName());
                 if (map == null) {
                     // nothing we can do about it
                     modified.getJoins().add(join);
@@ -308,7 +303,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      */
     public List<Name> getNames() throws IOException {
         String[] typeNames = getTypeNames();
-        List<Name> names = new ArrayList<Name>(typeNames.length);
+        List<Name> names = new ArrayList<>(typeNames.length);
         for (String typeName : typeNames) {
             names.add(new NameImpl(typeName));
         }

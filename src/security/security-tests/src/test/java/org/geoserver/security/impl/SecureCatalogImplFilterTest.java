@@ -23,7 +23,6 @@ import org.geoserver.security.*;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +34,7 @@ public class SecureCatalogImplFilterTest {
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
         try {
-            LinkedList<T> list = new LinkedList<T>();
+            LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }
@@ -76,6 +75,7 @@ public class SecureCatalogImplFilterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // hamcrest varargs method is not marked as @SafeVarArgs
     public void testFeatureTypeList() throws Exception {
         Catalog catalog = createMock(Catalog.class);
 
@@ -87,7 +87,7 @@ public class SecureCatalogImplFilterTest {
 
         final Capture<Filter> filterCapture = Capture.newInstance(CaptureType.LAST);
 
-        final List<FeatureTypeInfo> source = new ArrayList<FeatureTypeInfo>();
+        final List<FeatureTypeInfo> source = new ArrayList<>();
 
         WorkspaceInfo mockWSInfo = createMock(WorkspaceInfo.class);
         expect(manager.getAccessLimits(eq(anonymous), eq(mockWSInfo)))
@@ -114,9 +114,9 @@ public class SecureCatalogImplFilterTest {
                         catalog.list(
                                 eq(FeatureTypeInfo.class),
                                 capture(filterCapture),
-                                (Integer) isNull(),
-                                (Integer) isNull(),
-                                (SortBy) isNull()))
+                                isNull(),
+                                isNull(),
+                                isNull()))
                 .andStubAnswer(
                         new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
 

@@ -85,7 +85,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         File data = resourceLoader.getBaseDirectory();
 
         // figure out if the file is a child of the base data directory
-        List<String> path = new ArrayList<String>();
+        List<String> path = new ArrayList<>();
         boolean isChild = false;
         while (file != null) {
             if (file.equals(data)) {
@@ -116,7 +116,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         }
 
         public String convertToString(File value, Locale locale) {
-            return fromFile((File) value);
+            return fromFile(value);
         }
     }
 

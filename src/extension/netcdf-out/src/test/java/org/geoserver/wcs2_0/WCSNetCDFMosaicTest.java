@@ -106,7 +106,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     static {
         System.setProperty("org.geotools.referencing.forceXY", "true");
-        final List<Range> ranges = new LinkedList<Range>();
+        final List<Range> ranges = new LinkedList<>();
         ranges.add(new Range(1));
         ranges.add(new Range(1));
         NETCDF_SECTION = new Section(ranges);
@@ -144,11 +144,13 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         try {
             Field field = GetCoverage.class.getDeclaredField("mdFormats");
             field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
-        } catch (NoSuchFieldException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
+            @SuppressWarnings("unchecked")
+            Set<String> values = (Set<String>) field.get(null);
+            values.add(WCSResponseInterceptor.MIME_TYPE);
+        } catch (NoSuchFieldException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | SecurityException e) {
         }
 
         super.onSetUp(testData);
@@ -236,7 +238,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         container.setShuffle(true);
         container.setDataPacking(isPackedLayer ? DataPacking.SHORT : DataPacking.NONE);
 
-        List<GlobalAttribute> attributes = new ArrayList<GlobalAttribute>();
+        List<GlobalAttribute> attributes = new ArrayList<>();
         attributes.add(new GlobalAttribute("custom_attribute", "testing WCS"));
         attributes.add(new GlobalAttribute("Conventions", "CF-1.6"));
         attributes.add(new GlobalAttribute("NULLAttribute", null));
@@ -635,7 +637,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         final CoverageBand outputBand2 =
                 new CoverageBand(
                         Collections.singletonList(band2), "BrO@0", 1, CompositionType.BAND_SELECT);
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand1);
         coverageBands.add(outputBand2);
         coverageView = new CoverageView("dummyView", coverageBands);
@@ -645,16 +647,16 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     private void configureTemperatureSurface() {
         NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
         container.setCopyAttributes(true);
-        List<VariableAttribute> variableAttributes = new ArrayList<VariableAttribute>();
+        List<VariableAttribute> variableAttributes = new ArrayList<>();
         variableAttributes.add(
                 new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
         variableAttributes.add(new VariableAttribute("Grib2_Parameter_Category", "Test Category"));
         container.setVariableAttributes(variableAttributes);
-        List<ExtraVariable> extraVariables = new ArrayList<ExtraVariable>();
+        List<ExtraVariable> extraVariables = new ArrayList<>();
         extraVariables.add(new ExtraVariable("reftime", "forecast_reference_time", "time"));
         extraVariables.add(new ExtraVariable("reftime", "scalar_forecast_reference_time", ""));
         container.setExtraVariables(extraVariables);
-        List<GlobalAttribute> globalAttributes = new ArrayList<GlobalAttribute>();
+        List<GlobalAttribute> globalAttributes = new ArrayList<>();
         globalAttributes.add(new GlobalAttribute("test-global-attribute", "Test Global Attribute"));
         globalAttributes.add(new GlobalAttribute("test-global-attribute-integer", "42"));
         globalAttributes.add(new GlobalAttribute("test-global-attribute-double", "1.5"));
@@ -728,7 +730,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertArrayEquals(
                     new double[] {1461664800, 1461708000},
                     (double[]) timeVar.read().copyTo1DJavaArray(),
-                    (double) DELTA);
+                    DELTA);
             Variable rlonVar = dataset.findVariable("rlon");
             assertNotNull(rlonVar);
             assertEquals(1, rlonVar.getDimensions().size());
@@ -818,9 +820,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals(
                     "GRIB reference time", reftimeVar.findAttribute("long_name").getStringValue());
             assertArrayEquals(
-                    new double[] {6, 3},
-                    (double[]) reftimeVar.read().copyTo1DJavaArray(),
-                    (double) DELTA);
+                    new double[] {6, 3}, (double[]) reftimeVar.read().copyTo1DJavaArray(), DELTA);
             // scalar extra variable copied from source with dimensions ""
             Variable scalarReftimeVar = dataset.findVariable("scalar_forecast_reference_time");
             assertEquals(0, scalarReftimeVar.getDimensions().size());

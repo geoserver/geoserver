@@ -44,8 +44,7 @@ public class InspireConverterFactory implements ConverterFactory {
             if (source instanceof String && UniqueResourceIdentifiers.class.equals(target)) {
                 UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
                 String[] values = ((String) source).split("\\s*;\\s*");
-                for (int i = 0; i < values.length; i++) {
-                    String value = values[i];
+                for (String value : values) {
                     String[] elements = value.split("\\s*,\\s*");
                     if (elements.length == 0) {
                         continue;
@@ -94,7 +93,7 @@ public class InspireConverterFactory implements ConverterFactory {
                             new UniqueResourceIdentifier(code, namespace, metadataURL);
                     identifiers.add(id);
                 }
-                return (T) identifiers;
+                return target.cast(identifiers);
             } else if (source instanceof UniqueResourceIdentifiers && String.class.equals(target)) {
                 UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) source;
                 if (ids.size() > 0) {
@@ -114,9 +113,9 @@ public class InspireConverterFactory implements ConverterFactory {
                         sb.append(";");
                     }
                     sb.setLength(sb.length() - 1);
-                    return (T) sb.toString();
+                    return target.cast(sb.toString());
                 } else {
-                    return (T) "";
+                    return target.cast("");
                 }
             }
 

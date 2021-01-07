@@ -29,7 +29,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<Object, Object>();
+    protected Map<Object, Object> clientProperties = new HashMap<>();
 
     protected long updateSequence;
 

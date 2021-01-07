@@ -10,7 +10,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.styling.AnchorPoint;
@@ -64,7 +63,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
     private static final int TRANSPARENT_CODE = 255 << 16 | 255 << 8 | 255;
 
-    Set /*<Color>*/ colors;
+    Set<Color> colors;
     boolean translucentSymbolizers;
     boolean externalGraphicsSymbolizers;
     boolean unknownColors;
@@ -77,7 +76,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
      */
     public PaletteExtractor(Color background) {
         super(null);
-        colors = new HashSet();
+        colors = new HashSet<>();
         if (background == null) background = TRANSPARENT;
         colors.add(background);
     }
@@ -88,7 +87,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
             return false;
 
         // impossible to devise a palette (0 shuold never happen, but you never know...)
-        if (colors.size() == 0 || colors.size() > 256) return false;
+        if (colors.isEmpty() || colors.size() > 256) return false;
 
         return true;
     }
@@ -99,8 +98,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
         int[] cmap = new int[colors.size()];
         int i = 0;
-        for (Iterator it = colors.iterator(); it.hasNext(); ) {
-            Color color = (Color) it.next();
+        for (Color color : colors) {
             cmap[i++] =
                     (color.getAlpha() << 24)
                             | (color.getRed() << 16)
@@ -143,7 +141,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         if (opacity == null) return;
         if (opacity instanceof Literal) {
             Literal lo = (Literal) opacity;
-            double value = ((Double) lo.evaluate(null, Double.class)).doubleValue();
+            double value = lo.evaluate(null, Double.class).doubleValue();
             translucentSymbolizers = translucentSymbolizers || value != 1;
         } else {
             // we cannot know, so we assume some will be non opaque
@@ -159,7 +157,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         if (color == null) return;
         if (color instanceof Literal) {
             Literal lc = (Literal) color;
-            String rgbColor = (String) lc.evaluate(null, String.class);
+            String rgbColor = lc.evaluate(null, String.class);
             colors.add(Color.decode(rgbColor));
         } else {
             unknownColors = true;
@@ -190,11 +188,11 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public void visit(StyledLayerDescriptor sld) {
         StyledLayer[] layers = sld.getStyledLayers();
 
-        for (int i = 0; i < layers.length; i++) {
-            if (layers[i] instanceof NamedLayer) {
-                ((NamedLayer) layers[i]).accept(this);
-            } else if (layers[i] instanceof UserLayer) {
-                ((UserLayer) layers[i]).accept(this);
+        for (StyledLayer layer : layers) {
+            if (layer instanceof NamedLayer) {
+                ((NamedLayer) layer).accept(this);
+            } else if (layer instanceof UserLayer) {
+                ((UserLayer) layer).accept(this);
             }
         }
     }
@@ -202,16 +200,16 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public void visit(NamedLayer layer) {
         Style[] styles = layer.getStyles();
 
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : styles) {
+            style.accept(this);
         }
     }
 
     public void visit(UserLayer layer) {
         Style[] styles = layer.getUserStyles();
 
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : styles) {
+            style.accept(this);
         }
     }
 

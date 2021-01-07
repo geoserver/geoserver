@@ -86,32 +86,31 @@ public class SystemTestData extends CiteTestData {
     /** Keys for overriding default layer properties */
     public static class LayerProperty<T> {
 
+        @SuppressWarnings("unchecked")
         T get(Map<LayerProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static LayerProperty<String> NAME = new LayerProperty<String>();
-        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY =
-                new LayerProperty<ProjectionPolicy>();
-        public static LayerProperty<String> STYLE = new LayerProperty<String>();
-        public static LayerProperty<ReferencedEnvelope> ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<Integer> SRS = new LayerProperty<Integer>();
-        public static LayerProperty<String> STORE = new LayerProperty<String>();
+        public static LayerProperty<String> NAME = new LayerProperty<>();
+        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY = new LayerProperty<>();
+        public static LayerProperty<String> STYLE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<Integer> SRS = new LayerProperty<>();
+        public static LayerProperty<String> STORE = new LayerProperty<>();
     }
 
     /** Keys for overriding default layer properties */
     public static class StyleProperty<T> {
 
+        @SuppressWarnings("unchecked")
         T get(Map<StyleProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static StyleProperty<String> FORMAT = new StyleProperty<String>();
-        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<Version>();
-        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<LegendInfo>();
+        public static StyleProperty<String> FORMAT = new StyleProperty<>();
+        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<>();
+        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<>();
     }
 
     /** data directory root */
@@ -430,7 +429,7 @@ public class SystemTestData extends CiteTestData {
      */
     public void addStyle(String name, String filename, Class scope, Catalog catalog)
             throws IOException {
-        addStyle((WorkspaceInfo) null, name, filename, scope, catalog);
+        addStyle(null, name, filename, scope, catalog);
     }
 
     /**
@@ -448,7 +447,7 @@ public class SystemTestData extends CiteTestData {
     public void addStyle(
             WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog)
             throws IOException {
-        addStyle(ws, name, filename, scope, catalog, (Map) null);
+        addStyle(ws, name, filename, scope, catalog, Collections.emptyMap());
     }
 
     /**
@@ -531,7 +530,7 @@ public class SystemTestData extends CiteTestData {
      * properties.
      */
     public void addVectorLayer(QName qName, Catalog catalog) throws IOException {
-        addVectorLayer(qName, new HashMap(), catalog);
+        addVectorLayer(qName, new HashMap<>(), catalog);
     }
 
     /**
@@ -746,7 +745,7 @@ public class SystemTestData extends CiteTestData {
      */
     public void addRasterLayer(QName qName, String filename, String extension, Catalog catalog)
             throws IOException {
-        addRasterLayer(qName, filename, extension, new HashMap(), catalog);
+        addRasterLayer(qName, filename, extension, new HashMap<>(), catalog);
     }
 
     /**
@@ -987,6 +986,7 @@ public class SystemTestData extends CiteTestData {
         for (XStreamServiceLoader loader : loaders) {
             if (serviceClass.equals(loader.getServiceClass())) {
                 // create a new one
+                @SuppressWarnings("unchecked")
                 T created = (T) loader.create(geoServer);
 
                 // grab the old one, if it exists

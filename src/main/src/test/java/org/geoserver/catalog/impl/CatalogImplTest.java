@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -407,7 +408,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         NamespaceInfo ns2 = catalog.getNamespace(ns.getId());
 
         assertNotNull(ns2);
-        assertFalse(ns == ns2);
+        assertNotSame(ns, ns2);
         assertEquals(ns, ns2);
     }
 
@@ -417,17 +418,17 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         NamespaceInfo ns2 = catalog.getNamespaceByPrefix(ns.getPrefix());
         assertNotNull(ns2);
-        assertFalse(ns == ns2);
+        assertNotSame(ns, ns2);
         assertEquals(ns, ns2);
 
         NamespaceInfo ns3 = catalog.getNamespaceByPrefix(null);
         assertNotNull(ns3);
-        assertFalse(ns == ns3);
+        assertNotSame(ns, ns3);
         assertEquals(ns, ns3);
 
         NamespaceInfo ns4 = catalog.getNamespaceByPrefix(Catalog.DEFAULT);
         assertNotNull(ns4);
-        assertFalse(ns == ns4);
+        assertNotSame(ns, ns4);
         assertEquals(ns, ns4);
     }
 
@@ -437,7 +438,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         NamespaceInfo ns2 = catalog.getNamespaceByURI(ns.getURI());
 
         assertNotNull(ns2);
-        assertFalse(ns == ns2);
+        assertNotSame(ns, ns2);
         assertEquals(ns, ns2);
     }
 
@@ -667,7 +668,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         WorkspaceInfo ws2 = catalog.getWorkspace(ws.getId());
 
         assertNotNull(ws2);
-        assertFalse(ws == ws2);
+        assertNotSame(ws, ws2);
         assertEquals(ws, ws2);
     }
 
@@ -677,17 +678,17 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         WorkspaceInfo ws2 = catalog.getWorkspaceByName(ws.getName());
 
         assertNotNull(ws2);
-        assertFalse(ws == ws2);
+        assertNotSame(ws, ws2);
         assertEquals(ws, ws2);
 
         WorkspaceInfo ws3 = catalog.getWorkspaceByName(null);
         assertNotNull(ws3);
-        assertFalse(ws == ws3);
+        assertNotSame(ws, ws3);
         assertEquals(ws, ws3);
 
         WorkspaceInfo ws4 = catalog.getWorkspaceByName(Catalog.DEFAULT);
         assertNotNull(ws4);
-        assertFalse(ws == ws4);
+        assertNotSame(ws, ws4);
         assertEquals(ws, ws4);
     }
 
@@ -832,7 +833,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         DataStoreInfo ds2 = catalog.getDataStore(ds.getId());
         assertNotNull(ds2);
-        assertFalse(ds == ds2);
+        assertNotSame(ds, ds2);
         assertEquals(ds, ds2);
     }
 
@@ -842,22 +843,22 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         DataStoreInfo ds2 = catalog.getDataStoreByName(ds.getName());
         assertNotNull(ds2);
-        assertFalse(ds == ds2);
+        assertNotSame(ds, ds2);
         assertEquals(ds, ds2);
 
         DataStoreInfo ds3 = catalog.getDataStoreByName(ws, null);
         assertNotNull(ds3);
-        assertFalse(ds == ds3);
+        assertNotSame(ds, ds3);
         assertEquals(ds, ds3);
 
         DataStoreInfo ds4 = catalog.getDataStoreByName(ws, Catalog.DEFAULT);
         assertNotNull(ds4);
-        assertFalse(ds == ds4);
+        assertNotSame(ds, ds4);
         assertEquals(ds, ds4);
 
         DataStoreInfo ds5 = catalog.getDataStoreByName(Catalog.DEFAULT, Catalog.DEFAULT);
         assertNotNull(ds5);
-        assertFalse(ds == ds5);
+        assertNotSame(ds, ds5);
         assertEquals(ds, ds5);
     }
 
@@ -867,32 +868,32 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         StoreInfo ds2 = catalog.getStoreByName(ds.getName(), StoreInfo.class);
         assertNotNull(ds2);
-        assertFalse(ds == ds2);
+        assertNotSame(ds, ds2);
         assertEquals(ds, ds2);
 
         StoreInfo ds3 = catalog.getStoreByName(ws, null, StoreInfo.class);
         assertNotNull(ds3);
-        assertFalse(ds == ds3);
+        assertNotSame(ds, ds3);
         assertEquals(ds, ds3);
 
         StoreInfo ds4 = catalog.getStoreByName(ws, Catalog.DEFAULT, StoreInfo.class);
         assertNotNull(ds4);
-        assertFalse(ds == ds4);
+        assertNotSame(ds, ds4);
         assertEquals(ds, ds4);
 
         StoreInfo ds5 = catalog.getStoreByName(Catalog.DEFAULT, Catalog.DEFAULT, StoreInfo.class);
         assertNotNull(ds5);
-        assertFalse(ds == ds5);
+        assertNotSame(ds, ds5);
         assertEquals(ds, ds5);
 
         StoreInfo ds6 = catalog.getStoreByName((String) null, null, StoreInfo.class);
         assertNotNull(ds6);
-        assertFalse(ds == ds6);
+        assertNotSame(ds, ds6);
         assertEquals(ds, ds3);
 
         StoreInfo ds7 = catalog.getStoreByName(Catalog.DEFAULT, Catalog.DEFAULT, StoreInfo.class);
         assertNotNull(ds7);
-        assertFalse(ds == ds7);
+        assertNotSame(ds, ds7);
         assertEquals(ds6, ds7);
     }
 
@@ -1115,7 +1116,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo ft2 = catalog.getFeatureType(ft.getId());
 
         assertNotNull(ft2);
-        assertFalse(ft == ft2);
+        assertNotSame(ft, ft2);
         assertEquals(ft, ft2);
     }
 
@@ -1125,7 +1126,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
 
         assertNotNull(ft2);
-        assertFalse(ft == ft2);
+        assertNotSame(ft, ft2);
         assertEquals(ft, ft2);
 
         NamespaceInfo ns2 = catalog.getFactory().createNamespace();
@@ -1141,12 +1142,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         FeatureTypeInfo ft4 = catalog.getFeatureTypeByName(ns2.getPrefix(), ft3.getName());
         assertNotNull(ft4);
-        assertFalse(ft4 == ft3);
+        assertNotSame(ft4, ft3);
         assertEquals(ft3, ft4);
 
         ft4 = catalog.getFeatureTypeByName(ns2.getURI(), ft3.getName());
         assertNotNull(ft4);
-        assertFalse(ft4 == ft3);
+        assertNotSame(ft4, ft3);
         assertEquals(ft3, ft4);
     }
 
@@ -1723,9 +1724,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         s2.setWorkspace(ws);
         catalog.add(s2);
 
-        assertFalse(
-                new HashSet<StyleInfo>(currStyles)
-                        .equals(new HashSet<StyleInfo>(catalog.getStyles())));
+        assertNotEquals(new HashSet<>(currStyles), new HashSet<>(catalog.getStyles()));
 
         StyleInfo s3 = catalog.getFactory().createStyle();
         s3.setName(s2.getName());
@@ -1999,7 +1998,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
             assertTrue(true);
         }
 
-        styles = new ArrayList<StyleInfo>(styles);
+        styles = new ArrayList<>(styles);
         Collections.sort(styles, comparator);
 
         assertEquals("a" + s.getName(), styles.get(0).getName());
@@ -2088,7 +2087,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
                 new CountDownLatch(GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT + 1);
         CountDownLatch done = new CountDownLatch(GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT);
 
-        List<RunnerBase> runners = new ArrayList<RunnerBase>();
+        List<RunnerBase> runners = new ArrayList<>();
         for (int i = 0; i < GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT; i++) {
             RunnerBase runner = new LayerAddRunner(ready, done, i);
             new Thread(runner).start();
@@ -2753,7 +2752,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         filter = contains("name", "t");
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
-        assertTrue(expected.equals(actual));
+        assertEquals(expected, actual);
         assertEquals(expected, actual);
 
         filter = or(contains("name", "t2"), contains("name", "t1"));
@@ -2942,55 +2941,67 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(expected, actual);
 
         // multivalued literals
-        List values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft2");
+        List<String> strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ANY);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ANY);
         expected = Sets.newHashSet(ft1, ft2);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft1");
+        strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft1");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ALL);
         expected = Sets.newHashSet(ft1);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft2");
+        strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ALL);
         expected = Sets.newHashSet();
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft1");
-        values.add("ft2");
+        strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ONE);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ONE);
         expected = Sets.newHashSet(ft2);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
         // multivalued literals with multivalued fields
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("keyword2"));
+        List<Keyword> keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("keyword2"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ANY);
@@ -2998,12 +3009,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("keyword1"));
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("keyword1"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ALL);
@@ -3011,12 +3022,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("blah"));
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("blah"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(keywords),
                         factory.property("keywords"),
                         true,
                         MatchAction.ONE);
@@ -3105,22 +3116,19 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         CatalogPropertyAccessor pe = new CatalogPropertyAccessor();
 
-        List<Object> props = new ArrayList<Object>();
-        List<Object> actual = new ArrayList<Object>();
+        List<Object> props = new ArrayList<>();
+        List<Object> actual = new ArrayList<>();
         String sortProperty = sortOrder.getPropertyName().getPropertyName();
         for (T info : expected) {
             Object pval = pe.getProperty(info, sortProperty);
             props.add(pval);
         }
 
-        CloseableIterator<T> it = catalog.list(clazz, filter, offset, limit, sortOrder);
-        try {
+        try (CloseableIterator<T> it = catalog.list(clazz, filter, offset, limit, sortOrder)) {
             while (it.hasNext()) {
                 Object property = pe.getProperty(it.next(), sortProperty);
                 actual.add(property);
             }
-        } finally {
-            it.close();
         }
 
         assertEquals(props, actual);

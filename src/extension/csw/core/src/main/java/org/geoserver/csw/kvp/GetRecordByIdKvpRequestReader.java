@@ -28,7 +28,8 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
 
         ElementSetType ent = (ElementSetType) kvp.get("elementsetname");
         if (ent != null) {
@@ -37,7 +38,7 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
             kvp.put("elementsetname", esnt);
         }
 
-        List<URI> idsuri = new ArrayList<URI>();
+        List<URI> idsuri = new ArrayList<>();
         String rawId = (String) kvp.get("id");
         if (rawId == null) {
             throw new ServiceException(

@@ -183,7 +183,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
                             image.add(
                                     AttributeModifier.replace(
                                             "alt",
@@ -282,7 +282,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
                             image.add(
                                     AttributeModifier.replace(
                                             "alt",
@@ -306,11 +306,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // home page link
         add(
-                new BookmarkablePageLink("home", GeoServerHomePage.class)
-                        .add(
-                                new Label(
-                                        "label",
-                                        new StringResourceModel("home", (Component) null, null))));
+                new BookmarkablePageLink<>("home", GeoServerHomePage.class)
+                        .add(new Label("label", new StringResourceModel("home", null, null))));
 
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
@@ -319,12 +316,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 RuntimeConfigurationType.DEVELOPMENT.equals(
                         getApplication().getConfigurationType()));
 
-        final Map<Category, List<MenuPageInfo>> links =
-                splitByCategory(
-                        filterByAuth(getGeoServerApplication().getBeansOfType(MenuPageInfo.class)));
+        @SuppressWarnings("unchecked")
+        List<MenuPageInfo<GeoServerBasePage>> infos =
+                (List) filterByAuth(getGeoServerApplication().getBeansOfType(MenuPageInfo.class));
+        final Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links = splitByCategory(infos);
 
-        List<MenuPageInfo> standalone =
-                links.containsKey(null) ? links.get(null) : new ArrayList<MenuPageInfo>();
+        List<MenuPageInfo<GeoServerBasePage>> standalone =
+                links.containsKey(null) ? links.get(null) : new ArrayList<>();
         links.remove(null);
 
         List<Category> categories = new ArrayList<>(links.keySet());
@@ -338,11 +336,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                 new Label(
                                         "category.header",
                                         new StringResourceModel(
-                                                category.getNameKey(), (Component) null, null)));
+                                                category.getNameKey(), null, null)));
                         item.add(
-                                new ListView<MenuPageInfo>("category.links", links.get(category)) {
-                                    public void populateItem(ListItem<MenuPageInfo> item) {
-                                        MenuPageInfo info = item.getModelObject();
+                                new ListView<MenuPageInfo<GeoServerBasePage>>(
+                                        "category.links", links.get(category)) {
+                                    public void populateItem(
+                                            ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                                        MenuPageInfo<GeoServerBasePage> info =
+                                                item.getModelObject();
                                         BookmarkablePageLink<Page> link =
                                                 new BookmarkablePageLink<Page>(
                                                         "link", info.getComponentClass()) {
@@ -364,15 +365,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                                         "title",
                                                         new StringResourceModel(
                                                                 info.getDescriptionKey(),
-                                                                (Component) null,
+                                                                null,
                                                                 null)));
                                         link.add(
                                                 new Label(
                                                         "link.label",
                                                         new StringResourceModel(
-                                                                info.getTitleKey(),
-                                                                (Component) null,
-                                                                null)));
+                                                                info.getTitleKey(), null, null)));
                                         Image image;
                                         if (info.getIcon() != null) {
                                             image =
@@ -402,21 +401,20 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 });
 
         add(
-                new ListView<MenuPageInfo>("standalone", standalone) {
-                    public void populateItem(ListItem<MenuPageInfo> item) {
-                        MenuPageInfo info = item.getModelObject();
-                        BookmarkablePageLink<Page> link =
+                new ListView<MenuPageInfo<GeoServerBasePage>>("standalone", standalone) {
+                    public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                        MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+                        BookmarkablePageLink<GeoServerBasePage> link =
                                 new BookmarkablePageLink<>("link", info.getComponentClass());
                         link.add(
                                 AttributeModifier.replace(
                                         "title",
                                         new StringResourceModel(
-                                                info.getDescriptionKey(), (Component) null, null)));
+                                                info.getDescriptionKey(), null, null)));
                         link.add(
                                 new Label(
                                         "link.label",
-                                        new StringResourceModel(
-                                                info.getTitleKey(), (Component) null, null)));
+                                        new StringResourceModel(info.getTitleKey(), null, null)));
                         item.add(link);
                     }
                 });
@@ -576,14 +574,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /** Splits up the pages by category, turning the list into a map keyed by category */
-    private Map<Category, List<MenuPageInfo>> splitByCategory(List<MenuPageInfo> pages) {
+    private <T extends GeoServerBasePage> Map<Category, List<MenuPageInfo<T>>> splitByCategory(
+            List<MenuPageInfo<T>> pages) {
         Collections.sort(pages);
-        HashMap<Category, List<MenuPageInfo>> map = new HashMap<Category, List<MenuPageInfo>>();
+        Map<Category, List<MenuPageInfo<T>>> map = new HashMap<>();
 
-        for (MenuPageInfo page : pages) {
+        for (MenuPageInfo<T> page : pages) {
             Category cat = page.getCategory();
 
-            if (!map.containsKey(cat)) map.put(cat, new ArrayList<MenuPageInfo>());
+            if (!map.containsKey(cat)) map.put(cat, new ArrayList<>());
 
             map.get(cat).add(page);
         }
@@ -594,7 +593,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** Filters a set of component descriptors based on the current authenticated user. */
     protected <T extends ComponentInfo> List<T> filterByAuth(List<T> list) {
         Authentication user = getSession().getAuthentication();
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T component : list) {
             if (component.getAuthorizer() == null) {
                 continue;

@@ -7,7 +7,6 @@ package org.geoserver.wps.gs;
 
 import com.google.common.collect.Maps;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -144,9 +143,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
 
         if (hasPropertiesFile) {
             Properties props = new Properties();
-            InputStream fis = null;
-            try {
-                fis = configFile.in();
+            try (InputStream fis = configFile.in()) {
                 props.load(fis);
                 Iterator<Object> keys = props.keySet().iterator();
                 envVariables = Maps.newHashMap();
@@ -189,7 +186,8 @@ public class GeorectifyConfiguration implements ApplicationListener {
                                             "The specified folder for "
                                                     + key
                                                     + " variable isn't valid, "
-                                                    + "or it doesn't exist or it isn't a readable directory or it is a "
+                                                    + "or it doesn't exist or it isn't a readable"
+                                                    + " directory or it is a "
                                                     + "destination folder which can't be written: "
                                                     + path);
                                 }
@@ -232,28 +230,12 @@ public class GeorectifyConfiguration implements ApplicationListener {
                     }
                 }
 
-            } catch (FileNotFoundException e) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Unable to parse the config file: " + configFile.path(),
-                            e);
-                }
-
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(
                             Level.WARNING,
                             "Unable to parse the config file: " + configFile.path(),
                             e);
-                }
-            } finally {
-                if (fis != null) {
-                    try {
-                        fis.close();
-                    } catch (Throwable t) {
-                        // Does nothing
-                    }
                 }
             }
         }

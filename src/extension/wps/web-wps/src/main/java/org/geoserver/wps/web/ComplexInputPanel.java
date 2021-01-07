@@ -47,7 +47,7 @@ public class ComplexInputPanel extends Panel {
 
     private DropDownChoice typeChoice;
 
-    PropertyModel valueModel;
+    PropertyModel<Object> valueModel;
 
     List<String> mimeTypes;
 
@@ -56,15 +56,15 @@ public class ComplexInputPanel extends Panel {
     public ComplexInputPanel(String id, InputParameterValues pv, int valueIndex) {
         super(id);
         setOutputMarkupId(true);
-        setDefaultModel(new PropertyModel(pv, "values[" + valueIndex + "]"));
-        valueModel = new PropertyModel(getDefaultModel(), "value");
+        setDefaultModel(new PropertyModel<>(pv, "values[" + valueIndex + "]"));
+        valueModel = new PropertyModel<>(getDefaultModel(), "value");
         mimeTypes = pv.getSupportedMime();
 
         List<ParameterType> ptypes = pv.getSupportedTypes();
         ptypes.remove(ParameterType.LITERAL);
         typeChoice =
-                new DropDownChoice(
-                        "type", new PropertyModel(getDefaultModelObject(), "type"), ptypes);
+                new DropDownChoice<>(
+                        "type", new PropertyModel<>(getDefaultModelObject(), "type"), ptypes);
         add(typeChoice);
 
         subprocesswindow = new ModalWindow("subprocessPopupWindow");
@@ -110,11 +110,11 @@ public class ComplexInputPanel extends Panel {
             // data as plain text
             Fragment f = new Fragment("editor", "text", this);
             DropDownChoice mimeChoice =
-                    new DropDownChoice(
-                            "mime", new PropertyModel(getDefaultModel(), "mime"), mimeTypes);
+                    new DropDownChoice<>(
+                            "mime", new PropertyModel<>(getDefaultModel(), "mime"), mimeTypes);
             f.add(mimeChoice);
 
-            f.add(new TextArea("textarea", valueModel));
+            f.add(new TextArea<>("textarea", valueModel));
             add(f);
         } else if (pt == ParameterType.VECTOR_LAYER) {
             // an internal vector layer
@@ -122,12 +122,12 @@ public class ComplexInputPanel extends Panel {
                 valueModel.setObject(new VectorLayerConfiguration());
             }
 
-            new PropertyModel(getDefaultModel(), "mime").setObject("text/xml");
+            new PropertyModel<>(getDefaultModel(), "mime").setObject("text/xml");
             Fragment f = new Fragment("editor", "vectorLayer", this);
             DropDownChoice layer =
-                    new Select2DropDownChoice(
+                    new Select2DropDownChoice<>(
                             "layer",
-                            new PropertyModel(valueModel, "layerName"),
+                            new PropertyModel<>(valueModel, "layerName"),
                             getVectorLayerNames());
             f.add(layer);
             add(f);
@@ -139,9 +139,9 @@ public class ComplexInputPanel extends Panel {
 
             Fragment f = new Fragment("editor", "rasterLayer", this);
             final DropDownChoice layer =
-                    new Select2DropDownChoice(
+                    new Select2DropDownChoice<>(
                             "layer",
-                            new PropertyModel(valueModel, "layerName"),
+                            new PropertyModel<>(valueModel, "layerName"),
                             getRasterLayerNames());
             f.add(layer);
             add(f);
@@ -170,20 +170,21 @@ public class ComplexInputPanel extends Panel {
 
             Fragment f = new Fragment("editor", "reference", this);
             final DropDownChoice method =
-                    new DropDownChoice(
+                    new DropDownChoice<>(
                             "method",
-                            new PropertyModel(valueModel, "method"),
+                            new PropertyModel<>(valueModel, "method"),
                             Arrays.asList(
                                     ReferenceConfiguration.Method.GET,
                                     ReferenceConfiguration.Method.POST));
             f.add(method);
 
             DropDownChoice mimeChoice =
-                    new DropDownChoice("mime", new PropertyModel(valueModel, "mime"), mimeTypes);
+                    new DropDownChoice<>(
+                            "mime", new PropertyModel<>(valueModel, "mime"), mimeTypes);
             f.add(mimeChoice);
 
-            f.add(new TextField("url", new PropertyModel(valueModel, "url")).setRequired(true));
-            final TextArea body = new TextArea("body", new PropertyModel(valueModel, "body"));
+            f.add(new TextField<>("url", new PropertyModel<>(valueModel, "url")).setRequired(true));
+            final TextArea body = new TextArea<>("body", new PropertyModel<>(valueModel, "body"));
             add(body);
 
             final WebMarkupContainer bodyContainer = new WebMarkupContainer("bodyContainer");
@@ -222,15 +223,15 @@ public class ComplexInputPanel extends Panel {
                         }
                     });
 
-            final TextArea xml = new TextArea("xml");
+            final TextArea<String> xml = new TextArea<>("xml");
             if (((ExecuteRequest) valueModel.getObject()).processName != null) {
                 try {
                     xml.setModelObject(getExecuteXML());
                 } catch (Throwable t) {
-                    xml.setModel(new Model(""));
+                    xml.setModel(new Model<>(""));
                 }
             } else {
-                xml.setModel(new Model(""));
+                xml.setModel(new Model<>(""));
             }
             xml.setOutputMarkupId(true);
             f.add(xml);
@@ -272,7 +273,7 @@ public class ComplexInputPanel extends Panel {
     List<String> getVectorLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof FeatureTypeInfo) {
                 result.add(li.getResource().prefixedName());
@@ -284,7 +285,7 @@ public class ComplexInputPanel extends Panel {
     List<String> getRasterLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof CoverageInfo) {
                 result.add(li.getResource().prefixedName());

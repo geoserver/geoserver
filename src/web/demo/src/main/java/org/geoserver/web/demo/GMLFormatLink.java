@@ -6,7 +6,6 @@ package org.geoserver.web.demo;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.config.GeoServer;
@@ -19,8 +18,7 @@ public class GMLFormatLink extends CommonFormatLink {
     private GeoServer geoserver;
 
     /** GML output params computation may be expensive, results are cached in this map */
-    private final transient Map<String, GMLOutputParams> gmlParamsCache =
-            new HashMap<String, GMLOutputParams>();
+    private final transient Map<String, GMLOutputParams> gmlParamsCache = new HashMap<>();
 
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {
@@ -28,8 +26,7 @@ public class GMLFormatLink extends CommonFormatLink {
                 new ExternalLink(
                         this.getComponentId(),
                         layer.getGmlLink(gmlParamsCache) + this.getMaxFeatures(),
-                        (new StringResourceModel(this.getTitleKey(), (Component) null, null))
-                                .getString());
+                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
         gmlLink.setVisible(
                 layer.getType() == PreviewLayerType.Vector && layer.hasServiceSupport("WFS"));
         return gmlLink;

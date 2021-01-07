@@ -61,6 +61,7 @@ import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.CachedGridReaderLayer;
@@ -155,7 +156,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     private String mapFormat = "image/gif";
 
-    private static final ThreadLocal<Boolean> usedCustomLabelCache = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<Boolean> usedCustomLabelCache = new ThreadLocal<>();
 
     public static class CustomLabelCache implements LabelCache {
         public CustomLabelCache() {}
@@ -712,7 +713,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         request.setFormat(getMapFormat());
-        Map formatOptions = new HashMap();
+        Map<String, Object> formatOptions = new HashMap<>();
         // 1 ms timeout
         formatOptions.put("timeout", 1);
         request.setFormatOptions(formatOptions);
@@ -724,7 +725,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         }
 
         // Test partial image exception format
-        Map rawKvp = new HashMap();
+        Map<String, String> rawKvp = new HashMap<>();
         rawKvp.put("EXCEPTIONS", "PARTIALMAP");
         request.setRawKvp(rawKvp);
 
@@ -872,8 +873,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         testData.addStyle(
                 STRAIGHT_VERTICAL_LINE_STYLE, "verticalline.sld", getClass(), getCatalog());
-        Map properties = new HashMap();
-        properties.put(MockData.KEY_STYLE, STRAIGHT_VERTICAL_LINE_STYLE);
+        Map<LayerProperty, Object> properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, STRAIGHT_VERTICAL_LINE_STYLE);
         testData.addVectorLayer(
                 STRAIGHT_VERTICAL_LINE,
                 properties,
@@ -882,8 +883,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 getCatalog());
 
         testData.addStyle(CROSS_DATELINE_STYLE, "crossline.sld", getClass(), getCatalog());
-        properties = new HashMap();
-        properties.put(MockData.KEY_STYLE, CROSS_DATELINE_STYLE);
+        properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, CROSS_DATELINE_STYLE);
         testData.addVectorLayer(
                 CROSS_DATELINE, properties, "CrossLine.properties", getClass(), getCatalog());
     }
@@ -1079,8 +1080,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         request.setLayers(Arrays.asList(mapLayer));
 
         layerInfo.setDefaultWMSInterpolationMethod(null);
-        assertEquals(
-                null, request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertNull(request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
         assertTrue(request.getInterpolations().isEmpty());
 
         assertEquals(
@@ -1357,7 +1357,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                         2,
                         CompositionType.BAND_SELECT);
 
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(1);
+        final List<CoverageBand> coverageBands = new ArrayList<>(1);
         coverageBands.add(b0);
         coverageBands.add(b1);
         coverageBands.add(b2);
@@ -1429,7 +1429,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         // Source and result image first bands should be the same. We have reversed the order
         // of the three first bands of the source coverage and then we re-reversed the three
         // first bands using channel selection on the raster symbolizer used for rendering.
-        Assert.assertTrue(Arrays.equals(destImageRowBand0, srcImageRowBand0));
+        assertArrayEquals(destImageRowBand0, srcImageRowBand0);
         // Result band 0 should not be equal to source image band 2
         Assert.assertFalse(Arrays.equals(destImageRowBand0, srcImageRowBand2));
 
@@ -1486,7 +1486,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Parameter<int[]> bandIndicesParam =
                 (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
         bandIndicesParam.setValue(bandIndices);
-        List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+        List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.add(bandIndicesParam);
         GeneralParameterValue[] readParams =
                 paramList.toArray(new GeneralParameterValue[paramList.size()]);

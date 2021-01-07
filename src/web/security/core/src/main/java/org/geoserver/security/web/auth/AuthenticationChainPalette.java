@@ -40,14 +40,14 @@ public class AuthenticationChainPalette extends Palette<String> {
                 id,
                 model,
                 choicesModel,
-                new ChoiceRenderer() {
+                new ChoiceRenderer<String>() {
                     @Override
-                    public String getIdValue(Object object, int index) {
+                    public String getIdValue(String object, int index) {
                         return (String) getDisplayValue(object);
                     }
 
                     @Override
-                    public Object getDisplayValue(Object object) {
+                    public Object getDisplayValue(String object) {
                         return object.toString();
                     }
                 },
@@ -61,7 +61,7 @@ public class AuthenticationChainPalette extends Palette<String> {
         @Override
         public List<String> getObject() {
             try {
-                return new ArrayList<String>(
+                return new ArrayList<>(
                         GeoServerApplication.get()
                                 .getSecurityManager()
                                 .listAuthenticationProviders());

@@ -29,7 +29,7 @@ import org.geotools.ows.wms.request.GetMapRequest;
  */
 public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
 
-    List<Layer> queryLayers = new ArrayList<Layer>();
+    List<Layer> queryLayers = new ArrayList<>();
     GetFeatureInfoRequest delegate;
     int x;
     int y;
@@ -45,7 +45,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
         queryLayers.add(layer);
     }
 
-    public void setQueryLayers(Set layers) {
+    public void setQueryLayers(Set<Layer> layers) {
         queryLayers.clear();
         queryLayers.addAll(layers);
     }
@@ -58,8 +58,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
 
     public URL getFinalURL() {
         // scan and check the layers
-        for (int i = 0; i < queryLayers.size(); i++) {
-            Layer layer = queryLayers.get(i);
+        for (Layer layer : queryLayers) {
             if (layer instanceof SecuredWMSLayer) {
                 SecuredWMSLayer secured = (SecuredWMSLayer) layer;
                 final WrapperPolicy policy = secured.getPolicy();

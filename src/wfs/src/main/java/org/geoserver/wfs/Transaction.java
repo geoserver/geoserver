@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,16 +140,17 @@ public class Transaction {
         // gathering all the FeatureSources we need
         //
         // Map of required FeatureStores by typeName
-        Map stores = new HashMap();
+        Map<QName, FeatureStore> stores = new HashMap<>();
 
         // Map of required FeatureStores by typeRef (dataStoreId:typeName)
         // (This will be added to the contents are harmed)
-        Map stores2 = new HashMap();
+        Map<String, FeatureSource> stores2 = new HashMap<>();
 
         // List of type names, maintain this list because of the insert hack
         // described below
         // List typeNames = new ArrayList();
-        Map elementHandlers = gatherElementHandlers(request);
+        Map<TransactionElement, TransactionElementHandler> elementHandlers =
+                gatherElementHandlers(request);
 
         // Gather feature types required by transaction elements and validate
         // the elements
@@ -159,16 +159,16 @@ public class Transaction {
         //
         // (I am using element rather than transaction sub request
         // to agree with the spec docs)
-        for (Iterator it = elementHandlers.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Entry<TransactionElement, TransactionElementHandler>
+                elementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
+            Entry entry = (Entry) elementTransactionElementHandlerEntry;
             TransactionElement element = (TransactionElement) entry.getKey();
             TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
-            Map featureTypeInfos = new HashMap();
+            Map<QName, FeatureTypeInfo> featureTypeInfos = new HashMap<>();
 
             QName[] typeNames = handler.getTypeNames(request, element);
 
-            for (int i = 0; i < typeNames.length; i++) {
-                final QName typeName = typeNames[i];
+            for (final QName typeName : typeNames) {
                 final String name = typeName.getLocalPart();
                 final String namespaceURI;
 
@@ -197,8 +197,7 @@ public class Transaction {
 
             // go through all feature type infos data objects, and load feature
             // stores
-            for (Iterator m = featureTypeInfos.values().iterator(); m.hasNext(); ) {
-                FeatureTypeInfo meta = (FeatureTypeInfo) m.next();
+            for (FeatureTypeInfo meta : featureTypeInfos.values()) {
                 String typeRef = meta.getStore().getName() + ":" + meta.getName();
 
                 String URI = meta.getNamespace().getURI();
@@ -229,10 +228,10 @@ public class Transaction {
                         FeatureStore<? extends FeatureType, ? extends Feature> store;
                         store = (FeatureStore<? extends FeatureType, ? extends Feature>) source;
                         store.setTransaction(transaction);
-                        stores.put(elementName, source);
+                        stores.put(elementName, (FeatureStore) source);
 
                         if (elementNameDefault != null) {
-                            stores.put(elementNameDefault, source);
+                            stores.put(elementNameDefault, (FeatureStore) source);
                         }
 
                         stores2.put(typeRef, source);
@@ -289,8 +288,9 @@ public class Transaction {
         Exception exception = null;
 
         try {
-            for (Iterator it = elementHandlers.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) it.next();
+            for (Entry<TransactionElement, TransactionElementHandler>
+                    transactionElementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
+                Entry entry = (Entry) transactionElementTransactionElementHandlerEntry;
                 TransactionElement element = (TransactionElement) entry.getKey();
                 TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
 
@@ -444,10 +444,11 @@ public class Transaction {
     }
 
     /** Looks up the element handlers to be used for each element */
-    private Map gatherElementHandlers(TransactionRequest request) throws WFSTransactionException {
+    private Map<TransactionElement, TransactionElementHandler> gatherElementHandlers(
+            TransactionRequest request) throws WFSTransactionException {
         // JD: use a linked hashmap since the order of elements in a transaction
         // must be respected
-        Map map = new LinkedHashMap();
+        Map<TransactionElement, TransactionElementHandler> map = new LinkedHashMap<>();
 
         List<TransactionElement> elements = request.getElements();
         for (TransactionElement element : elements) {
@@ -463,11 +464,9 @@ public class Transaction {
      */
     protected final TransactionElementHandler findElementHandler(Class type)
             throws WFSTransactionException {
-        List matches = new ArrayList();
+        List<TransactionElementHandler> matches = new ArrayList<>();
 
-        for (Iterator it = transactionElementHandlers.iterator(); it.hasNext(); ) {
-            TransactionElementHandler handler = (TransactionElementHandler) it.next();
-
+        for (TransactionElementHandler handler : transactionElementHandlers) {
             if (handler.getElementClass().isAssignableFrom(type)) {
                 matches.add(handler);
             }
@@ -481,12 +480,10 @@ public class Transaction {
 
         if (matches.size() > 1) {
             // sort by class hierarchy
-            Comparator comparator =
-                    new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            TransactionElementHandler h1 = (TransactionElementHandler) o1;
-                            TransactionElementHandler h2 = (TransactionElementHandler) o2;
-
+            Comparator<TransactionElementHandler> comparator =
+                    new Comparator<TransactionElementHandler>() {
+                        public int compare(
+                                TransactionElementHandler h1, TransactionElementHandler h2) {
                             if (h2.getElementClass().isAssignableFrom(h1.getElementClass())) {
                                 return -1;
                             }
@@ -498,7 +495,7 @@ public class Transaction {
             Collections.sort(matches, comparator);
         }
 
-        return (TransactionElementHandler) matches.get(0);
+        return matches.get(0);
     }
 
     /**
@@ -617,8 +614,8 @@ public class Transaction {
      */
     private class TransactionListenerMux implements TransactionListener {
         public void dataStoreChange(List listeners, TransactionEvent event) throws WFSException {
-            for (Iterator it = listeners.iterator(); it.hasNext(); ) {
-                TransactionListener listener = (TransactionListener) it.next();
+            for (Object o : listeners) {
+                TransactionListener listener = (TransactionListener) o;
                 listener.dataStoreChange(event);
             }
         }

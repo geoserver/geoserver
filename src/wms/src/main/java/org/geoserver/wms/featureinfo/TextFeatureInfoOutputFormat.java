@@ -72,16 +72,15 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
         try {
             final List collections = results.getFeature();
-            final int size = collections.size();
             FeatureCollection fr;
             SimpleFeature f;
 
             SimpleFeatureType schema;
             List<AttributeDescriptor> types;
 
-            for (int i = 0; i < size; i++) // for each layer queried
-            {
-                fr = (FeatureCollection) collections.get(i);
+            // for each layer queried
+            for (Object collection : collections) {
+                fr = (FeatureCollection) collection;
                 reader = fr.features();
 
                 boolean startFeat = true;
@@ -99,7 +98,7 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
                         if (feature instanceof SimpleFeature) {
                             f = (SimpleFeature) feature;
-                            schema = (SimpleFeatureType) f.getType();
+                            schema = f.getType();
                             types = schema.getAttributeDescriptors();
 
                             for (AttributeDescriptor descriptor : types) {

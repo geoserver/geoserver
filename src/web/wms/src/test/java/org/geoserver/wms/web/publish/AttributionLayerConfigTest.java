@@ -49,12 +49,12 @@ public class AttributionLayerConfigTest extends GeoServerWicketTestSupport {
     @Test
     public void testLayer() {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        testPublished(new Model<LayerInfo>(layer));
+        testPublished(new Model<>(layer));
     }
 
     @Test
     public void testLayerGroup() {
         final LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
-        testPublished(new Model<LayerGroupInfo>(layerGroup));
+        testPublished(new Model<>(layerGroup));
     }
 }

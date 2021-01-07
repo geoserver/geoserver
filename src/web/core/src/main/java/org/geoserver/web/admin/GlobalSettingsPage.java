@@ -56,7 +56,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     "GEOSERVER_DEVELOPER_LOGGING.properties");
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
-            new ArrayList<String>(Charset.availableCharsets().keySet());
+            new ArrayList<>(Charset.availableCharsets().keySet());
     private final IModel<GeoServerInfo> globalInfoModel;
     private final IModel<LoggingInfo> loggingInfoModel;
 
@@ -99,17 +99,15 @@ public class GlobalSettingsPage extends ServerAdminPage {
         logLevelsAppend(form, loggingInfoModel);
         form.add(
                 new CheckBox(
-                        "stdOutLogging",
-                        new PropertyModel<Boolean>(loggingInfoModel, "stdOutLogging")));
+                        "stdOutLogging", new PropertyModel<>(loggingInfoModel, "stdOutLogging")));
         form.add(
-                new TextField<String>(
-                        "loggingLocation",
-                        new PropertyModel<String>(loggingInfoModel, "location")));
+                new TextField<>(
+                        "loggingLocation", new PropertyModel<>(loggingInfoModel, "location")));
 
         TextField<String> xmlPostRequestLogBufferSize =
-                new TextField<String>(
+                new TextField<>(
                         "xmlPostRequestLogBufferSize",
-                        new PropertyModel<String>(globalInfoModel, "xmlPostRequestLogBufferSize"));
+                        new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
         xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
 
@@ -117,8 +115,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
 
-        IModel<String> lockProviderModel =
-                new PropertyModel<String>(globalInfoModel, "lockProviderName");
+        IModel<String> lockProviderModel = new PropertyModel<>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
         List<String> providers =
                 new ArrayList<>(
@@ -136,7 +133,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(lockProviderChoice);
 
         IModel<GeoServerInfo.WebUIMode> webUIModeModel =
-                new PropertyModel<GeoServerInfo.WebUIMode>(globalInfoModel, "webUIMode");
+                new PropertyModel<>(globalInfoModel, "webUIMode");
         if (webUIModeModel.getObject() == null) {
             webUIModeModel.setObject(GeoServerInfo.WebUIMode.DEFAULT);
         }
@@ -151,8 +148,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(
                 new CheckBox(
                         "allowStoredQueriesPerWorkspace",
-                        new PropertyModel<Boolean>(
-                                globalInfoModel, "allowStoredQueriesPerWorkspace")));
+                        new PropertyModel<>(globalInfoModel, "allowStoredQueriesPerWorkspace")));
 
         // Extension plugin for Global Settings
         // Loading of the settings from the Global Info
@@ -215,8 +211,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
     public void onSave(boolean doReturn) {
         GeoServer gs = getGeoServer();
-        gs.save((GeoServerInfo) globalInfoModel.getObject());
-        gs.save((LoggingInfo) loggingInfoModel.getObject());
+        gs.save(globalInfoModel.getObject());
+        gs.save(loggingInfoModel.getObject());
         if (doReturn) {
             doReturn();
         }
@@ -241,7 +237,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                                                 .endsWith("logging.properties");
                                     }
                                 });
-                logProfiles = new ArrayList<String>();
+                logProfiles = new ArrayList<>();
                 for (Resource res : propFiles) {
                     logProfiles.add(res.name());
                 }
@@ -254,12 +250,12 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     e);
         }
         // if none is found use the default set
-        if (logProfiles == null || logProfiles.size() == 0) logProfiles = DEFAULT_LOG_PROFILES;
+        if (logProfiles == null || logProfiles.isEmpty()) logProfiles = DEFAULT_LOG_PROFILES;
 
         form.add(
-                new ListChoice<String>(
+                new ListChoice<>(
                         "log4jConfigFile",
-                        new PropertyModel<String>(loggingInfoModel, "level"),
+                        new PropertyModel<>(loggingInfoModel, "level"),
                         logProfiles));
     }
 

@@ -59,7 +59,7 @@ public class LoggingUtils {
         // JD: before we wipe out the logging configuration, save any appenders that are not
         // console or file based. This allows for other types of appenders to remain in tact
         // when geoserver is reloaded.
-        List<Appender> appenders = new ArrayList();
+        List<Appender> appenders = new ArrayList<>();
         Enumeration a = LogManager.getRootLogger().getAllAppenders();
         while (a.hasMoreElements()) {
             Appender appender = (Appender) a.nextElement();
@@ -174,10 +174,10 @@ public class LoggingUtils {
                         "VERBOSE_LOGGING.properties"
                     };
 
-            for (int i = 0; i < lcfiles.length; i++) {
-                File target = new File(lcdir.getAbsolutePath(), lcfiles[i]);
+            for (String lcfile : lcfiles) {
+                File target = new File(lcdir.getAbsolutePath(), lcfile);
                 if (!target.exists()) {
-                    resourceLoader.copyFromClassPath(lcfiles[i], target);
+                    resourceLoader.copyFromClassPath(lcfile, target);
                 }
             }
 

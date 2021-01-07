@@ -85,7 +85,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
         // The request filter chain objects have to be cloned
         config = getSecurityManager().getSecurityConfig();
-        List<RequestFilterChain> clones = new ArrayList<RequestFilterChain>();
+        List<RequestFilterChain> clones = new ArrayList<>();
 
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
             try {
@@ -96,7 +96,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         }
         config.setFilterChain(new GeoServerSecurityFilterChain(clones));
 
-        form = new Form("form", new CompoundPropertyModel<SecurityManagerConfig>(config));
+        form = new Form<>("form", new CompoundPropertyModel<>(config));
         add(form);
 
         try {
@@ -109,9 +109,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
             throw new RuntimeException(e1);
         }
         form.add(
-                new TextField<String>(
+                new TextField<>(
                         "redirectURL",
-                        new PropertyModel<String>(this, "logoutFilterConfig.redirectURL")));
+                        new PropertyModel<>(this, "logoutFilterConfig.redirectURL")));
 
         try {
             sslFilterConfig =
@@ -121,35 +121,32 @@ public class AuthenticationPage extends AbstractSecurityPage {
         } catch (IOException e1) {
             throw new RuntimeException(e1);
         }
-        form.add(
-                new TextField<Integer>(
-                        "sslPort", new PropertyModel<Integer>(this, "sslFilterConfig.sslPort")));
+        form.add(new TextField<>("sslPort", new PropertyModel<>(this, "sslFilterConfig.sslPort")));
 
         // brute force attack
         form.add(
                 new CheckBox(
                         "bfEnabled",
-                        new PropertyModel<Boolean>(this, "config.bruteForcePrevention.enabled")));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.enabled")));
         final TextField<Integer> bfMinDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMinDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.minDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.minDelaySeconds"));
         bfMinDelay.add(RangeValidator.minimum(0));
         form.add(bfMinDelay);
         final TextField<Integer> bfMaxDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxDelaySeconds"));
         bfMaxDelay.add(RangeValidator.minimum(0));
         form.add(bfMaxDelay);
 
         final TextField<List<String>> netmasks =
                 new TextField<List<String>>(
                         "bfWhitelistedNetmasks",
-                        new PropertyModel<List<String>>(
-                                this, "config.bruteForcePrevention.whitelistedMasks")) {
+                        new PropertyModel<>(this, "config.bruteForcePrevention.whitelistedMasks")) {
+
+                    @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         return (IConverter<C>) new CommaSeparatedListConverter();
@@ -193,10 +190,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     }
                 });
         final TextField<Integer> bfMaxBlockedThreads =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxBlockedThreads",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxBlockedThreads"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxBlockedThreads"));
         bfMaxBlockedThreads.add(RangeValidator.minimum(0));
         form.add(bfMaxBlockedThreads);
 
@@ -213,11 +209,10 @@ public class AuthenticationPage extends AbstractSecurityPage {
                 authFilterChainPanel =
                         new AuthFilterChainPanel(
                                 "filterChain",
-                                new PropertyModel<GeoServerSecurityFilterChain>(
-                                        form.getModel(), "filterChain")));
+                                new PropertyModel<>(form.getModel(), "filterChain")));
         form.add(new HelpLink("filterChainHelp").setDialog(dialog));
 
-        form.add(new AuthenticationChainPanel("providerChain", form));
+        form.add(new AuthenticationChainPanel("providerChain"));
         form.add(new HelpLink("providerChainHelp").setDialog(dialog));
 
         form.add(
@@ -250,16 +245,16 @@ public class AuthenticationPage extends AbstractSecurityPage {
         form.replace(new SecurityFilterChainsPanel("authChains", config));
     }
 
-    class AuthenticationChainPanel extends FormComponentPanel {
+    class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
-        public AuthenticationChainPanel(String id, Form form) {
-            super(id, new Model());
+        public AuthenticationChainPanel(String id) {
+            super(id, new Model<>());
 
             add(new AuthenticationChainPalette("authProviderNames"));
         }
     }
 
-    class AuthFilterChainPanel extends FormComponentPanel {
+    class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
 
         DropDownChoice<HTTPMethod> httpMethodChoice;
         TextField<String> urlPathField, chainTestResultField;
@@ -267,14 +262,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
         HTTPMethod httpMethod = HTTPMethod.GET;
 
         public AuthFilterChainPanel(String id, IModel<GeoServerSecurityFilterChain> model) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             this.setOutputMarkupId(true);
 
-            add(
-                    urlPathField =
-                            new TextField<String>(
-                                    "urlPath", new PropertyModel<String>(this, "urlPath")));
+            add(urlPathField = new TextField<>("urlPath", new PropertyModel<>(this, "urlPath")));
             urlPathField.setOutputMarkupId(true);
             urlPathField.add(
                     new OnChangeAjaxBehavior() {
@@ -284,17 +276,17 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
             add(
                     chainTestResultField =
-                            new TextField<String>(
+                            new TextField<>(
                                     "chainTestResult",
-                                    new PropertyModel<String>(this, "chainTestResult")));
+                                    new PropertyModel<>(this, "chainTestResult")));
             chainTestResultField.setEnabled(false);
             chainTestResultField.setOutputMarkupId(true);
 
             add(
                     httpMethodChoice =
-                            new DropDownChoice<HTTPMethod>(
+                            new DropDownChoice<>(
                                     "httpMethod",
-                                    new PropertyModel<HTTPMethod>(this, "httpMethod"),
+                                    new PropertyModel<>(this, "httpMethod"),
                                     Arrays.asList(HTTPMethod.values())));
             httpMethodChoice.setOutputMarkupId(true);
             httpMethodChoice.setNullValid(false);
@@ -392,11 +384,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getParameterNames() {
+                                public Enumeration<String> getParameterNames() {
                                     return null;
                                 }
 
-                                public Map getParameterMap() {
+                                public Map<String, String[]> getParameterMap() {
                                     return null;
                                 }
 
@@ -404,7 +396,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getLocales() {
+                                public Enumeration<Locale> getLocales() {
                                     return null;
                                 }
 
@@ -478,7 +470,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
-                                public Enumeration getAttributeNames() {
+                                public Enumeration<String> getAttributeNames() {
                                     return null;
                                 }
 
@@ -591,11 +583,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return 0;
                                 }
 
-                                public Enumeration getHeaders(String name) {
+                                public Enumeration<String> getHeaders(String name) {
                                     return null;
                                 }
 
-                                public Enumeration getHeaderNames() {
+                                public Enumeration<String> getHeaderNames() {
                                     return null;
                                 }
 

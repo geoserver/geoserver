@@ -33,21 +33,21 @@ public class BoundingBoxInputPanel extends Panel {
 
     private DropDownChoice typeChoice;
 
-    PropertyModel valueModel;
+    PropertyModel<Object> valueModel;
 
     List<String> mimeTypes;
 
     public BoundingBoxInputPanel(String id, InputParameterValues pv, int valueIndex) {
         super(id);
         setOutputMarkupId(true);
-        setDefaultModel(new PropertyModel(pv, "values[" + valueIndex + "]"));
-        valueModel = new PropertyModel(getDefaultModel(), "value");
+        setDefaultModel(new PropertyModel<>(pv, "values[" + valueIndex + "]"));
+        valueModel = new PropertyModel<>(getDefaultModel(), "value");
         mimeTypes = pv.getSupportedMime();
 
         typeChoice =
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "type",
-                        new PropertyModel(getDefaultModelObject(), "type"),
+                        new PropertyModel<>(getDefaultModelObject(), "type"),
                         Arrays.asList(ParameterType.values()));
         add(typeChoice);
 
@@ -78,20 +78,20 @@ public class BoundingBoxInputPanel extends Panel {
             // data as plain text
             Fragment f = new Fragment("editor", "text", this);
             DropDownChoice mimeChoice =
-                    new DropDownChoice(
-                            "mime", new PropertyModel(getDefaultModel(), "mime"), mimeTypes);
+                    new DropDownChoice<>(
+                            "mime", new PropertyModel<>(getDefaultModel(), "mime"), mimeTypes);
             f.add(mimeChoice);
 
-            f.add(new TextArea("textarea", valueModel));
+            f.add(new TextArea<>("textarea", valueModel));
             add(f);
         } else if (pt == ParameterType.VECTOR_LAYER) {
             // an internal vector layer
             valueModel.setObject(new VectorLayerConfiguration());
             Fragment f = new Fragment("editor", "vectorLayer", this);
             DropDownChoice layer =
-                    new DropDownChoice(
+                    new DropDownChoice<>(
                             "layer",
-                            new PropertyModel(valueModel, "layerName"),
+                            new PropertyModel<>(valueModel, "layerName"),
                             getVectorLayerNames());
             f.add(layer);
             add(f);
@@ -101,9 +101,9 @@ public class BoundingBoxInputPanel extends Panel {
 
             Fragment f = new Fragment("editor", "rasterLayer", this);
             final DropDownChoice layer =
-                    new DropDownChoice(
+                    new DropDownChoice<>(
                             "layer",
-                            new PropertyModel(valueModel, "layerName"),
+                            new PropertyModel<>(valueModel, "layerName"),
                             getRasterLayerNames());
             f.add(layer);
             add(f);
@@ -132,7 +132,7 @@ public class BoundingBoxInputPanel extends Panel {
     List<String> getVectorLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof FeatureTypeInfo) {
                 result.add(li.getResource().prefixedName());
@@ -144,7 +144,7 @@ public class BoundingBoxInputPanel extends Panel {
     List<String> getRasterLayerNames() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof CoverageInfo) {
                 result.add(li.getResource().prefixedName());

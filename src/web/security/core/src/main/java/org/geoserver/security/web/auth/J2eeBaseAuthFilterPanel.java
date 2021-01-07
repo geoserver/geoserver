@@ -48,12 +48,10 @@ public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFi
     }
 
     @Override
-    protected void createRoleSourceDropDown() {
-        add(
-                roleSourceChoice =
-                        new DropDownChoice<RoleSource>(
-                                "roleSource",
-                                Arrays.asList(J2EERoleSource.values()),
-                                new RoleSourceChoiceRenderer()));
+    protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
+        return new DropDownChoice<>(
+                "roleSource",
+                Arrays.asList(J2EERoleSource.values()),
+                new RoleSourceChoiceRenderer());
     }
 }

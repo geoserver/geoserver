@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -176,12 +175,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public static final String WORKSPACE_PARAM = "WORKSPACE";
 
     /** @see #get() */
-    private static GWC INSTANCE;
+    private static volatile GWC INSTANCE;
 
     static final Logger log = Logging.getLogger(GWC.class);
 
     /** @see #getResponseEncoder(MimeType, RenderedImageMap) */
-    private Map<String, Response> cachedTileEncoders = new HashMap<String, Response>();
+    private Map<String, Response> cachedTileEncoders = new HashMap<>();
 
     private final TileLayerDispatcher tld;
 
@@ -306,14 +305,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @return The {@link GWC} mediator bean
      * @throws IllegalStateException if no {@link GWC} instance was found.
      */
-    public static synchronized GWC get() {
-        if (GWC.INSTANCE == null) {
-            GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
-            if (GWC.INSTANCE == null) {
-                throw new IllegalStateException(
-                        "No bean of type " + GWC.class.getName() + " found by GeoServerExtensions");
-            }
-        }
+    public static GWC get() {
         GWC.INSTANCE.syncEnv();
         return GWC.INSTANCE;
     }
@@ -535,7 +527,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         final List<MimeType> mimeTypes;
         if (styleName == null) {
             styleNames = getCachedStyles(layerName);
-            if (styleNames.size() == 0) {
+            if (styleNames.isEmpty()) {
                 styleNames.add("");
             }
         } else {
@@ -631,7 +623,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /** Returns the names of the styles for the layer, including the default style */
     private Set<String> getCachedStyles(final String layerName) {
         final TileLayer l = getTileLayerByName(layerName);
-        Set<String> cachedStyles = new HashSet<String>();
+        Set<String> cachedStyles = new HashSet<>();
         String defaultStyle = l.getStyles();
         if (defaultStyle != null) {
             cachedStyles.add(defaultStyle);
@@ -679,7 +671,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /** Reloads the configuration and notifies GWC of any externally removed layer. */
     @SuppressWarnings("deprecation")
     void reload() {
-        final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
+        final Set<String> currLayerNames = new HashSet<>(getTileLayerNames());
         try {
             tld.reInit(); // some mock testing uses this blasted method, don't know how to work
             // around it
@@ -937,13 +929,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         Map<String, ParameterFilter> filters;
         {
             List<ParameterFilter> parameterFilters = layer.getParameterFilters();
-            if (null != parameterFilters && parameterFilters.size() > 0) {
-                filters = new HashMap<String, ParameterFilter>();
+            if (null == parameterFilters || parameterFilters.isEmpty()) {
+                filters = Collections.emptyMap();
+            } else {
+                filters = new HashMap<>();
                 for (ParameterFilter pf : parameterFilters) {
                     filters.put(pf.getKey().toUpperCase(), pf);
                 }
-            } else {
-                filters = Collections.emptyMap();
             }
         }
 
@@ -1173,7 +1165,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public Set<String> getLayerNamesForGridSets(final Set<String> gridSetIds) {
 
-        Set<String> layerNames = new TreeSet<String>();
+        Set<String> layerNames = new TreeSet<>();
 
         for (TileLayer layer : getTileLayers()) {
             Set<String> layerGrids = layer.getGridSubsets();
@@ -1384,7 +1376,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         HttpServletRequest actualRequest = tile.servletReq;
 
         // get the param map and force service to be WMS if missing
-        Map<String, String> parameterMap = new HashMap<String, String>();
+        Map<String, String> parameterMap = new HashMap<>();
         Map<String, String[]> params = actualRequest.getParameterMap();
         boolean hasService = false;
         for (Map.Entry<String, String[]> param : params.entrySet()) {
@@ -1496,7 +1488,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         final FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(namespace, typeName);
         final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
 
-        Set<String> affectedLayers = new HashSet<String>();
+        Set<String> affectedLayers = new HashSet<>();
 
         for (LayerInfo layer : layers) {
             final String tileLayerName = tileLayerName(layer);
@@ -1567,7 +1559,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             log.info("### New gridset: " + newGridSet);
         }
 
-        Map<TileLayer, GridSubset> affectedLayers = new HashMap<TileLayer, GridSubset>();
+        Map<TileLayer, GridSubset> affectedLayers = new HashMap<>();
         Lock lock = null;
         try {
             lock = lockProvider.getLock(GLOBAL_LOCK_KEY);
@@ -1668,7 +1660,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                     throw new IllegalStateException(
                             "Didn't find service descriptor 'wms-1_1_1-ServiceDescriptor'");
                 }
-                operation = new Operation("GetMap", service, (Method) null, parameters);
+                operation = new Operation("GetMap", service, null, parameters);
             }
 
             final List<Response> extensions = GeoServerExtensions.extensions(Response.class);
@@ -1758,7 +1750,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         Iterable<GeoServerTileLayer> tileLayers = getGeoServerTileLayers();
 
-        List<GeoServerTileLayer> affected = new ArrayList<GeoServerTileLayer>();
+        List<GeoServerTileLayer> affected = new ArrayList<>();
         for (GeoServerTileLayer tl : tileLayers) {
             try {
                 GeoServerTileLayerInfo info = tl.getInfo();
@@ -1788,7 +1780,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     private Iterable<LayerInfo> getLayerInfosFor(
             final StyleInfo style, boolean includeSecondaryStyles) {
-        List<LayerInfo> result = new ArrayList<LayerInfo>();
+        List<LayerInfo> result = new ArrayList<>();
         Filter styleFilter =
                 ff.equal(ff.property("defaultStyle.id"), ff.literal(style.getId()), true);
         if (includeSecondaryStyles) {
@@ -1817,7 +1809,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     /** @return all the layergroups that somehow refer to the given style */
     public Iterable<LayerGroupInfo> getLayerGroupsFor(final StyleInfo style) {
-        List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
+        List<LayerGroupInfo> layerGroups = new ArrayList<>();
 
         // get the layers whose default style is that style, they might be in layer groups
         // using their default style
@@ -2396,6 +2388,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
+        GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
 
         syncEnv();
     }
@@ -2405,19 +2398,28 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
      */
     public void syncEnv() throws IllegalArgumentException {
-        if (gsEnvironment != null && gsEnvironment.isStale() && gwcEnvironment != null) {
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
-                    && gsEnvironment.getProps() != null) {
-                Properties gwcProps = gwcEnvironment.getProps();
+        if (needsSynchronization()) {
+            synchronized (this) {
+                if (needsSynchronization()) {
+                    Properties gwcProps = gwcEnvironment.getProps();
 
-                if (gwcProps == null) {
-                    gwcProps = new Properties();
+                    if (gwcProps == null) {
+                        gwcProps = new Properties();
+                    }
+                    gwcProps.putAll(gsEnvironment.getProps());
+
+                    gwcEnvironment.setProps(gwcProps);
                 }
-                gwcProps.putAll(gsEnvironment.getProps());
-
-                gwcEnvironment.setProps(gwcProps);
             }
         }
+    }
+
+    private boolean needsSynchronization() {
+        return GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
+                && gsEnvironment != null
+                && gsEnvironment.isStale()
+                && gsEnvironment.getProps() != null
+                && gwcEnvironment != null;
     }
 
     /**
@@ -2472,7 +2474,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             default:
                 throw new IllegalArgumentException("Unknown published type: " + type);
         }
-        Set<String> formats = new TreeSet<String>();
+        Set<String> formats = new TreeSet<>();
 
         for (URL url : urls) {
             Properties props = new Properties();
@@ -2497,8 +2499,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (blobStores instanceof List) {
             return (List<BlobStoreInfo>) blobStores;
         } else {
-            ArrayList<BlobStoreInfo> storeInfos =
-                    new ArrayList<BlobStoreInfo>(agg.getBlobStoreCount());
+            ArrayList<BlobStoreInfo> storeInfos = new ArrayList<>(agg.getBlobStoreCount());
             blobStores.forEach(storeInfos::add);
             return storeInfos;
         }

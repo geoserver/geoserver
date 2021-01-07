@@ -72,7 +72,7 @@ public class RetypingFeatureStore extends RetypingFeatureSource implements Simpl
                                 new RetypingFeatureCollection(
                                         DataUtilities.simple(collection),
                                         typeMap.getOriginalFeatureType()));
-        List<FeatureId> retyped = new ArrayList<FeatureId>();
+        List<FeatureId> retyped = new ArrayList<>();
         for (FeatureId id : ids) {
             retyped.add(
                     RetypingFeatureCollection.reTypeId(

@@ -118,6 +118,7 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         DescribeFeatureTypeType describeFeatureType = wfsfactory.createDescribeFeatureTypeType();
 

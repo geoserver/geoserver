@@ -30,9 +30,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     static final Logger LOGGER = Logging.getLogger(DefaultGeoServerFacade.class);
 
     GeoServerInfo global;
-    List<SettingsInfo> settings = new ArrayList<SettingsInfo>();
+    List<SettingsInfo> settings = new ArrayList<>();
     LoggingInfo logging;
-    List<ServiceInfo> services = new ArrayList<ServiceInfo>();
+    List<ServiceInfo> services = new ArrayList<>();
 
     GeoServer geoServer;
 
@@ -67,9 +67,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public void save(GeoServerInfo global) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(global);
 
-        List propertyNames = proxy.getPropertyNames();
-        List oldValues = proxy.getOldValues();
-        List newValues = proxy.getNewValues();
+        List<String> propertyNames = proxy.getPropertyNames();
+        List<Object> oldValues = proxy.getOldValues();
+        List<Object> newValues = proxy.getNewValues();
 
         geoServer.fireGlobalModified(global, propertyNames, oldValues, newValues);
 
@@ -96,9 +96,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public void save(SettingsInfo settings) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(settings);
 
-        List propertyNames = proxy.getPropertyNames();
-        List oldValues = proxy.getOldValues();
-        List newValues = proxy.getNewValues();
+        List<String> propertyNames = proxy.getPropertyNames();
+        List<Object> oldValues = proxy.getOldValues();
+        List<Object> newValues = proxy.getNewValues();
 
         settings = (SettingsInfo) proxy.getProxyObject();
         geoServer.fireSettingsModified(settings, propertyNames, oldValues, newValues);
@@ -127,9 +127,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public void save(LoggingInfo logging) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(logging);
 
-        List propertyNames = proxy.getPropertyNames();
-        List oldValues = proxy.getOldValues();
-        List newValues = proxy.getNewValues();
+        List<String> propertyNames = proxy.getPropertyNames();
+        List<Object> oldValues = proxy.getOldValues();
+        List<Object> newValues = proxy.getNewValues();
 
         geoServer.fireLoggingModified(logging, propertyNames, oldValues, newValues);
 
@@ -148,9 +148,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public void save(ServiceInfo service) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(service);
 
-        List propertyNames = proxy.getPropertyNames();
-        List oldValues = proxy.getOldValues();
-        List newValues = proxy.getNewValues();
+        List<String> propertyNames = proxy.getPropertyNames();
+        List<Object> oldValues = proxy.getOldValues();
+        List<Object> newValues = proxy.getNewValues();
 
         geoServer.fireServiceModified(service, propertyNames, oldValues, newValues);
 
@@ -173,7 +173,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
         for (ServiceInfo si : services) {
             if (id.equals(si.getId())) {
-                return ModificationProxy.create((T) si, clazz);
+                @SuppressWarnings("unchecked")
+                T cast = (T) si;
+                return ModificationProxy.create(cast, clazz);
             }
         }
 
@@ -225,7 +227,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             global.setMetadata(new MetadataMap());
         }
         if (global.getClientProperties() == null) {
-            global.setClientProperties(new HashMap<Object, Object>());
+            global.setClientProperties(new HashMap<>());
         }
         if (global.getCoverageAccess() == null) {
             global.setCoverageAccess(new CoverageAccessInfoImpl());
@@ -236,8 +238,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             Class<T> clazz, WorkspaceInfo workspace, List<ServiceInfo> services) {
         for (ServiceInfo si : services) {
             if (clazz.isAssignableFrom(si.getClass()) && wsEquals(workspace, si.getWorkspace())) {
-
-                return ModificationProxy.create((T) si, clazz);
+                @SuppressWarnings("unchecked")
+                T cast = (T) si;
+                return ModificationProxy.create(cast, clazz);
             }
         }
 
@@ -258,7 +261,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             String name, WorkspaceInfo workspace, Class<T> clazz, List<ServiceInfo> services) {
         for (ServiceInfo si : services) {
             if (name.equals(si.getName()) && wsEquals(workspace, si.getWorkspace())) {
-                return ModificationProxy.create((T) si, clazz);
+                @SuppressWarnings("unchecked")
+                T cast = (T) si;
+                return ModificationProxy.create(cast, clazz);
             }
         }
 
@@ -277,8 +282,8 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return null;
     }
 
-    public List filter(List<ServiceInfo> services, WorkspaceInfo workspace) {
-        List<ServiceInfo> list = new ArrayList();
+    public List<ServiceInfo> filter(List<ServiceInfo> services, WorkspaceInfo workspace) {
+        List<ServiceInfo> list = new ArrayList<>();
         for (ServiceInfo si : services) {
             if (wsEquals(workspace, si.getWorkspace())) {
                 list.add(si);

@@ -21,10 +21,10 @@ import java.util.Map;
  */
 public class NameSpaceTranslatorFactory {
     /** map of namespace names as Strings -> Class representations of NameSpaceTranslators */
-    private Map namespaceTranslators;
+    private Map<String, Class> namespaceTranslators;
 
     /** map of prefixs as String -> Instances of NameSpaceTranslators */
-    private Map namespaceTranslatorInstances;
+    private Map<String, NameSpaceTranslator> namespaceTranslatorInstances;
 
     /** the only instance */
     private static final NameSpaceTranslatorFactory instance = new NameSpaceTranslatorFactory();
@@ -35,8 +35,8 @@ public class NameSpaceTranslatorFactory {
      * <p>Loads some default prefixes into memory when the class is first loaded.
      */
     private NameSpaceTranslatorFactory() {
-        namespaceTranslators = new HashMap();
-        namespaceTranslatorInstances = new HashMap();
+        namespaceTranslators = new HashMap<>();
+        namespaceTranslatorInstances = new HashMap<>();
 
         // TODO replace null for these default namespaces.
         namespaceTranslators.put("http://www.w3.org/2001/XMLSchema", XMLSchemaTranslator.class);
@@ -76,7 +76,7 @@ public class NameSpaceTranslatorFactory {
         }
 
         try {
-            Class nstClass = (Class) namespaceTranslators.get(namespace);
+            Class<?> nstClass = namespaceTranslators.get(namespace);
 
             if (nstClass == null) {
                 return;
@@ -108,7 +108,7 @@ public class NameSpaceTranslatorFactory {
      * @return the translator, or null if it was not found
      */
     public NameSpaceTranslator getNameSpaceTranslator(String prefix) {
-        return (NameSpaceTranslator) namespaceTranslatorInstances.get(prefix);
+        return namespaceTranslatorInstances.get(prefix);
     }
 
     /**

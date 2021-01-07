@@ -5,11 +5,16 @@
  */
 package org.geoserver.script.wps;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
+import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.type.Name;
@@ -21,10 +26,12 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         return "buffer";
     }
 
+    @Test
     public void testLookupHook() throws Exception {
         assertNotNull(getScriptManager().lookupWpsHook(script));
     }
 
+    @Test
     public void testName() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         assertEquals(1, pf.getNames().size());
@@ -33,18 +40,21 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         assertEquals("buffer", name.getLocalPart());
     }
 
+    @Test
     public void testTitle() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
         assertEquals("Buffer", pf.getTitle(buffer).toString());
     }
 
+    @Test
     public void testDescription() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
         assertEquals("Buffers a geometry", pf.getDescription(buffer).toString());
     }
 
+    @Test
     public void testInputs() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
@@ -61,6 +71,7 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         assertEquals("The buffer distance", inputs.get("distance").description.toString());
     }
 
+    @Test
     public void testOutputs() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
@@ -73,6 +84,7 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         assertEquals("The buffered geometry", outputs.get("result").description.toString());
     }
 
+    @Test
     public void testRun() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
@@ -92,6 +104,7 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         assertTrue(h.equals(g.buffer(1)));
     }
 
+    @Test
     public void testRunMultipleOutputs() throws Exception {
         String pname = "buffer-multipleOutputs";
         File script = copyScriptIfExists(pname);

@@ -82,7 +82,7 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
                         scaleDenominator, (SimpleFeatureType) layer.getFeatureSource().getSchema());
         try {
             layer.getStyle().accept(visitor);
-            return (Style) visitor.getCopy();
+            return visitor.getCopy();
         } catch (EmptyStackException e) {
             return null;
         }
@@ -122,7 +122,7 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
                     context.setCurrentFeature(sf);
 
                     List<Symbolizer> symbolizers = getSymbolizers(simplified, sf);
-                    if (symbolizers.size() == 0) {
+                    if (symbolizers.isEmpty()) {
                         // skip layers that have no active symbolizers
                         continue;
                     }

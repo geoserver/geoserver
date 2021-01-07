@@ -36,7 +36,7 @@ class LegendGraphicAjaxUpdater implements Serializable {
         this.wmsURL = wmsURL;
         this.image = image;
         this.styleInfoModel = styleInfoModel;
-        this.urlModel = new Model<String>(wmsURL);
+        this.urlModel = new Model<>(wmsURL);
         this.image.add(new AttributeModifier("src", urlModel));
         updateStyleImage(null);
     }
@@ -45,7 +45,7 @@ class LegendGraphicAjaxUpdater implements Serializable {
         String url =
                 wmsURL
                         + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
-        StyleInfo styleInfo = (StyleInfo) styleInfoModel.getObject();
+        StyleInfo styleInfo = styleInfoModel.getObject();
         if (styleInfo != null) {
             String style = styleInfo.prefixedName();
             url += style;

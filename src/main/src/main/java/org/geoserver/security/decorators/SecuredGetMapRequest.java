@@ -37,8 +37,8 @@ public class SecuredGetMapRequest implements GetMapRequest {
     static final Logger LOGGER = Logging.getLogger(SecuredGetMapRequest.class);
 
     GetMapRequest delegate;
-    List<Layer> layers = new ArrayList<Layer>();
-    List<String> styles = new ArrayList<String>();
+    List<Layer> layers = new ArrayList<>();
+    List<String> styles = new ArrayList<>();
 
     // we should add layers to the delegate only once, also if
     // getFinalURL is called many times
@@ -92,7 +92,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
 
     /** Checks security and build the eventual CQL filter to cascade */
     public String buildCQLFilter() {
-        List<Filter> layerFilters = new ArrayList<Filter>();
+        List<Filter> layerFilters = new ArrayList<>();
         // scan and check the layers
         boolean layerFiltersFound = false;
         for (int i = 0; i < layers.size(); i++) {

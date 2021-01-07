@@ -36,9 +36,9 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
             return null;
         }
 
-        List<String> layers = new ArrayList<String>();
-        for (int i = 0; i < queryLayers.size(); i++) {
-            layers.add((String) OwsUtils.get(queryLayers.get(i), "name"));
+        List<String> layers = new ArrayList<>();
+        for (Object queryLayer : queryLayers) {
+            layers.add((String) OwsUtils.get(queryLayer, "name"));
         }
 
         return layers;

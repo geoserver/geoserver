@@ -25,7 +25,7 @@ public class Database extends ImportData {
     Map<String, Serializable> parameters;
 
     /** List of tables */
-    List<Table> tables = new ArrayList<Table>();
+    List<Table> tables = new ArrayList<>();
 
     public Database(Map<String, Serializable> parameters) {
         this.parameters = parameters;
@@ -53,7 +53,7 @@ public class Database extends ImportData {
     /** Loads the available tables from this database. */
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
-        tables = new ArrayList<Table>();
+        tables = new ArrayList<>();
         DataStoreFactorySpi factory =
                 (DataStoreFactorySpi) DataStoreUtils.aquireFactory(parameters);
         if (factory == null) {
@@ -119,7 +119,7 @@ public class Database extends ImportData {
     }
 
     private Object readResolve() {
-        tables = tables != null ? tables : new ArrayList();
+        tables = tables != null ? tables : new ArrayList<>();
         return this;
     }
 }

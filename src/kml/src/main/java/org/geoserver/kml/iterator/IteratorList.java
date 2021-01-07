@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
  */
 public class IteratorList<T> extends AbstractList<T> {
 
-    public class GeneratorIterator implements Iterator<T> {
+    public static class GeneratorIterator<T> implements Iterator<T> {
 
         private Iterator<T> generator;
 
@@ -52,8 +52,8 @@ public class IteratorList<T> extends AbstractList<T> {
     }
 
     @Override
-    public Iterator iterator() {
-        return new GeneratorIterator(generatorFactory.newIterator());
+    public Iterator<T> iterator() {
+        return new GeneratorIterator<>(generatorFactory.newIterator());
     }
 
     @Override

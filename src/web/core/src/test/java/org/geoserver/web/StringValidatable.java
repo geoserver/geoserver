@@ -13,7 +13,7 @@ import org.apache.wicket.validation.IValidationError;
 
 /** Helper class to test validators that need to validate a String object */
 public class StringValidatable implements IValidatable<String> {
-    List<IValidationError> errors = new ArrayList<IValidationError>();
+    List<IValidationError> errors = new ArrayList<>();
     String value;
 
     public StringValidatable(String value) {

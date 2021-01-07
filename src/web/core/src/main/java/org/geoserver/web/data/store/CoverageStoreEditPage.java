@@ -134,9 +134,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
-            } catch (IOException e) {
-                confirmSaveOnConnectionFailure(info, requestTarget, e);
-            } catch (RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 confirmSaveOnConnectionFailure(info, requestTarget, e);
             }
         } else {

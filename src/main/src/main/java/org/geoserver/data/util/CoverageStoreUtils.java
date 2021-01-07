@@ -40,13 +40,10 @@ public final class CoverageStoreUtils {
     private CoverageStoreUtils() {}
 
     public static Format acquireFormat(String type) throws IOException {
-        Format[] formats = GridFormatFinder.getFormatArray();
         Format format = null;
-        final int length = formats.length;
-
-        for (int i = 0; i < length; i++) {
-            if (formats[i].getName().equals(type)) {
-                format = formats[i];
+        for (Format value : GridFormatFinder.getFormatArray()) {
+            if (value.getName().equals(type)) {
+                format = value;
 
                 break;
             }
@@ -73,7 +70,7 @@ public final class CoverageStoreUtils {
 
         while (it.hasNext()) {
             val = (ParameterValue) it.next();
-            descr = (ParameterDescriptor) val.getDescriptor();
+            descr = val.getDescriptor();
 
             if (key.equalsIgnoreCase(descr.getName().toString())) {
                 return val;
@@ -91,10 +88,9 @@ public final class CoverageStoreUtils {
     public static Format aquireFactoryByType(String type) {
         final Format[] formats = GridFormatFinder.getFormatArray();
         Format format = null;
-        final int length = formats.length;
 
-        for (int i = 0; i < length; i++) {
-            format = formats[i];
+        for (Format value : formats) {
+            format = value;
 
             if (format.getName().equals(type)) {
                 return format;
@@ -108,10 +104,9 @@ public final class CoverageStoreUtils {
     public static Format aquireFactory(String description) {
         Format[] formats = GridFormatFinder.getFormatArray();
         Format format = null;
-        final int length = formats.length;
 
-        for (int i = 0; i < length; i++) {
-            format = formats[i];
+        for (Format value : formats) {
+            format = value;
 
             if (format.getDescription().equals(description)) {
                 return format;
@@ -128,28 +123,24 @@ public final class CoverageStoreUtils {
      *
      * @return Descriptions for user to choose from
      */
-    public static List listDataFormatsDescriptions() {
-        List list = new ArrayList();
+    public static List<String> listDataFormatsDescriptions() {
+        List<String> list = new ArrayList<>();
         Format[] formats = GridFormatFinder.getFormatArray();
-        final int length = formats.length;
-
-        for (int i = 0; i < length; i++) {
-            if (!list.contains(formats[i].getDescription())) {
-                list.add(formats[i].getDescription());
+        for (Format format : formats) {
+            if (!list.contains(format.getDescription())) {
+                list.add(format.getDescription());
             }
         }
 
         return Collections.synchronizedList(list);
     }
 
-    public static List listDataFormats() {
-        List list = new ArrayList();
+    public static List<Format> listDataFormats() {
+        List<Format> list = new ArrayList<>();
         Format[] formats = GridFormatFinder.getFormatArray();
-        final int length = formats.length;
-
-        for (int i = 0; i < length; i++) {
-            if (!list.contains(formats[i])) {
-                list.add(formats[i]);
+        for (Format format : formats) {
+            if (!list.contains(format)) {
+                list.add(format);
             }
         }
 
@@ -160,8 +151,8 @@ public final class CoverageStoreUtils {
         return Collections.synchronizedMap(defaultParams(aquireFactory(description)));
     }
 
-    public static Map defaultParams(Format factory) {
-        Map defaults = new HashMap();
+    public static Map<String, Object> defaultParams(Format factory) {
+        Map<String, Object> defaults = new HashMap<>();
         ParameterValueGroup params = factory.getReadParameters();
 
         if (params != null) {
@@ -174,7 +165,7 @@ public final class CoverageStoreUtils {
 
             while (it.hasNext()) {
                 val = (ParameterValue) it.next();
-                descr = (ParameterDescriptor) val.getDescriptor();
+                descr = val.getDescriptor();
 
                 key = descr.getName().toString();
                 value = null;
@@ -208,13 +199,13 @@ public final class CoverageStoreUtils {
      *
      * @return Map with real values that may be acceptable to GDSFactory
      */
-    public static Map toParams(GridFormatFactorySpi factory, Map params) throws IOException {
-        final Map map = new HashMap(params.size());
+    public static Map<String, Object> toParams(GridFormatFactorySpi factory, Map<String, ?> params)
+            throws IOException {
+        final Map<String, Object> map = new HashMap<>(params.size());
 
         final ParameterValueGroup info = factory.createFormat().getReadParameters();
         // Convert Params into the kind of Map we actually need
-        for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
-            String key = (String) i.next();
+        for (String key : params.keySet()) {
             Object value = find(info, key).getValue();
             if (value != null) {
                 map.put(key, value);

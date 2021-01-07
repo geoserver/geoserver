@@ -24,7 +24,7 @@ import org.geotools.csw.CSWConfiguration;
  */
 public class CSWRecordingXmlReader extends CSWXmlReader implements DispatcherCallback {
 
-    public static final ThreadLocal<String> RECORDED_REQUEST = new ThreadLocal<String>();
+    public static final ThreadLocal<String> RECORDED_REQUEST = new ThreadLocal<>();
 
     public CSWRecordingXmlReader(
             String element,

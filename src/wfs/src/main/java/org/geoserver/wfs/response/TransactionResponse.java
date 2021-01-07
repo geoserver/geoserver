@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import net.opengis.wfs.ActionType;
 import net.opengis.wfs.InsertResultsType;
 import net.opengis.wfs.InsertedFeatureType;
@@ -62,6 +61,7 @@ public class TransactionResponse extends WFSResponse {
         }
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     public void v_1_0(TransactionResponseType response, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         TransactionResultsType result = response.getTransactionResults();
@@ -105,8 +105,8 @@ public class TransactionResponse extends WFSResponse {
         boolean first = true;
 
         if (insertResults != null) {
-            for (Iterator i = insertResults.getFeature().iterator(); i.hasNext(); ) {
-                InsertedFeatureType insertedFeature = (InsertedFeatureType) i.next();
+            for (Object value : insertResults.getFeature()) {
+                InsertedFeatureType insertedFeature = (InsertedFeatureType) value;
                 String handle = insertedFeature.getHandle();
 
                 if (first
@@ -128,8 +128,8 @@ public class TransactionResponse extends WFSResponse {
                     writer.write(">");
                 }
 
-                for (Iterator id = insertedFeature.getFeatureId().iterator(); id.hasNext(); ) {
-                    FeatureId featureId = (FeatureId) id.next();
+                for (Object o : insertedFeature.getFeatureId()) {
+                    FeatureId featureId = (FeatureId) o;
                     writer.write("<ogc:FeatureId fid=\"" + featureId.toString() + "\"/>");
                 }
 

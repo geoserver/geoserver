@@ -30,7 +30,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         prefixMap.put("gml", "http://www.opengis.net/gml");
@@ -42,7 +42,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPParameter() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetDomain");
@@ -59,7 +59,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPProperty() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetDomain");
@@ -84,8 +84,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd =
                 (GetDomainType)
-                        reader.read(
-                                null, getResourceAsReader("GetDomainParameter.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetDomainParameter.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("GetRecords.resultType", gd.getParameterName());
@@ -101,7 +100,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd =
                 (GetDomainType)
-                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("dc:title", gd.getPropertyName());

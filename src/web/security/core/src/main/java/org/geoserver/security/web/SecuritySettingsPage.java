@@ -35,10 +35,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
 
     void initComponents() {
         Form<SecurityManagerConfig> form =
-                new Form(
-                        "form",
-                        new CompoundPropertyModel<SecurityManagerConfig>(
-                                new SecurityManagerConfigModel()));
+                new Form<>("form", new CompoundPropertyModel<>(new SecurityManagerConfigModel()));
         add(form);
 
         form.add(new RoleServiceChoice("roleServiceName"));
@@ -68,10 +65,10 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
                 });
     }
 
-    class EncryptionPanel extends FormComponentPanel {
+    class EncryptionPanel extends FormComponentPanel<String> {
 
         public EncryptionPanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             GeoServerSecurityManager secMgr = getSecurityManager();
             if (secMgr.isStrongEncryptionAvailable()) {
@@ -80,7 +77,9 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
                         new Label(
                                         "strongEncryptionMsg",
                                         new StringResourceModel("strongEncryption", this, null))
-                                .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                                .add(
+                                        new AttributeAppender(
+                                                "class", new Model<>("info-link"), " ")));
             } else {
                 add(
                         new Label(
@@ -88,7 +87,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
                                         new StringResourceModel("noStrongEncryption", this, null))
                                 .add(
                                         new AttributeAppender(
-                                                "class", new Model("warning-link"), " ")));
+                                                "class", new Model<>("warning-link"), " ")));
             }
 
             add(new CheckBox("encryptingUrlParams"));

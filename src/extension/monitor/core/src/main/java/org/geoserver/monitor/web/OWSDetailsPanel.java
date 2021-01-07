@@ -38,7 +38,7 @@ public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
 
     class DataGatherer implements RequestDataVisitor {
 
-        HashMap<String, Integer> data = new HashMap<String, Integer>();
+        HashMap<String, Integer> data = new HashMap<>();
 
         public void visit(RequestData req, Object... aggregates) {
             String op = req.getOperation().toLowerCase();

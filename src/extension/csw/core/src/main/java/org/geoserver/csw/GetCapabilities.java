@@ -128,7 +128,7 @@ public class GetCapabilities {
 
             KeywordsType kw = null;
             List<KeywordInfo> keywords = csw.getKeywords();
-            if (keywords != null && keywords.size() > 0) {
+            if (keywords != null && !keywords.isEmpty()) {
                 kw = owsf.createKeywordsType();
                 for (KeywordInfo keyword : keywords) {
                     kw.getKeyword().add(keyword.getValue());
@@ -304,8 +304,7 @@ public class GetCapabilities {
         getCapabilitiesDCP.setHTTP(getCapabilitiesHTTP);
 
         String getCapabilitiesHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType getCapabilitiesGet = owsf.createRequestMethodType();
         getCapabilitiesGet.setHref(getCapabilitiesHref);
@@ -345,8 +344,7 @@ public class GetCapabilities {
         describeRecordDCP.setHTTP(describeRecordHTTP);
 
         String describeRecordHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType describeRecordGet = owsf.createRequestMethodType();
         describeRecordGet.setHref(describeRecordHref);
@@ -393,8 +391,7 @@ public class GetCapabilities {
         getRecordsDCP.setHTTP(getRecordsHTTP);
 
         String getRecordsHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType getRecordsGet = owsf.createRequestMethodType();
         getRecordsGet.setHref(getRecordsHref);
@@ -430,7 +427,7 @@ public class GetCapabilities {
             for (RecordDescriptor rd : store.getRecordDescriptors()) {
                 List<Name> queriables =
                         store.getCapabilities().getQueriables(rd.getFeatureDescriptor().getName());
-                if (queriables != null && queriables.size() > 0) {
+                if (queriables != null && !queriables.isEmpty()) {
                     DomainType dt = owsf.createDomainType();
                     dt.setName(rd.getQueryablesDescription());
                     NamespaceSupport nss = rd.getNamespaceSupport();
@@ -472,8 +469,7 @@ public class GetCapabilities {
         getRecordByIdDCP.setHTTP(getRecordByIdHTTP);
 
         String getRecordByIdHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType getRecordByIdGet = owsf.createRequestMethodType();
         getRecordByIdGet.setHref(getRecordByIdHref);
@@ -520,8 +516,7 @@ public class GetCapabilities {
         getDomainDCP.setHTTP(getDomainHTTP);
 
         String getDomainHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType getDomainGet = owsf.createRequestMethodType();
         getDomainGet.setHref(getDomainHref);
@@ -546,13 +541,13 @@ public class GetCapabilities {
 
         // The domain queriables list from the catalog store
         try {
-            Set<String> summary = new HashSet<String>();
+            Set<String> summary = new HashSet<>();
             for (RecordDescriptor rd : store.getRecordDescriptors()) {
                 List<Name> queriables =
                         store.getCapabilities()
                                 .getDomainQueriables(rd.getFeatureDescriptor().getName());
 
-                if (queriables != null && queriables.size() > 0) {
+                if (queriables != null && !queriables.isEmpty()) {
                     NamespaceSupport nss = rd.getNamespaceSupport();
                     for (Name q : queriables) {
                         String prefix = nss.getPrefix(q.getNamespaceURI());
@@ -564,8 +559,8 @@ public class GetCapabilities {
                 }
             }
 
-            if (summary.size() > 0) {
-                List<String> sorted = new ArrayList<String>(summary);
+            if (!summary.isEmpty()) {
+                List<String> sorted = new ArrayList<>(summary);
                 Collections.sort(sorted);
                 DomainType dt = owsf.createDomainType();
                 dt.setName("PropertyName");
@@ -600,8 +595,7 @@ public class GetCapabilities {
         transactionDCP.setHTTP(transactionHTTP);
 
         String transactionHref =
-                ResponseUtils.buildURL(
-                        baseUrl, "csw", new HashMap<String, String>(), URLType.SERVICE);
+                ResponseUtils.buildURL(baseUrl, "csw", new HashMap<>(), URLType.SERVICE);
 
         RequestMethodType transactionGet = owsf.createRequestMethodType();
         transactionGet.setHref(transactionHref);
@@ -660,7 +654,7 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
 
     volatile SpatialOperators spatialOperands = new SpatialOperatorsImpl();
 
-    List<GeometryOperand> geometryOperands = new LinkedList<GeometryOperand>();
+    List<GeometryOperand> geometryOperands = new LinkedList<>();
 
     @Override
     public Collection<GeometryOperand> getGeometryOperands() {

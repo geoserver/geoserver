@@ -53,7 +53,7 @@ public class PlacemarkStyleDecoratorTest extends org.geoserver.wms.icons.IconTes
         }
 
         public List<SimpleFeatureType> getFeatureTypes() {
-            List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
+            List<SimpleFeatureType> results = new ArrayList<>();
             results.add(featureType);
             return results;
         }

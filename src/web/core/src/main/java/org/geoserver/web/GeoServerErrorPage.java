@@ -18,7 +18,7 @@ import org.apache.wicket.model.ResourceModel;
 public class GeoServerErrorPage extends GeoServerBasePage {
 
     public GeoServerErrorPage(Throwable error) {
-        IModel notice = null, errorText = new Model("");
+        IModel notice = null, errorText = new Model<>("");
 
         boolean trace = false;
         if (getSession().getAuthentication() != null
@@ -29,7 +29,7 @@ public class GeoServerErrorPage extends GeoServerBasePage {
                 error.printStackTrace(ps);
                 ps.close();
                 bos.close();
-                errorText = new Model(bos.toString());
+                errorText = new Model<>(bos.toString());
                 notice = new ResourceModel("GeoServerErrorPage.whatIsThis");
                 trace = true;
             } catch (Exception e) {

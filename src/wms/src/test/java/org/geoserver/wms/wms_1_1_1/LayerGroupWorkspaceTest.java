@@ -8,8 +8,8 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -545,7 +545,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         List<String> normal =
                 originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
         List<String> ordered = normal.stream().sorted().collect(Collectors.toList());
-        assertTrue(ordered.equals(normal));
+        assertEquals(ordered, normal);
     }
 
     /** Test Layer group order on a workspace virtual service */
@@ -562,7 +562,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         List<String> normal =
                 originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
         List<String> ordered = normal.stream().sorted().collect(Collectors.toList());
-        assertTrue(ordered.equals(normal));
+        assertEquals(ordered, normal);
     }
 
     /** removes prefix from layer name */

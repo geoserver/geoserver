@@ -48,7 +48,7 @@ public class DownloadLinkHandler {
     static final Logger LOGGER = Logging.getLogger(DownloadLinkHandler.class);
 
     static {
-        STANDARD_DOMAINS = new HashSet<String>();
+        STANDARD_DOMAINS = new HashSet<>();
         STANDARD_DOMAINS.add(Utils.TIME_DOMAIN);
         STANDARD_DOMAINS.add(Utils.ELEVATION_DOMAIN);
         STANDARD_DOMAINS.add(Utils.BBOX);
@@ -121,10 +121,7 @@ public class DownloadLinkHandler {
                     }
                 }
                 return builder.toString();
-            } catch (IOException e) {
-                throw new RuntimeException(
-                        "Unable to encode the specified file:" + canonicalPath, e.getCause());
-            } catch (NoSuchAlgorithmException e) {
+            } catch (IOException | NoSuchAlgorithmException e) {
                 throw new RuntimeException(
                         "Unable to encode the specified file:" + canonicalPath, e.getCause());
             }
@@ -252,7 +249,7 @@ public class DownloadLinkHandler {
                         baseURL.replace("${nameSpace}", coverageInfo.getNamespace().getName())
                                 .replace("${layerName}", coverageInfo.getName());
 
-                return new CloseableLinksIterator(baseLink, fileResourceInfo.getFiles(null));
+                return new CloseableLinksIterator<>(baseLink, fileResourceInfo.getFiles(null));
             } else {
                 throw new RuntimeException(
                         "Donwload links handler need to provide "

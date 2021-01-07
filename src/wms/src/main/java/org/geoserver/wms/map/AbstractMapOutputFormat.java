@@ -55,8 +55,8 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
         this(
                 mime,
                 outputFormats == null
-                        ? Collections.EMPTY_SET
-                        : new HashSet<String>(Arrays.asList(outputFormats)));
+                        ? Collections.emptySet()
+                        : new HashSet<>(Arrays.asList(outputFormats)));
     }
 
     protected AbstractMapOutputFormat(final String mime, Set<String> outputFormats) {
@@ -72,7 +72,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     }
 
     private static Set<String> caseInsensitiveOutputFormats(Set<String> outputFormats) {
-        Set<String> caseInsensitiveFormats = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> caseInsensitiveFormats = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         caseInsensitiveFormats.addAll(outputFormats);
         return caseInsensitiveFormats;
     }
@@ -140,7 +140,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     public static MapDecorationLayout.Block getWatermark(WMSInfo wms) {
         WatermarkInfo watermark = (wms == null ? null : wms.getWatermark());
         if (watermark != null && watermark.isEnabled()) {
-            Map<String, String> options = new HashMap<String, String>();
+            Map<String, String> options = new HashMap<>();
             options.put("url", watermark.getURL());
             options.put("opacity", Float.toString((255f - watermark.getTransparency()) / 2.55f));
 

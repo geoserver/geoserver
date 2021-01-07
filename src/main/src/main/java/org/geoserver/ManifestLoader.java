@@ -146,7 +146,7 @@ public class ManifestLoader {
             throw new IllegalArgumentException("Unable to run with null arguments");
         }
 
-        Map<String, Manifest> manifests = new HashMap<String, Manifest>();
+        Map<String, Manifest> manifests = new HashMap<>();
         try {
             Enumeration<URL> resources = loader.getResources("META-INF/MANIFEST.MF");
             while (resources.hasMoreElements()) {
@@ -334,7 +334,7 @@ public class ManifestLoader {
         }
 
         public AboutModel() {
-            manifests = new TreeSet<ManifestModel>(new ManifestModel.ManifestComparator());
+            manifests = new TreeSet<>(new ManifestModel.ManifestComparator());
         }
 
         /** */
@@ -342,7 +342,7 @@ public class ManifestLoader {
             if (am == null) {
                 throw new IllegalArgumentException("Unable to initialize model with a null model");
             }
-            manifests = new TreeSet<ManifestModel>(am.getManifests());
+            manifests = new TreeSet<>(am.getManifests());
         }
 
         private AboutModel(NavigableSet<ManifestModel> manifests) throws IllegalArgumentException {
@@ -350,7 +350,7 @@ public class ManifestLoader {
                 throw new IllegalArgumentException(
                         "Unable to initialize model with a null manifests tree");
             }
-            this.manifests = new TreeSet<ManifestModel>(manifests);
+            this.manifests = new TreeSet<>(manifests);
         }
 
         /**
@@ -386,9 +386,7 @@ public class ManifestLoader {
             if (regex == null) {
                 throw new IllegalArgumentException("Unable to parse regex is null");
             }
-            AboutModel am =
-                    new AboutModel(
-                            new TreeSet<ManifestModel>(new ManifestModel.ManifestComparator()));
+            AboutModel am = new AboutModel(new TreeSet<>(new ManifestModel.ManifestComparator()));
             Iterator<ManifestModel> it = manifests.iterator();
             while (it.hasNext()) {
                 ManifestModel tModel = it.next();
@@ -584,7 +582,7 @@ public class ManifestLoader {
 
             public ManifestModel(final String name) {
                 this.name = name;
-                this.entries = new HashMap<String, String>();
+                this.entries = new HashMap<>();
             }
 
             public void putAllEntries(Map<String, String> entries) {
@@ -666,7 +664,7 @@ public class ManifestLoader {
                         final Attributes at, String[] include) {
                     if (at == null) throw new IllegalArgumentException("Null argument");
 
-                    Map<String, String> ret = new HashMap<String, String>();
+                    Map<String, String> ret = new HashMap<>();
 
                     if (include == null) {
                         if (LOGGER.isLoggable(Level.FINE))
@@ -675,7 +673,7 @@ public class ManifestLoader {
                                 at.entrySet().iterator();
                         while (it.hasNext()) {
                             java.util.Map.Entry<Object, Object> entry = it.next();
-                            String attrName = ((Attributes.Name) entry.getKey()).toString();
+                            String attrName = entry.getKey().toString();
                             ret.put(attrName, entry.getValue().toString());
                         }
                     } else {
@@ -684,7 +682,7 @@ public class ManifestLoader {
                                 at.entrySet().iterator();
                         while (it.hasNext()) {
                             java.util.Map.Entry<Object, Object> entry = it.next();
-                            String attrName = ((Attributes.Name) entry.getKey()).toString();
+                            String attrName = entry.getKey().toString();
 
                             // search into including array to filter over attributes
                             int i = 0;
@@ -735,11 +733,11 @@ public class ManifestLoader {
                         if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "No exceptions");
                         exclude = new String[0];
                     }
-                    Map<String, String> ret = new HashMap<String, String>();
+                    Map<String, String> ret = new HashMap<>();
                     // for each attribute
                     final Iterator<Object> it = at.keySet().iterator();
                     while (it.hasNext()) {
-                        String attrName = ((Attributes.Name) it.next()).toString();
+                        String attrName = it.next().toString();
                         boolean skip = false;
                         // search into including array to filter over attributes
                         int i = 0;

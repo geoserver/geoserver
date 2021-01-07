@@ -26,14 +26,14 @@ public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
 
     static final Logger LOGGER = Logging.getLogger(SQLViewParamProvider.class);
 
-    List<Parameter> parameters = new ArrayList<Parameter>();
+    List<Parameter> parameters = new ArrayList<>();
 
-    static final Property<Parameter> NAME = new BeanProperty<Parameter>("name", "name");
+    static final Property<Parameter> NAME = new BeanProperty<>("name", "name");
 
     static final Property<Parameter> DEFAULT_VALUE =
-            new BeanProperty<Parameter>("defaultValue", "defaultValue");
+            new BeanProperty<>("defaultValue", "defaultValue");
 
-    static final Property<Parameter> REGEXP = new BeanProperty<Parameter>("regexp", "regexp");
+    static final Property<Parameter> REGEXP = new BeanProperty<>("regexp", "regexp");
 
     public SQLViewParamProvider() {
         setEditable(true);
@@ -61,7 +61,7 @@ public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
     public void refreshFromSql(String sql) {
         Pattern p = Pattern.compile("%[\\w\\d\\s]+%");
         Matcher matcher = p.matcher(sql);
-        Set<String> paramNames = new HashSet<String>();
+        Set<String> paramNames = new HashSet<>();
         while (matcher.find()) {
             paramNames.add(matcher.group().replace('%', ' ').trim());
         }

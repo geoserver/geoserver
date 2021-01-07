@@ -197,7 +197,7 @@ public final class WFS extends XSD {
     }
 
     /** Adds dependencies on the filter and gml schemas. */
-    protected void addDependencies(Set dependencies) {
+    protected void addDependencies(Set<XSD> dependencies) {
         dependencies.add(OGC.getInstance());
         dependencies.add(GML.getInstance());
     }

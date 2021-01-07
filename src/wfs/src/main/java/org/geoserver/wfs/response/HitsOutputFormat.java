@@ -20,7 +20,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.xml.GML3OutputFormat;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
@@ -49,8 +48,7 @@ public class HitsOutputFormat extends WFSResponse {
     /** Checks that the resultType is of type "hits". */
     public boolean canHandle(Operation operation) {
         GetFeatureType request =
-                (GetFeatureType)
-                        OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
+                OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
 
         return (request != null) && (request.getResultType() == ResultTypeType.HITS_LITERAL);
     }
@@ -88,9 +86,7 @@ public class HitsOutputFormat extends WFSResponse {
         for (int fcIndex = 0; fcIndex < fct.getFeature().size(); fcIndex++) {
             FeatureIterator i = null;
             try {
-                for (i = (((FeatureCollection) fct.getFeature().get(fcIndex)).features());
-                        i.hasNext();
-                        i.next()) {
+                for (i = (fct.getFeature().get(fcIndex).features()); i.hasNext(); i.next()) {
                     count = count.add(BigInteger.ONE);
                 }
             } finally {

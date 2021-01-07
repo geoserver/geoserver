@@ -452,7 +452,7 @@ public class PipelineBuilder {
          * difference.
          */
         private Geometry collectionClip(GeometryCollection geom) throws Exception {
-            ArrayList<Geometry> result = new ArrayList<Geometry>();
+            ArrayList<Geometry> result = new ArrayList<>();
             for (int t = 0; t < geom.getNumGeometries(); t++) {
                 Geometry g = geom.getGeometryN(0);
                 Geometry clipped = _run(g); // gets the non-degenerative of the result
@@ -460,11 +460,11 @@ public class PipelineBuilder {
                     result.add(clipped);
                 }
             }
-            if (result.size() == 0) {
+            if (result.isEmpty()) {
                 return null;
             }
             return new GeometryCollection(
-                    (Geometry[]) result.toArray(new Geometry[result.size()]), geom.getFactory());
+                    result.toArray(new Geometry[result.size()]), geom.getFactory());
         }
 
         /*
@@ -475,12 +475,14 @@ public class PipelineBuilder {
             if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
                 return result;
             }
-            List polys = org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
-            if (polys.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<Polygon> polys =
+                    org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
+            if (polys.isEmpty()) {
                 return null;
             }
             if (polys.size() == 1) {
-                return (Polygon) polys.get(0);
+                return polys.get(0);
             }
             // this could, theoretically, produce invalid MULTIPOLYGONS since polygons cannot share
             // edges. Taking
@@ -488,39 +490,39 @@ public class PipelineBuilder {
             // systems will not correctly
             // deal with a GeometryCollection with multiple polygons in them.
             // The best strategy is to just create a (potentially) invalid multipolygon.
-            return new MultiPolygon(
-                    (Polygon[]) polys.toArray(new Polygon[polys.size()]), result.getFactory());
+            return new MultiPolygon(polys.toArray(new Polygon[polys.size()]), result.getFactory());
         }
 
         private Geometry onlyLines(Geometry result) {
             if ((result instanceof LineString) || (result instanceof MultiLineString)) {
                 return result;
             }
-            List lines = org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
-            if (lines.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<LineString> lines =
+                    org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
+            if (lines.isEmpty()) {
                 return null;
             }
             if (lines.size() == 1) {
-                return (LineString) lines.get(0);
+                return lines.get(0);
             }
             return new MultiLineString(
-                    (LineString[]) lines.toArray(new LineString[lines.size()]),
-                    result.getFactory());
+                    lines.toArray(new LineString[lines.size()]), result.getFactory());
         }
 
         private Geometry onlyPoints(Geometry result) {
             if ((result instanceof Point) || (result instanceof MultiPoint)) {
                 return result;
             }
-            List pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
-            if (pts.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<Point> pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
+            if (pts.isEmpty()) {
                 return null;
             }
             if (pts.size() == 1) {
-                return (Point) pts.get(0);
+                return pts.get(0);
             }
-            return new MultiPoint(
-                    (Point[]) pts.toArray(new Point[pts.size()]), result.getFactory());
+            return new MultiPoint(pts.toArray(new Point[pts.size()]), result.getFactory());
         }
     }
 }

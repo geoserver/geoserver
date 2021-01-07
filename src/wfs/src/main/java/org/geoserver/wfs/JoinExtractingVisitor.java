@@ -50,8 +50,8 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     boolean hadAliases;
 
-    List<Filter> joinFilters = new ArrayList<Filter>();
-    List<Filter> filters = new ArrayList<Filter>();
+    List<Filter> joinFilters = new ArrayList<>();
+    List<Filter> filters = new ArrayList<>();
     private List<QName> queriedTypes;
 
     public JoinExtractingVisitor(List<FeatureTypeInfo> featureTypes, List<String> aliases) {
@@ -61,7 +61,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         if (aliases == null || aliases.isEmpty()) {
             hadAliases = false;
             // assign prefixes
-            aliases = new ArrayList<String>();
+            aliases = new ArrayList<>();
             for (int j = 0, i = 0; i < featureTypes.size(); i++) {
                 String alias;
                 boolean conflictFound;
@@ -81,7 +81,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             hadAliases = true;
         }
 
-        this.aliases = new ArrayList(aliases);
+        this.aliases = new ArrayList<>(aliases);
     }
 
     public Object visitNullFilter(Object extraData) {
@@ -212,7 +212,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             Set<String> localAttributes = fae.getAttributeNameSet();
             Set<String> localPrefixes = getPrefixes(localAttributes);
             if (!localPrefixes.isEmpty()) {
-                if (prefixes.size() == 0) {
+                if (prefixes.isEmpty()) {
                     // accumulate the prefixes, to see how many tables we're joining
                     prefixes.addAll(localPrefixes);
                 } else if (prefixes.size() > 1) {
@@ -253,7 +253,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     }
 
     public List<Join> getJoins() {
-        List<Join> joins = new ArrayList();
+        List<Join> joins = new ArrayList<>();
 
         setupPrimary();
 

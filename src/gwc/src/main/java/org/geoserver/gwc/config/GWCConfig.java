@@ -95,9 +95,9 @@ public class GWCConfig implements Cloneable, Serializable {
         String png = "image/png";
         String jpeg = "image/jpeg";
         setDefaultCoverageCacheFormats(Collections.singleton(jpeg));
-        setDefaultOtherCacheFormats(new HashSet<String>(Arrays.asList(png, jpeg)));
+        setDefaultOtherCacheFormats(new HashSet<>(Arrays.asList(png, jpeg)));
         setDefaultVectorCacheFormats(Collections.singleton(png));
-        Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+        Map<String, CacheConfiguration> map = new HashMap<>();
         map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         setCacheConfigurations(map);
         setRequireTiledParameter(true);
@@ -110,19 +110,19 @@ public class GWCConfig implements Cloneable, Serializable {
         }
 
         if (defaultCachingGridSetIds == null) {
-            defaultCachingGridSetIds = new HashSet<String>();
+            defaultCachingGridSetIds = new HashSet<>();
         }
         if (defaultCoverageCacheFormats == null) {
-            defaultCoverageCacheFormats = new HashSet<String>();
+            defaultCoverageCacheFormats = new HashSet<>();
         }
         if (defaultOtherCacheFormats == null) {
-            defaultOtherCacheFormats = new HashSet<String>();
+            defaultOtherCacheFormats = new HashSet<>();
         }
         if (defaultVectorCacheFormats == null) {
-            defaultVectorCacheFormats = new HashSet<String>();
+            defaultVectorCacheFormats = new HashSet<>();
         }
         if (cacheConfigurations == null) {
-            cacheConfigurations = new HashMap<String, CacheConfiguration>();
+            cacheConfigurations = new HashMap<>();
             cacheConfigurations.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         }
 
@@ -201,7 +201,7 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setDefaultCachingGridSetIds(Set<String> defaultCachingGridSetIds) {
-        this.defaultCachingGridSetIds = new HashSet<String>(defaultCachingGridSetIds);
+        this.defaultCachingGridSetIds = new HashSet<>(defaultCachingGridSetIds);
     }
 
     public Set<String> getDefaultCoverageCacheFormats() {
@@ -209,7 +209,7 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setDefaultCoverageCacheFormats(Set<String> defaultCoverageCacheFormats) {
-        this.defaultCoverageCacheFormats = new HashSet<String>(defaultCoverageCacheFormats);
+        this.defaultCoverageCacheFormats = new HashSet<>(defaultCoverageCacheFormats);
     }
 
     public Set<String> getDefaultVectorCacheFormats() {
@@ -217,7 +217,7 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setDefaultVectorCacheFormats(Set<String> defaultVectorCacheFormats) {
-        this.defaultVectorCacheFormats = new HashSet<String>(defaultVectorCacheFormats);
+        this.defaultVectorCacheFormats = new HashSet<>(defaultVectorCacheFormats);
     }
 
     public Set<String> getDefaultOtherCacheFormats() {
@@ -225,7 +225,7 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setDefaultOtherCacheFormats(Set<String> defaultOtherCacheFormats) {
-        this.defaultOtherCacheFormats = new HashSet<String>(defaultOtherCacheFormats);
+        this.defaultOtherCacheFormats = new HashSet<>(defaultOtherCacheFormats);
     }
 
     /**
@@ -294,9 +294,8 @@ public class GWCConfig implements Cloneable, Serializable {
         // this is not an old default, but a new feature so we enabled it anyway
         setCacheNonDefaultStyles(true);
         setRequireTiledParameter(true);
-        setDefaultCachingGridSetIds(new HashSet<String>(Arrays.asList("EPSG:4326", "EPSG:900913")));
-        Set<String> oldDefaultFormats =
-                new HashSet<String>(Arrays.asList("image/png", "image/jpeg"));
+        setDefaultCachingGridSetIds(new HashSet<>(Arrays.asList("EPSG:4326", "EPSG:900913")));
+        Set<String> oldDefaultFormats = new HashSet<>(Arrays.asList("image/png", "image/jpeg"));
         setDefaultCoverageCacheFormats(oldDefaultFormats);
         setDefaultOtherCacheFormats(oldDefaultFormats);
         setDefaultVectorCacheFormats(oldDefaultFormats);
@@ -305,7 +304,7 @@ public class GWCConfig implements Cloneable, Serializable {
         setTMSEnabled(true);
         setEnabledPersistence(true);
         setInnerCachingEnabled(false);
-        HashMap<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+        HashMap<String, CacheConfiguration> map = new HashMap<>();
         map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         setCacheConfigurations(map);
         setCacheProviderClass(GuavaCacheProvider.class.toString());
@@ -513,7 +512,7 @@ public class GWCConfig implements Cloneable, Serializable {
      *     the {@link CacheProvider} keys.
      */
     public void setCacheConfigurations(Map<String, CacheConfiguration> cacheConfigurations) {
-        this.cacheConfigurations = new HashMap<String, CacheConfiguration>(cacheConfigurations);
+        this.cacheConfigurations = new HashMap<>(cacheConfigurations);
     }
 
     public Boolean isWMTSEnabled() {

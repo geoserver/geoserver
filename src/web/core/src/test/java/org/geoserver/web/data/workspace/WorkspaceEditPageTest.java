@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -166,7 +167,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testDefaultCheckbox() {
-        assertFalse(getCatalog().getDefaultWorkspace().getName().equals(MockData.CITE_PREFIX));
+        assertNotEquals(getCatalog().getDefaultWorkspace().getName(), MockData.CITE_PREFIX);
 
         FormTester form = tester.newFormTester("form");
         form.setValue("tabs:panel:default", true);
@@ -208,7 +209,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
                 false);
         form.submit("save");
 
-        assertEquals(false, settings.isLocalWorkspaceIncludesPrefix());
+        assertFalse(settings.isLocalWorkspaceIncludesPrefix());
     }
 
     @Test
@@ -377,7 +378,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
             tester.clickLink("form:tabs:tabs-container:tabs:1:link");
             form.setValue("tabs:panel:listContainer:rules:0:admin", true);
             tester.clickLink("form:save");
-            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
+            assertEquals(1, ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size());
             tester.assertNoErrorMessage();
 
         } finally {
@@ -409,8 +410,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
             Set<DataAccessRule> news = new HashSet<>();
             news.add(ruleLayer);
             news.add(ruleWS);
-            ruleMan.saveRules(new HashSet<DataAccessRule>(), news);
-            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
+            ruleMan.saveRules(new HashSet<>(), news);
+            assertEquals(1, ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size());
             tester.clickLink("form:tabs:tabs-container:tabs:1:link");
             CheckBox checkboxFalse =
                     (CheckBox)

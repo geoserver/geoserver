@@ -134,7 +134,7 @@ public class GWCTransactionListener implements TransactionCallback {
     private ReferencedEnvelope merge(
             final String tileLayerName, final List<ReferencedEnvelope> dirtyList)
             throws TransformException, FactoryException {
-        if (dirtyList.size() == 0) {
+        if (dirtyList.isEmpty()) {
             return null;
         }
 
@@ -222,7 +222,7 @@ public class GWCTransactionListener implements TransactionCallback {
                 (Map<String, List<ReferencedEnvelope>>)
                         extendedProperties.get(GWC_TRANSACTION_INFO_PLACEHOLDER);
         if (byLayerDirtyRegions == null) {
-            byLayerDirtyRegions = new HashMap<String, List<ReferencedEnvelope>>();
+            byLayerDirtyRegions = new HashMap<>();
             extendedProperties.put(GWC_TRANSACTION_INFO_PLACEHOLDER, byLayerDirtyRegions);
         }
         return byLayerDirtyRegions;
@@ -238,7 +238,7 @@ public class GWCTransactionListener implements TransactionCallback {
 
         List<ReferencedEnvelope> layerDirtyRegion = byLayerDirtyRegions.get(tileLayerName);
         if (layerDirtyRegion == null) {
-            layerDirtyRegion = new ArrayList<ReferencedEnvelope>(2);
+            layerDirtyRegion = new ArrayList<>(2);
             byLayerDirtyRegions.put(tileLayerName, layerDirtyRegion);
         }
         layerDirtyRegion.add(affectedBounds);

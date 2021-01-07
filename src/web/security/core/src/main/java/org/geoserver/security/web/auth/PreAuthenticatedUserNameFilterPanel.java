@@ -32,14 +32,14 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
                 T extends PreAuthenticatedUserNameFilterConfig>
         extends AuthenticationFilterPanel<T> {
 
-    DropDownChoice<RoleSource> roleSourceChoice;
+    protected DropDownChoice<RoleSource> roleSourceChoice;
 
     public PreAuthenticatedUserNameFilterPanel(String id, IModel<T> model) {
         super(id, model);
 
         add(new HelpLink("roleSourceHelp", this).setDialog(dialog));
 
-        createRoleSourceDropDown();
+        add(roleSourceChoice = createRoleSourceDropDown());
 
         roleSourceChoice.setNullValid(false);
 
@@ -74,13 +74,11 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
         return new EmptyPanel("panel");
     }
 
-    protected void createRoleSourceDropDown() {
-        add(
-                roleSourceChoice =
-                        new DropDownChoice<RoleSource>(
-                                "roleSource",
-                                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
-                                new RoleSourceChoiceRenderer()));
+    protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
+        return new DropDownChoice<>(
+                "roleSource",
+                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
+                new RoleSourceChoiceRenderer());
     }
 
     protected void addRoleSourceDropDown(WebMarkupContainer container, RoleSource rs) {
@@ -90,7 +88,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
     static class HeaderPanel extends Panel {
         public HeaderPanel(String id) {
             super(id, new Model());
-            add(new TextField("rolesHeaderAttribute").setRequired(true));
+            add(new TextField("rolesHeaderAttribute").setRequired(true).setRequired(true));
         }
     }
 

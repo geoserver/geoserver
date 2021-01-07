@@ -21,13 +21,14 @@ public class CompositeList<T> extends AbstractList<T> {
 
     List<T>[] lists;
 
+    @SafeVarargs
     public CompositeList(List<T>... lists) {
         this.lists = lists;
     }
 
     @Override
-    public Iterator iterator() {
-        CompositeIterator<T> cit = new CompositeIterator<T>();
+    public Iterator<T> iterator() {
+        CompositeIterator<T> cit = new CompositeIterator<>();
         for (List<T> list : lists) {
             cit.add(list.iterator());
         }

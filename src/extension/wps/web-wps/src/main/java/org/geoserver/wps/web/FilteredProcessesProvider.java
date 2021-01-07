@@ -95,7 +95,7 @@ public class FilteredProcessesProvider
             ProcessInfo pai = new ProcessInfoImpl();
             pai.setName(getName());
             pai.setEnabled(getEnabled());
-            if (getRoles() != null && getRoles().size() > 0) {
+            if (getRoles() != null && !getRoles().isEmpty()) {
                 pai.getRoles().addAll(getRoles());
             }
             if (validators != null && validators.size() > 0) {
@@ -123,7 +123,7 @@ public class FilteredProcessesProvider
     public FilteredProcessesProvider(ProcessGroupInfo pfi, Locale locale) {
         ProcessFactory pf = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false);
         Set<Name> names = pf.getNames();
-        selectableProcesses = new ArrayList<FilteredProcess>();
+        selectableProcesses = new ArrayList<>();
         List<ProcessInfo> filteredProcesses = pfi.getFilteredProcesses();
         for (Name name : names) {
             InternationalString description =
@@ -152,11 +152,10 @@ public class FilteredProcessesProvider
 
     @Override
     protected List<Property<FilteredProcess>> getProperties() {
-        List<Property<FilteredProcess>> props =
-                new ArrayList<GeoServerDataProvider.Property<FilteredProcess>>();
-        props.add(new BeanProperty<FilteredProcess>("enabled", "enabled"));
-        props.add(new BeanProperty<FilteredProcess>("name", "name"));
-        props.add(new BeanProperty<FilteredProcess>("description", "description"));
+        List<Property<FilteredProcess>> props = new ArrayList<>();
+        props.add(new BeanProperty<>("enabled", "enabled"));
+        props.add(new BeanProperty<>("name", "name"));
+        props.add(new BeanProperty<>("description", "description"));
         props.add(
                 new AbstractProperty<FilteredProcess>("roles") {
                     @Override
@@ -169,8 +168,8 @@ public class FilteredProcessesProvider
                         return new PropertyModel(itemModel, "roles");
                     }
                 });
-        props.add(new PropertyPlaceholder("edit"));
-        props.add(new BeanProperty("validated", "validated"));
+        props.add(new PropertyPlaceholder<>("edit"));
+        props.add(new BeanProperty<>("validated", "validated"));
         return props;
     }
 

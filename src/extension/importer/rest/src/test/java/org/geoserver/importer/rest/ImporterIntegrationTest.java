@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -573,7 +574,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
     protected Authentication createAuthentication() {
         GeoServerUser anonymous = GeoServerUser.createAnonymous();
-        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> roles = new ArrayList<>();
         roles.addAll(anonymous.getAuthorities());
         AnonymousAuthenticationToken auth =
                 new AnonymousAuthenticationToken("geoserver", anonymous.getUsername(), roles);
@@ -1021,7 +1022,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+        assertSame(context.getState(), ImportContext.State.COMPLETE);
 
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), ".clean-me").exists());
@@ -1079,7 +1080,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+        assertSame(context.getState(), ImportContext.State.COMPLETE);
 
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
@@ -1184,7 +1185,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+        assertSame(context.getState(), ImportContext.State.COMPLETE);
 
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.shp").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.dbf").exists());

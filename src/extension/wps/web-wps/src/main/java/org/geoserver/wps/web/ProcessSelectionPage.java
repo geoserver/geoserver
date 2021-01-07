@@ -23,6 +23,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractSecurityPage;
@@ -48,7 +49,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
     private String title;
     private GeoServerTablePanel<FilteredProcess> processSelector;
     private ProcessGroupInfo pfi;
-    private List<String> availableRoles = new ArrayList<String>();
+    private List<String> availableRoles = new ArrayList<>();
 
     public ProcessSelectionPage(
             final WPSAccessRulePage wpsAccessRulePage, final ProcessGroupInfo pfi) {
@@ -89,13 +90,12 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                             String id,
                             final IModel<FilteredProcess> itemModel,
                             Property<FilteredProcess> property) {
+                        @SuppressWarnings("unchecked")
+                        IModel<Boolean> model = (IModel<Boolean>) property.getModel(itemModel);
                         if (property.getName().equals("enabled")) {
                             Fragment fragment =
                                     new Fragment(id, "enabledFragment", ProcessSelectionPage.this);
-                            CheckBox enabled =
-                                    new CheckBox(
-                                            "enabled",
-                                            (IModel<Boolean>) property.getModel(itemModel));
+                            CheckBox enabled = new CheckBox("enabled", model);
                             enabled.setOutputMarkupId(true);
                             fragment.add(enabled);
                             return fragment;
@@ -106,13 +106,15 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                         } else if (property.getName().equals("roles")) {
                             Fragment fragment =
                                     new Fragment(id, "rolesFragment", ProcessSelectionPage.this);
+                            @SuppressWarnings("unchecked")
+                            IModel<Object> pm = (IModel<Object>) property.getModel(itemModel);
                             TextArea<?> roles =
-                                    new TextArea("roles", property.getModel(itemModel)) {
-                                        public <C extends Object>
-                                                org.apache.wicket.util.convert.IConverter<C>
-                                                        getConverter(java.lang.Class<C> type) {
+                                    new TextArea<Object>("roles", pm) {
+                                        @Override
+                                        @SuppressWarnings("unchecked")
+                                        public <C> IConverter<C> getConverter(Class<C> type) {
                                             return new RolesConverter(availableRoles);
-                                        };
+                                        }
                                     };
                             StringBuilder selectedRoles = new StringBuilder();
                             IAutoCompleteRenderer<String> roleRenderer =
@@ -125,8 +127,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                             fragment.add(roles);
                             return fragment;
                         } else if (property.getName().equals("validated")) {
-                            final IModel<Boolean> hasValidatorsModel =
-                                    (IModel<Boolean>) property.getModel(itemModel);
+                            final IModel<Boolean> hasValidatorsModel = model;
                             IModel<String> availableModel =
                                     new AbstractReadOnlyModel<String>() {
 
@@ -149,8 +150,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                                     new Link("link") {
                                         @Override
                                         public void onClick() {
-                                            FilteredProcess fp =
-                                                    (FilteredProcess) itemModel.getObject();
+                                            FilteredProcess fp = itemModel.getObject();
                                             setResponsePage(
                                                     new ProcessLimitsPage(
                                                             ProcessSelectionPage.this, fp));
@@ -198,7 +198,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
 
     protected Collection<? extends Name> getFilteredProcesses() {
         ProcessFactory pf = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false);
-        List<Name> disabled = new ArrayList<Name>(pf.getNames());
+        List<Name> disabled = new ArrayList<>(pf.getNames());
         for (FilteredProcess fp : processSelector.getSelection()) {
             disabled.remove(fp.getName());
         }

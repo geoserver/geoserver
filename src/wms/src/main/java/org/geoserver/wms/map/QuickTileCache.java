@@ -38,10 +38,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
      * Set of parameters that we can ignore, since they do not define a map, are either unrelated,
      * or define the tiling instead
      */
-    private static final Set ignoredParameters;
+    private static final Set<String> ignoredParameters;
 
     static {
-        ignoredParameters = new HashSet();
+        ignoredParameters = new HashSet<>();
         ignoredParameters.add("REQUEST");
         ignoredParameters.add("TILED");
         ignoredParameters.add("BBOX");
@@ -55,7 +55,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     /** Canonicalizer used to return the same object when two threads ask for the same meta-tile */
     private CanonicalSet<MetaTileKey> metaTileKeys = CanonicalSet.newInstance(MetaTileKey.class);
 
-    private WeakHashMap tileCache = new WeakHashMap();
+    private WeakHashMap<MetaTileKey, CacheElement> tileCache = new WeakHashMap<>();
 
     public QuickTileCache(GeoServer geoServer) {
         geoServer.addListener(
@@ -190,11 +190,9 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     private String buildMapDefinition(Map<String, String> map) {
         StringBuffer sb = new StringBuffer();
 
-        Entry<String, String> en;
-        String paramName;
         for (Iterator<Map.Entry<String, String>> it = map.entrySet().iterator(); it.hasNext(); ) {
-            en = it.next();
-            paramName = en.getKey();
+            Entry<String, String> en = it.next();
+            String paramName = en.getKey();
 
             if (ignoredParameters.contains(paramName.toUpperCase())) {
                 continue;
@@ -322,7 +320,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /** Gathers a tile from the cache, if available */
     public synchronized RenderedImage getTile(MetaTileKey key, GetMapRequest request) {
-        CacheElement ce = (CacheElement) tileCache.get(key);
+        CacheElement ce = tileCache.get(key);
 
         if (ce == null) {
             return null;

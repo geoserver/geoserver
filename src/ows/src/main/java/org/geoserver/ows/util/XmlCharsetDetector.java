@@ -54,6 +54,7 @@ public class XmlCharsetDetector {
      *     probably throw this exception if inferred charset of XML document is not supported by
      *     current JVM.
      */
+    @SuppressWarnings("PMD.CloseResource") // reader being re-assigned
     public static Reader getCharsetAwareReader(InputStream istream, EncodingInfo encInfo)
             throws IOException, UnsupportedCharsetException {
         @SuppressWarnings("PMD.CloseResource") // just a wrapper

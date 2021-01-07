@@ -168,6 +168,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
                         + JSONType.json;
 
         MockHttpServletResponse result = getAsServletResponse(request, "");
-        assertTrue("UTF-8".equals(result.getCharacterEncoding()));
+        assertEquals("UTF-8", result.getCharacterEncoding());
     }
 }

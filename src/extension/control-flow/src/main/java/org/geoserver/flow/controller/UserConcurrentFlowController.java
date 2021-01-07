@@ -31,7 +31,7 @@ public class UserConcurrentFlowController extends QueueController {
      * Thread local holding the current request queue id TODO: consider having a user map in {@link
      * Request} instead
      */
-    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
+    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<>();
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
 

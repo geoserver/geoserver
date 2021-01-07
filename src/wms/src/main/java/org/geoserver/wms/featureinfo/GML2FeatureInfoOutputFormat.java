@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Iterator;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
@@ -74,8 +73,8 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         GetFeatureType gfreq = WfsFactory.eINSTANCE.createGetFeatureType();
         gfreq.setBaseUrl(fInfoReq.getBaseUrl());
 
-        for (Iterator i = results.getFeature().iterator(); i.hasNext(); ) {
-            FeatureCollection fc = (FeatureCollection) i.next();
+        for (Object o : results.getFeature()) {
+            FeatureCollection fc = (FeatureCollection) o;
             features.getFeature().add(fc);
 
             QueryType qt = WfsFactory.eINSTANCE.createQueryType();
@@ -99,7 +98,7 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
         // this is a dummy wrapper around our 'request' object so that the new Dispatcher will
         // accept it.
-        Service serviceDesc = new Service("wms", null, null, Collections.EMPTY_LIST);
+        Service serviceDesc = new Service("wms", null, null, Collections.emptyList());
         Operation opDescriptor = new Operation("", serviceDesc, null, new Object[] {gfreq});
 
         final GeoServer gs = wms.getGeoServer();

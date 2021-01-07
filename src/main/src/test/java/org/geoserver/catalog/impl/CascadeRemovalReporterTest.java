@@ -105,7 +105,7 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         List<StoreInfo> stores = getCatalog().getStoresByWorkspace(ws, StoreInfo.class);
         List<StyleInfo> styles = getCatalog().getStylesByWorkspace(ws);
         List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroupsByWorkspace(ws);
-        List<LayerGroupInfo> changedLayerGroups = new ArrayList<LayerGroupInfo>();
+        List<LayerGroupInfo> changedLayerGroups = new ArrayList<>();
         // Added another check for Layergroups which are not in the ws but contain
         // Layers belonging to this ws
         List<LayerGroupInfo> totalLayerGroups = getCatalog().getLayerGroups();

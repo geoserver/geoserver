@@ -6,7 +6,6 @@
 package org.geoserver.ows.util;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
@@ -32,8 +31,8 @@ public class EMFLogger extends RequestObjectLogger {
         EObject object = (EObject) obj;
         List properties = object.eClass().getEAllStructuralFeatures();
 
-        for (Iterator p = properties.iterator(); p.hasNext(); ) {
-            EStructuralFeature property = (EStructuralFeature) p.next();
+        for (Object o : properties) {
+            EStructuralFeature property = (EStructuralFeature) o;
             Object value = object.eGet(property);
 
             // skip empty properties
@@ -50,7 +49,7 @@ public class EMFLogger extends RequestObjectLogger {
             if (value instanceof EObject && (level < 3)) {
                 log.append(property.getName());
                 log.append(":");
-                log((EObject) value, level + 1, log);
+                log(value, level + 1, log);
             } else if (value instanceof Collection) {
                 log(property.getName(), (Collection) value, level + 1, log);
             } else {
@@ -67,7 +66,7 @@ public class EMFLogger extends RequestObjectLogger {
             if (o instanceof EObject) {
                 log.append(pc);
                 log.append(":");
-                log((EObject) o, level, log);
+                log(o, level, log);
             } else if (o instanceof Collection) {
                 log(pc, (Collection) o, level + 1, log);
             } else {

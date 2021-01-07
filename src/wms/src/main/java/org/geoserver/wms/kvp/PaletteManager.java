@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -46,10 +45,9 @@ public class PaletteManager {
     public static final String SAFE = "SAFE";
 
     public static final IndexColorModel safePalette = buildDefaultPalette();
-    static SoftValueHashMap<String, PaletteCacheEntry> paletteCache =
-            new SoftValueHashMap<String, PaletteCacheEntry>();
+    static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<>();
     static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache =
-            new SoftValueHashMap<IndexColorModelKey, InverseColorMapOp>();
+            new SoftValueHashMap<>();
 
     /** TODO: we should probably provide the data directory as a constructor parameter here */
     private PaletteManager() {}
@@ -62,7 +60,7 @@ public class PaletteManager {
         }
 
         // check for cached one, making sure it's not stale
-        final PaletteCacheEntry entry = (PaletteCacheEntry) paletteCache.get(name);
+        final PaletteCacheEntry entry = paletteCache.get(name);
         if (entry != null) {
             if (entry.isStale()) {
                 paletteCache.remove(name);
@@ -84,12 +82,12 @@ public class PaletteManager {
 
         Resource palettes = loader.get("palettes");
 
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         names.addAll(
                 Arrays.asList(
                         new String[] {name + ".gif", name + ".png", name + ".pal", name + ".tif"}));
 
-        List<Resource> paletteFiles = new ArrayList<Resource>();
+        List<Resource> paletteFiles = new ArrayList<>();
         for (Resource item : palettes.list()) {
             if (names.contains(item.name().toLowerCase())) {
                 paletteFiles.add(item);
@@ -113,9 +111,7 @@ public class PaletteManager {
                     if (it.hasNext()) {
                         final ImageReader reader = (ImageReader) it.next();
                         reader.setInput(iis);
-                        final ColorModel cm =
-                                ((ImageTypeSpecifier) reader.getImageTypes(0).next())
-                                        .getColorModel();
+                        final ColorModel cm = reader.getImageTypes(0).next().getColorModel();
                         if (cm instanceof IndexColorModel) {
                             final IndexColorModel icm = (IndexColorModel) cm;
                             paletteCache.put(name, new PaletteCacheEntry(resource, icm));
@@ -136,7 +132,7 @@ public class PaletteManager {
     public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
         // check for cached one, making sure it's not stale
         IndexColorModelKey key = new IndexColorModelKey(icm);
-        InverseColorMapOp op = (InverseColorMapOp) opCache.get(key);
+        InverseColorMapOp op = opCache.get(key);
         if (op != null) {
             return op;
         } else {

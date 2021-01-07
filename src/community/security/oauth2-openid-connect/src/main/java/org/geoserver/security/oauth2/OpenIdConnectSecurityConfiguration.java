@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
@@ -21,6 +22,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @Configuration(value = "openIdConnectSecurityConfiguration")
 @EnableOAuth2Client
 class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
+
+    private OpenIdConnectFilterConfig config;
 
     @Bean(name = "openIdConnectResource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
@@ -41,5 +44,21 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
         messageConverters.add(new MappingJackson2HttpMessageConverter());
 
         return template;
+    }
+
+    public void setConfiguration(OpenIdConnectFilterConfig config) {
+        this.config = config;
+    }
+
+    @Override
+    protected OAuth2RestTemplate getOAuth2RestTemplate() {
+        if (config != null) {
+            String jwkUri = config.getJwkURI();
+            return new ValidatingOAuth2RestTemplate(
+                    geoServerOAuth2Resource(),
+                    new DefaultOAuth2ClientContext(getAccessTokenRequest()),
+                    jwkUri);
+        }
+        return super.getOAuth2RestTemplate();
     }
 }

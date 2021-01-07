@@ -20,8 +20,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         JPEGFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("jpeg", "jpg")),
-                    new HashSet<String>(Arrays.asList("jpw", "wld", "prj")));
+                    new HashSet<>(Arrays.asList("jpeg", "jpg")),
+                    new HashSet<>(Arrays.asList("jpw", "wld", "prj")));
         }
     };
 
@@ -29,8 +29,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         TIFFFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("tif", "tiff")),
-                    new HashSet<String>(
+                    new HashSet<>(Arrays.asList("tif", "tiff")),
+                    new HashSet<>(
                             Arrays.asList(
                                     "tfw", "wld", "aux", "rrd", "xml", "tif.aux.xml", "prj")));
         }
@@ -40,8 +40,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         PNGFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("png")),
-                    new HashSet<String>(Arrays.asList("pnw", "wld", "aux.xml", "xml", "prj")));
+                    new HashSet<>(Arrays.asList("png")),
+                    new HashSet<>(Arrays.asList("pnw", "wld", "aux.xml", "xml", "prj")));
         }
     };
 
@@ -49,8 +49,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         NetCDFFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("nc")),
-                    new HashSet<String>(Arrays.asList("ncx", "aux.xml", "xml", "prj")));
+                    new HashSet<>(Arrays.asList("nc")),
+                    new HashSet<>(Arrays.asList("ncx", "aux.xml", "xml", "prj")));
         }
     };
 
@@ -58,8 +58,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         GribFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("grib", "grb", "grib2", "grb2")),
-                    new HashSet<String>(
+                    new HashSet<>(Arrays.asList("grib", "grb", "grib2", "grb2")),
+                    new HashSet<>(
                             Arrays.asList(
                                     "grb2.ncx3",
                                     "gbx9",
@@ -75,8 +75,8 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
 
         ShapeFileExtensionsProvider() {
             super(
-                    new HashSet<String>(Arrays.asList("shp")),
-                    new HashSet<String>(
+                    new HashSet<>(Arrays.asList("shp")),
+                    new HashSet<>(
                             Arrays.asList(
                                     "shx",
                                     "dbf",
@@ -101,7 +101,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
     private static final GribFileExtensionsProvider GRIB_PROVIDER =
             new GribFileExtensionsProvider();
 
-    static Map<String, SupplementalFileExtensionsProvider> PROVIDERS = new HashMap();
+    static Map<String, SupplementalFileExtensionsProvider> PROVIDERS = new HashMap<>();
 
     {
         // Providers being setup on the available tests

@@ -38,7 +38,7 @@ public class UserGroupServiceChoice extends DropDownChoice<String> {
         UserGroupServiceNamesModel() {
             try {
                 this.serviceNames =
-                        new ArrayList(
+                        new ArrayList<>(
                                 GeoServerApplication.get()
                                         .getSecurityManager()
                                         .listUserGroupServices());

@@ -288,7 +288,7 @@ public class MonitorFilter implements GeoServerFilter {
         public void run() {
             try {
                 SecurityContextHolder.getContext().setAuthentication(propagatedAuth);
-                List<RequestPostProcessor> pp = new ArrayList();
+                List<RequestPostProcessor> pp = new ArrayList<>();
                 pp.add(new ReverseDNSPostProcessor());
                 pp.addAll(GeoServerExtensions.extensions(RequestPostProcessor.class));
                 Set<String> ignoreList = this.monitor.getConfig().getIgnorePostProcessors();

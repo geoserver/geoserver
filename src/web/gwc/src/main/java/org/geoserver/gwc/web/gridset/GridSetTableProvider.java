@@ -19,7 +19,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
 
     private static final long serialVersionUID = 399110981279814481L;
 
-    static final Property<GridSet> NAME = new BeanProperty<GridSet>("name", "name");
+    static final Property<GridSet> NAME = new BeanProperty<>("name", "name");
 
     static final Property<GridSet> EPSG_CODE =
             new AbstractProperty<GridSet>("epsg_code") {

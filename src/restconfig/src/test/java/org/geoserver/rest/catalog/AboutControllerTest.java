@@ -132,7 +132,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         LOGGER.info("JSON model: " + json.toString(2));
 
         // make assertions
-        assertTrue(json != null);
+        assertNotNull(json);
         Object obj = json.get("about");
 
         assertTrue(obj instanceof JSONObject);

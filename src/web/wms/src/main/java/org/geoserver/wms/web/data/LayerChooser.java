@@ -70,7 +70,7 @@ public class LayerChooser extends Panel {
 
         @Override
         public List<LayerInfo> getItems() {
-            List<LayerInfo> items = new ArrayList<LayerInfo>();
+            List<LayerInfo> items = new ArrayList<>();
             for (LayerInfo l : parent.getCatalog().getLayers()) {
                 if (l.getResource() instanceof FeatureTypeInfo) {
                     items.add(l);
@@ -98,7 +98,7 @@ public class LayerChooser extends Panel {
                     @Override
                     public Component getComponentForProperty(
                             String id, IModel<LayerInfo> value, Property<LayerInfo> property) {
-                        final LayerInfo layer = (LayerInfo) value.getObject();
+                        final LayerInfo layer = value.getObject();
                         final String text = property.getPropertyValue(layer).toString();
 
                         if (property == LayerProvider.name) {
@@ -109,10 +109,7 @@ public class LayerChooser extends Panel {
                                     add(
                                             new GeoServerAjaxFormLink("link", parent.styleForm) {
                                                 {
-                                                    add(
-                                                            new Label(
-                                                                    "layer.name",
-                                                                    new Model<String>(text)));
+                                                    add(new Label("layer.name", new Model<>(text)));
                                                 }
 
                                                 private static final long serialVersionUID =

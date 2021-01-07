@@ -30,7 +30,7 @@ class ExecuteRequest implements Serializable {
 
     public ExecuteRequest() {
         this.processName = null;
-        this.inputs = new ArrayList<InputParameterValues>();
-        this.outputs = new ArrayList<OutputParameter>();
+        this.inputs = new ArrayList<>();
+        this.outputs = new ArrayList<>();
     }
 }

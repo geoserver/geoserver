@@ -82,8 +82,9 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         } else {
             if (listener == null) {
                 // add event listener which persists changes
-                final List<XStreamServiceLoader> loaders =
-                        GeoServerExtensions.extensions(XStreamServiceLoader.class);
+                @SuppressWarnings("unchecked")
+                final List<XStreamServiceLoader<ServiceInfo>> loaders =
+                        (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
                 listener = new ServicePersister(loaders, geoserver);
                 geoserver.addListener(listener);
             }

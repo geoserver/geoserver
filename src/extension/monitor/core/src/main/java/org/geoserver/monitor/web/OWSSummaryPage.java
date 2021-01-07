@@ -17,7 +17,7 @@ public class OWSSummaryPage extends MonitorBasePage {
     private static final long serialVersionUID = -8012730662519508306L;
 
     public OWSSummaryPage() {
-        List<AbstractTab> tabs = new ArrayList<AbstractTab>();
+        List<AbstractTab> tabs = new ArrayList<>();
         tabs.add(
                 new AbstractTab(new ResourceModel("overview")) {
                     private static final long serialVersionUID = 1037158550051655148L;
@@ -54,6 +54,6 @@ public class OWSSummaryPage extends MonitorBasePage {
                         return new OWSDetailsPanel(panelId, getMonitor(), "WCS");
                     }
                 });
-        add(new TabbedPanel<AbstractTab>("charts", tabs));
+        add(new TabbedPanel<>("charts", tabs));
     }
 }

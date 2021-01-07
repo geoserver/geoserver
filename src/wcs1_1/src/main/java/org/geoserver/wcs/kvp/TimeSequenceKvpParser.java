@@ -23,6 +23,7 @@ public class TimeSequenceKvpParser extends KvpParser {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(String value) throws Exception {
         TimeSequenceType timeSequence = Wcs111Factory.eINSTANCE.createTimeSequenceType();
 

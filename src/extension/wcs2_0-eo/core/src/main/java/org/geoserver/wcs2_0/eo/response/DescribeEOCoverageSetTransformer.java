@@ -59,7 +59,6 @@ import org.geotools.xml.transform.Translator;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -204,16 +203,13 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
 
         private List<CoverageGranules> applyMaxCoverages(
                 List<CoverageGranules> coverageGranules, Integer maxCoverages) {
-            List<CoverageGranules> result =
-                    new ArrayList<DescribeEOCoverageSetTransformer.CoverageGranules>();
+            List<CoverageGranules> result = new ArrayList<>();
             for (CoverageGranules cg : coverageGranules) {
                 int size = cg.granules.size();
                 if (size > maxCoverages) {
                     cg.granules =
                             DataUtilities.simple(
-                                    new MaxFeaturesFeatureCollection<
-                                            SimpleFeatureType, SimpleFeature>(
-                                            cg.granules, maxCoverages));
+                                    new MaxFeaturesFeatureCollection<>(cg.granules, maxCoverages));
                 }
                 result.add(cg);
                 maxCoverages -= size;
@@ -298,18 +294,13 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
         private void handleCoverageDescriptions(List<CoverageGranules> coverageGranules) {
             start("wcs:CoverageDescriptions");
             for (CoverageGranules cg : coverageGranules) {
-                SimpleFeatureIterator features = cg.granules.features();
-                try {
+                try (SimpleFeatureIterator features = cg.granules.features()) {
                     while (features.hasNext()) {
                         SimpleFeature f = features.next();
                         String granuleId = codec.getGranuleId(cg.coverage, f.getID());
                         dcTranslator.handleCoverageDescription(
                                 granuleId,
                                 new GranuleCoverageInfo(cg.coverage, f, cg.dimensionDescriptors));
-                    }
-                } finally {
-                    if (features != null) {
-                        features.close();
                     }
                 }
             }
@@ -326,7 +317,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
         }
 
         private List<CoverageInfo> getCoverages(DescribeEOCoverageSetType dcs) {
-            List<CoverageInfo> results = new ArrayList<CoverageInfo>();
+            List<CoverageInfo> results = new ArrayList<>();
             for (String id : dcs.getEoId()) {
                 CoverageInfo ci = codec.getDatasetCoverage(id);
                 if (ci == null) {
@@ -341,7 +332,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
 
         private List<CoverageGranules> getCoverageGranules(
                 DescribeEOCoverageSetType dcs, List<CoverageInfo> coverages) {
-            List<CoverageGranules> results = new ArrayList<CoverageGranules>();
+            List<CoverageGranules> results = new ArrayList<>();
             for (CoverageInfo ci : coverages) {
                 GranuleSource source = null;
                 try {
@@ -384,14 +375,13 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                 CoverageInfo ci, StructuredGridCoverage2DReader reader, String name)
                 throws IOException {
             // map the source descriptors for easy retrieval
-            Map<String, DimensionDescriptor> sourceDescriptors =
-                    new HashMap<String, DimensionDescriptor>();
+            Map<String, DimensionDescriptor> sourceDescriptors = new HashMap<>();
             for (DimensionDescriptor dimensionDescriptor : reader.getDimensionDescriptors(name)) {
                 sourceDescriptors.put(
                         dimensionDescriptor.getName().toUpperCase(), dimensionDescriptor);
             }
             // select only those that have been activated vai the GeoServer GUI
-            List<DimensionDescriptor> enabledDescriptors = new ArrayList<DimensionDescriptor>();
+            List<DimensionDescriptor> enabledDescriptors = new ArrayList<>();
             for (Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
                 if (entry.getValue() instanceof DimensionInfo) {
                     DimensionInfo di = (DimensionInfo) entry.getValue();
@@ -629,7 +619,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                             "dimensionTrim");
                 }
 
-                return new NumberRange<Double>(Double.class, low, high);
+                return new NumberRange<>(Double.class, low, high);
             } catch (NumberFormatException e) {
                 throw new WCS20Exception(
                         "Invalid numeric value",

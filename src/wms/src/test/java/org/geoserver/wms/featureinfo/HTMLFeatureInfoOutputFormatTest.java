@@ -103,11 +103,11 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         // test request with some parameters to use in templates
         Request request = new Request();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         parameters.put("LAYER", "testLayer");
         parameters.put("NUMBER1", 10);
         parameters.put("NUMBER2", 100);
-        Map<String, String> env = new HashMap<String, String>();
+        Map<String, String> env = new HashMap<>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
@@ -117,11 +117,10 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
 
-        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+        initFeatureType(featureType);
 
         // fake layer list
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
@@ -134,6 +133,12 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         queryLayers.add(mapLayerInfo);
         getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
+    }
+
+    @SuppressWarnings("unchecked") // EMF model without generics
+    private void initFeatureType(FeatureTypeInfo featureType) throws IOException {
+        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
     }
 
     /** Test request values are inserted in processed template */
@@ -262,7 +267,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         assertEquals("text/html", response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
     }
 
     @SuppressWarnings("unchecked")

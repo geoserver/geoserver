@@ -34,7 +34,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
 
     public MemoryFeatureCollection(FeatureType memberType, List<Feature> features) {
         super(memberType);
-        this.features = new ArrayList<Feature>();
+        this.features = new ArrayList<>();
         if (features != null) {
             for (Feature f : features) {
                 if (!f.getType().equals(memberType)) {
@@ -50,7 +50,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
 
     @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        List<Feature> results = new ArrayList<Feature>();
+        List<Feature> results = new ArrayList<>();
         for (Feature f : features) {
             if (filter.evaluate(f)) {
                 results.add(f);
@@ -62,7 +62,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
 
     @Override
     public FeatureCollection<FeatureType, Feature> sort(SortBy order) {
-        List<Feature> results = new ArrayList<Feature>(features);
+        List<Feature> results = new ArrayList<>(features);
         Comparator<Feature> comparator = ComplexComparatorFactory.buildComparator(order);
         Collections.sort(results, comparator);
 
@@ -164,7 +164,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
     }
 
     public boolean addAll(FeatureCollection<FeatureType, Feature> c) {
-        Feature[] array = (Feature[]) c.toArray(new Feature[c.size()]);
+        Feature[] array = c.toArray(new Feature[c.size()]);
         return features.addAll(Arrays.asList(array));
     }
 }

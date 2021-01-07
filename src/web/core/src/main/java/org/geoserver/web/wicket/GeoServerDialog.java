@@ -129,10 +129,11 @@ public class GeoServerDialog extends Panel {
      * @param messages A list of models, displayed each as a separate paragraphs, containing the
      *     information dialog content.
      */
-    public void showInfo(
+    @SafeVarargs
+    public final void showInfo(
             AjaxRequestTarget target,
             final IModel<String> heading,
-            @SuppressWarnings("unchecked") final IModel<String>... messages) {
+            final IModel<String>... messages) {
         window.setPageCreator(
                 new ModalWindow.PageCreator() {
                     public Page createPage() {
@@ -180,7 +181,7 @@ public class GeoServerDialog extends Panel {
                         delegate.onError(target, form);
                     }
                 };
-        link.setDefaultModel(new Model<Component>(contents));
+        link.setDefaultModel(new Model<>(contents));
         return link;
     }
 

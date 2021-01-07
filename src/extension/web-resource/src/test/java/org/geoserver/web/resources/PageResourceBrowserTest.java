@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -199,7 +200,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
     protected boolean assertContainsPaths(Collection<TreeNode<Resource>> nodes, String... paths) {
         assertEquals(paths.length, nodes.size());
-        Set<String> pathset = new HashSet<String>(Arrays.asList(paths));
+        Set<String> pathset = new HashSet<>(Arrays.asList(paths));
         for (TreeNode<Resource> node : nodes) {
             assertTrue(pathset.remove(node.getObject().path()));
         }
@@ -288,7 +289,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         // rename resource
         tester.clickLink("download");
 
-        assertTrue(Arrays.equals(DATA.getBytes(), tester.getLastResponse().getBinaryContent()));
+        assertArrayEquals(DATA.getBytes(), tester.getLastResponse().getBinaryContent());
     }
 
     @Test

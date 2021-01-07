@@ -33,7 +33,7 @@ public class MBStyleHandler extends StyleHandler {
 
     public static final String MIME_TYPE = "application/vnd.geoserver.mbstyle+json";
 
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static final Map<StyleType, String> TEMPLATES = new HashMap<>();
 
     static {
         try {

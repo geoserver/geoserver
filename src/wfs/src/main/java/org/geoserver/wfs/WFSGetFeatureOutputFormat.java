@@ -151,7 +151,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * element names to be returned in the WFS 1.0 capabilities
      */
     protected List<String> getAllCapabilitiesElementNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String name : getOutputFormats()) {
             if (XML_ELEMENT.matcher(name).matches()) {
                 result.add(name);
@@ -222,11 +222,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
 
     protected int getNumDecimals(List featureCollections, GeoServer geoServer, Catalog catalog) {
         int numDecimals = -1;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Integer ftiDecimals =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getNumDecimals());
 
             // track num decimals, in cases where the query has multiple types we choose the max
@@ -249,11 +249,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected boolean getPadWithZeros(
             List featureCollections, GeoServer geoServer, Catalog catalog) {
         boolean padWithZeros = false;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean pad =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getPadWithZeros());
             if (Boolean.TRUE.equals(pad)) {
                 padWithZeros = true;
@@ -265,11 +265,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected boolean getForcedDecimal(
             List featureCollections, GeoServer geoServer, Catalog catalog) {
         boolean forcedDecimal = false;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean forced =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getForcedDecimal());
             if (Boolean.TRUE.equals(forced)) {
                 forcedDecimal = true;
@@ -288,11 +288,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      */
     protected boolean encodeMeasures(List featureCollections, Catalog catalog) {
         boolean encodeMeasures = true;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean measures =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getEncodeMeasures());
             if (Boolean.FALSE.equals(measures)) {
                 // no measures should be encoded

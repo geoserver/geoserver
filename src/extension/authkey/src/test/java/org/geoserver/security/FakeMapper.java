@@ -38,6 +38,6 @@ public class FakeMapper extends AbstractAuthenticationKeyMapper {
 
     @Override
     public Set<String> getAvailableParameters() {
-        return new HashSet(Arrays.asList("param1", "param2"));
+        return new HashSet<>(Arrays.asList("param1", "param2"));
     }
 }

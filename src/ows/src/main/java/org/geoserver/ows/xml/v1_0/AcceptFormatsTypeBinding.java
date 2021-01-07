@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.ows10.AcceptFormatsType;
 import net.opengis.ows10.Ows10Factory;
@@ -60,7 +61,9 @@ public class AcceptFormatsTypeBinding extends AbstractComplexBinding {
      */
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         AcceptFormatsType acceptFormats = owsfactory.createAcceptFormatsType();
-        acceptFormats.getOutputFormat().addAll(node.getChildValues("OutputFormat"));
+        @SuppressWarnings("unchecked")
+        List<String> outputFormats = node.getChildValues("OutputFormat");
+        acceptFormats.getOutputFormat().addAll(outputFormats);
 
         return acceptFormats;
     }

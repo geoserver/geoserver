@@ -57,7 +57,7 @@ public class SRSListTextArea extends TextArea<List<String>> {
 
         public List<String> convertToObject(String value, Locale locale) {
             if (value == null || value.trim().equals("")) return Collections.emptyList();
-            return new ArrayList<String>(Arrays.asList(COMMA_SEPARATED.split(value)));
+            return new ArrayList<>(Arrays.asList(COMMA_SEPARATED.split(value)));
         }
     }
 
@@ -79,7 +79,7 @@ public class SRSListTextArea extends TextArea<List<String>> {
                                 }
                             });
 
-            if (invalid.size() > 0) {
+            if (!invalid.isEmpty()) {
                 IValidationError err =
                         new ValidationError("SRSListTextArea.unknownEPSGCodes")
                                 .addKey("SRSListTextArea.unknownEPSGCodes")

@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -83,7 +82,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
 
     /** Creates the producer with a reference to the GetFeature operation using it. */
     public GML2OutputFormat(GeoServer geoServer) {
-        super(geoServer, new HashSet(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
+        super(geoServer, new HashSet<>(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
 
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
@@ -116,7 +115,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         boolean forcedDecimal = false;
         for (int i = 0; i < results.getFeature().size(); i++) {
             // FeatureResults features = (FeatureResults) f.next();
-            FeatureCollection features = (FeatureCollection) results.getFeature().get(i);
+            FeatureCollection features = results.getFeature().get(i);
             SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();
 
             ResourceInfo meta =
@@ -206,8 +205,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
             transformer.addSchemaLocation(WFS.NAMESPACE, wfsSchemaloc);
         }
 
-        for (Iterator it = ftNamespaces.keySet().iterator(); it.hasNext(); ) {
-            String uri = (String) it.next();
+        for (Object o : ftNamespaces.keySet()) {
+            String uri = (String) o;
             transformer.addSchemaLocation(uri, (String) ftNamespaces.get(uri));
         }
 
@@ -236,10 +235,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         // including the lockID
         //
         // execute should also fail if all of the locks could not be aquired
-        List resultsList = results.getFeature();
+        List<FeatureCollection> resultsList = results.getFeature();
         FeatureCollection[] featureResults =
-                (FeatureCollection[])
-                        resultsList.toArray(new FeatureCollection[resultsList.size()]);
+                resultsList.toArray(new FeatureCollection[resultsList.size()]);
 
         try {
             transformer.transform(featureResults, output);

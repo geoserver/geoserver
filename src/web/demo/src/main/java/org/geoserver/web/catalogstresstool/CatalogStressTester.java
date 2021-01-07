@@ -133,11 +133,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     protected List<Tuple> load() {
                         Catalog catalog = GeoServerApplication.get().getCatalog();
                         Filter filter = Predicates.acceptAll();
-                        CloseableIterator<WorkspaceInfo> list =
-                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null);
-                        List<Tuple> workspaces;
-                        try {
-                            workspaces =
+
+                        try (CloseableIterator<WorkspaceInfo> list =
+                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null)) {
+                            List<Tuple> workspaces =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     list,
@@ -148,16 +147,14 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            list.close();
+                            Collections.sort(workspaces);
+                            return workspaces;
                         }
-                        Collections.sort(workspaces);
-                        return workspaces;
                     }
                 };
         workspace =
-                new DropDownChoice<Tuple>(
-                        "workspace", new Model<Tuple>(), wsModel, new TupleChoiceRenderer());
+                new DropDownChoice<>(
+                        "workspace", new Model<>(), wsModel, new TupleChoiceRenderer());
         workspace.setNullValid(true);
 
         workspace.setOutputMarkupId(true);
@@ -187,12 +184,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                         }
                         Filter filter = Predicates.equal("workspace.id", ws.id);
                         int limit = 100;
-                        CloseableIterator<StoreInfo> iter =
-                                catalog.list(StoreInfo.class, filter, null, limit, null);
 
-                        List<Tuple> stores;
-                        try {
-                            stores =
+                        try (CloseableIterator<StoreInfo> iter =
+                                catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                            List<Tuple> stores =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
@@ -204,17 +199,15 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            iter.close();
+                            Collections.sort(stores);
+                            return stores;
                         }
-                        Collections.sort(stores);
-                        return stores;
                     }
                 };
 
         store =
-                new DropDownChoice<Tuple>(
-                        "store", new Model<Tuple>(), storesModel, new TupleChoiceRenderer());
+                new DropDownChoice<>(
+                        "store", new Model<>(), storesModel, new TupleChoiceRenderer());
         store.setNullValid(true);
 
         store.setOutputMarkupId(true);
@@ -242,12 +235,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                         }
                         Integer limit = 100;
                         Filter filter = Predicates.equal("store.id", storeInfo.id);
-                        CloseableIterator<ResourceInfo> iter =
-                                catalog.list(ResourceInfo.class, filter, null, limit, null);
 
-                        List<Tuple> resources;
-                        try {
-                            resources =
+                        try (CloseableIterator<ResourceInfo> iter =
+                                catalog.list(ResourceInfo.class, filter, null, limit, null)) {
+                            List<Tuple> resources =
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
@@ -258,18 +249,16 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                                                     input.getId(), input.getName());
                                                         }
                                                     }));
-                        } finally {
-                            iter.close();
+                            Collections.sort(resources);
+                            return resources;
                         }
-                        Collections.sort(resources);
-                        return resources;
                     }
                 };
 
         resourceAndLayer =
-                new DropDownChoice<Tuple>(
+                new DropDownChoice<>(
                         "resourceAndLayer",
-                        new Model<Tuple>(),
+                        new Model<>(),
                         resourcesModel,
                         new TupleChoiceRenderer());
         resourceAndLayer.setNullValid(true);
@@ -277,20 +266,19 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         resourceAndLayer.setOutputMarkupId(true);
         form.add(resourceAndLayer);
 
-        recursive = new CheckBox("recursive", new Model<Boolean>(Boolean.FALSE));
+        recursive = new CheckBox("recursive", new Model<>(Boolean.FALSE));
         form.add(recursive);
 
-        duplicateCount =
-                new TextField<Integer>("duplicateCount", new Model<Integer>(100), Integer.class);
+        duplicateCount = new TextField<>("duplicateCount", new Model<>(100), Integer.class);
         duplicateCount.setRequired(true);
-        duplicateCount.add(new RangeValidator<Integer>(1, 100000));
+        duplicateCount.add(new RangeValidator<>(1, 100000));
         form.add(duplicateCount);
 
-        sufix = new TextField<String>("sufix", new Model<String>("-copy-"));
+        sufix = new TextField<>("sufix", new Model<>("-copy-"));
         sufix.setRequired(true);
         form.add(sufix);
 
-        progress = new Label("progress", new Model<String>("0/0"));
+        progress = new Label("progress", new Model<>("0/0"));
         progress.setOutputMarkupId(true);
         form.add(progress);
 
@@ -474,7 +462,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                 catalog,
                                 store,
                                 (Class<CatalogInfo>) interfaceOf(store),
-                                (LayerInfo) null,
+                                null,
                                 nameSuffix,
                                 sw,
                                 true,

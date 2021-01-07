@@ -29,7 +29,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
     public <C> IConverter<C> getConverter(Class<C> type) {
         Set<ConverterFactory> factories = Converters.getConverterFactories(String.class, type);
         if (!factories.isEmpty()) {
-            return new GeoToolsConverter<C>(factories, type);
+            return new GeoToolsConverter<>(factories, type);
         }
 
         return null;
@@ -69,7 +69,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
 
         public String convertToString(Object value, Locale locale) {
             Set<ConverterFactory> rconverters =
-                    (Set<ConverterFactory>) Converters.getConverterFactories(target, String.class);
+                    Converters.getConverterFactories(target, String.class);
             for (ConverterFactory cf : rconverters) {
                 try {
                     Converter converter = cf.createConverter(value.getClass(), String.class, null);

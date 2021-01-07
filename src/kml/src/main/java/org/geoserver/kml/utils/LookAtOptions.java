@@ -81,7 +81,7 @@ public class LookAtOptions {
 
     @SuppressWarnings("unchecked")
     public LookAtOptions() {
-        this(Collections.EMPTY_MAP);
+        this(Collections.emptyMap());
     }
 
     /**

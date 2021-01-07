@@ -107,7 +107,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeUnknownCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //
@@ -198,7 +198,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeDemCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //

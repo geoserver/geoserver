@@ -69,7 +69,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
      */
     protected void loadRules() {
         WPSInfo wps = this.gs.getService(WPSInfo.class);
-        TreeSet<WpsAccessRule> result = new TreeSet<WpsAccessRule>();
+        TreeSet<WpsAccessRule> result = new TreeSet<>();
 
         if (wps != null) {
             catalogMode = CatalogMode.HIDE;
@@ -77,7 +77,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
                 catalogMode = wps.getCatalogMode();
             }
             for (ProcessGroupInfo group : wps.getProcessGroups()) {
-                Set<String> prefixes = new HashSet<String>();
+                Set<String> prefixes = new HashSet<>();
                 ProcessFactory pf =
                         GeoServerProcessors.getProcessFactory(group.getFactoryClass(), false);
                 if (pf != null) {
@@ -89,9 +89,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
 
                 for (String prefix : prefixes) {
                     if (group.getRoles() != null && !group.getRoles().isEmpty()) {
-                        result.add(
-                                new WpsAccessRule(
-                                        prefix, ANY, new HashSet<String>(group.getRoles())));
+                        result.add(new WpsAccessRule(prefix, ANY, new HashSet<>(group.getRoles())));
                     }
                 }
                 for (ProcessInfo process : group.getFilteredProcesses()) {
@@ -100,13 +98,13 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
                                 new WpsAccessRule(
                                         process.getName().getNamespaceURI(),
                                         process.getName().getLocalPart(),
-                                        new HashSet<String>(process.getRoles())));
+                                        new HashSet<>(process.getRoles())));
                     }
                 }
             }
         }
         // make sure the single basic rules if the set is empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new WpsAccessRule(WpsAccessRule.EXECUTE_ALL));
         }
 

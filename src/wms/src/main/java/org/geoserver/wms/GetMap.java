@@ -230,11 +230,11 @@ public class GetMap {
         int maxAllowedFrames = wms.getMaxAllowedFrames();
         if ((numTimes > 1 || singleTimeRange) && isMultivaluedSupported) {
             WebMap map = null;
-            List<RenderedImage> images = new ArrayList<RenderedImage>();
+            List<RenderedImage> images = new ArrayList<>();
             if (singleTimeRange) {
                 List<Object> expandTimeList =
                         expandTimeList((DateRange) times.get(0), request, maxAllowedFrames);
-                if (expandTimeList.size() == 0) {
+                if (expandTimeList.isEmpty()) {
                     return executeInternal(
                             mapContent, request, delegate, Arrays.asList(times.get(0)), elevations);
                 } else {
@@ -261,12 +261,12 @@ public class GetMap {
             return new RenderedImageMap(mapContent, imageList, map.getMimeType());
         } else if ((numElevations > 1 || singleElevationRange) && isMultivaluedSupported) {
             WebMap map = null;
-            List<RenderedImage> images = new ArrayList<RenderedImage>();
+            List<RenderedImage> images = new ArrayList<>();
             if (singleElevationRange) {
                 List<Object> expandElevationList =
                         expandElevationList(
                                 (NumberRange) elevations.get(0), request, maxAllowedFrames);
-                if (expandElevationList.size() == 0) {
+                if (expandElevationList.isEmpty()) {
                     map =
                             executeInternal(
                                     mapContent,
@@ -876,11 +876,11 @@ public class GetMap {
                     "MissingOrInvalidParameter");
         }
 
-        if (request.getLayers().size() == 0) {
+        if (request.getLayers().isEmpty()) {
             throw new ServiceException("No layers have been requested", "LayerNotDefined");
         }
 
-        if (request.getStyles().size() == 0) {
+        if (request.getStyles().isEmpty()) {
             throw new ServiceException("No styles have been requested", "StyleNotDefined");
         }
 
@@ -920,8 +920,8 @@ public class GetMap {
     private Filter[] buildLayersFilters(List<Filter> requestFilters, List<MapLayerInfo> layers) {
         final int nLayers = layers.size();
 
-        if (requestFilters == null || requestFilters.size() == 0) {
-            requestFilters = Collections.nCopies(layers.size(), (Filter) Filter.INCLUDE);
+        if (requestFilters == null || requestFilters.isEmpty()) {
+            requestFilters = Collections.nCopies(layers.size(), Filter.INCLUDE);
         } else if (requestFilters.size() != nLayers) {
             throw new IllegalArgumentException(
                     "requested filters and number of layers do not match");
@@ -949,9 +949,8 @@ public class GetMap {
 
                 FeatureTypeConstraint[] featureTypeConstraints = layer.getLayerFeatureConstraints();
                 if (featureTypeConstraints != null) {
-                    List<Filter> filters = new ArrayList<Filter>();
-                    for (int j = 0; j < featureTypeConstraints.length; j++) {
-                        FeatureTypeConstraint featureTypeConstraint = featureTypeConstraints[j];
+                    List<Filter> filters = new ArrayList<>();
+                    for (FeatureTypeConstraint featureTypeConstraint : featureTypeConstraints) {
                         filters.add(featureTypeConstraint.getFilter());
                     }
                     combined = ff.and(combined, ff.and(filters));

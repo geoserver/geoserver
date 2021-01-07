@@ -26,6 +26,7 @@ public class RestEnvVariableCallback extends DispatcherCallbackAdapter {
      */
     public static void setOptions(String unparsedOptions) {
         try {
+            @SuppressWarnings("unchecked")
             Map<String, Object> localEnvVars = (Map<String, Object>) PARSER.parse(unparsedOptions);
             EnvFunction.setLocalValues(localEnvVars);
         } catch (Exception e) {

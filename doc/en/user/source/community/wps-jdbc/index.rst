@@ -44,7 +44,7 @@ Tipically the WPS JDBC plugin is useful when setting up a GeoServer cluster.
 
 The plugin allows to share the execution status among the nodes of the cluster.
 
-Nevertheless, this won't be sufficient. You will need to share the Execution folder too, in order to allow the differen instances to correctly retrieve the executions results.
+Nevertheless, this won't be sufficient. You will need to share the Execution folder too, in order to allow the different instances to correctly retrieve the executions results.
 
 #. Create a shared folder that all the nodes can reach somehow, e.g. by using `nfs`
 

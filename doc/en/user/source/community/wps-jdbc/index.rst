@@ -10,7 +10,7 @@ WPS JDBC
 Installing the WPS JDBC extension
 ---------------------------------
 
-#. Download the JWPS JDBC extension from the `GeoServer download page 
+#. Download the WPS JDBC extension from the `GeoServer download page 
    <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
@@ -40,9 +40,9 @@ Configuring the WPS JDBC properties
 Share the WPS Execution Dir among the cluster nodes
 ---------------------------------------------------
 
-Tipically the WPS JDBC plugin is useful when setting up a GeoServer cluster.
+Typically the WPS JDBC plugin is useful when setting up a GeoServer cluster.
 
-The plugin allows to share the execution status among the nodes of the cluster.
+The plugin allows sharing of the execution status among the nodes of the cluster.
 
 Nevertheless, this won't be sufficient. You will need to share the Execution folder too, in order to allow the different instances to correctly retrieve the executions results.
 

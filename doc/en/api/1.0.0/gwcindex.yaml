@@ -16,6 +16,8 @@ paths:
   /rest:
     get:
       operationId: indexGet
+      tags:
+       - "gwcindex"
       summary: Returns the HTML user interface
       description: Returns the HTML for the front facing ui homepage for GeoWebCache.
       produces:

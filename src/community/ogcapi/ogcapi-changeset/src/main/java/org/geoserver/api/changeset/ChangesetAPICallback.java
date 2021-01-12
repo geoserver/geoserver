@@ -54,7 +54,7 @@ public class ChangesetAPICallback implements OpenAPICallback {
             Parameter fTileParameter = fragment.getComponents().getParameters().get("f-tile");
             api.getComponents().getParameters().put("f-tile", fTileParameter);
             Parameter fParameter = fragment.getComponents().getParameters().get("f-json-zip");
-            api.getComponents().getParameters().put("f-json-zip", fTileParameter);
+            api.getComponents().getParameters().put("f-json-zip", fParameter);
         }
     }
 }

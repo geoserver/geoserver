@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.iterators.SingletonIterator;
@@ -42,11 +41,9 @@ import org.geotools.data.sort.SortedFeatureReader;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.data.store.EmptyIterator;
-import org.geotools.dggs.ChildrenFunction;
 import org.geotools.dggs.DGGSFilterVisitor;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.DGGSSetFunction;
-import org.geotools.dggs.NeighborFunction;
 import org.geotools.dggs.Zone;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -69,7 +66,6 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
@@ -217,22 +213,8 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
         return SimpleFeatureTypeBuilder.retype(getSchema(), new ArrayList<>(attributes));
     }
 
-    /** Extends the propertyNames array by eventual attributes needed by the Query filter */
-    private String[] extendAttributesByFilter(Query query, String[] propertyNames) {
-        FilterAttributeExtractor attributeExtractor = new FilterAttributeExtractor();
-        query.getFilter().accept(attributeExtractor, null);
-        Set<String> filterAttributes = attributeExtractor.getAttributeNameSet();
-        if (Arrays.stream(propertyNames).anyMatch(a -> !filterAttributes.contains(a))) {
-            LinkedHashSet<String> extendedAttributes =
-                    new LinkedHashSet<>(Arrays.asList(propertyNames));
-            extendedAttributes.addAll(filterAttributes);
-            propertyNames = extendedAttributes.toArray(new String[extendedAttributes.size()]);
-        }
-        return propertyNames;
-    }
-
     /**
-     * Injects the DGGS instance into the DGGS Sspecific functions
+     * Injects the DGGS instance into the DGGS specific functions
      *
      * @param originalQuery
      * @return
@@ -267,84 +249,6 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
 
         // fallback, go for geographical lookup
         return getIteratorFromEnvelope(query);
-    }
-
-    private long getOptimizedCount(Query query) {
-        Filter filter = query.getFilter();
-        if (filter instanceof PropertyIsEqualTo) {
-            PropertyIsEqualTo pe = (PropertyIsEqualTo) filter;
-            Expression ex1 = pe.getExpression1();
-            Expression ex2 = pe.getExpression2();
-            if (ex1 instanceof DGGSSetFunction && ((DGGSSetFunction) ex1).isStable()) {
-                return ((DGGSSetFunction) ex1).countMatched();
-            } // should we handle backwards comparison too?
-        }
-
-        // no optimization possible
-        return -1l;
-    }
-
-    /**
-     * Returs a zone iterator providing the neighbors
-     *
-     * @param function
-     * @return
-     */
-    private Iterator<Zone> getIteratorFromNeighbor(NeighborFunction function) {
-        List<Expression> parameters = function.getParameters();
-        String referenceZoneId = parameters.get(1).evaluate(null, String.class);
-        Integer distance = parameters.get(2).evaluate(null, Integer.class);
-        if (referenceZoneId == null || distance == null) return new EmptyIterator();
-
-        // the function is lenient, make this implementation too
-        try {
-            store.dggs.getZone(referenceZoneId);
-            return store.dggs.neighbors(referenceZoneId, distance);
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING, "Failed to evalute neighbors, returning an empty iterator", e);
-            return new EmptyIterator();
-        }
-    }
-
-    /**
-     * Returs a zone iterator providing the children at a rigen resolution
-     *
-     * @param function
-     * @return
-     */
-    private Iterator<Zone> getIteratorFromChildren(ChildrenFunction function) {
-        List<Expression> parameters = function.getParameters();
-        String referenceZoneId = parameters.get(1).evaluate(null, String.class);
-        Integer resolution = parameters.get(2).evaluate(null, Integer.class);
-        if (referenceZoneId == null || resolution == null) return new EmptyIterator();
-
-        // the function is lenient, make this implementation too
-        try {
-            store.dggs.getZone(referenceZoneId); // validation
-            return store.dggs.children(referenceZoneId, resolution);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to evalute children, returning an empty iterator", e);
-            return new EmptyIterator();
-        }
-    }
-
-    private boolean literalTrue(Expression ex) {
-        return ex instanceof Literal
-                && Boolean.TRUE.equals(((Literal) ex).evaluate(null, Boolean.class));
-    }
-
-    /**
-     * Checks if all input expressions to the function are {@link Literal}, with the exception of
-     * the first one
-     *
-     * @param function
-     * @return
-     */
-    private boolean cacheableDGGSCall(Function function) {
-        // TODO: allow the resolution to be provided as a env call, to make the calls
-        // to children, parent, polygon, point work across zoom ins/out in the display
-        return function.getParameters().stream().skip(1).allMatch(e -> e instanceof Literal);
     }
 
     private Iterator<Zone> getIteratorFromEnvelope(Query query) {
@@ -399,7 +303,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
             Set<String> attributes = getAttributeSet(fav);
             // can optimize a few visits based on resolution alone
             if (attributes != null
-                    && Collections.singleton(DGGSStore.RESOLUTION).equals(attributes)) {
+                    && attributes.equals(Collections.singleton(DGGSStore.RESOLUTION))) {
                 int[] resolutions = getDGGS().getResolutions();
                 if (fav instanceof MinVisitor) {
                     ((MinVisitor) fav).setValue(resolutions[0]);

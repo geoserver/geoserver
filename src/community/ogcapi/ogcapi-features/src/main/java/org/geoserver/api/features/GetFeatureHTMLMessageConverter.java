@@ -75,12 +75,11 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
                 header.process(model, osw);
             } catch (TemplateException e) {
                 String msg = "Error occurred processing header template.";
-                throw (IOException) new IOException(msg).initCause(e);
+                throw new IOException(msg, e);
             }
 
             // process content template for all feature collections found
-            for (int i = 0; i < collections.size(); i++) {
-                FeatureCollection fc = collections.get(i);
+            for (FeatureCollection fc : collections) {
                 if (fc != null) {
                     FeatureTypeInfo typeInfo = getResource(fc);
                     if (!fc.isEmpty()) {
@@ -110,7 +109,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
                                             + content.getName()
                                             + " for "
                                             + typeInfo.prefixedName();
-                            throw (IOException) new IOException(msg).initCause(e);
+                            throw new IOException(msg, e);
                         } finally {
                             model.remove("data");
                         }
@@ -125,7 +124,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
                                             + template.getName()
                                             + " for "
                                             + typeInfo.prefixedName();
-                            throw (IOException) new IOException(msg).initCause(e);
+                            throw new IOException(msg, e);
                         }
                     }
                 }
@@ -138,7 +137,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
                     footer.process(model, osw);
                 } catch (TemplateException e) {
                     String msg = "Error occured processing footer template.";
-                    throw (IOException) new IOException(msg).initCause(e);
+                    throw new IOException(msg, e);
                 }
             }
             osw.flush();

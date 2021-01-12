@@ -39,12 +39,10 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
     private static final MediaType ZIP_MEDIA_TYPE =
             MediaType.parseMediaType(ChangesetTilesService.ZIP_MIME);
 
-    private ObjectMapper mapper;
-    private GWC gwc;
-    private StorageBroker storageBroker;
+    private final ObjectMapper mapper;
+    private final StorageBroker storageBroker;
 
     public ZippedChangesetMessageConverter(GWC gwc, StorageBroker storageBroker) {
-        this.gwc = gwc;
         this.storageBroker = storageBroker;
         // custom configured JSON mapper to avoid stream being closed
         JsonFactory jsonFactory = new JsonFactory();
@@ -76,8 +74,7 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
     @Override
     public void write(ChangeSet changeSet, MediaType contentType, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        ZipOutputStream zos = new ZipOutputStream(outputMessage.getBody());
-        try {
+        try (ZipOutputStream zos = new ZipOutputStream(outputMessage.getBody())) {
             // write out the changeset
             zos.putNextEntry(new ZipEntry("changeset.json"));
             mapper.writeValue(zos, changeSet);
@@ -112,14 +109,13 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
                     zos.closeEntry();
                 }
             }
+            zos.flush();
         } catch (Exception e) {
             throw new APIException(
                     "InternalError",
                     "Failed during changeset encoding",
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     e);
-        } finally {
-            zos.flush();
         }
     }
 

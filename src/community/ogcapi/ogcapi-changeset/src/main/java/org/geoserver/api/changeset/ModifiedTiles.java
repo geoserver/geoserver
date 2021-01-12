@@ -38,12 +38,11 @@ import org.springframework.http.HttpStatus;
  * Allows access to lists of modified tiles to a given changeset, for encoding and counting purposes
  */
 public class ModifiedTiles {
-    private final CoverageInfo coverageInfo;
     private final TileLayer tileLayer;
     private final int zoomStart;
     private final int zoomEnd;
     private final GridSubset gridSubset;
-    private List<GridSubset> subsets = new ArrayList<>();
+    private final List<GridSubset> subsets = new ArrayList<>();
 
     public ModifiedTiles(
             CoverageInfo coverageInfo,
@@ -53,7 +52,6 @@ public class ModifiedTiles {
             ReferencedEnvelope[] boundingBoxes,
             NumberRange<Double> scaleDenominatorRange)
             throws FactoryException, IOException {
-        this.coverageInfo = coverageInfo;
         this.tileLayer = tileLayer;
         this.gridSubset = gridSet;
 
@@ -191,7 +189,7 @@ public class ModifiedTiles {
         return new TileIterator(subsets, zoomStart, zoomEnd);
     }
 
-    /** Retruns the number of tiles modified by the list of changes */
+    /** Returns the number of tiles modified by the list of changes */
     public long getModifiedTiles() {
         // dump implementation, just count while iterating, surely possible
         // to compute it faster by just counting the tiles in each subset, but

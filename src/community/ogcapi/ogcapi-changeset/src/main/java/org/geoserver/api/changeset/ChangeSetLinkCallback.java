@@ -37,7 +37,6 @@ public class ChangeSetLinkCallback implements DocumentCallback {
                 CoverageInfo coverage =
                         changesetService.getStructuredCoverageInfo(tiles.getId(), false);
                 if (coverage != null) {
-                    String baseURL = APIRequestInfo.get().getBaseURL();
                     List<Link> links =
                             APIRequestInfo.get()
                                     .getLinksFor(

@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.api.APIException;
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.QueryablesDocument;
@@ -26,15 +25,13 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.SRS;
@@ -72,9 +69,6 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
                 tileLayer instanceof GeoServerTileLayer
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName();
-        String pathId = ResponseUtils.urlEncode(id);
-
-        String baseURL = APIRequestInfo.get().getBaseURL();
         if (tileLayer instanceof GeoServerTileLayer) {
             PublishedInfo published =
                     (PublishedInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo();
@@ -184,8 +178,16 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         } else {
             // take the first and reproject...
             String srs = srsSet.iterator().next();
-            GridSubset subset = layer.getGridSubsetForSRS(SRS.getEPSG4326());
-            return getExtentsFromGridSubset(subset);
+
+            try {
+                GridSubset subset = layer.getGridSubsetForSRS(SRS.getSRS(srs));
+                return getExtentsFromGridSubset(subset);
+            } catch (GeoWebCacheException ex) {
+                throw new APIException(
+                        "IllegalState",
+                        "Could not convert " + srs + " value: " + ex.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
@@ -229,17 +231,6 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         }
 
         return null;
-    }
-
-    private boolean isWMSAvailable(GeoServer geoServer) {
-        ServiceInfo si =
-                geoServer
-                        .getServices()
-                        .stream()
-                        .filter(s -> "WMS".equals(s.getId()))
-                        .findFirst()
-                        .orElse(null);
-        return si != null;
     }
 
     public List<StyleDocument> getStyles() {

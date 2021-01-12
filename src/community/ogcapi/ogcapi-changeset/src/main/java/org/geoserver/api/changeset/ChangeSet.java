@@ -78,10 +78,10 @@ public class ChangeSet {
     }
 
     private String checkpoint;
-    private MimeType tilesMime;
-    private Map<String, String> filterParameters;
+    private final MimeType tilesMime;
+    private final Map<String, String> filterParameters;
     private List<ChangedItem> summaryOfChangedItems = new ArrayList<>();
-    private List<BoundsAndCRS> extentOfChangedItems;
+    private final List<BoundsAndCRS> extentOfChangedItems;
     private ScaleOfChangedItems scaleOfChangedItems;
     private final ModifiedTiles modifiedTiles;
 

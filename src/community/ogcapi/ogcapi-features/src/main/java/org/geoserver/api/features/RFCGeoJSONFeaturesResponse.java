@@ -52,6 +52,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         return MIME;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // was it a single feature request?
         if (getItemId() != null) {
@@ -79,12 +80,13 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             throws IOException {
         OutputStreamWriter osw =
                 new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
-        BufferedWriter outWriter = new BufferedWriter(osw);
-        FeatureCollectionResponse featureCollection = value;
-        boolean isComplex = isComplexFeature(featureCollection);
-        GeoJSONBuilder jsonWriter = getGeoJSONBuilder(featureCollection, outWriter);
-        writeFeatures(featureCollection.getFeatures(), operation, isComplex, jsonWriter);
-        outWriter.flush();
+        try (BufferedWriter outWriter = new BufferedWriter(osw)) {
+            FeatureCollectionResponse featureCollection = value;
+            boolean isComplex = isComplexFeature(featureCollection);
+            GeoJSONBuilder jsonWriter = getGeoJSONBuilder(featureCollection, outWriter);
+            writeFeatures(featureCollection.getFeatures(), operation, isComplex, jsonWriter);
+            outWriter.flush();
+        }
     }
 
     @Override

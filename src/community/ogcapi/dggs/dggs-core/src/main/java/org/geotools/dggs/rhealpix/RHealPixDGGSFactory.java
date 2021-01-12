@@ -63,7 +63,6 @@ public class RHealPixDGGSFactory implements DGGSFactory {
                 JEPWebRuntime.closeThreadIntepreter();
             } catch (JepException e) {
                 LOGGER.log(Level.FINE, "Could not clean up the JEP runtime", e);
-                return false;
             }
         }
     }

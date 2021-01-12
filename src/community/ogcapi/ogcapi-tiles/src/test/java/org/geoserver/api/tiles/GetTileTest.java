@@ -382,7 +382,7 @@ public class GetTileTest extends TilesTestSupport {
                                 + "/map/_/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
                         "image/png");
         File expected = new File("src/test/resources/org/geoserver/api/tiles/nature_tile_16.png");
-        ImageAssert.assertEquals(expected, image, 100);
+        ImageAssert.assertEquals(expected, image, 120);
     }
 
     @Test

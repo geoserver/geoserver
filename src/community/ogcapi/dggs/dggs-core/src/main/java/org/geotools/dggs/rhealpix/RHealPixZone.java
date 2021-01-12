@@ -18,7 +18,7 @@ package org.geotools.dggs.rhealpix;
 
 import static org.geotools.dggs.rhealpix.RHealPixUtils.setCellId;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Objects;
 import jep.JepException;
@@ -63,7 +63,6 @@ public class RHealPixZone implements Zone {
     private final String id;
     private final RHealPixDGGSInstance dggs;
     private Polygon boundary;
-    private Integer resolution;
 
     public RHealPixZone(RHealPixDGGSInstance dggs, String id) {
         this.dggs = dggs;

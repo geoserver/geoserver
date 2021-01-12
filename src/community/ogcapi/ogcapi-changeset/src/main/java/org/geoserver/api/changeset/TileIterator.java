@@ -16,8 +16,7 @@ import org.geowebcache.grid.GridSubset;
 class TileIterator implements Iterator<long[]> {
 
     private long minY;
-    private int zoomStart;
-    private int zoomEnd;
+    private final int zoomEnd;
     private List<GridSubset> subsets;
     private long x;
     private long y;
@@ -30,7 +29,6 @@ class TileIterator implements Iterator<long[]> {
     private long rowMaxX;
 
     TileIterator(List<GridSubset> subsets, int zoomStart, int zoomEnd) {
-        this.zoomStart = zoomStart;
         this.zoomEnd = zoomEnd;
 
         if (subsets.isEmpty()) {
@@ -103,7 +101,7 @@ class TileIterator implements Iterator<long[]> {
                             long[] coverage = ss.getCoverage(z);
                             return this.y >= coverage[1] && y <= coverage[3];
                         })
-                .sorted((ss1, ss2) -> Long.signum(ss1.getCoverage(z)[0] - ss1.getCoverage(z)[0]))
+                .sorted((ss1, ss2) -> Long.signum(ss1.getCoverage(z)[0] - ss2.getCoverage(z)[0]))
                 .collect(Collectors.toList());
     }
 

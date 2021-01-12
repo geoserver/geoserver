@@ -67,7 +67,7 @@ public class AbstractDocument {
     /**
      * Builds service links for the given response types
      *
-     * @param path The path of the resource, typically starting with "ogc/<service>"
+     * @param path The path of the resource, typically starting with "ogc/&lt;service&gt;"
      * @param responseType The class of the response object in the controller
      * @param titlePrefix The code will add the format name to this prefix and make it the link
      *     title
@@ -76,7 +76,7 @@ public class AbstractDocument {
      * @param rel The rel of the link object (the updater can modify it, to handle for example
      *     "self" relationships)
      */
-    public void addLinksFor(
+    public final void addLinksFor(
             String path,
             Class<?> responseType,
             String titlePrefix,
@@ -100,7 +100,7 @@ public class AbstractDocument {
      * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as
      * the default media type
      */
-    protected void addSelfLinks(String path) {
+    protected final void addSelfLinks(String path) {
         addSelfLinks(path, MediaType.APPLICATION_JSON);
     }
 
@@ -111,7 +111,7 @@ public class AbstractDocument {
      * @param defaultFormat The default format (will be used to create a "self" link instead of
      *     "alternate"
      */
-    protected void addSelfLinks(String path, MediaType defaultFormat) {
+    protected final void addSelfLinks(String path, MediaType defaultFormat) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         String baseUrl = requestInfo.getBaseURL();
         boolean firstSelf = true;

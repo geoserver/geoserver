@@ -30,8 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FreemarkerTemplateSupport {
 
-    private static Map<Class, Configuration> configurationCache =
-            new SoftValueHashMap<Class, Configuration>(10);
+    private static final Map<Class, Configuration> configurationCache = new SoftValueHashMap<>(10);
 
     private final GeoServerResourceLoader resoureLoader;
 

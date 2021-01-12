@@ -45,11 +45,9 @@ public class TiledFeaturesExtension
                 HTMLExtensionCallback {
 
     private static final String FEATURES = "Features";
-    private static final String REQ_CONFORMANCE = "getConformanceDeclaration";
     private static final String REQ_COLLECTION = "describeCollection";
     private static final String REQ_COLLECTIONS = "getCollections";
     private static final String REQ_LANDING = "getLandingPage";
-    private static final String REQ_API = "getApi";
 
     private final FreemarkerTemplateSupport templateSupport;
     private TiledFeatureService tiledFeatures;

@@ -16,7 +16,7 @@
  */
 package org.geoserver.api.styles;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -355,6 +355,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Graphic) */
+    @Override
     public void visit(Graphic gr) {
         for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
             if (symbol instanceof Symbol) {
@@ -382,6 +383,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Mark) */
+    @Override
     public void visit(Mark mark) {
         if (mark.getFill() != null) {
             mark.getFill().accept(this);
@@ -407,6 +409,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(ExternalGraphic) */
+    @Override
     public void visit(ExternalGraphic exgr) {
         // add dynamic support for ExternalGrapic format attribute
         visitCqlExpression(exgr.getFormat());
@@ -420,6 +423,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(PointPlacement) */
+    @Override
     public void visit(PointPlacement pp) {
         if (pp.getAnchorPoint() != null) {
             pp.getAnchorPoint().accept(this);
@@ -435,6 +439,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(AnchorPoint) */
+    @Override
     public void visit(AnchorPoint ap) {
         if (ap.getAnchorPointX() != null) {
             ap.getAnchorPointX().accept(this, Double.class);
@@ -474,70 +479,76 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         }
     }
 
+    @Override
     public void visit(StyledLayerDescriptor sld) {
         StyledLayer[] layers = sld.getStyledLayers();
 
-        for (int i = 0; i < layers.length; i++) {
-            if (layers[i] instanceof NamedLayer) {
-                ((NamedLayer) layers[i]).accept(this);
-            } else if (layers[i] instanceof UserLayer) {
-                ((UserLayer) layers[i]).accept(this);
+        for (StyledLayer layer : layers) {
+            if (layer instanceof NamedLayer) {
+                ((NamedLayer) layer).accept(this);
+            } else if (layer instanceof UserLayer) {
+                ((UserLayer) layer).accept(this);
             }
         }
     }
 
+    @Override
     public void visit(NamedLayer layer) {
-        Style[] styles = layer.getStyles();
-
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : layer.getStyles()) {
+            style.accept(this);
         }
     }
 
+    @Override
     public void visit(UserLayer layer) {
-        Style[] styles = layer.getUserStyles();
-
-        for (int i = 0; i < styles.length; i++) {
-            styles[i].accept(this);
+        for (Style style : layer.getUserStyles()) {
+            style.accept(this);
         }
     }
 
+    @Override
     public void visit(FeatureTypeConstraint ftc) {
         ftc.accept(this);
     }
 
+    @Override
     public void visit(ColorMap map) {
-        ColorMapEntry[] entries = map.getColorMapEntries();
-
-        for (int i = 0; i < entries.length; i++) {
-            entries[i].accept(this);
+        for (ColorMapEntry entry : map.getColorMapEntries()) {
+            entry.accept(this);
         }
     }
 
+    @Override
     public void visit(ColorMapEntry entry) {
         entry.accept(this);
     }
 
+    @Override
     public void visit(ContrastEnhancement contrastEnhancement) {
         contrastEnhancement.accept(this);
     }
 
+    @Override
     public void visit(ImageOutline outline) {
         outline.getSymbolizer().accept(this);
     }
 
+    @Override
     public void visit(ChannelSelection cs) {
         cs.accept(this);
     }
 
+    @Override
     public void visit(OverlapBehavior ob) {
         ob.accept(this);
     }
 
+    @Override
     public void visit(SelectedChannelType sct) {
         sct.accept(this);
     }
 
+    @Override
     public void visit(ShadedRelief sr) {
         sr.accept(this);
     }
@@ -546,7 +557,6 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     public Object visit(PropertyName expression, Object data) {
         AttributeDescriptor ad = (AttributeDescriptor) expression.evaluate(featureType);
         if (ad != null) {
-            String name = ad.getLocalName();
             propertyTypes.put(expression, ad.getType().getBinding());
         } else if (data instanceof Class) {
             propertyTypes.put(expression, (Class) data);
@@ -558,7 +568,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /**
-     * Retuns a map from PropertyName to its data type, either retrieved from the feature type if
+     * Returns a map from PropertyName to its data type, either retrieved from the feature type if
      * available, or guessed from the style property necessities, otherwise. When multiple types
      * would be allowed thanks to converters, the most specific is used (e.g., Color instead of
      * String)

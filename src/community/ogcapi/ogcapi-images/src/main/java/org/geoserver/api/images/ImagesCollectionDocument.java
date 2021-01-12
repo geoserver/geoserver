@@ -44,7 +44,6 @@ public class ImagesCollectionDocument extends AbstractCollectionDocument {
         this.id = coverage.prefixedName();
         this.title = coverage.getTitle();
         this.description = coverage.getAbstract();
-        String pathId = ResponseUtils.urlEncode(id);
 
         String baseURL = APIRequestInfo.get().getBaseURL();
         this.extent = new CollectionExtents(coverage.getLatLonBoundingBox());

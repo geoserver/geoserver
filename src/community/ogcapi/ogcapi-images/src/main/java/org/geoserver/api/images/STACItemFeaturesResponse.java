@@ -90,12 +90,13 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             throws IOException {
         OutputStreamWriter osw =
                 new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
-        BufferedWriter outWriter = new BufferedWriter(osw);
-        FeatureCollectionResponse featureCollection = value;
-        boolean isComplex = isComplexFeature(featureCollection);
-        GeoJSONBuilder jsonWriter = getGeoJSONBuilder(featureCollection, outWriter);
-        writeFeatures(featureCollection.getFeatures(), operation, isComplex, jsonWriter);
-        outWriter.flush();
+        try (BufferedWriter outWriter = new BufferedWriter(osw)) {
+            FeatureCollectionResponse featureCollection = value;
+            boolean isComplex = isComplexFeature(featureCollection);
+            GeoJSONBuilder jsonWriter = getGeoJSONBuilder(featureCollection, outWriter);
+            writeFeatures(featureCollection.getFeatures(), operation, isComplex, jsonWriter);
+            outWriter.flush();
+        }
     }
 
     @Override

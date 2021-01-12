@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.geoserver.api.APIBBoxParser;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
@@ -119,7 +118,6 @@ public class ChangesetTilesService {
                     String checkpoint,
             @RequestParam(name = "changeSetType", required = false) String changeSetTypeName)
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException, FactoryException {
-        ChangeSetType changeSetType = ChangeSetType.fromName(changeSetTypeName);
         Filter spatialFilter = APIBBoxParser.toFilter(bboxSpec);
         // collection must be a structured coverage and a tile layer at the same time
         CoverageInfo ci = getStructuredCoverageInfo(collectionId, true);
@@ -239,25 +237,6 @@ public class ChangesetTilesService {
             throw new InvalidParameterValueException(
                     "Unexpected values in 'scaleDenominator', could not parse numbers out of them");
         }
-    }
-
-    private org.geowebcache.mime.MimeType parseMimeType(
-            TileLayer tileLayer, String tileFormatSpec) {
-        Optional<org.geowebcache.mime.MimeType> mimeTypeMaybe =
-                tileLayer
-                        .getMimeTypes()
-                        .stream()
-                        .filter(mt -> tileFormatSpec.equals(mt.getMimeType()))
-                        .findFirst();
-        if (!mimeTypeMaybe.isPresent()) {
-            throw new InvalidParameterValueException(
-                    "Tiled collection "
-                            + tileLayer.getName()
-                            + " does not support format "
-                            + tileFormatSpec);
-        }
-
-        return mimeTypeMaybe.get();
     }
 
     public StyleInfo getStyle(@PathVariable(name = "styleId") String styleId) {

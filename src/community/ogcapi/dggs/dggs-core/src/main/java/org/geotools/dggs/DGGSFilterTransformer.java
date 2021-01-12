@@ -47,7 +47,6 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
     public static final int RESOLUTION_NOT_SPECIFIED = -1;
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    private final DGGSResolutionCalculator resolutionCalculator;
 
     public static Filter adapt(
             Filter filter,
@@ -64,7 +63,6 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
     public DGGSFilterTransformer(
             DGGSInstance dggs, DGGSResolutionCalculator resolutions, int resolution) {
         this.dggs = dggs;
-        this.resolutionCalculator = resolutions;
         this.resolution = resolution;
     }
 
@@ -155,7 +153,7 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
             }
         }
 
-        if (filters.size() > 0) {
+        if (!filters.isEmpty()) {
             Or or = FF.or(new ArrayList<>(filters));
             filters.clear();
             filters.add(or);

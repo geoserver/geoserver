@@ -474,8 +474,6 @@ public class ImagesService implements ApplicationContextAware {
                     "time");
         }
 
-        List<Filter> filters = new ArrayList<>();
-        Object timeSpec = times.iterator().next();
         DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(FF);
         filterBuilder.appendFilters(
                 descriptor.getStartAttribute(), descriptor.getEndAttribute(), times);
@@ -545,7 +543,7 @@ public class ImagesService implements ApplicationContextAware {
                 (StructuredGridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         List<HarvestedSource> harvested =
                 sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
-        if (harvested == null || harvested.size() == 0 || !harvested.get(0).success()) {
+        if (harvested == null || harvested.isEmpty() || !harvested.get(0).success()) {
             throw new APIException(
                     "InternalServerError",
                     "Resources could not be harvested (is the image posted in a format that GeoServer can understand?)",

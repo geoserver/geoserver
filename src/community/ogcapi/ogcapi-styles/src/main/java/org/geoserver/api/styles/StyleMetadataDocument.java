@@ -30,7 +30,6 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.styling.Description;
 import org.geotools.styling.NamedLayer;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
@@ -147,30 +146,6 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         }
     }
 
-    private Style getStyle(StyleInfo si, StyledLayer styledLayer) {
-        if (styledLayer instanceof UserLayer) {
-            return ((UserLayer) styledLayer).getUserStyles()[0];
-        } else if (styledLayer instanceof NamedLayer) {
-            return ((NamedLayer) styledLayer).getStyles()[0];
-        } else {
-            throw new IllegalArgumentException(
-                    "Do not recognize styled layer "
-                            + styledLayer
-                            + " inside "
-                            + si.prefixedName());
-        }
-    }
-
-    private String getPointOfContact(StyleInfo si) {
-        StyleMetadataInfo styleMetadataInfo =
-                si.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
-        if (styleMetadataInfo != null && styleMetadataInfo.getPointOfContact() != null) {
-            return styleMetadataInfo.getPointOfContact();
-        }
-
-        return null;
-    }
-
     private String getTitle(StyledLayerDescriptor sld) {
         if (sld.getTitle() != null) {
             return sld.getTitle();
@@ -193,16 +168,6 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
                 .map(d -> d.getAbstract().toString())
                 .findFirst()
                 .orElse(null);
-    }
-
-    private List<String> getKeywords(StyleInfo si) throws IOException {
-        StyleMetadataInfo styleMetadataInfo =
-                si.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
-        if (styleMetadataInfo != null && styleMetadataInfo.getAbstract() != null) {
-            return styleMetadataInfo.getKeywords();
-        }
-
-        return null;
     }
 
     /** Extracts the description of all styles contained in user layers or named layers */

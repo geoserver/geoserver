@@ -181,14 +181,14 @@ public class MessageConverterResponseAdapter<T>
         String[][] headers = response.getHeaders(result, operation);
         boolean contentDispositionProvided = false;
         if (headers != null) {
-            for (int i = 0; i < headers.length; i++) {
-                if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
+            for (String[] header : headers) {
+                if (header[0].equalsIgnoreCase("Content-Disposition")) {
                     contentDispositionProvided = true;
                     if (disposition == null) {
-                        message.getHeaders().set(headers[i][0], headers[i][1]);
+                        message.getHeaders().set(header[0], header[1]);
                     }
                 } else {
-                    message.getHeaders().set(headers[i][0], headers[i][1]);
+                    message.getHeaders().set(header[0], header[1]);
                 }
             }
         }

@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Get a list of layer groups
       description: Displays a list of all layer groups on the server not otherwise in a workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups.xml" for XML)
       produces:
@@ -43,7 +43,7 @@ paths:
     post:
       operationId: postLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Add a new layer group
       description: Adds a new layer group entry to the server.
 
@@ -70,7 +70,7 @@ paths:
     put:
       operationId: putLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use POST for adding a new layer group, or PUT on /layergroups/{layergroup} to edit an existing layer group.
       responses:
         405:
@@ -79,7 +79,7 @@ paths:
     delete:
       operationId: deleteLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use /layergroups/{layergroup} instead.
       responses:
         405:
@@ -89,7 +89,7 @@ paths:
     get:
       operationId: getLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Retrieve a layer group
       description: Retrieves a single layer group definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups/{layergroup}.xml" for XML).
       produces:
@@ -175,7 +175,7 @@ paths:
     post:
       operationId: postLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use PUT to edit a layer group definition, or POST with /layergroups to add a new definition.
       responses:
         405:
@@ -184,7 +184,7 @@ paths:
     put:
       operationId: putLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Modify a layer group.
       description: Modifies an existing layer group on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups/{layergroup}.xml" for XML).
       parameters:
@@ -209,7 +209,7 @@ paths:
     delete:
       operationId: deleteLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Delete layer group
       description: Deletes a layer group from the server.
       parameters:
@@ -227,7 +227,7 @@ paths:
     get:
       operationId: getWorkspaceLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Get a list of layer groups in a workspace
       description: Displays a list of all layer groups in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups.xml" for XML).
       produces:
@@ -256,7 +256,7 @@ paths:
     post:
       operationId: postWorkspaceLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Add a new layer group
       description: Adds a new layer group entry to the server in the specified workspace.
 
@@ -283,7 +283,7 @@ paths:
     put:
       operationId: putWorkspaceLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use POST for adding a new layer group to a workspace, or PUT on /workspaces/{workspace}/layergroups/{layergroup} to edit an existing layer group.
       responses:
         405:
@@ -292,7 +292,7 @@ paths:
     delete:
       operationId: deleteWorkspaceLayergroups
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use /workspaces/{workspace}/layergroups/{layergroup} instead.
       responses:
         405:
@@ -303,7 +303,7 @@ paths:
     get:
       operationId: getWorkspaceLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Retrieve a layer group
       description: Retrieves a single layer group definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/layergroups/{layergroup}.xml" for XML).
       produces:
@@ -366,7 +366,7 @@ paths:
     post:
       operationId: postWorkspaceLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       description: Invalid. Use PUT to edit a layer group definition, or POST with /workspaces/{workspace}/layergroups to add a new definition.
       responses:
         405:
@@ -375,7 +375,7 @@ paths:
     put:
       operationId: putWorkspaceLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Modify a layer group.
       description: Modifies an existing layer group on the server in the given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/layergroups/{layergroup}.xml" for XML).
       parameters:
@@ -401,7 +401,7 @@ paths:
     delete:
       operationId: deleteWorkspaceLayergroup
       tags:
-       - "layergroups"
+       - "LayerGroups"
       summary: Delete layer group
       description: Deletes a layer group from the server in the given workspace.
       parameters:

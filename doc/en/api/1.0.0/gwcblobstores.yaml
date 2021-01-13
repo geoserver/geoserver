@@ -17,7 +17,7 @@ paths:
     get:
       operationId: blobstoresGet
       tags:
-        - "gwcblobstores"
+        - "GwcBlobStores"
       summary: Get a list of configured blobstores
       description: Displays a list of all configured blobstores on the server.
       produces:
@@ -41,7 +41,7 @@ paths:
     get:
       operationId: blobstoreGet
       tags:
-        - "gwcblobstores"
+        - "GwcBlobStores"
       summary: Retrieve a configured blobstore
       description: Retrieves a single configured blobstore definition.
       produces:
@@ -72,7 +72,7 @@ paths:
     put:
       operationId: blobstorePut
       tags:
-        - "gwcblobstores"
+        - "GwcBlobStores"
       summary: Create or update a configured blobstore.
       description: Creates a new configured blobstore on the server, or modifies an existing blobstore.
       parameters:
@@ -98,7 +98,7 @@ paths:
     delete:
       operationId: blobstoreDelete
       tags:
-        - "gwcblobstores"
+        - "GwcBlobStores"
       summary: Delete configured blobstore
       description: Deletes a configured blobstore from the server.
       parameters:

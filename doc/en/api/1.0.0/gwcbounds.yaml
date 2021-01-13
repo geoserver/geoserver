@@ -19,7 +19,7 @@ paths:
         - text/plain
       operationId: boundsGet
       tags:
-       - "gwcbounds"
+       - "GwcBounds"
       summary: Returns the bounds for a layer based on srs.
       description: Returns the bounds for a layer based on srs.
       parameters:

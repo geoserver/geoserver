@@ -20,7 +20,7 @@ paths:
          CSV file must be of form "prefix:layername; [geonetwork-id] [; template-1 [;template-2 ... ] ]"
          Existing template links will be removed first.
       tags:
-       - "metadata"
+       - "Metadata"
       consumes: text/csv
       parameters:
         - name: geonetwork
@@ -40,7 +40,7 @@ paths:
         With respect to your custom-to-native mapping file (see general documentation), this operation will perform an
         opposite synchronization from native fields to custom fields.
       tags:
-       - "metadata"
+       - "Metadata"
       parameters:
         - name: indexes
           required: false
@@ -60,7 +60,7 @@ paths:
         opposite synchronization from native fields to custom fields. Your body must be a list layers, where each row is of
         the form "prefix:layername".
       tags:
-       - "metadata"
+       - "Metadata"
       consumes: text/csv
       parameters:
         - name: indexes
@@ -79,7 +79,7 @@ paths:
       summary: Delete all custom metadata
       description: Remove ALL custom metadata from ALL layers. All template links are removed. Used for testing and debugging.
       tags:
-       - "metadata"
+       - "Metadata"
       parameters:
         - name: iAmSure
           required: false
@@ -101,7 +101,7 @@ paths:
       summary: Fix all custom metadata
       description: Calls routine operations that may fix corrupted custom metadata in all layers. Used for testing and debugging.
       tags:
-       - "metadata"
+       - "Metadata"
       responses:
         200:
           description: OK

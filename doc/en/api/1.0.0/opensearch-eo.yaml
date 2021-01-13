@@ -16,7 +16,7 @@ paths:
     get:
       description: Retrieves a list of all available collections (names and links)
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       parameters:
       - name: offset
         in: query
@@ -60,7 +60,7 @@ paths:
         * owsLinks.json: the list of OWS links, in the same JSON format as the associated resource
         A creation with ZIP is recommend for speed and consistency sake.
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       parameters:
       - name: ogc_publish
         in: query
@@ -100,7 +100,7 @@ paths:
     get:
       description: Retrieves a collection search attributes and its ogc links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/json
       responses:
@@ -146,7 +146,7 @@ paths:
     put:
       description: Updates a collection search attributes
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/json
       responses:
@@ -158,7 +158,7 @@ paths:
           description: The specified collection cannot be found
     delete:
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       parameters:
       - name: keepMetadata
         in: query
@@ -181,7 +181,7 @@ paths:
     get:
       description: Returns the ISO metadata of this collection
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/xml
       responses:
@@ -192,7 +192,7 @@ paths:
     put:
       description: Updates/creates a collection ISO metadata
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/xml
       responses:
@@ -205,7 +205,7 @@ paths:
     delete:
       description: Removes the product metadata
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -221,7 +221,7 @@ paths:
     get:
       description: Returns the HTML description of this collection
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - text/html
       responses:
@@ -276,7 +276,7 @@ paths:
     put:
       description: Updates/creates a collection HTML description
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - text/html
       responses:
@@ -287,7 +287,7 @@ paths:
     delete:
       description: Removes the collection HTML description
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -305,7 +305,7 @@ paths:
     get:
       description: Returns the list of OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - text/html
       responses:
@@ -336,7 +336,7 @@ paths:
     put:
       description: Updates/creates a collection OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - text/html
       responses:
@@ -349,7 +349,7 @@ paths:
     delete:
       description: Removes the collection OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -365,7 +365,7 @@ paths:
     get:
       description: Returns the thumbnail of this collection
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - image/png
       responses:
@@ -376,7 +376,7 @@ paths:
     put:
       description: Updates/creates a collection thumbnail
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - image/png
       - image/jpeg
@@ -388,7 +388,7 @@ paths:
     delete:
       description: Removes the collection thumbnail
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -405,7 +405,7 @@ paths:
       deprecated: true
       description: Returns the current publishing configuration for the layer (or 404 if no configuration is currently in use)
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/json
       responses:
@@ -438,7 +438,7 @@ paths:
       deprecated: true
       description: Removes the previous publshing configuration and replaces with a new one, creating along the mosaic configuration, store, layer and style as described
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/json
       responses:
@@ -452,7 +452,7 @@ paths:
       deprecated: true
       description: Removes the mosaic configuration, store, layer and style associated to this collection
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -468,7 +468,7 @@ paths:
     get:
       description: Returns the list of collection layers
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/json
       responses:
@@ -511,7 +511,7 @@ paths:
     get:
       description: Returns the list of collection layers
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/json
       responses:
@@ -536,7 +536,7 @@ paths:
     put:
       description: Updates/creates a collection layer publishing configuration
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/json
       responses:
@@ -547,7 +547,7 @@ paths:
     delete:
       description: Removes the collection layer configuration
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -563,7 +563,7 @@ paths:
     get:
       description: Returns a paged list of all available products
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       parameters:
       - name: offset
         in: query
@@ -612,7 +612,7 @@ paths:
         * granules.json: the list of granules, in the same JSON format as the associated resource
         The JSON format is the same as the one returned by a GET on an existing product, the "*Href" properties should be omitted
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/json
       - application/zip
@@ -646,7 +646,7 @@ paths:
         Retrieves a product search attributes, ogc links and granules.
         The response contains cross links to ogcLinks/metadata/description/thumnail/granules sub-resources, when the same JSON is used o create a new collection the associated can be omitted, or if everything needs to be put in the JSON, the associated representations can be inlined instead (the thumbnail image can be BASE64 encded). A creation with ZIP is recommend.
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/json
       - application/xml
@@ -716,7 +716,7 @@ paths:
     put:
       description: Updates a product search attributes and OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/json
       - application/xml
@@ -730,7 +730,7 @@ paths:
     delete:
       description: Deletes a product and everything inside it
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       parameters:
       - name: keepMetadata
         in: query
@@ -754,7 +754,7 @@ paths:
     get:
       description: Returns the O&M metadata of this product
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - application/xml
       responses:
@@ -765,7 +765,7 @@ paths:
     put:
       description: Updates/creates a product O&M metadata
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - application/xml
       responses:
@@ -778,7 +778,7 @@ paths:
     delete:
       description: Removes the product metadata
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -799,7 +799,7 @@ paths:
     get:
       description: Returns the HTML description of this product
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - text/html
       responses:
@@ -847,7 +847,7 @@ paths:
     put:
       description: Updates/creates a product HTML description
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - text/html
       responses:
@@ -858,7 +858,7 @@ paths:
     delete:
       description: Removes the product HTML description
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -879,7 +879,7 @@ paths:
     get:
       description: Returns the thumbnail of this product
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - image/png
       - image/jpeg
@@ -891,7 +891,7 @@ paths:
     put:
       description: Updates/creates a product thumbnail
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - image/png
       - image/jpeg
@@ -905,7 +905,7 @@ paths:
     delete:
       description: Removes the product thumbnail
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -926,7 +926,7 @@ paths:
     get:
       description: Returns the list of a product OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - text/html
       responses:
@@ -955,7 +955,7 @@ paths:
     put:
       description: Updates/creates a products OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - text/json
       responses:
@@ -968,7 +968,7 @@ paths:
     delete:
       description: Removes the product OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK
@@ -989,7 +989,7 @@ paths:
     get:
       description: Returns the list of a product granules
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       produces:
       - text/json
       responses:
@@ -1019,7 +1019,7 @@ paths:
     put:
       description: Updates/creates a product granules
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       consumes:
       - text/html
       responses:
@@ -1032,7 +1032,7 @@ paths:
     delete:
       description: Removes the product OGC links
       tags:
-       - "opensearch-eo"
+       - "OpenSearchEo"
       responses:
         200:
           description: OK

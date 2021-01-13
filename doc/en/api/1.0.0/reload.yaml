@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getReset
       tags:
-       - "reload"
+       - "Reload"
       description: Invalid. Use PUT or POST to reset the caches.
       responses:
         405:
@@ -24,7 +24,7 @@ paths:
     put:
       operationId: putReset
       tags:
-       - "reload"
+       - "Reload"
       summary: Reset all store, raster, and schema caches. 
       description: Resets all store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
       responses:
@@ -33,7 +33,7 @@ paths:
     post:
       operationId: postReset
       tags:
-       - "reload"
+       - "Reload"
       summary: Reset all store, raster, and schema caches. 
       description: Resets all store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
       responses:
@@ -42,7 +42,7 @@ paths:
     delete:
       operationId: deleteReset
       tags:
-       - "reload"
+       - "Reload"
       description: Invalid. Use PUT or POST to reset the caches.
       responses:
         405:
@@ -51,7 +51,7 @@ paths:
     get:
       operationId: getReload
       tags:
-       - "reload"
+       - "Reload"
       description: Invalid. Use PUT or POST to reload the catalog and configuation.
       responses:
         405:
@@ -59,7 +59,7 @@ paths:
     put:
       operationId: putReload
       tags:
-       - "reload"
+       - "Reload"
       summary: Reload the configuration from disk, and reset all caches.
       description: Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
       responses:
@@ -68,7 +68,7 @@ paths:
     post:
       operationId: postReload
       tags:
-       - "reload"
+       - "Reload"
       summary: Reload the configuration from disk, and reset all caches.
       description: Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
       responses:
@@ -77,7 +77,7 @@ paths:
     delete:
       operationId: deleteReload
       tags:
-       - "reload"
+       - "Reload"
       description: Invalid. Use PUT or POST to reload the catalog and configuation.
       responses:
         405:

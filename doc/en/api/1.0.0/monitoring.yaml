@@ -17,7 +17,7 @@ paths:
     get:
       operationId: getMonitorRequests
       tags:
-       - "monitoring"
+       - "Monitoring"
       summary: Get a list of requests
       description: |
                    Returns a list of all requests known to the monitoring system.
@@ -102,7 +102,7 @@ paths:
     post:
       operationId: postMonitorRequests
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: Invalid. This resource cannot be modified.
       responses:
         405:
@@ -111,7 +111,7 @@ paths:
     put:
       operationId: putMonitorRequests
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: Invalid. This resource cannot be modified.
       responses:
         405:
@@ -120,7 +120,7 @@ paths:
     delete:
       operationId: deleteMonitorRequests
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: Clears all reqests
       responses:
         200:
@@ -130,7 +130,7 @@ paths:
     get:
       operationId: getMonitorRequest
       tags:
-       - "monitoring"
+       - "Monitoring"
       summary: Get a list of requests
       description: |
                    Returns a specific request, by identifier
@@ -164,7 +164,7 @@ paths:
     post:
       operationId: postMonitorRequest
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: This resource cannot be modified
       responses:
         405:
@@ -173,7 +173,7 @@ paths:
     put:
       operationId: putMonitorRequest
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: This resource cannot be modified
       responses:
         405:
@@ -182,7 +182,7 @@ paths:
     delete:
       operationId: deleteMonitorRequest
       tags:
-       - "monitoring"
+       - "Monitoring"
       description: Invalid. Cannot delete a specific request
       responses:
         405:

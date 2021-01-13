@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getEchoParameters
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Get a list of echo parameters
       description: List all echo parameters currently configured.  Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
       produces:
@@ -47,7 +47,7 @@ paths:
     post:
       operationId: postEchoParameter
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Create a new echo parameter
       description: Adds a new echo parameter
       parameters:
@@ -69,7 +69,7 @@ paths:
     get:
       operationId: getEchoParameter
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Retrieve a particular echo parameter definition
       description: Controls a particular echo parameter. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/echos/{parameterId}.xml" for XML).
       produces:
@@ -100,7 +100,7 @@ paths:
     put:
       operationId: putEchoParameter
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Modify an echo parametr
       description: Modify an echo parameter
       parameters:
@@ -120,7 +120,7 @@ paths:
     delete:
       operationId: deleteEchoParameter
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Delete an echo parameter
       description: Deletes an echo parameter from the configuration
       parameters:
@@ -137,7 +137,7 @@ paths:
     get:
       operationId: getRules
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Get a list of rules
       description: List all rules currently configured.  Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
       produces:
@@ -168,7 +168,7 @@ paths:
     post:
       operationId: postRule
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Create a new rule
       description: Adds a new rule
       parameters:
@@ -190,7 +190,7 @@ paths:
     get:
       operationId: getRule
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Retrieve a particular rule definition
       description: Controls a particular rule . Use the "Accept:" header to specify format or append an extension to the endpoint (example "/echos/{parameterId}.xml" for XML).
       produces:
@@ -224,7 +224,7 @@ paths:
     put:
       operationId: putRule
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Modify a rule
       description: Modify a rule
       parameters:
@@ -244,7 +244,7 @@ paths:
     delete:
       operationId: deleteRule
       tags:
-       - "params-extractor"
+       - "ParamsExtractor"
       summary: Delete a rule
       description: Deletes a rule from the configuration
       parameters:

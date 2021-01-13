@@ -18,7 +18,7 @@ paths:
     get:
       operationId: getWMSStores
       tags:
-       - "wmsstores"
+       - "WmsStores"
       summary: Get a list of WMS stores
       description: Displays a list of all WMS stores on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/rest/workspaces/{workspace}/wmsstores.xml" for XML).
       produces:
@@ -49,7 +49,7 @@ paths:
     post:
       operationId: postWMSStores
       tags:
-       - "wmsstores"
+       - "WmsStores"
       summary: Add a new WMS store
       description: Adds a new WMS store entry to the server.
       parameters:
@@ -75,7 +75,7 @@ paths:
     put:
       operationId: putWMSStores
       tags:
-       - "wmsstores"
+       - "WmsStores"
       description: Invalid. Use POST for adding a new WMS store, or PUT on /workspaces/{workspace}/wmsstores/{wmsstore} to edit an existing WMS store.
       responses:
         401:
@@ -86,7 +86,7 @@ paths:
     delete:
       operationId: deleteWMSStores
       tags:
-       - "wmsstores"
+       - "WmsStores"
       description: Invalid. Use /workspaces/{workspace}/wmsstores/{wmsstore} instead.
       responses:
         401:
@@ -100,7 +100,7 @@ paths:
     get:
       operationId: getWMSStore
       tags:
-       - "wmsstores"
+       - "WmsStores"
       summary: Retrieve a WMS store in a given workspace
       description: Displays a representation of the WMS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{store}.xml" for XML). Defaults to HTML representation.
       produces:
@@ -171,7 +171,7 @@ paths:
     post:
       operationId: postWMSStore
       tags:
-       - "wmsstores"
+       - "WmsStores"
       description: Invalid. Use POST on /workspaces/{workspace}/WMSstores for adding a new WMS store, or PUT on /workspaces/{workspace}/WMSstores/{store} to edit/upload an existing WMS store.
       responses:
         401:
@@ -182,7 +182,7 @@ paths:
     put:
       operationId: putWMSStore
       tags:
-       - "wmsstores"
+       - "WmsStores"
       summary: Modify a single WMS store.
       description: Modifies a single WMS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
       parameters:
@@ -209,7 +209,7 @@ paths:
     delete:
       operationId: deleteWMSStore
       tags:
-       - "wmsstores"
+       - "WmsStores"
       summary: Delete WMS store
       description: Deletes a WMS store
       parameters:

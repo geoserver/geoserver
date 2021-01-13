@@ -25,7 +25,7 @@ paths:
     get:           
       operationId: getFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: |
         Get a list of feature types for the workspace and datastore. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
       parameters:
@@ -117,7 +117,7 @@ paths:
     post:
       operationId: postFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: |
         Create a new feature type. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
       parameters:
@@ -150,7 +150,7 @@ paths:
     put:
       operationId: putFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
       responses:
         405:
@@ -158,7 +158,7 @@ paths:
     delete:
       operationId: deleteFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid.
       responses:
         405:
@@ -167,7 +167,7 @@ paths:
     get:           
       operationId: getFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: |
         Get a list of all feature types for all datastores in the workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
       parameters:
@@ -254,7 +254,7 @@ paths:
     post:
       operationId: postFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: |
         Create a new feature type, the feature type definition needs to reference a store. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
       parameters:
@@ -282,7 +282,7 @@ paths:
     put:
       operationId: putFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
       responses:
         405:
@@ -290,7 +290,7 @@ paths:
     delete:
       operationId: deleteFeatureTypes
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid.
       responses:
         405:
@@ -299,7 +299,7 @@ paths:
     get:    
       operationId: getFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description:  Get an individual feature type
       produces:
         - text/html
@@ -598,7 +598,7 @@ paths:
     post:
       operationId: postFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
       responses:
         405:
@@ -606,7 +606,7 @@ paths:
     put:
       operationId: putFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Update an individual feature type
       consumes:        
         - application/xml
@@ -652,7 +652,7 @@ paths:
     delete:
       operationId: deleteFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Delete a feature type (optionally recursively deleting layers).
       parameters:
         - name: workspaceName
@@ -684,7 +684,7 @@ paths:
     get:    
       operationId: getFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description:  Get an individual feature type in the default data store for the workspace
       produces:
         - text/html
@@ -978,7 +978,7 @@ paths:
     post:
       operationId: postFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
       responses:
         405:
@@ -986,7 +986,7 @@ paths:
     put:
       operationId: putFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Update an individual feature type in the default data store for the workspace
       consumes:        
         - application/xml
@@ -1027,7 +1027,7 @@ paths:
     delete:
       operationId: deleteFeatureType
       tags:
-       - "featuretypes"
+       - "FeatureTypes"
       description: Delete a feature type in the default data store for the workspace (optionally recursively deleting layers).
       parameters:
         - name: workspaceName

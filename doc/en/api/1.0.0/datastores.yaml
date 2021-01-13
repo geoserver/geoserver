@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getDatastores
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Get a list of data stores
       description: List all data stores in workspace ws. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
       produces:
@@ -47,7 +47,7 @@ paths:
     post:
       operationId: postDatastores
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Create a new data store
       description: Adds a new data store to the workspace.
 
@@ -78,7 +78,7 @@ paths:
     put:
       operationId: putdatastores
       tags:
-       - "datastores"
+       - "DataStores"
       description: Invalid. Use POST for adding a new data store, or PUT on /datastores/{datastore} to edit an existing data store.
       responses:
         405:
@@ -87,7 +87,7 @@ paths:
     delete:
       operationId: deletedatastores
       tags:
-       - "datastores"
+       - "DataStores"
       description: Invalid. Use /datastores/{datastore} instead.
       responses:
         405:
@@ -97,7 +97,7 @@ paths:
     get:
       operationId: getDataStore
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Retrieve a particular data store from a workspace
       description: Controls a particular data store in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
       produces:
@@ -150,7 +150,7 @@ paths:
     post:
       operationId: postDatastore
       tags:
-       - "datastores"
+       - "DataStores"
       description: Invalid. Use PUT to edit a data store definition, or POST with /datastore to add a new definition.
       responses:
         405:
@@ -159,7 +159,7 @@ paths:
     put:
       operationId: putDatastore
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Modify a data store.
       description: Modify data store ds. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{ds}.xml" for XML).
       parameters:
@@ -184,7 +184,7 @@ paths:
     delete:
       operationId: deleteDatastore
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Delete data store
       description: Deletes a data store from the server.
       parameters:
@@ -211,7 +211,7 @@ paths:
     get:
       operationId: getDataStoreUpload
       tags:
-       - "datastores"
+       - "DataStores"
       description:  Deprecated. Retrieve the underlying files for the data store as a zip file with MIME type application/zip
       parameters:
         - name: workspaceName
@@ -241,7 +241,7 @@ paths:
     post:
       operationId: postDataStoreUpload
       tags:
-       - "datastores"
+       - "DataStores"
       description: Invalid, use PUT for uploads
       responses:
         405:
@@ -250,7 +250,7 @@ paths:
     put:
       operationId: putDataStoreUpload
       tags:
-       - "datastores"
+       - "DataStores"
       summary:  Uploads files to the data store, creating it if necessary
       description: Creates or modifies a single data store by uploading spatial data or mapping configuration (in case an app-schema data store is targeted) files.
       parameters:
@@ -309,7 +309,7 @@ paths:
     delete:
       operationId: deleteDataStoreUpload
       tags:
-       - "datastores"
+       - "DataStores"
       description: Invalid, only used for uploads
       responses:
         405:
@@ -318,7 +318,7 @@ paths:
     post:
       operationId: cleanAllMongoSchemas
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
       description: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
       produces:
@@ -341,7 +341,7 @@ paths:
     post:
       operationId: cleanMongoSchema
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Cleans a MongoDB internal store Schemas for an App-Schema store. 
       description: Cleans a MongoDB internal store Schemas for an App-Schema store. 
       produces:
@@ -369,7 +369,7 @@ paths:
     post:
       operationId: rebuildAllMongoSchemas
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
       description: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
       produces:
@@ -402,7 +402,7 @@ paths:
     post:
       operationId: rebuildMongoSchema
       tags:
-       - "datastores"
+       - "DataStores"
       summary: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
       description: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
       produces:

@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getStructuredCoverageIndex
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       summary: Get the information schema attached to the granules
       description: Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation.
       produces:
@@ -125,7 +125,7 @@ paths:
     post:
       operationId: postStructuredCoverageIndex
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the index cannot be created or modified
       responses:
         401:
@@ -136,7 +136,7 @@ paths:
     put:
       operationId: putStructuredCoverageIndex
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the index cannot be created or modified
       responses:
         401:
@@ -147,7 +147,7 @@ paths:
     delete:
       operationId: deleteCoverageStores
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the index cannot be created or modified
       responses:
         401:
@@ -159,7 +159,7 @@ paths:
     get:
       operationId: getStructuredCoverageGranules
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       summary: Get the attributes associated to the granules
       description: |
         Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
@@ -362,7 +362,7 @@ paths:
     post:
       operationId: postStructuredCoverageGranules
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
       responses:
         401:
@@ -373,7 +373,7 @@ paths:
     put:
       operationId: putStructuredCoverageGranules
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
       responses:
         401:
@@ -384,7 +384,7 @@ paths:
     delete:
       operationId: deleteStructuredCoverageGranules
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Allows removing one or more granules from the index
       parameters:
         - name: workspace
@@ -432,7 +432,7 @@ paths:
     get:
       operationId: getStructuredCoverageGranule
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       summary: Get the attributes of a particular granule
       description: Displays a list of all the attributes associated to a particular coverage's granule. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
       produces:
@@ -562,7 +562,7 @@ paths:
     post:
       operationId: postStructuredCoverageGranule
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
       responses:
         401:
@@ -573,7 +573,7 @@ paths:
     put:
       operationId: putStructuredCoverageGranule
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
       responses:
         401:
@@ -584,7 +584,7 @@ paths:
     delete:
       operationId: deleteStructuredCoverageGranule
       tags:
-       - "structuredcoverages"
+       - "StructuredCoverages"
       description: Allows removing the specified granule
       parameters:
         - name: workspace

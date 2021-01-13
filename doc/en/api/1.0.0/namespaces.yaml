@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getNamespaces
       tags:
-       - "namespaces"
+       - "Namespaces"
       summary: Get a list of namespaces
       description: Displays a list of all namespaces on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/namespaces.xml" for XML)
       produces:
@@ -62,7 +62,7 @@ paths:
     post:
       operationId: postNamespaces
       tags:
-       - "namespaces"
+       - "Namespaces"
       summary: Add a new namespace to GeoServer
       description: Adds a new namespace to the server
       parameters:
@@ -94,7 +94,7 @@ paths:
     put:
       operationId: putNamespaces
       tags:
-       - "namespaces"
+       - "Namespaces"
       responses:
         405:
           description: Not permitted
@@ -102,7 +102,7 @@ paths:
     delete:
       operationId: deleteNamespaces
       tags:
-       - "namespaces"
+       - "Namespaces"
       responses:
         405:
           description: Not permitted
@@ -111,7 +111,7 @@ paths:
     get:
       operationId: getNamespace
       tags:
-       - "namespaces"
+       - "Namespaces"
       summary: Retrieve a namespace
       description: Retrieves a single namespace definition. Use the "Accept:" header to specify format or 
         append an extension to the endpoint (example "/namespaces/{namespace}.xml" for XML).
@@ -153,7 +153,7 @@ paths:
     put:
       summary: Update a namespace
       tags:
-       - "namespaces"
+       - "Namespaces"
       description: Takes the body of the put and modifies the namespace from it.
       operationId: putNamespace
       consumes:
@@ -175,7 +175,7 @@ paths:
     post:
       operationId: postNamespace
       tags:
-       - "namespaces"
+       - "Namespaces"
       responses:
         405:
           description: Forbidden to post to an existing namespace (use PUT)
@@ -183,7 +183,7 @@ paths:
     delete:
       operationId: deleteNamespace
       tags:
-       - "namespaces"
+       - "Namespaces"
       summary: Delete a namespace
       parameters:
         - name: namespaceName

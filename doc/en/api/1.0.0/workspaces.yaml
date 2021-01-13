@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getWorkspaces
       tags:
-       - "workspaces"
+       - "Workspaces"
       summary: Get a list of workspaces
       description: Displays a list of all workspaces on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces.xml" for XML)
       produces:
@@ -62,7 +62,7 @@ paths:
     post:
       operationId: postWorkspaces
       tags:
-       - "workspaces"
+       - "Workspaces"
       summary: add a new workspace to GeoServer
       description: Adds a new workspace to the server
       parameters:
@@ -100,7 +100,7 @@ paths:
     put:
       operationId: putWorkspaces
       tags:
-       - "workspaces"
+       - "Workspaces"
       responses:
         405:
           description: Not permitted
@@ -108,7 +108,7 @@ paths:
     delete:
       operationId: deleteWorkspaces
       tags:
-       - "workspaces"
+       - "Workspaces"
       responses:
         405:
           description: Not permitted
@@ -117,7 +117,7 @@ paths:
     get:
       operationId: getWorkspace
       tags:
-       - "workspaces"
+       - "Workspaces"
       summary: Retrieve a layer group
       description: Retrieves a single workspace definition. Use the "Accept:" header to specify format or 
         append an extension to the endpoint (example "/workspaces/{workspace}.xml" for XML).
@@ -170,7 +170,7 @@ paths:
     put:
       summary: Update a workspace
       tags:
-       - "workspaces"
+       - "Workspaces"
       description: takes the body of the post and modifies the workspace from it.
       operationId: putWorkspace
       consumes:
@@ -198,7 +198,7 @@ paths:
     post:
       operationId: postWorkspace
       tags:
-       - "workspaces"
+       - "Workspaces"
       responses:
         405:
           description: Forbidden to post to an existing workspace (use PUT)
@@ -206,7 +206,7 @@ paths:
     delete:
       operationId: deleteWorkspace
       tags:
-       - "workspaces"
+       - "Workspaces"
       parameters:
         - name: workspaceName
           in: path

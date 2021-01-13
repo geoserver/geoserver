@@ -16,7 +16,7 @@ paths:
     get:
       operationId: rolesDefaultGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles
       description: Query all roles in the default role service.
       produces:
@@ -32,7 +32,7 @@ paths:
     get:
       operationId: rolesDefaultUserGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles for user
       description: Query all roles for the user in the default role service.
       produces:
@@ -54,7 +54,7 @@ paths:
     get:
       operationId: rolesDefaultGroupGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles for group
       description: Query all roles for the group in the default role service.
       produces:
@@ -76,7 +76,7 @@ paths:
     get:
       operationId: rolesGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles
       description: Query all roles in a particular role service.
       produces:
@@ -98,7 +98,7 @@ paths:
     get:
       operationId: rolesUserGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles for user
       description: Query all roles for the user in a particular role service.
       produces:
@@ -125,7 +125,7 @@ paths:
     get:
       operationId: rolesGroupGet
       tags:
-       - "roles"
+       - "Roles"
       summary: Query all roles for group
       description: Query all roles for the group in a particular role service.
       produces:
@@ -152,7 +152,7 @@ paths:
     post:
       operationId: roleDefaultPost
       tags:
-       - "roles"
+       - "Roles"
       summary: Add a role
       description: Add a role in the default role service.
       consumes: 
@@ -170,7 +170,7 @@ paths:
     delete:
       operationId: roleDefaultDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Delete a role
       description: Delete a role in the default role service.
       consumes: 
@@ -189,7 +189,7 @@ paths:
     post:
       operationId: roleDefaultUserPost
       tags:
-       - "roles"
+       - "Roles"
       summary: Associate a role with a user
       description: Associate an existing role in the default role service with a user.
       consumes: 
@@ -212,7 +212,7 @@ paths:
     delete:
       operationId: roleDefaultUserDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Disassociate a role from a user
       description: Disassociate a role in the default role service with a user.
       consumes: 
@@ -236,7 +236,7 @@ paths:
     post:
       operationId: roleDefaultGroupPost
       tags:
-       - "roles"
+       - "Roles"
       summary: Associate a role with a group
       description: Associate an existing role in the default role service with a group.
       consumes: 
@@ -259,7 +259,7 @@ paths:
     delete:
       operationId: roleDefaultGroupDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Disassociate a role from a group
       description: Disassociate a role in the default role service with a group.
       consumes: 
@@ -283,7 +283,7 @@ paths:
     post:
       operationId: rolePost
       tags:
-       - "roles"
+       - "Roles"
       summary: Add a role
       description: Add a role in a particular role service.
       consumes: 
@@ -306,7 +306,7 @@ paths:
     delete:
       operationId: roleDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Delete a role
       description: Delete a role in a particular role service.
       consumes: 
@@ -330,7 +330,7 @@ paths:
     post:
       operationId: roleUserPost
       tags:
-       - "roles"
+       - "Roles"
       summary: Associate a role with a user
       description: Associate an existing role in a particular role service with a user.
       consumes: 
@@ -358,7 +358,7 @@ paths:
     delete:
       operationId: roleUserDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Disassociate a role from a user
       description: Disassociate a role in a particular role service with a user.
       consumes: 
@@ -387,7 +387,7 @@ paths:
     post:
       operationId: roleGroupPost
       tags:
-       - "roles"
+       - "Roles"
       summary: Associate a role with a group
       description: Associate an existing role in a particular role service with a group.
       consumes: 
@@ -415,7 +415,7 @@ paths:
     delete:
       operationId: roleGroupDelete
       tags:
-       - "roles"
+       - "Roles"
       summary: Disassociate a role from a group
       description: Disassociate a role in a particular role service with a group.
       consumes: 

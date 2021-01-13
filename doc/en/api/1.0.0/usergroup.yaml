@@ -16,7 +16,7 @@ paths:
     get:
       operationId: usersDefaultGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query all users
       description: Query all users in the default user/group service.
       produces:
@@ -31,7 +31,7 @@ paths:
     post:
       operationId: usersDefaultPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Add a new user
       description: Add a new user to the default user/group service      
       parameters:
@@ -55,7 +55,7 @@ paths:
     get:
       operationId: usersGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query all users
       description: Query all users in a particular user/group service.
       produces:
@@ -76,7 +76,7 @@ paths:
     post:
       operationId: usersPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Add a new user
       description: Add a new user to a particular user/group service.
       consumes: 
@@ -105,7 +105,7 @@ paths:
     get:
       operationId: userDefaultGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query a user
       description: Query a user in the default user/group service.
       produces:
@@ -126,7 +126,7 @@ paths:
     post:
       operationId: userDefaultPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Modify a user
       description: Modify a user in the default user/group service, unspecified fields remain unchanged.
       consumes: 
@@ -150,7 +150,7 @@ paths:
     delete:
       operationId: userDefaultDelete
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Delete a user
       description: Delete a user in the default user/group service.
       consumes: 
@@ -169,7 +169,7 @@ paths:
     get:
       operationId: userGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query a user
       description: Query a user in a particular user/group service.
       produces:
@@ -196,7 +196,7 @@ paths:
     post:
       operationId: userPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Modify a user
       description: Modify a user in a particular user/group service, unspecified fields remain unchanged.
       consumes: 
@@ -225,7 +225,7 @@ paths:
     delete:
       operationId: userDelete
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Delete a user
       description: Delete a user in a particular user/group service.
       consumes: 
@@ -250,7 +250,7 @@ paths:
     get:
       operationId: groupsDefaultGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query all groups
       description: Query all groups in the default user/group service.
       produces:
@@ -266,7 +266,7 @@ paths:
     get:
       operationId: groupsGet
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Query all groups
       description: Query all groups in a particular user/group service.
       produces:
@@ -288,7 +288,7 @@ paths:
     post:
       operationId: groupDefaultPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Add a group
       description: Add a group in the default user/group service.
       consumes: 
@@ -306,7 +306,7 @@ paths:
     delete:
       operationId: groupDefaultDelete
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Delete a group
       description: Delete a group in the default user/group service.
       consumes: 
@@ -325,7 +325,7 @@ paths:
     post:
       operationId: groupPost
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Add a group
       description: Add a group in a particular user/group service.
       consumes: 
@@ -348,7 +348,7 @@ paths:
     delete:
       operationId: groupDelete
       tags:
-       - "usergroup"
+       - "UserGroup"
       summary: Delete a group
       description: Delete a group in a particular user/group service.
       consumes: 

@@ -16,7 +16,7 @@ paths:
     get:
       operationId: getFonts
       tags:
-       - "fonts"
+       - "Fonts"
       summary: Get a list of fonts
       description: Displays a list of all fonts on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/fonts.xml" for XML)
       produces:
@@ -48,7 +48,7 @@ paths:
     post:
       operationId: postFonts
       tags:
-       - "fonts"
+       - "Fonts"
       description: Invalid. Fonts cannot be added through the REST API.
       responses:
         401:
@@ -59,7 +59,7 @@ paths:
     put:
       operationId: putFonts
       tags:
-       - "fonts"
+       - "Fonts"
       description: Invalid. Fonts cannot be updated through the REST API.
       responses:
         401:
@@ -70,7 +70,7 @@ paths:
     delete:
       operationId: deleteFonts
       tags:
-       - "fonts"
+       - "Fonts"
       description: Invalid. Fonts cannot be deleted through the REST API.
       responses:
         401:

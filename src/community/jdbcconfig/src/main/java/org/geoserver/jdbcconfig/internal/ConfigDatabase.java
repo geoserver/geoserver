@@ -291,6 +291,11 @@ public class ConfigDatabase {
         return count;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -298,12 +303,17 @@ public class ConfigDatabase {
             @Nullable Integer limit,
             @Nullable SortBy sortOrder) {
         if (sortOrder == null) {
-            return query(of, filter, offset, limit, new SortBy[] {});
+            return query(of, filter, offset, limit);
         } else {
-            return query(of, filter, offset, limit, new SortBy[] {sortOrder});
+            return query(of, filter, offset, limit, sortOrder);
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -415,6 +425,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<String> queryIds(
             final Class<T> of, final Filter filter) {
 
@@ -480,6 +495,11 @@ public class ConfigDatabase {
         return iterator;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> List<T> queryAsList(
             final Class<T> of,
             final Filter filter,
@@ -497,6 +517,11 @@ public class ConfigDatabase {
         return list;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends CatalogInfo> T getDefault(final String key, Class<T> type) {
         String sql = "SELECT ID FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
 
@@ -1036,6 +1061,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
@@ -1099,6 +1129,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getIdByIdentity(
             final Class<T> type, final String... identityMappings) {
         Assert.notNull(identityMappings, "id");
@@ -1152,6 +1187,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
         String id = getIdByIdentity(type, identityMappings);
 
@@ -1542,6 +1582,11 @@ public class ConfigDatabase {
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<T> it =
@@ -1561,6 +1606,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getId(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 

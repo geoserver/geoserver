@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.validator;
 
-import org.hsqldb.lib.Collection;
+import java.util.Collection;
 import org.springframework.validation.Errors;
 
 /**

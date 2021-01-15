@@ -78,6 +78,7 @@ public abstract class LegendGraphicBuilder {
      */
     protected final double MINIMUM_SYMBOL_SIZE = 3.0;
 
+    double dpiScaleFactor;
     protected int w;
     protected int h;
     boolean forceLabelsOn = false;
@@ -96,6 +97,13 @@ public abstract class LegendGraphicBuilder {
         // width and height, we might have to rescale those in case of DPI usage
         w = request.getWidth();
         h = request.getHeight();
+        double dpi = RendererUtilities.getDpi(request.getLegendOptions());
+        double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
+        dpiScaleFactor = dpi / standardDpi;
+        if (dpiScaleFactor != 1.0) {
+            w = ((int) Math.round(request.getWidth() * dpiScaleFactor));
+            h = ((int) Math.round(request.getHeight() * dpiScaleFactor));
+        }
 
         if (request.getLegendOptions().get("forceLabels") instanceof String) {
             String forceLabelsOpt = (String) request.getLegendOptions().get("forceLabels");
@@ -149,13 +157,8 @@ public abstract class LegendGraphicBuilder {
     protected Style resizeForDPI(GetLegendGraphicRequest request, Style gt2Style) {
 
         // apply dpi rescale
-        double dpi = RendererUtilities.getDpi(request.getLegendOptions());
-        double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
-        if (dpi != standardDpi) {
-            double scaleFactor = dpi / standardDpi;
-            w = ((int) Math.round(request.getWidth() * scaleFactor));
-            h = ((int) Math.round(request.getHeight() * scaleFactor));
-            DpiRescaleStyleVisitor dpiVisitor = new DpiRescaleStyleVisitor(scaleFactor);
+        if (dpiScaleFactor != 1.0) {
+            DpiRescaleStyleVisitor dpiVisitor = new DpiRescaleStyleVisitor(dpiScaleFactor);
             dpiVisitor.visit(gt2Style);
             gt2Style = (Style) dpiVisitor.getCopy();
         }

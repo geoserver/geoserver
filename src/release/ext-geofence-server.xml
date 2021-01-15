@@ -10,12 +10,12 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>antlr*</include>
-        <include>asm*</include>
         <include>aspectj*</include>
-        <include>cglib*</include>
+        <include>cglib-nodep*</include>
         <include>dao*</include>
         <include>dom4j*</include>
         <include>geodb*</include>
+        <include>ehcache-core*</include>
         <include>*gs-geofence*</include>
         <include>*geofence-model-internal*</include>
         <include>*geofence-services*</include>
@@ -33,8 +33,6 @@
         <include>spring-orm*</include>
         <include>spring-oxm*</include>
         <include>xercesImpl*</include>
-        <include>wicket-dnd*</include>
-        <include>prototype*</include>
       </includes>
     </fileSet>
     <fileSet>

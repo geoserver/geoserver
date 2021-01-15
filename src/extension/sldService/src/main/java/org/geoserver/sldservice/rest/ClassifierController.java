@@ -449,8 +449,7 @@ public class ClassifierController extends BaseSLDServiceController {
         if (bandSelected) {
             SelectedChannelType grayChannel =
                     SF.createSelectedChannelType(String.valueOf(selectedBand), null);
-            ChannelSelection channelSelection =
-                    SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
+            ChannelSelection channelSelection = SF.createChannelSelection(grayChannel);
             rasterSymbolizer.setChannelSelection(channelSelection);
         }
 

@@ -124,7 +124,7 @@ public class DataPanel extends Panel {
         // grab the feature collection and run the min/max visitors (this will move the
         // query to the dbms in case of such data source)
         Query q = new Query();
-        q.setPropertyNames(new String[] {attribute.getName()});
+        q.setPropertyNames(attribute.getName());
         FeatureCollection<?, ?> fc = fs.getFeatures(q);
         MinVisitor minVisitor = new MinVisitor(attribute.getName());
         MaxVisitor maxVisitor = new MaxVisitor(attribute.getName());

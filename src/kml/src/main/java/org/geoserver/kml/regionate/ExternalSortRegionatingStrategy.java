@@ -190,9 +190,9 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
             Query q = new Query();
 
             if (geom.getLocalName().equals(attribute)) {
-                q.setPropertyNames(new String[] {geom.getLocalName()});
+                q.setPropertyNames(geom.getLocalName());
             } else {
-                q.setPropertyNames(new String[] {attribute, geom.getLocalName()});
+                q.setPropertyNames(attribute, geom.getLocalName());
             }
 
             // setup the eventual transform

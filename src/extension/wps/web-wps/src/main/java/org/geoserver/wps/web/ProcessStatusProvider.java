@@ -183,7 +183,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
                 @SuppressWarnings("unchecked")
                 final String sortProperty = ((BeanProperty<StoreInfo>) property).getPropertyPath();
                 sortOrder = sortBy(sortProperty, sort.isAscending());
-                query.setSortBy(new SortBy[] {sortOrder});
+                query.setSortBy(sortOrder);
             }
         }
         LOGGER.fine("built query " + query + " to filter statuses");

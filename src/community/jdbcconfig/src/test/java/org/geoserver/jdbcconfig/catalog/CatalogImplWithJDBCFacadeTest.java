@@ -335,7 +335,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         facade.getConfigDatabase().clearCache();
 
         // catalog scan, similar to what WMS GetCapabilities does, simulating many of them in
-        // parlalle
+        // parallel
         ExecutorService tp = Executors.newFixedThreadPool(LOAD_FACTOR);
         List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < LAYER_COUNT; i++) {

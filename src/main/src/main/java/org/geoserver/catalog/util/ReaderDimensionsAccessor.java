@@ -378,7 +378,7 @@ public class ReaderDimensionsAccessor {
                                 FF.literal(range.getMaxValue()));
                 query.setFilter(rangeFilter);
                 query.setMaxFeatures(maxEntries);
-                query.setPropertyNames(new String[] {descriptor.getStartAttribute()});
+                query.setPropertyNames(descriptor.getStartAttribute());
                 query.setHints(new Hints(StructuredCoverageViewReader.QUERY_FIRST_BAND, true));
 
                 FeatureCollection collection = gs.getGranules(query);

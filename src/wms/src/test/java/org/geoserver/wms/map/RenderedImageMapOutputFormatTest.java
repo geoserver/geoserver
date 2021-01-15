@@ -1394,7 +1394,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         green.setChannelName("2");
         blue.setChannelName("1");
 
-        cs.setRGBChannels(new SelectedChannelType[] {red, green, blue});
+        cs.setRGBChannels(red, green, blue);
         symbolizer.setChannelSelection(cs);
 
         reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);

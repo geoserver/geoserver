@@ -66,7 +66,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
 
         MemoryDataStore ds = new MemoryDataStore();
         ds.createSchema(type);
-        ds.addFeatures(new SimpleFeature[] {f1, f2, f3});
+        ds.addFeatures(f1, f2, f3);
 
         FeatureSource fs = ds.getFeatureSource("test");
 

@@ -60,7 +60,7 @@ public class RandomRegionatingStrategy extends CachedHierarchyRegionatingStrateg
         // generation of Coordinate[] out of the sequences...
         // q.setHints(new Hints(Hints.JTS_COORDINATE_SEQUENCE_FACTORY,
         // PackedCoordinateSequenceFactory.class));
-        q.setPropertyNames(new String[] {geom.getLocalName()});
+        q.setPropertyNames(geom.getLocalName());
 
         // return the reader
         return fs.getFeatures(q).features();

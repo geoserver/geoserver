@@ -6,7 +6,6 @@ package org.geoserver.wcs2_0.eo.web;
 
 import static org.junit.Assert.assertTrue;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.wcs.WCSInfo;
@@ -30,13 +29,7 @@ public class WCSEOAdminPanelTest extends GeoServerWicketTestSupport {
 
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new WCSEOAdminPanel(id, new Model<>(wcs));
-                            }
-                        }));
+                        (ComponentBuilder) id -> new WCSEOAdminPanel(id, new Model<>(wcs))));
     }
 
     @Test

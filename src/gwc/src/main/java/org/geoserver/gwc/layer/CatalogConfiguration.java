@@ -143,14 +143,10 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                         .build(new TileLayerLoader(tileLayerCatalog));
 
         tileLayerCatalog.addListener(
-                new TileLayerCatalogListener() {
-
-                    @Override
-                    public void onEvent(String layerId, TileLayerCatalogListener.Type type) {
-                        if (type == TileLayerCatalogListener.Type.MODIFY
-                                || type == TileLayerCatalogListener.Type.DELETE) {
-                            layerCache.invalidate(layerId);
-                        }
+                (layerId, type) -> {
+                    if (type == TileLayerCatalogListener.Type.MODIFY
+                            || type == TileLayerCatalogListener.Type.DELETE) {
+                        layerCache.invalidate(layerId);
                     }
                 });
     }

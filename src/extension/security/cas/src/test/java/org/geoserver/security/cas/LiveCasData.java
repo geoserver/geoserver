@@ -5,8 +5,6 @@
  */
 package org.geoserver.security.cas;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
@@ -240,14 +238,11 @@ public class LiveCasData extends LiveSystemTestData {
 
         httpsServer.createContext(
                 "/test",
-                new HttpHandler() {
-                    @Override
-                    public void handle(HttpExchange t) throws IOException {
-                        LOGGER.info("https server working");
-                        t.getRequestBody().close();
-                        t.sendResponseHeaders(200, 0);
-                        t.getResponseBody().close();
-                    }
+                t -> {
+                    LOGGER.info("https server working");
+                    t.getRequestBody().close();
+                    t.sendResponseHeaders(200, 0);
+                    t.getResponseBody().close();
                 });
 
         httpsServer.setExecutor(null); // creates a default executor

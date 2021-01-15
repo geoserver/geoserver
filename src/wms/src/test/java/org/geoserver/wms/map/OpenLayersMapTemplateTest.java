@@ -14,7 +14,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -29,9 +28,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
@@ -74,18 +71,13 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         docBuilder.setEntityResolver(
-                new EntityResolver() {
-
-                    @Override
-                    public InputSource resolveEntity(String publicId, String systemId)
-                            throws SAXException, IOException {
-                        StringReader reader =
-                                new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                        InputSource source = new InputSource(reader);
-                        source.setPublicId(publicId);
-                        source.setSystemId(systemId);
-                        return source;
-                    }
+                (publicId, systemId) -> {
+                    StringReader reader =
+                            new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    InputSource source = new InputSource(reader);
+                    source.setPublicId(publicId);
+                    source.setSystemId(systemId);
+                    return source;
                 });
 
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));

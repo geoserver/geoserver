@@ -8,7 +8,6 @@ package org.geoserver.web.publish;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -235,14 +234,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     private void sortTabPanels(List<PublishedEditTabPanelInfo> tabPanels) {
         Collections.sort(
                 tabPanels,
-                new Comparator<PublishedEditTabPanelInfo>() {
-                    @Override
-                    public int compare(PublishedEditTabPanelInfo o1, PublishedEditTabPanelInfo o2) {
-                        Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
-                        Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+                (o1, o2) -> {
+                    Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+                    Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-                        return order1.compareTo(order2);
-                    }
+                    return order1.compareTo(order2);
                 });
     }
 

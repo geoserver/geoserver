@@ -67,63 +67,55 @@ public class ReaderDimensionsAccessor {
 
     /** Comparator for the TreeSet made either by Date objects, or by DateRange objects */
     private static final Comparator<Object> TEMPORAL_COMPARATOR =
-            new Comparator<Object>() {
-
-                @Override
-                public int compare(Object o1, Object o2) {
-                    // the domain can be a mix of dates and ranges
-                    if (o1 instanceof Date) {
-                        if (o2 instanceof DateRange) {
-                            return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
-                        } else {
-                            return ((Date) o1).compareTo((Date) o2);
-                        }
-                    } else if (o1 instanceof DateRange) {
-                        if (o2 instanceof Date) {
-                            return ((DateRange) o1).getMinValue().compareTo((Date) o2);
-                        } else {
-                            return ((DateRange) o1)
-                                    .getMinValue()
-                                    .compareTo(((DateRange) o2).getMinValue());
-                        }
+            (o1, o2) -> {
+                // the domain can be a mix of dates and ranges
+                if (o1 instanceof Date) {
+                    if (o2 instanceof DateRange) {
+                        return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
+                    } else {
+                        return ((Date) o1).compareTo((Date) o2);
                     }
-                    throw new IllegalArgumentException(
-                            "Unxpected object type found, was expecting date or date range but found "
-                                    + o1
-                                    + " and "
-                                    + o2);
+                } else if (o1 instanceof DateRange) {
+                    if (o2 instanceof Date) {
+                        return ((DateRange) o1).getMinValue().compareTo((Date) o2);
+                    } else {
+                        return ((DateRange) o1)
+                                .getMinValue()
+                                .compareTo(((DateRange) o2).getMinValue());
+                    }
                 }
+                throw new IllegalArgumentException(
+                        "Unxpected object type found, was expecting date or date range but found "
+                                + o1
+                                + " and "
+                                + o2);
             };
 
     /** Comparator for TreeSet made either by Double objects, or by NumberRange objects */
     @SuppressWarnings("unchecked")
     private static final Comparator<Object> ELEVATION_COMPARATOR =
-            new Comparator<Object>() {
-
-                @Override
-                public int compare(Object o1, Object o2) {
-                    if (o1 instanceof Double) {
-                        if (o2 instanceof Double) {
-                            return ((Double) o1).compareTo((Double) o2);
-                        } else if (o2 instanceof NumberRange) {
-                            NumberRange<Double> nrd = (NumberRange<Double>) o2;
-                            return ((Double) o1).compareTo(nrd.getMinValue());
-                        }
-                    } else if (o1 instanceof NumberRange) {
-                        if (o2 instanceof NumberRange) {
-                            return ((NumberRange<Double>) o1)
-                                    .getMinValue()
-                                    .compareTo(((NumberRange<Double>) o2).getMinValue());
-                        } else {
-                            return ((NumberRange<Double>) o1).getMinValue().compareTo((Double) o2);
-                        }
+            (o1, o2) -> {
+                if (o1 instanceof Double) {
+                    if (o2 instanceof Double) {
+                        return ((Double) o1).compareTo((Double) o2);
+                    } else if (o2 instanceof NumberRange) {
+                        NumberRange<Double> nrd = (NumberRange<Double>) o2;
+                        return ((Double) o1).compareTo(nrd.getMinValue());
                     }
-                    throw new IllegalArgumentException(
-                            "Unxpected object type found, was expecting double or range of doubles but found "
-                                    + o1
-                                    + " and "
-                                    + o2);
+                } else if (o1 instanceof NumberRange) {
+                    if (o2 instanceof NumberRange) {
+                        return ((NumberRange<Double>) o1)
+                                .getMinValue()
+                                .compareTo(((NumberRange<Double>) o2).getMinValue());
+                    } else {
+                        return ((NumberRange<Double>) o1).getMinValue().compareTo((Double) o2);
+                    }
                 }
+                throw new IllegalArgumentException(
+                        "Unxpected object type found, was expecting double or range of doubles but found "
+                                + o1
+                                + " and "
+                                + o2);
             };
 
     private final GridCoverage2DReader reader;

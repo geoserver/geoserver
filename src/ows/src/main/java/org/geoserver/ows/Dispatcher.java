@@ -956,22 +956,19 @@ public class Dispatcher extends AbstractController {
                 // sort by class hierarchy
                 Collections.sort(
                         responses,
-                        new Comparator<Response>() {
-                            @Override
-                            public int compare(Response o1, Response o2) {
-                                Class<?> c1 = o1.getBinding();
-                                Class<?> c2 = o2.getBinding();
+                        (o1, o2) -> {
+                            Class<?> c1 = o1.getBinding();
+                            Class<?> c2 = o2.getBinding();
 
-                                if (c1.equals(c2)) {
-                                    return 0;
-                                }
-
-                                if (c1.isAssignableFrom(c2)) {
-                                    return 1;
-                                }
-
-                                return -1;
+                            if (c1.equals(c2)) {
+                                return 0;
                             }
+
+                            if (c1.isAssignableFrom(c2)) {
+                                return 1;
+                            }
+
+                            return -1;
                         });
 
                 // check first two and make sure bindings are not equal
@@ -1217,12 +1214,7 @@ public class Dispatcher extends AbstractController {
             if (vmatches.size() > 1) {
                 // use highest version
                 Comparator<Service> comparator =
-                        new Comparator<Service>() {
-                            @Override
-                            public int compare(Service s1, Service s2) {
-                                return s1.getVersion().compareTo(s2.getVersion());
-                            }
-                        };
+                        (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
 
                 Collections.sort(vmatches, comparator);
             }
@@ -1266,15 +1258,12 @@ public class Dispatcher extends AbstractController {
         if (matches.size() > 1) {
             // sort by class hierarchy
             Comparator<KvpRequestReader> comparator =
-                    new Comparator<KvpRequestReader>() {
-                        @Override
-                        public int compare(KvpRequestReader kvp1, KvpRequestReader kvp2) {
-                            if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
-                                return -1;
-                            }
-
-                            return 1;
+                    (kvp1, kvp2) -> {
+                        if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
+                            return -1;
                         }
+
+                        return 1;
                     };
 
             Collections.sort(matches, comparator);
@@ -1421,47 +1410,44 @@ public class Dispatcher extends AbstractController {
             if (vmatches.size() > 1) {
                 // use highest version
                 Comparator<XmlRequestReader> comparator =
-                        new Comparator<XmlRequestReader>() {
-                            @Override
-                            public int compare(XmlRequestReader r1, XmlRequestReader r2) {
-                                Version v1 = r1.getVersion();
-                                Version v2 = r2.getVersion();
+                        (r1, r2) -> {
+                            Version v1 = r1.getVersion();
+                            Version v2 = r2.getVersion();
 
-                                if ((v1 == null) && (v2 == null)) {
-                                    return 0;
-                                }
-
-                                if ((v1 != null) && (v2 == null)) {
-                                    return 1;
-                                }
-
-                                if ((v1 == null) && (v2 != null)) {
-                                    return -1;
-                                }
-
-                                int versionCompare = v1.compareTo(v2);
-
-                                if (versionCompare != 0) {
-                                    return versionCompare;
-                                }
-
-                                String sid1 = r1.getServiceId();
-                                String sid2 = r2.getServiceId();
-
-                                if ((sid1 == null) && (sid2 == null)) {
-                                    return 0;
-                                }
-
-                                if ((sid1 != null) && (sid2 == null)) {
-                                    return 1;
-                                }
-
-                                if ((sid1 == null) && (sid2 != null)) {
-                                    return -1;
-                                }
-
-                                return sid1.compareTo(sid2);
+                            if ((v1 == null) && (v2 == null)) {
+                                return 0;
                             }
+
+                            if ((v1 != null) && (v2 == null)) {
+                                return 1;
+                            }
+
+                            if ((v1 == null) && (v2 != null)) {
+                                return -1;
+                            }
+
+                            int versionCompare = v1.compareTo(v2);
+
+                            if (versionCompare != 0) {
+                                return versionCompare;
+                            }
+
+                            String sid1 = r1.getServiceId();
+                            String sid2 = r2.getServiceId();
+
+                            if ((sid1 == null) && (sid2 == null)) {
+                                return 0;
+                            }
+
+                            if ((sid1 != null) && (sid2 == null)) {
+                                return 1;
+                            }
+
+                            if ((sid1 == null) && (sid2 != null)) {
+                                return -1;
+                            }
+
+                            return sid1.compareTo(sid2);
                         };
 
                 Collections.sort(vmatches, comparator);

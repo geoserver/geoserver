@@ -13,13 +13,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
-import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.filter.text.ecql.ECQL;
@@ -86,17 +84,13 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
         // the assertion
         expect(reader.read(isA(GeneralParameterValue[].class)))
                 .andAnswer(
-                        new IAnswer<GridCoverage2D>() {
-
-                            @Override
-                            public GridCoverage2D answer() throws Throwable {
-                                GeneralParameterValue[] params =
-                                        (GeneralParameterValue[]) EasyMock.getCurrentArguments()[0];
-                                ParameterValue param = (ParameterValue) params[0];
-                                Filter filter = (Filter) param.getValue();
-                                assertEquals(Predicates.and(requestFilter, securityFilter), filter);
-                                return null;
-                            }
+                        () -> {
+                            GeneralParameterValue[] params =
+                                    (GeneralParameterValue[]) EasyMock.getCurrentArguments()[0];
+                            ParameterValue param = (ParameterValue) params[0];
+                            Filter filter = (Filter) param.getValue();
+                            assertEquals(Predicates.and(requestFilter, securityFilter), filter);
+                            return null;
                         });
         EasyMock.replay(reader);
     }

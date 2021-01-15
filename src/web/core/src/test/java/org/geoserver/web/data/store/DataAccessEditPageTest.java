@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.util.List;
@@ -115,13 +114,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
         List<String> l =
                 Lists.transform(
-                        tester.getMessages(FeedbackMessage.ERROR),
-                        new Function<Serializable, String>() {
-                            @Override
-                            public String apply(Serializable input) {
-                                return input.toString();
-                            }
-                        });
+                        tester.getMessages(FeedbackMessage.ERROR), input -> input.toString());
         assertTrue(l.contains("Field 'Data Source Name' is required."));
         // tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
     }

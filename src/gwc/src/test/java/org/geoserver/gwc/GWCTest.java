@@ -129,10 +129,8 @@ import org.geowebcache.storage.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 import org.locationtech.jts.geom.Envelope;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opengis.filter.Filter;
 import org.springframework.context.ApplicationContext;
@@ -952,14 +950,11 @@ public class GWCTest {
 
         when(tld.getLayerNames()).thenReturn(layerNames);
         doAnswer(
-                        new Answer<Void>() {
-
-                            @Override
-                            public Void answer(InvocationOnMock invocation) throws Throwable {
-                                layerNames.remove(removedLayer);
-                                return null;
-                            }
-                        })
+                        (Answer<Void>)
+                                invocation -> {
+                                    layerNames.remove(removedLayer);
+                                    return null;
+                                })
                 .when(tld)
                 .reInit();
 
@@ -1466,15 +1461,7 @@ public class GWCTest {
     public void testSetBlobStoresNull() throws ConfigurationException {
 
         NullPointerException e =
-                assertThrows(
-                        NullPointerException.class,
-                        new ThrowingRunnable() {
-
-                            @Override
-                            public void run() throws Throwable {
-                                mediator.setBlobStores(null);
-                            }
-                        });
+                assertThrows(NullPointerException.class, () -> mediator.setBlobStores(null));
         assertTrue(e.getMessage().contains("stores is null"));
     }
 

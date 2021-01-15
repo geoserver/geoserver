@@ -362,12 +362,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
                     @Override
                     public Principal getSubjectDN() {
-                        return new Principal() {
-                            @Override
-                            public String getName() {
-                                return "cn=" + userName + ",ou=ou1";
-                            }
-                        };
+                        return () -> "cn=" + userName + ",ou=ou1";
                     }
 
                     @Override

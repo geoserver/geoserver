@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -848,13 +847,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         request.setFormat(getMapFormat());
 
-        this.rasterMapProducer.setLabelCache(
-                new Function<WMSMapContent, LabelCache>() {
-                    @Override
-                    public LabelCache apply(WMSMapContent mapContent) {
-                        return new CustomLabelCache();
-                    }
-                });
+        this.rasterMapProducer.setLabelCache(mapContent -> new CustomLabelCache());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         BufferedImage image = (BufferedImage) imageMap.getImage();
         imageMap.dispose();

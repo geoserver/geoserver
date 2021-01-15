@@ -5,12 +5,10 @@
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -144,14 +142,7 @@ public class Directory extends FileData {
             m.setTask("Scanning " + dir.getPath());
 
             // get all the regular (non directory) files
-            File[] fileList =
-                    dir.listFiles(
-                            new FilenameFilter() {
-                                @Override
-                                public boolean accept(File dir, String name) {
-                                    return !new File(dir, name).isDirectory();
-                                }
-                            });
+            File[] fileList = dir.listFiles((dir1, name) -> new File(dir1, name).isFile());
             if (fileList == null) {
                 // it can be null in case of I/O error, even if the
                 // dir is indeed a directory
@@ -503,14 +494,7 @@ public class Directory extends FileData {
         }
 
         try {
-            return Iterables.find(
-                    files,
-                    new Predicate<FileData>() {
-                        @Override
-                        public boolean apply(FileData input) {
-                            return name.equals(input.getName());
-                        }
-                    });
+            return Iterables.find(files, input -> name.equals(input.getName()));
         } catch (NoSuchElementException e) {
             return null;
         }

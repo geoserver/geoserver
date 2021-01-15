@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 import org.junit.rules.TemporaryFolder;
 
 /** Tests for {@link GeoServerResourceLoader}. */
@@ -58,13 +57,7 @@ public class GeoServerResourceLoaderTest {
     public void testRequireSingleMissingFile() {
         assertThrows(
                 IllegalArgumentException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        GeoServerResourceLoader.requireFile("does-not-exist", "Test fixture");
-                    }
-                });
+                () -> GeoServerResourceLoader.requireFile("does-not-exist", "Test fixture"));
     }
 
     /**
@@ -75,14 +68,9 @@ public class GeoServerResourceLoaderTest {
     public void testRequireSingleMissingFileOfTwo() {
         assertThrows(
                 IllegalArgumentException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
+                () ->
                         GeoServerResourceLoader.requireFile(
-                                "pom.xml" + File.pathSeparator + "does-not-exist", "Test fixture");
-                    }
-                });
+                                "pom.xml" + File.pathSeparator + "does-not-exist", "Test fixture"));
     }
 
     /**
@@ -124,13 +112,7 @@ public class GeoServerResourceLoaderTest {
         try {
             assertThrows(
                     IllegalArgumentException.class,
-                    new ThrowingRunnable() {
-
-                        @Override
-                        public void run() throws Throwable {
-                            GeoServerResourceLoader.lookupGeoServerDataDirectory(context);
-                        }
-                    });
+                    () -> GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
         } finally {
             System.clearProperty("GEOSERVER_REQUIRE_FILE");
         }
@@ -151,13 +133,7 @@ public class GeoServerResourceLoaderTest {
         EasyMock.replay(context);
         assertThrows(
                 IllegalArgumentException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        GeoServerResourceLoader.lookupGeoServerDataDirectory(context);
-                    }
-                });
+                () -> GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
     }
 
     @Test

@@ -41,7 +41,6 @@ import org.junit.Test;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -287,14 +286,10 @@ public class SimpleCatalogStoreTest {
             throws IOException {
         final List<String> values = new ArrayList<>();
         records.accepts(
-                new FeatureVisitor() {
-
-                    @Override
-                    public void visit(Feature feature) {
-                        ComplexAttribute ca = (ComplexAttribute) feature.getProperty(property);
-                        String value = (String) ca.getProperty("value").getValue();
-                        values.add(value);
-                    }
+                feature -> {
+                    ComplexAttribute ca = (ComplexAttribute) feature.getProperty(property);
+                    String value = (String) ca.getProperty("value").getValue();
+                    values.add(value);
                 },
                 null);
         return values;
@@ -322,19 +317,15 @@ public class SimpleCatalogStoreTest {
         // check the properties and collect their identifier
         final List<String> values = new ArrayList<>();
         records.accepts(
-                new FeatureVisitor() {
+                feature -> {
+                    // has the id
+                    ComplexAttribute id = (ComplexAttribute) feature.getProperty("identifier");
+                    assertNotNull(id);
+                    String value = (String) id.getProperty("value").getValue();
+                    values.add(value);
 
-                    @Override
-                    public void visit(Feature feature) {
-                        // has the id
-                        ComplexAttribute id = (ComplexAttribute) feature.getProperty("identifier");
-                        assertNotNull(id);
-                        String value = (String) id.getProperty("value").getValue();
-                        values.add(value);
-
-                        // only has the id
-                        assertEquals(1, feature.getProperties().size());
-                    }
+                    // only has the id
+                    assertEquals(1, feature.getProperties().size());
                 },
                 null);
 

@@ -816,14 +816,11 @@ public class GetFeature {
                 Enhancer enhancer = new Enhancer();
                 enhancer.setSuperclass(BigInteger.class);
                 enhancer.setCallback(
-                        new LazyLoader() {
-
-                            @Override
-                            public Object loadObject() throws Exception {
-                                long totalCount = getTotalCount(totalCountExecutors);
-                                return BigInteger.valueOf(totalCount);
-                            }
-                        });
+                        (LazyLoader)
+                                () -> {
+                                    long totalCount1 = getTotalCount(totalCountExecutors);
+                                    return BigInteger.valueOf(totalCount1);
+                                });
                 totalCount =
                         (BigInteger)
                                 enhancer.create(new Class[] {String.class}, new Object[] {"0"});

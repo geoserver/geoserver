@@ -178,23 +178,19 @@ public class DefaultTileLayerCatalogTest {
         AtomicBoolean hasBeenDeleted = new AtomicBoolean(false);
 
         catalog.addListener(
-                new TileLayerCatalogListener() {
-
-                    @Override
-                    public void onEvent(String layerId, Type type) {
-                        switch (type) {
-                            case CREATE:
-                                hasBeenCreated.set(true);
-                                break;
-                            case DELETE:
-                                hasBeenDeleted.set(true);
-                                break;
-                            case MODIFY:
-                                hasBeenModified.set(true);
-                                break;
-                            default:
-                                break;
-                        }
+                (layerId, type) -> {
+                    switch (type) {
+                        case CREATE:
+                            hasBeenCreated.set(true);
+                            break;
+                        case DELETE:
+                            hasBeenDeleted.set(true);
+                            break;
+                        case MODIFY:
+                            hasBeenModified.set(true);
+                            break;
+                        default:
+                            break;
                     }
                 });
 

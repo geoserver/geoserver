@@ -24,7 +24,6 @@ import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -76,22 +75,18 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         final Set<String> values = new HashSet<>();
         getRecords(q, Transaction.AUTO_COMMIT, rd)
                 .accepts(
-                        new FeatureVisitor() {
-
-                            @Override
-                            public void visit(Feature feature) {
-                                Property prop = (Property) property.evaluate(feature);
-                                if (prop != null)
-                                    try {
-                                        values.add(
-                                                new String(
-                                                        ((String) prop.getValue())
-                                                                .getBytes("ISO-8859-1"),
-                                                        "UTF-8"));
-                                    } catch (UnsupportedEncodingException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                            }
+                        feature -> {
+                            Property prop = (Property) property.evaluate(feature);
+                            if (prop != null)
+                                try {
+                                    values.add(
+                                            new String(
+                                                    ((String) prop.getValue())
+                                                            .getBytes("ISO-8859-1"),
+                                                    "UTF-8"));
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
                         },
                         null);
 

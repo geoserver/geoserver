@@ -5,7 +5,6 @@
 package org.geoserver.gwc.web.layer;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -31,15 +30,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
 
     private List<Locale> getLocales() {
         Locale[] locales = Locale.getAvailableLocales();
-        Arrays.sort(
-                locales,
-                new Comparator<Locale>() {
-
-                    @Override
-                    public int compare(Locale o1, Locale o2) {
-                        return o1.toString().compareTo(o2.toString());
-                    }
-                });
+        Arrays.sort(locales, (o1, o2) -> o1.toString().compareTo(o2.toString()));
         return Arrays.asList(locales);
     }
 

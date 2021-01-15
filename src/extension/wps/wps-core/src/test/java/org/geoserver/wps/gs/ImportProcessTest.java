@@ -151,21 +151,17 @@ public class ImportProcessTest extends WPSTestSupport {
         try {
             Future<?> future =
                     executor.submit(
-                            new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    importer.execute(
-                                            testFeatureCollection,
-                                            null,
-                                            SystemTestData.CITE_PREFIX,
-                                            SystemTestData.CITE_PREFIX,
-                                            "Buildings2",
-                                            null,
-                                            null,
-                                            null,
-                                            listener);
-                                }
+                            () -> {
+                                importer.execute(
+                                        testFeatureCollection,
+                                        null,
+                                        SystemTestData.CITE_PREFIX,
+                                        SystemTestData.CITE_PREFIX,
+                                        "Buildings2",
+                                        null,
+                                        null,
+                                        null,
+                                        listener);
                             });
             // cancel the import
             listener.setTask(new SimpleInternationalString("Test message"));

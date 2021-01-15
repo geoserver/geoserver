@@ -8,7 +8,6 @@ package org.geoserver.web.wicket;
 import java.io.Serializable;
 import java.util.Arrays;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -103,21 +102,9 @@ public class GeoServerDialog extends Panel {
 
         // make sure close == cancel behavior wise
         window.setCloseButtonCallback(
-                new ModalWindow.CloseButtonCallback() {
-
-                    @Override
-                    public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-                        return delegate.onCancel(target);
-                    }
-                });
+                (ModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
         window.setWindowClosedCallback(
-                new ModalWindow.WindowClosedCallback() {
-
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        delegate.onClose(target);
-                    }
-                });
+                (ModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
 
         // show the window
         this.delegate = delegate;
@@ -136,13 +123,7 @@ public class GeoServerDialog extends Panel {
             AjaxRequestTarget target,
             final IModel<String> heading,
             final IModel<String>... messages) {
-        window.setPageCreator(
-                new ModalWindow.PageCreator() {
-                    @Override
-                    public Page createPage() {
-                        return new InfoPage(heading, messages);
-                    }
-                });
+        window.setPageCreator((ModalWindow.PageCreator) () -> new InfoPage(heading, messages));
         window.show(target);
     }
 

@@ -36,12 +36,10 @@ import static org.geoserver.security.SecurityUtils.toBytes;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TreeSet;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.namespace.QName;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -77,7 +75,6 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.PasswordValidatorImpl;
@@ -122,15 +119,7 @@ public class MockCreator implements Callback {
         catalog.addListener(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
-        expect(catalog.getResourcePool())
-                .andAnswer(
-                        new IAnswer<ResourcePool>() {
-                            @Override
-                            public ResourcePool answer() throws Throwable {
-                                return ResourcePool.create(catalog);
-                            }
-                        })
-                .anyTimes();
+        expect(catalog.getResourcePool()).andAnswer(() -> ResourcePool.create(catalog)).anyTimes();
         MockCatalogBuilder b = new MockCatalogBuilder(catalog, loader.getBaseDirectory());
         b.setCallback(this);
 
@@ -342,119 +331,49 @@ public class MockCreator implements Callback {
 
         // password encoders
         expect(secMgr.loadPasswordEncoder(GeoServerEmptyPasswordEncoder.class))
-                .andAnswer(
-                        new IAnswer<GeoServerEmptyPasswordEncoder>() {
-                            @Override
-                            public GeoServerEmptyPasswordEncoder answer() throws Throwable {
-                                return createEmptyPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createEmptyPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder("emptyPasswordEncoder"))
-                .andAnswer(
-                        new IAnswer<GeoServerPasswordEncoder>() {
-                            @Override
-                            public GeoServerPasswordEncoder answer() throws Throwable {
-                                return createEmptyPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createEmptyPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder(GeoServerPlainTextPasswordEncoder.class))
-                .andAnswer(
-                        new IAnswer<GeoServerPlainTextPasswordEncoder>() {
-                            @Override
-                            public GeoServerPlainTextPasswordEncoder answer() throws Throwable {
-                                return createPlainTextPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createPlainTextPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder("plainTextPasswordEncoder"))
-                .andAnswer(
-                        new IAnswer<GeoServerPasswordEncoder>() {
-                            @Override
-                            public GeoServerPasswordEncoder answer() throws Throwable {
-                                return createPlainTextPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createPlainTextPasswordEncoder(secMgr))
                 .anyTimes();
 
         expect(secMgr.loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false))
-                .andAnswer(
-                        new IAnswer<GeoServerPBEPasswordEncoder>() {
-                            @Override
-                            public GeoServerPBEPasswordEncoder answer() throws Throwable {
-                                return createPbePasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createPbePasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder("pbePasswordEncoder"))
-                .andAnswer(
-                        new IAnswer<GeoServerPasswordEncoder>() {
-                            @Override
-                            public GeoServerPasswordEncoder answer() throws Throwable {
-                                return createPbePasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createPbePasswordEncoder(secMgr))
                 .anyTimes();
 
         expect(secMgr.loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, true))
-                .andAnswer(
-                        new IAnswer<GeoServerPBEPasswordEncoder>() {
-                            @Override
-                            public GeoServerPBEPasswordEncoder answer() throws Throwable {
-                                return createStrongPbePasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createStrongPbePasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder("strongPbePasswordEncoder"))
-                .andAnswer(
-                        new IAnswer<GeoServerPasswordEncoder>() {
-                            @Override
-                            public GeoServerPasswordEncoder answer() throws Throwable {
-                                return createStrongPbePasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createStrongPbePasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder(GeoServerDigestPasswordEncoder.class, null, true))
-                .andAnswer(
-                        new IAnswer<GeoServerDigestPasswordEncoder>() {
-                            @Override
-                            public GeoServerDigestPasswordEncoder answer() throws Throwable {
-                                return createDigestPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createDigestPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder(GeoServerDigestPasswordEncoder.class))
-                .andAnswer(
-                        new IAnswer<GeoServerDigestPasswordEncoder>() {
-                            @Override
-                            public GeoServerDigestPasswordEncoder answer() throws Throwable {
-                                return createDigestPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createDigestPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoder("digestPasswordEncoder"))
-                .andAnswer(
-                        new IAnswer<GeoServerPasswordEncoder>() {
-                            @Override
-                            public GeoServerPasswordEncoder answer() throws Throwable {
-                                return createDigestPasswordEncoder(secMgr);
-                            }
-                        })
+                .andAnswer(() -> createDigestPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoders())
                 .andAnswer(
-                        new IAnswer<List<GeoServerPasswordEncoder>>() {
-                            @Override
-                            public List<GeoServerPasswordEncoder> answer() throws Throwable {
-                                return Arrays.asList(
+                        () ->
+                                Arrays.asList(
                                         createEmptyPasswordEncoder(secMgr),
                                         createPlainTextPasswordEncoder(secMgr),
                                         createPbePasswordEncoder(secMgr),
                                         createStrongPbePasswordEncoder(secMgr),
-                                        createDigestPasswordEncoder(secMgr));
-                            }
-                        })
+                                        createDigestPasswordEncoder(secMgr)))
                 .anyTimes();
 
         // keystore provider

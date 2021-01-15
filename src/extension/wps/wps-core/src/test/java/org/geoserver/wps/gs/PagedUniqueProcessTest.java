@@ -24,8 +24,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class PagedUniqueProcessTest extends WPSTestSupport {
@@ -151,17 +149,13 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         // mock optimized store behaviour to always
         // use hasLimits
         Mockito.doAnswer(
-                        new Answer() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) throws Throwable {
-                                UniqueVisitor visitor =
-                                        (UniqueVisitor) invocation.getArguments()[0];
-                                if (visitor.hasLimits()) {
-                                    counter.incrementAndGet();
-                                }
-                                visitor.setValue(Arrays.asList("a", "b", "c", "d"));
-                                return null;
+                        invocation -> {
+                            UniqueVisitor visitor = (UniqueVisitor) invocation.getArguments()[0];
+                            if (visitor.hasLimits()) {
+                                counter.incrementAndGet();
                             }
+                            visitor.setValue(Arrays.asList("a", "b", "c", "d"));
+                            return null;
                         })
                 .when(features)
                 .accepts(Mockito.any(UniqueVisitor.class), Mockito.any());

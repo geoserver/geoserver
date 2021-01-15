@@ -50,28 +50,28 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
         modal.setInitialWidth(800);
         modal.setTitle(new ParamResourceModel("modalTitle", SolrConfigurationPanel.this));
         modal.setWindowClosedCallback(
-                new ModalWindow.WindowClosedCallback() {
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        if (_layerInfo != null) {
-                            GeoServerApplication app = (GeoServerApplication) getApplication();
-                            FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+                (ModalWindow.WindowClosedCallback)
+                        target -> {
+                            if (_layerInfo != null) {
+                                GeoServerApplication app = (GeoServerApplication) getApplication();
+                                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
 
-                            // Override _isNew state, based on resource informations into catalog
-                            if (ft.getId() != null
-                                    && app.getCatalog().getResource(ft.getId(), ResourceInfo.class)
-                                            != null) {
-                                _isNew = false;
-                            } else {
-                                _isNew = true;
+                                // Override _isNew state, based on resource informations into
+                                // catalog
+                                if (ft.getId() != null
+                                        && app.getCatalog()
+                                                        .getResource(ft.getId(), ResourceInfo.class)
+                                                != null) {
+                                    _isNew = false;
+                                } else {
+                                    _isNew = true;
+                                }
+
+                                app.getCatalog().getResourcePool().clear(ft);
+                                app.getCatalog().getResourcePool().clear(ft.getStore());
+                                setResponsePage(new ResourceConfigurationPage(_layerInfo, _isNew));
                             }
-
-                            app.getCatalog().getResourcePool().clear(ft);
-                            app.getCatalog().getResourcePool().clear(ft.getStore());
-                            setResponsePage(new ResourceConfigurationPage(_layerInfo, _isNew));
-                        }
-                    }
-                });
+                        });
 
         if (fti.getId() == null) {
             modal.add(new OpenWindowOnLoadBehavior());

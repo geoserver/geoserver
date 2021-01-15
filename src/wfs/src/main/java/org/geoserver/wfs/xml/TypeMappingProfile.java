@@ -72,22 +72,19 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
         } else {
             // sort
             Comparator<AttributeType> comparator =
-                    new Comparator<AttributeType>() {
-                        @Override
-                        public int compare(AttributeType a1, AttributeType a2) {
-                            Class<?> c1 = a1.getBinding();
-                            Class<?> c2 = a2.getBinding();
+                    (a1, a2) -> {
+                        Class<?> c1 = a1.getBinding();
+                        Class<?> c2 = a2.getBinding();
 
-                            if (c1.equals(c2)) {
-                                return 0;
-                            }
-
-                            if (c1.isAssignableFrom(c2)) {
-                                return 1;
-                            }
-
-                            return -1;
+                        if (c1.equals(c2)) {
+                            return 0;
                         }
+
+                        if (c1.isAssignableFrom(c2)) {
+                            return 1;
+                        }
+
+                        return -1;
                     };
 
             Collections.sort(assignable, comparator);
@@ -135,25 +132,22 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
         } else {
             // sort
             Comparator<Map.Entry> comparator =
-                    new Comparator<Map.Entry>() {
-                        @Override
-                        public int compare(Map.Entry e1, Map.Entry e2) {
-                            AttributeType a1 = (AttributeType) e1.getValue();
-                            AttributeType a2 = (AttributeType) e2.getValue();
+                    (e1, e2) -> {
+                        AttributeType a1 = (AttributeType) e1.getValue();
+                        AttributeType a2 = (AttributeType) e2.getValue();
 
-                            Class<?> c1 = a1.getBinding();
-                            Class<?> c2 = a2.getBinding();
+                        Class<?> c1 = a1.getBinding();
+                        Class<?> c2 = a2.getBinding();
 
-                            if (c1.equals(c2)) {
-                                return 0;
-                            }
-
-                            if (c1.isAssignableFrom(c2)) {
-                                return 1;
-                            }
-
-                            return -1;
+                        if (c1.equals(c2)) {
+                            return 0;
                         }
+
+                        if (c1.isAssignableFrom(c2)) {
+                            return 1;
+                        }
+
+                        return -1;
                     };
 
             Collections.sort(assignable, comparator);

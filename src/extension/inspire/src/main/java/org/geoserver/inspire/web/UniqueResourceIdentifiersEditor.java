@@ -18,7 +18,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.ResourceInfo;
@@ -179,23 +178,18 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         // to stomach... however, could not find other way to add a validation to an editabl table,
         // grrr
         add(
-                new IValidator<UniqueResourceIdentifiers>() {
-
-                    @Override
-                    public void validate(IValidatable<UniqueResourceIdentifiers> validatable) {
-                        UniqueResourceIdentifiers identifiers = provider.getItems();
-                        if (identifiers.size() == 0) {
-                            ValidationError error = new ValidationError();
-                            String message =
-                                    new ParamResourceModel(
-                                                    "noSpatialDatasetIdentifiers",
-                                                    UniqueResourceIdentifiersEditor.this)
-                                            .getString();
-                            error.setMessage(message);
-                            validatable.error(error);
-                        }
-                    }
-                });
+                (IValidator<UniqueResourceIdentifiers>)
+                        validatable -> {
+                            UniqueResourceIdentifiers identifiers = provider.getItems();
+                            if (identifiers.size() == 0) {
+                                ValidationError error = new ValidationError();
+                                String message =
+                                        new ParamResourceModel("noSpatialDatasetIdentifiers", this)
+                                                .getString();
+                                error.setMessage(message);
+                                validatable.error(error);
+                            }
+                        });
     }
 
     @Override

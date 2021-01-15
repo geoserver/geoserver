@@ -35,7 +35,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -271,13 +270,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
             xmlReader.setContentHandler(handler);
             // suppress validation
             xmlReader.setEntityResolver(
-                    new EntityResolver() {
-                        @Override
-                        public InputSource resolveEntity(String publicId, String systemId)
-                                throws SAXException, IOException {
-                            return new InputSource(new StringReader(""));
-                        }
-                    });
+                    (publicId, systemId) -> new InputSource(new StringReader("")));
             xmlReader.parse(inputSource);
         } catch (Exception e) {
             throw new IOException(e);

@@ -7,7 +7,6 @@ package org.geoserver.catalog.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 
 /** @author Marcus Sen, British Geological Survey */
 public class DataLinkInfoImplTest {
@@ -38,14 +37,7 @@ public class DataLinkInfoImplTest {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
         Assert.assertThrows(
-                IllegalArgumentException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        info.setContent("telnet:example.com");
-                    }
-                });
+                IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
     }
 
     @Test
@@ -81,13 +73,7 @@ public class DataLinkInfoImplTest {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
         Assert.assertThrows(
-                IllegalArgumentException.class,
-                new ThrowingRunnable() {
-                    @Override
-                    public void run() throws Throwable {
-                        info.setContent("::^%/[*] FOO ::");
-                    };
-                });
+                IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
     }
 
     @Test
@@ -96,11 +82,6 @@ public class DataLinkInfoImplTest {
 
         Assert.assertThrows(
                 IllegalArgumentException.class,
-                new ThrowingRunnable() {
-                    @Override
-                    public void run() throws Throwable {
-                        info.setContent("https://example.com/::^%/[*] FOO ::");
-                    };
-                });
+                () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
     }
 }

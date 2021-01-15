@@ -18,7 +18,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
-import org.geoserver.platform.resource.ResourceNotification;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -41,13 +40,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     protected Resource configFile;
 
     // ConfigurationPoller
-    protected ResourceListener listener =
-            new ResourceListener() {
-                @Override
-                public void changed(ResourceNotification notify) {
-                    loadConfiguration();
-                }
-            };
+    protected ResourceListener listener = notify -> loadConfiguration();
 
     /** @param formatConverter the format converter tool */
     public AbstractToolConfigurator(

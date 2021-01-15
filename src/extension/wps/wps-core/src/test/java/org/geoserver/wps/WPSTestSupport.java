@@ -214,13 +214,9 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return waitForProcessEnd(
                 statusLocation,
                 maxWaitSeconds,
-                new Callable<Void>() {
-
-                    @Override
-                    public Void call() throws Exception {
-                        Thread.sleep(100);
-                        return null;
-                    }
+                () -> {
+                    Thread.sleep(100);
+                    return null;
                 });
     }
 

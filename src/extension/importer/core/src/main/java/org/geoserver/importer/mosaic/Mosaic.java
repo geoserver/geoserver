@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer.mosaic;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.importer.DataFormat;
 import org.geoserver.importer.Directory;
-import org.geoserver.importer.FileData;
 import org.geoserver.importer.GridFormat;
 import org.geoserver.importer.RasterFormat;
 import org.geoserver.importer.SpatialFile;
@@ -57,25 +55,22 @@ public class Mosaic extends Directory {
         files.removeAll(
                 Collections2.filter(
                         files,
-                        new Predicate<FileData>() {
-                            @Override
-                            public boolean apply(FileData input) {
-                                File f = input.getFile();
-                                String basename = FilenameUtils.getBaseName(f.getName());
+                        input -> {
+                            File f = input.getFile();
+                            String basename = FilenameUtils.getBaseName(f.getName());
 
-                                // is this file part a shapefile or properties file?
-                                if (new File(f.getParentFile(), basename + ".shp").exists()
-                                        || new File(f.getParentFile(), basename + ".properties")
-                                                .exists()) {
-                                    return true;
-                                }
-
-                                if ("sample_image".equals(basename)) {
-                                    return true;
-                                }
-
-                                return false;
+                            // is this file part a shapefile or properties file?
+                            if (new File(f.getParentFile(), basename + ".shp").exists()
+                                    || new File(f.getParentFile(), basename + ".properties")
+                                            .exists()) {
+                                return true;
                             }
+
+                            if ("sample_image".equals(basename)) {
+                                return true;
+                            }
+
+                            return false;
                         }));
 
         if (!files.isEmpty()) {
@@ -130,14 +125,6 @@ public class Mosaic extends Directory {
 
     @SuppressWarnings("unchecked")
     public Collection<Granule> granules() {
-        return (Collection)
-                Collections2.filter(
-                        files,
-                        new Predicate<FileData>() {
-                            @Override
-                            public boolean apply(FileData input) {
-                                return input instanceof Granule;
-                            }
-                        });
+        return (Collection) Collections2.filter(files, input -> input instanceof Granule);
     }
 }

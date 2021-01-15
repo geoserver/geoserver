@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -931,12 +930,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         ImportTask task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "archsites".equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input -> "archsites".equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.READY, task.getState());
         assertTrue(task.getData() instanceof SpatialFile);
         assertEquals("Shapefile", task.getData().getFormat().getName());
@@ -944,12 +938,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "bugsites".equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input -> "bugsites".equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.READY, task.getState());
 
         assertTrue(task.getData() instanceof SpatialFile);
@@ -958,13 +947,9 @@ public class ImporterDataTest extends ImporterTestSupport {
         task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "EmissiveCampania"
-                                        .equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input ->
+                                "EmissiveCampania"
+                                        .equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.BAD_FORMAT, task.getState());
         assertTrue(task.getData() instanceof SpatialFile);
         assertEquals("GeoTIFF", task.getData().getFormat().getName());

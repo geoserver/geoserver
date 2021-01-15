@@ -34,7 +34,6 @@ import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.util.Filter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
@@ -229,14 +228,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 List<Resource> propFiles =
                         Resources.list(
                                 logsDirectory,
-                                new Filter<Resource>() {
-                                    @Override
-                                    public boolean accept(Resource obj) {
-                                        return obj.name()
-                                                .toLowerCase()
-                                                .endsWith("logging.properties");
-                                    }
-                                });
+                                obj -> obj.name().toLowerCase().endsWith("logging.properties"));
                 logProfiles = new ArrayList<>();
                 for (Resource res : propFiles) {
                     logProfiles.add(res.name());

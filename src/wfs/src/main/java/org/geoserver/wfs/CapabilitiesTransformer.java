@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -174,14 +173,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         // Sort them up for easier visual inspection
         SortedSet<FunctionName> sortedFunctions =
                 new TreeSet<>(
-                        new Comparator<FunctionName>() {
-                            @Override
-                            public int compare(FunctionName fn1, FunctionName fn2) {
-                                String n1 = fn1.getName();
-                                String n2 = fn2.getName();
+                        (fn1, fn2) -> {
+                            String n1 = fn1.getName();
+                            String n2 = fn2.getName();
 
-                                return n1.toLowerCase().compareTo(n2.toLowerCase());
-                            }
+                            return n1.toLowerCase().compareTo(n2.toLowerCase());
                         });
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);

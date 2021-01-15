@@ -7,7 +7,6 @@ package org.geoserver.web.publish;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.feedback.ErrorLevelFeedbackMessageFilter;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextField;
@@ -31,13 +30,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new HTTPLayerConfig(id, new Model<>(polygons));
-                            }
-                        });
+                        (ComponentBuilder) id -> new HTTPLayerConfig(id, new Model<>(polygons)));
         tester.startPage(page);
     }
 
@@ -60,13 +53,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                 getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         FormTestPage page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new HTTPLayerConfig(id, new Model<>(polygons));
-                            }
-                        });
+                        (ComponentBuilder) id -> new HTTPLayerConfig(id, new Model<>(polygons)));
         tester.startPage(page);
         tester.assertComponent("form:panel:cacheAgeMax", TextField.class);
 

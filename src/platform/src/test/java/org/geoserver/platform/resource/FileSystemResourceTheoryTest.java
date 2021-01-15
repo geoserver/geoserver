@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
-import org.junit.function.ThrowingRunnable;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
@@ -91,15 +90,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     @Test
     public void invalid() {
 
-        assertThrows(
-                IllegalArgumentException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        store.get("..");
-                    }
-                });
+        assertThrows(IllegalArgumentException.class, () -> store.get(".."));
     }
 
     @Test
@@ -177,14 +168,10 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         // expectedException.expect(ConditionTimeoutException.class);
         assertThrows(
                 ConditionTimeoutException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() {
-                        listener.await(
-                                100,
-                                TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
-                    }
+                () -> {
+                    listener.await(
+                            100,
+                            TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
                 });
     }
 
@@ -251,14 +238,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         // directory contents
 
         assertThrows(
-                ConditionTimeoutException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        listener.await(500, TimeUnit.MILLISECONDS);
-                    }
-                });
+                ConditionTimeoutException.class, () -> listener.await(500, TimeUnit.MILLISECONDS));
     }
 
     @Test

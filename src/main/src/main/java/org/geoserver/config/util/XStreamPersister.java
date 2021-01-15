@@ -944,14 +944,11 @@ public class XStreamPersister {
 
                 if (matches.size() > 1) {
                     Comparator<Class<?>> comparator =
-                            new Comparator<Class<?>>() {
-                                @Override
-                                public int compare(Class<?> c1, Class<?> c2) {
-                                    if (c2.isAssignableFrom(c1)) {
-                                        return -1;
-                                    } else {
-                                        return 1;
-                                    }
+                            (c1, c2) -> {
+                                if (c2.isAssignableFrom(c1)) {
+                                    return -1;
+                                } else {
+                                    return 1;
                                 }
                             };
 

@@ -7,7 +7,6 @@ package org.geoserver.importer;
 
 import static org.geoserver.importer.ImporterUtils.resolve;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
@@ -269,15 +268,7 @@ public class ImportContext implements Serializable {
      * @return boolean
      */
     public boolean isDirect() {
-        boolean isDirect =
-                Iterables.any(
-                        getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return input.isDirect();
-                            }
-                        });
+        boolean isDirect = Iterables.any(getTasks(), input -> input.isDirect());
         return isDirect;
     }
 
@@ -294,17 +285,14 @@ public class ImportContext implements Serializable {
         boolean noLayersAvailable =
                 Iterables.all(
                         getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                final StoreInfo store = input != null ? input.getStore() : null;
-                                final Catalog catalog = store != null ? store.getCatalog() : null;
-                                final LayerInfo layer =
-                                        catalog != null
-                                                ? catalog.getLayer(input.getLayer().getId())
-                                                : null;
-                                return (layer == null);
-                            }
+                        input -> {
+                            final StoreInfo store = input != null ? input.getStore() : null;
+                            final Catalog catalog = store != null ? store.getCatalog() : null;
+                            final LayerInfo layer =
+                                    catalog != null
+                                            ? catalog.getLayer(input.getLayer().getId())
+                                            : null;
+                            return (layer == null);
                         });
         return noLayersAvailable;
     }

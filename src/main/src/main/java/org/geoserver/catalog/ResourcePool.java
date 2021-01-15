@@ -2255,14 +2255,7 @@ public class ResourcePool {
 
         public CatalogResourceCache(int hardReferences) {
             super(hardReferences);
-            super.cleaner =
-                    new ValueCleaner<K, V>() {
-
-                        @Override
-                        public void clean(K key, V object) {
-                            dispose(key, object);
-                        }
-                    };
+            super.cleaner = (ValueCleaner<K, V>) (key, object) -> dispose(key, object);
         }
 
         @Override

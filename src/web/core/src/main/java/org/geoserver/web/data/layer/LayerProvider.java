@@ -83,31 +83,26 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
                  */
                 @Override
                 public java.util.Comparator<LayerInfo> getComparator() {
-                    return new Comparator<LayerInfo>() {
+                    return (o1, o2) -> {
+                        // split out authority and code
+                        String[] srs1 = o1.getResource().getSRS().split(":");
+                        String[] srs2 = o2.getResource().getSRS().split(":");
 
-                        @Override
-                        public int compare(LayerInfo o1, LayerInfo o2) {
-                            // split out authority and code
-                            String[] srs1 = o1.getResource().getSRS().split(":");
-                            String[] srs2 = o2.getResource().getSRS().split(":");
-
-                            // use sign to control sort order
-                            if (srs1[0].equalsIgnoreCase(srs2[0])
-                                    && srs1.length > 1
-                                    && srs2.length > 1) {
-                                try {
-                                    // in case of same authority, compare numbers
-                                    return Integer.valueOf(srs1[1])
-                                            .compareTo(Integer.valueOf(srs2[1]));
-                                } catch (NumberFormatException e) {
-                                    // a handful of codes are not numeric,
-                                    // handle the general case as well
-                                    return srs1[1].compareTo(srs2[1]);
-                                }
-                            } else {
-                                // compare authorities
-                                return srs1[0].compareToIgnoreCase(srs2[0]);
+                        // use sign to control sort order
+                        if (srs1[0].equalsIgnoreCase(srs2[0])
+                                && srs1.length > 1
+                                && srs2.length > 1) {
+                            try {
+                                // in case of same authority, compare numbers
+                                return Integer.valueOf(srs1[1]).compareTo(Integer.valueOf(srs2[1]));
+                            } catch (NumberFormatException e) {
+                                // a handful of codes are not numeric,
+                                // handle the general case as well
+                                return srs1[1].compareTo(srs2[1]);
                             }
+                        } else {
+                            // compare authorities
+                            return srs1[0].compareToIgnoreCase(srs2[0]);
                         }
                     };
                 }

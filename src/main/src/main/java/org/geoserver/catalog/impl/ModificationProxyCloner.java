@@ -189,19 +189,16 @@ class ModificationProxyCloner {
             } else {
                 Collections.sort(
                         cis,
-                        new Comparator<Class<?>>() {
-
-                            @Override
-                            public int compare(Class<?> c1, Class<?> c2) {
-                                if (c1.isAssignableFrom(c2)) {
-                                    return 1;
-                                } else if (c2.isAssignableFrom(c1)) {
-                                    return -1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-                        });
+                        (Comparator<Class<?>>)
+                                (c1, c2) -> {
+                                    if (c1.isAssignableFrom(c2)) {
+                                        return 1;
+                                    } else if (c2.isAssignableFrom(c1)) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                });
 
                 result = cis.get(0);
             }

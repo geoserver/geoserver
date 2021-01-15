@@ -481,16 +481,12 @@ public class Transaction {
         if (matches.size() > 1) {
             // sort by class hierarchy
             Comparator<TransactionElementHandler> comparator =
-                    new Comparator<TransactionElementHandler>() {
-                        @Override
-                        public int compare(
-                                TransactionElementHandler h1, TransactionElementHandler h2) {
-                            if (h2.getElementClass().isAssignableFrom(h1.getElementClass())) {
-                                return -1;
-                            }
-
-                            return 1;
+                    (h1, h2) -> {
+                        if (h2.getElementClass().isAssignableFrom(h1.getElementClass())) {
+                            return -1;
                         }
+
+                        return 1;
                     };
 
             Collections.sort(matches, comparator);

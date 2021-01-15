@@ -1272,20 +1272,16 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     private HttpHandler createLongResponseHandler() {
         HttpHandler handler =
-                new HttpHandler() {
-
-                    @Override
-                    public void handle(com.sun.net.httpserver.HttpExchange t) throws IOException {
-                        try {
-                            t.sendResponseHeaders(200, 5000000000l);
-                            TimeUnit.SECONDS.sleep(4);
-                            try (OutputStream outputStream = t.getResponseBody()) {
-                                outputStream.write("This is a bad style".getBytes());
-                                outputStream.flush();
-                            }
-                        } catch (InterruptedException e) {
-                            LOG.log(Level.INFO, e.getMessage(), e);
-                        }
+                t -> {
+                    try {
+                        t.sendResponseHeaders(200, 5000000000l);
+                        TimeUnit.SECONDS.sleep(4);
+                        OutputStream outputStream = t.getResponseBody();
+                        outputStream.write("This is a bad style".getBytes());
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (InterruptedException e) {
+                        LOG.log(Level.INFO, e.getMessage(), e);
                     }
                 };
         return handler;

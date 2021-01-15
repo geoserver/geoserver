@@ -7,13 +7,7 @@ package org.geoserver.importer;
 
 public interface ImportFilter {
 
-    static ImportFilter ALL =
-            new ImportFilter() {
-                @Override
-                public boolean include(ImportTask task) {
-                    return true;
-                }
-            };
+    static ImportFilter ALL = task -> true;
 
     boolean include(ImportTask task);
 }

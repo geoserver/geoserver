@@ -110,15 +110,7 @@ public class SimpleResourceNotificationDispatcherTest
 
         AtomicReference<ResourceNotification> dirEvent = new AtomicReference<>();
 
-        dispatch.addListener(
-                "DirB",
-                new ResourceListener() {
-
-                    @Override
-                    public void changed(ResourceNotification notify) {
-                        dirEvent.set(notify);
-                    }
-                });
+        dispatch.addListener("DirB", notify -> dirEvent.set(notify));
 
         dispatch.changed(
                 new ResourceNotification(

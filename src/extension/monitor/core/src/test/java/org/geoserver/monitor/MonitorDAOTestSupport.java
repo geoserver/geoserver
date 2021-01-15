@@ -71,13 +71,7 @@ public abstract class MonitorDAOTestSupport {
         final List<RequestData> datas = new ArrayList<>();
         dao.getRequests(
                 new Query().filter("path", "/seven", Comparison.EQ),
-                new RequestDataVisitor() {
-
-                    @Override
-                    public void visit(RequestData data, Object... aggregates) {
-                        datas.add(data);
-                    }
-                });
+                (data, aggregates) -> datas.add(data));
 
         assertCoveredInOrder(datas, 7);
     }

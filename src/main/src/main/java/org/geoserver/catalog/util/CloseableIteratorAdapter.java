@@ -141,12 +141,6 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     private static <T> com.google.common.base.Predicate<T> filterAdapter(
             final Filter catalogPredicate) {
 
-        return new com.google.common.base.Predicate<T>() {
-
-            @Override
-            public boolean apply(T input) {
-                return catalogPredicate.evaluate(input);
-            }
-        };
+        return input -> catalogPredicate.evaluate(input);
     }
 }

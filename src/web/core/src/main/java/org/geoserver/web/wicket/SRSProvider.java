@@ -131,14 +131,9 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
                 @Override
                 public Comparator<SRS> getComparator() {
-                    return new Comparator<SRS>() {
-
-                        @Override
-                        public int compare(SRS o1, SRS o2) {
-                            return String.CASE_INSENSITIVE_ORDER.compare(
+                    return (o1, o2) ->
+                            String.CASE_INSENSITIVE_ORDER.compare(
                                     o1.getDescription(), o2.getDescription());
-                        }
-                    };
                 }
             };
 

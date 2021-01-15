@@ -66,7 +66,8 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         }
 
         // check we can actually sort on that attribute
-        if (!fs.getQueryCapabilities().supportsSorting(ff.sort(attribute, SortOrder.DESCENDING)))
+        if (!fs.getQueryCapabilities()
+                .supportsSorting(ff.sort(attribute, SortOrder.DESCENDING)))
             throw new ServiceException(
                     "Native sorting on the "
                             + attribute

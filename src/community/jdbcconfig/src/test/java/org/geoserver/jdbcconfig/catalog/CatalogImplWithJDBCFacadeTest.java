@@ -14,7 +14,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
@@ -310,4 +314,43 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     // not supported
     @Test
     public void testAddIsolatedNamespace() {}
+
+    @Test
+    public void testConcurrentListLoad() throws Exception {
+        addDataStore();
+        addNamespace();
+
+        // load some layers
+        final int LAYER_COUNT = 100;
+        final int LOAD_FACTOR = Runtime.getRuntime().availableProcessors() * 2;
+        for (int i = 0; i < LAYER_COUNT; i++) {
+            FeatureTypeInfo ft = newFeatureType("ft" + i, ds);
+            catalog.add(ft);
+            StyleInfo style = newStyle("s" + i, "s" + i + "Filename");
+            catalog.add(style);
+            catalog.add(newLayer(ft, style));
+        }
+
+        // drop all caches
+        facade.getConfigDatabase().clearCache();
+
+        // catalog scan, similar to what WMS GetCapabilities does, simulating many of them in
+        // parallel
+        ExecutorService tp = Executors.newFixedThreadPool(LOAD_FACTOR);
+        List<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < LAYER_COUNT; i++) {
+            futures.add(
+                    tp.submit(
+                            () -> {
+                                try (CloseableIterator<LayerInfo> layers =
+                                        catalog.list(LayerInfo.class, Filter.INCLUDE)) {
+                                    while (layers.hasNext()) layers.next();
+                                }
+                            }));
+        }
+        // here, it should not deadlock, nor throw exceptions
+        for (Future<?> future : futures) {
+            future.get();
+        }
+    }
 }

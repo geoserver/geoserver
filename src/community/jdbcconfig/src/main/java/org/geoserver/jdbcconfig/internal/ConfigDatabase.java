@@ -117,6 +117,9 @@ import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -130,8 +133,25 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-/** */
-public class ConfigDatabase {
+/**
+ * Stores and retrieves actual {@link CatalogInfo} and {@link ServiceInfo} from the underlying
+ * database, with an in memory cache for both objects.
+ *
+ * <p><b>Important implementation notes</b> This bean is annotated with {@link Transactional} in all
+ * write methods and all exposed read methods. The write methods are obvious, the read ones less so.
+ * The reads load XML from the database and use XStream to decode it. This can cause references to
+ * object related objects to be resolved, which happen by calling again onto the catalog, the facade
+ * and eventually again this class. Using a read only transaction around the read methods ensures
+ * that a single connection is used in this process, which prevents deadlock at the connection pool
+ * level. Also, methods returning a {@link CloseableIterator} of info objects just look up the
+ * identifier, and resolve them to full objects during the iteration. This lazy loading also needs
+ * to be protected by transactional loading, which is tricky. A trivial implementation would just
+ * call itself, which ends up bypassing the transaction annotations (which are implemented as a
+ * proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads itself
+ * from the application context, with full transactional proxying, and uses that instance for
+ * deferred loading while iterating.
+ */
+public class ConfigDatabase implements ApplicationContextAware {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
 
@@ -164,6 +184,9 @@ public class ConfigDatabase {
     private ConfigClearingListener configListener;
 
     private ConcurrentMap<String, Semaphore> locks;
+
+    /* the bean itself, but with the transactional proxy wrappers around */
+    private ConfigDatabase transactionalConfigDatabase;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
     protected ConfigDatabase() {
@@ -291,6 +314,11 @@ public class ConfigDatabase {
         return count;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -298,12 +326,17 @@ public class ConfigDatabase {
             @Nullable Integer limit,
             @Nullable SortBy sortOrder) {
         if (sortOrder == null) {
-            return query(of, filter, offset, limit, new SortBy[] {});
+            return query(of, filter, offset, limit);
         } else {
-            return query(of, filter, offset, limit, new SortBy[] {sortOrder});
+            return query(of, filter, offset, limit, sortOrder);
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -392,7 +425,11 @@ public class ConfigDatabase {
                             @Nullable
                             @Override
                             public T apply(String id) {
-                                return getById(id, of);
+                                // tricky bit... transaction management works only if the method
+                                // is called from a Spring proxy that processed the annotations,
+                                // so we cannot call getId directly, it needs to be done from
+                                // "outside"
+                                return transactionalConfigDatabase.getById(id, of);
                             }
                         });
 
@@ -415,6 +452,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<String> queryIds(
             final Class<T> of, final Filter filter) {
 
@@ -480,6 +522,11 @@ public class ConfigDatabase {
         return iterator;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> List<T> queryAsList(
             final Class<T> of,
             final Filter filter,
@@ -497,6 +544,11 @@ public class ConfigDatabase {
         return list;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends CatalogInfo> T getDefault(final String key, Class<T> type) {
         String sql = "SELECT ID FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
 
@@ -1034,6 +1086,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
@@ -1097,6 +1154,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getIdByIdentity(
             final Class<T> type, final String... identityMappings) {
         Assert.notNull(identityMappings, "id");
@@ -1124,6 +1186,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public ServiceInfo getService(
             final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
         Assert.notNull(clazz, "clazz");
@@ -1150,6 +1217,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
         String id = getIdByIdentity(type, identityMappings);
 
@@ -1192,9 +1264,12 @@ public class ConfigDatabase {
         } else if (real instanceof LayerInfo) {
             LayerInfo layer = (LayerInfo) real;
             resolveTransient(layer.getDefaultStyle());
-            if (!layer.getStyles().isEmpty()) {
-                for (StyleInfo s : layer.getStyles()) {
-                    resolveTransient(s);
+            // avoids concurrent modification exceptions on the list contents
+            synchronized (layer) {
+                if (!layer.getStyles().isEmpty()) {
+                    for (StyleInfo s : layer.getStyles()) {
+                        resolveTransient(s);
+                    }
                 }
             }
             resolveTransient(layer.getResource());
@@ -1287,6 +1362,11 @@ public class ConfigDatabase {
     private void disposeServiceCache() {
         serviceCache.invalidateAll();
         serviceCache.cleanUp();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.transactionalConfigDatabase = applicationContext.getBean(ConfigDatabase.class);
     }
 
     private final class CatalogLoader implements Callable<CatalogInfo> {
@@ -1508,6 +1588,11 @@ public class ConfigDatabase {
         return !propertyTypes.isEmpty();
     }
 
+    public void clearCache() {
+        cache.invalidateAll();
+        serviceCache.invalidateAll();
+    }
+
     public void clearCache(Info info) {
         if (info instanceof ServiceInfo) {
             // need to figure out how to remove only the relevant cache
@@ -1540,6 +1625,11 @@ public class ConfigDatabase {
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<T> it =
@@ -1559,6 +1649,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getId(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 
@@ -1788,17 +1883,21 @@ public class ConfigDatabase {
 
         @Override
         public void visit(LayerInfo layer) {
-            if (layer.getDefaultStyle() != null) {
-                layer.setDefaultStyle(getById(layer.getDefaultStyle().getId(), StyleInfo.class));
-            }
-            Set<StyleInfo> newStyles = new HashSet<>();
-            for (StyleInfo style : layer.getStyles()) {
-                if (style != null) {
-                    newStyles.add(getById(style.getId(), StyleInfo.class));
+            // avoids concurrent modification exceptions on the list contents
+            synchronized (layer) {
+                if (layer.getDefaultStyle() != null) {
+                    layer.setDefaultStyle(
+                            getById(layer.getDefaultStyle().getId(), StyleInfo.class));
                 }
+                Set<StyleInfo> newStyles = new HashSet<>();
+                for (StyleInfo style : new ArrayList<>(layer.getStyles())) {
+                    if (style != null) {
+                        newStyles.add(getById(style.getId(), StyleInfo.class));
+                    }
+                }
+                layer.getStyles().clear();
+                layer.getStyles().addAll(newStyles);
             }
-            layer.getStyles().clear();
-            layer.getStyles().addAll(newStyles);
         }
 
         @Override

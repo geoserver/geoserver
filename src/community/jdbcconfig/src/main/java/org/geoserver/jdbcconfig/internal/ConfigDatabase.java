@@ -147,7 +147,7 @@ import org.springframework.util.Assert;
  * identifier, and resolve them to full objects during the iteration. This lazy loading also needs
  * to be protected by transactional loading, which is tricky. A trivial implementation would just
  * call itself, which ends up bypassing the transaction annotations (which are implemented as a
- * proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads itsel
+ * proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads itself
  * from the application context, with full transactional proxying, and uses that instance for
  * deferred loading while iterating.
  */

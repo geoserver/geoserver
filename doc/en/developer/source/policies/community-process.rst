@@ -52,6 +52,17 @@ During the release cycle community members contribute fixes to be included, and 
 
 Please respect our release volunteers. We stop back porting fixes the day before release so CITE tests can verify the release includes all the changes needed.
 
+Upgrading dependencies
+^^^^^^^^^^^^^^^^^^^^^^
+
+During both the development and release cycle, dependencies may be upgraded, either as part of a new feature or fix, or as a standalone change during general maintenance.
+
+When backporting changes that include dependency upgrades, keep in mind the guidelings for backporting fixes and features, as they apply to the dependency that changed:
+
+#. Upgrades for bug fixes or security issues can be backported immediately like any other fix. 
+#. Upgrades for new features that do not require an API change (either in the upgraded library or in GeoServer) can be backported after one month. Additive-only API changes may also be backported where technically feasible.
+#. In some cases, upgrading a dependency to fix a bug may also bring with it API changes in the dependency. Consider whether a backport is really necessary in such cases. Security fixes may need to force an api change.
+
 .. _release_cycle:
 
 Release cycle

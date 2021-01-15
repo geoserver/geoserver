@@ -16,7 +16,6 @@ import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -272,14 +271,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         }
         final Set<String> gridSubsets = new TreeSet<>(layer.getGridSubsets());
         final List<MimeType> mimeTypes = new ArrayList<>(layer.getMimeTypes());
-        Collections.sort(
-                mimeTypes,
-                new Comparator<MimeType>() {
-                    @Override
-                    public int compare(MimeType o1, MimeType o2) {
-                        return o1.getFormat().compareTo(o2.getFormat());
-                    }
-                });
+        Collections.sort(mimeTypes, (o1, o2) -> o1.getFormat().compareTo(o2.getFormat()));
 
         Fragment f = new Fragment(id, "menuFragment", this);
 

@@ -567,14 +567,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             Collections.sort(
                     finalArray,
-                    new Comparator<String>() {
+                    (o1, o2) -> {
+                        if (o1.equals(o2)) return 0;
 
-                        @Override
-                        public int compare(String o1, String o2) {
-                            if (o1.equals(o2)) return 0;
-
-                            return (Double.parseDouble(o1) > Double.parseDouble(o2) ? 1 : -1);
-                        }
+                        return (Double.parseDouble(o1) > Double.parseDouble(o2) ? 1 : -1);
                     });
 
             return finalArray.toArray(new String[1]);

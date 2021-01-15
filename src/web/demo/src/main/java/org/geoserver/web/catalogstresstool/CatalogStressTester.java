@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.catalogstresstool;
 
-import com.google.common.base.Function;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
@@ -141,13 +140,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     list,
-                                                    new Function<WorkspaceInfo, Tuple>() {
-                                                        @Override
-                                                        public Tuple apply(WorkspaceInfo input) {
-                                                            return new Tuple(
-                                                                    input.getId(), input.getName());
-                                                        }
-                                                    }));
+                                                    input ->
+                                                            new Tuple(
+                                                                    input.getId(),
+                                                                    input.getName())));
                             Collections.sort(workspaces);
                             return workspaces;
                         }
@@ -192,14 +188,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
-                                                    new Function<StoreInfo, Tuple>() {
-
-                                                        @Override
-                                                        public Tuple apply(StoreInfo input) {
-                                                            return new Tuple(
-                                                                    input.getId(), input.getName());
-                                                        }
-                                                    }));
+                                                    input ->
+                                                            new Tuple(
+                                                                    input.getId(),
+                                                                    input.getName())));
                             Collections.sort(stores);
                             return stores;
                         }
@@ -243,13 +235,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                                     Lists.newArrayList(
                                             Iterators.transform(
                                                     iter,
-                                                    new Function<ResourceInfo, Tuple>() {
-                                                        @Override
-                                                        public Tuple apply(ResourceInfo input) {
-                                                            return new Tuple(
-                                                                    input.getId(), input.getName());
-                                                        }
-                                                    }));
+                                                    input ->
+                                                            new Tuple(
+                                                                    input.getId(),
+                                                                    input.getName())));
                             Collections.sort(resources);
                             return resources;
                         }

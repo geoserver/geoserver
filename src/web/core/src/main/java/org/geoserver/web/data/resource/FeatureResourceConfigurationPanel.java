@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -164,16 +163,11 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
         add(reloadWarningDialog = new ModalWindow("reloadWarningDialog"));
         reloadWarningDialog.setPageCreator(
-                new ModalWindow.PageCreator() {
-                    @Override
-                    public Page createPage() {
-                        return new ReloadWarningDialog(
-                                new StringResourceModel(
-                                        "featureTypeReloadWarning",
-                                        FeatureResourceConfigurationPanel.this,
-                                        null));
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () ->
+                                new ReloadWarningDialog(
+                                        new StringResourceModel(
+                                                "featureTypeReloadWarning", this, null)));
         reloadWarningDialog.setTitle(new StringResourceModel("warning", null, null));
         reloadWarningDialog.setInitialHeight(100);
         reloadWarningDialog.setInitialHeight(200);

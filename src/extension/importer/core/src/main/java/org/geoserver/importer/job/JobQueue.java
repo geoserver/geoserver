@@ -69,45 +69,42 @@ public class JobQueue {
 
     {
         cleaner.scheduleAtFixedRate(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Long> toremove = new ArrayList<>();
-                        for (Map.Entry<Long, Task<?>> e : jobs.entrySet()) {
-                            if (e.getValue().isCancelled()
-                                    || (e.getValue()
-                                            .isDone() /* AF: This condition is never verified ?!? && e.getValue().isRecieved() */)) {
-                                try {
-                                    ImportContext context = (ImportContext) e.getValue().get();
+                () -> {
+                    List<Long> toremove = new ArrayList<>();
+                    for (Map.Entry<Long, Task<?>> e : jobs.entrySet()) {
+                        if (e.getValue().isCancelled()
+                                || (e.getValue()
+                                        .isDone() /* AF: This condition is never verified ?!? && e.getValue().isRecieved() */)) {
+                            try {
+                                ImportContext context = (ImportContext) e.getValue().get();
 
-                                    if (context.getState() == ImportContext.State.COMPLETE
-                                            && context.isEmpty()) {
-                                        context.unlockUploadFolder(context.getUploadDirectory());
-                                        toremove.add(e.getKey());
-                                    }
-                                } catch (Exception ex) {
-                                    LOGGER.log(Level.INFO, ex.getMessage(), ex);
+                                if (context.getState() == ImportContext.State.COMPLETE
+                                        && context.isEmpty()) {
+                                    context.unlockUploadFolder(context.getUploadDirectory());
+                                    toremove.add(e.getKey());
                                 }
+                            } catch (Exception ex) {
+                                LOGGER.log(Level.INFO, ex.getMessage(), ex);
                             }
                         }
-                        for (Long l : toremove) {
-                            jobs.remove(l);
-                        }
+                    }
+                    for (Long l : toremove) {
+                        jobs.remove(l);
+                    }
 
-                        final Importer importer = GeoServerExtensions.bean(Importer.class);
-                        File[] files = importer.getUploadRoot().listFiles();
-                        if (files != null) {
-                            for (File f : files) {
-                                if (f.isDirectory() && new File(f, ".clean-me").exists()) {
-                                    try {
-                                        IOUtils.delete(f);
-                                    } catch (IOException e) {
-                                        LOGGER.log(
-                                                Level.WARNING,
-                                                "It was not possible to cleanup Importer temporary folder "
-                                                        + f,
-                                                e);
-                                    }
+                    final Importer importer = GeoServerExtensions.bean(Importer.class);
+                    File[] files = importer.getUploadRoot().listFiles();
+                    if (files != null) {
+                        for (File f : files) {
+                            if (f.isDirectory() && new File(f, ".clean-me").exists()) {
+                                try {
+                                    IOUtils.delete(f);
+                                } catch (IOException e) {
+                                    LOGGER.log(
+                                            Level.WARNING,
+                                            "It was not possible to cleanup Importer temporary folder "
+                                                    + f,
+                                            e);
                                 }
                             }
                         }

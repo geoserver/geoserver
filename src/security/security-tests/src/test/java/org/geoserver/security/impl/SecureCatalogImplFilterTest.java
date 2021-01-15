@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -136,13 +135,9 @@ public class SecureCatalogImplFilterTest {
                                 isNull(),
                                 isNull()))
                 .andStubAnswer(
-                        new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
-
-                            @Override
-                            public CloseableIterator<FeatureTypeInfo> answer() throws Throwable {
-                                Filter filter = filterCapture.getValue();
-                                return CloseableIteratorAdapter.filter(source.iterator(), filter);
-                            }
+                        () -> {
+                            Filter filter = filterCapture.getValue();
+                            return CloseableIteratorAdapter.filter(source.iterator(), filter);
                         });
 
         replay(catalog, manager, mockFilter);

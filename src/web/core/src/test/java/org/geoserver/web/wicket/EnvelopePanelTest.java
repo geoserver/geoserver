@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.ComponentBuilder;
@@ -26,15 +25,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
     public void testEditPlain() throws Exception {
         final ReferencedEnvelope e =
                 new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new EnvelopePanel(id, e);
-                            }
-                        }));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new EnvelopePanel(id, e)));
 
         tester.assertComponent("form", Form.class);
 
@@ -66,15 +57,12 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         final ReferencedEnvelope e = new ReferencedEnvelope(-180, 180, -90, 90, epsg4326);
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                EnvelopePanel panel = new EnvelopePanel(id, e);
-                                panel.setCRSFieldVisible(true);
-                                return panel;
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> {
+                                    EnvelopePanel panel = new EnvelopePanel(id, e);
+                                    panel.setCRSFieldVisible(true);
+                                    return panel;
+                                }));
 
         tester.assertComponent("form", Form.class);
 
@@ -105,15 +93,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
     public void testDecimalsPreserved() throws Exception {
         final ReferencedEnvelope e =
                 new ReferencedEnvelope(-0.1E-10, 1.0E-9, -9E-11, 9E-11, DefaultGeographicCRS.WGS84);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new EnvelopePanel(id, e);
-                            }
-                        }));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new EnvelopePanel(id, e)));
 
         tester.assertComponent("form", Form.class);
 

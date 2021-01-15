@@ -69,7 +69,6 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -511,14 +510,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             final DynamicBufferEstimator dbe = new DynamicBufferEstimator();
             fs.getFeatures(query)
                     .accepts(
-                            new FeatureVisitor() {
-
-                                @Override
-                                public void visit(Feature feature) {
-                                    dbe.setFeature(feature);
-                                    for (Rule rule : dynamicRules) {
-                                        rule.accept(dbe);
-                                    }
+                            feature -> {
+                                dbe.setFeature(feature);
+                                for (Rule rule : dynamicRules) {
+                                    rule.accept(dbe);
                                 }
                             },
                             null);

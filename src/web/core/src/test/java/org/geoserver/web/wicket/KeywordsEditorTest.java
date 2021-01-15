@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
@@ -36,12 +35,8 @@ public class KeywordsEditorTest {
         keywords.add(new Keyword("three"));
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new KeywordsEditor(id, new ListModel<>(keywords));
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new KeywordsEditor(id, new ListModel<>(keywords))));
     }
 
     @Test

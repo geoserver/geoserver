@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONArray;
@@ -1408,13 +1407,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         Coordinate[] coordinates =
                 Arrays.stream(coordsArray.toArray())
                         .map(
-                                new Function<Object, Coordinate>() {
-                                    @Override
-                                    public Coordinate apply(Object t) {
-                                        JSONArray cArray = (JSONArray) t;
-                                        return new Coordinate(
-                                                cArray.getDouble(0), cArray.getDouble(1));
-                                    }
+                                t -> {
+                                    JSONArray cArray = (JSONArray) t;
+                                    return new Coordinate(cArray.getDouble(0), cArray.getDouble(1));
                                 })
                         .toArray(Coordinate[]::new);
 

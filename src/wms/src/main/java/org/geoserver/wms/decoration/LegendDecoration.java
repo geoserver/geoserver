@@ -263,15 +263,12 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         StyleInfo defaultStyle = info.getDefaultStyle();
 
         Predicate<StyleInfo> predicate =
-                new Predicate<StyleInfo>() {
-                    @Override
-                    public boolean test(StyleInfo s) {
-                        try {
-                            return s.getName().equals(layer.getStyle().getName())
-                                    && s.getStyle() != null;
-                        } catch (IOException e) {
-                            return false;
-                        }
+                s -> {
+                    try {
+                        return s.getName().equals(layer.getStyle().getName())
+                                && s.getStyle() != null;
+                    } catch (IOException e) {
+                        return false;
                     }
                 };
         StyleInfo sInfo =

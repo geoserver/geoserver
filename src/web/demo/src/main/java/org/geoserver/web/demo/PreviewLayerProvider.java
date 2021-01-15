@@ -7,7 +7,6 @@ package org.geoserver.web.demo;
 
 import static org.geoserver.catalog.Predicates.sortBy;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -183,17 +182,13 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
         return CloseableIteratorAdapter.transform(
                 pi,
-                new Function<PublishedInfo, PreviewLayer>() {
-
-                    @Override
-                    public PreviewLayer apply(PublishedInfo input) {
-                        if (input instanceof LayerInfo) {
-                            return new PreviewLayer((LayerInfo) input);
-                        } else if (input instanceof LayerGroupInfo) {
-                            return new PreviewLayer((LayerGroupInfo) input);
-                        }
-                        return null;
+                input -> {
+                    if (input instanceof LayerInfo) {
+                        return new PreviewLayer((LayerInfo) input);
+                    } else if (input instanceof LayerGroupInfo) {
+                        return new PreviewLayer((LayerGroupInfo) input);
                     }
+                    return null;
                 });
     }
 

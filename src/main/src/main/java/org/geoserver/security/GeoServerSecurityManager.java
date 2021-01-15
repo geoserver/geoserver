@@ -468,9 +468,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     void migrateFrom24() throws SecurityConfigException, IOException {
         // allows migration of RoleSource from PreAuthenticatedUserNameFilterConfig
         MigrationHelper mh =
-                new MigrationHelper() {
-                    @Override
-                    public void migrationPersister(XStreamPersister xp) {
+                xp ->
                         xp.getXStream()
                                 .registerConverter(
                                         new Converter() {
@@ -502,8 +500,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                                                 return null;
                                             }
                                         });
-                    }
-                };
         for (String fName : listFilters()) {
             SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
             if (fConfig != null) {

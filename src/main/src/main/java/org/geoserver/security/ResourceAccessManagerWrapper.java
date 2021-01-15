@@ -102,12 +102,10 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
                 } else {
                     final List<Polygon> accum = new ArrayList<>();
                     intersection.apply(
-                            new GeometryComponentFilter() {
-                                @Override
-                                public void filter(Geometry geom) {
-                                    if (geom instanceof Polygon) accum.add((Polygon) geom);
-                                }
-                            });
+                            (GeometryComponentFilter)
+                                    geom -> {
+                                        if (geom instanceof Polygon) accum.add((Polygon) geom);
+                                    });
 
                     rasterFilter =
                             geomFactory.createMultiPolygon(

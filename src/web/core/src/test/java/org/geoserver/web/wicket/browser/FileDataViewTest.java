@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
@@ -51,21 +50,16 @@ public class FileDataViewTest {
 
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
+                        (ComponentBuilder)
+                                id ->
+                                        new FileDataView(id, fileProvider) {
 
-                            @Override
-                            public Component buildComponent(String id) {
-
-                                return new FileDataView(id, fileProvider) {
-
-                                    @Override
-                                    protected void linkNameClicked(
-                                            File file, AjaxRequestTarget target) {
-                                        lastClicked = file;
-                                    }
-                                };
-                            }
-                        }));
+                                            @Override
+                                            protected void linkNameClicked(
+                                                    File file, AjaxRequestTarget target) {
+                                                lastClicked = file;
+                                            }
+                                        }));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }

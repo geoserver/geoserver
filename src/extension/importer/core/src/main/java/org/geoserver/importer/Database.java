@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.io.Serializable;
@@ -108,14 +107,7 @@ public class Database extends ImportData {
 
     @Override
     public Table part(final String name) {
-        return Iterables.find(
-                tables,
-                new Predicate<Table>() {
-                    @Override
-                    public boolean apply(Table input) {
-                        return name.equals(input.getName());
-                    }
-                });
+        return Iterables.find(tables, input -> name.equals(input.getName()));
     }
 
     private Object readResolve() {

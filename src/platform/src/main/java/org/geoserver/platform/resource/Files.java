@@ -62,10 +62,7 @@ public final class Files {
 
         @Override
         public Lock lock() {
-            return new Lock() {
-                @Override
-                public void release() {}
-            };
+            return () -> {};
         }
 
         @Override

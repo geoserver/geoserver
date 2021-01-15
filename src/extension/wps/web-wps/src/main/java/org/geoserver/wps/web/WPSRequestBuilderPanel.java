@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -203,26 +202,19 @@ public class WPSRequestBuilderPanel extends Panel {
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    @Override
-                    public Page createPage() {
-                        DemoRequest request = new DemoRequest(null);
-                        HttpServletRequest http =
-                                (HttpServletRequest)
-                                        WPSRequestBuilderPanel.this
-                                                .getRequest()
-                                                .getContainerRequest();
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        request.setRequestUrl(url);
-                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model<>(request));
-                    }
+                () -> {
+                    DemoRequest request = new DemoRequest(null);
+                    HttpServletRequest http =
+                            (HttpServletRequest) getRequest().getContainerRequest();
+                    String url =
+                            ResponseUtils.buildURL(
+                                    ResponseUtils.baseURL(http),
+                                    "ows",
+                                    Collections.singletonMap("strict", "true"),
+                                    URLType.SERVICE);
+                    request.setRequestUrl(url);
+                    request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                    return new DemoRequestResponse(new Model<>(request));
                 });
 
         // the describe process link

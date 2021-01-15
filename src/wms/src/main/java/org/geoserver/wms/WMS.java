@@ -1646,16 +1646,8 @@ public class WMS implements ApplicationContextAware {
     public Filter getDimensionsToFilter(
             final Map<String, String> rawKVP, final FeatureTypeInfo typeInfo) {
         CustomDimensionFilterConverter.DefaultValueStrategyFactory defaultValueStrategyFactory =
-                new CustomDimensionFilterConverter.DefaultValueStrategyFactory() {
-                    @Override
-                    public DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(
-                            ResourceInfo resource,
-                            String dimensionName,
-                            DimensionInfo dimensionInfo) {
-                        return WMS.this.getDefaultValueStrategy(
-                                resource, dimensionName, dimensionInfo);
-                    }
-                };
+                (resource, dimensionName, dimensionInfo) ->
+                        getDefaultValueStrategy(resource, dimensionName, dimensionInfo);
         final CustomDimensionFilterConverter converter =
                 new CustomDimensionFilterConverter(defaultValueStrategyFactory, ff);
         return converter.getDimensionsToFilter(rawKVP, typeInfo);

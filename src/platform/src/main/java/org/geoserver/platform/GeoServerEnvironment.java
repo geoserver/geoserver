@@ -80,14 +80,7 @@ public class GeoServerEnvironment {
                     constants.asString("DEFAULT_VALUE_SEPARATOR"),
                     true);
 
-    private final PlaceholderResolver resolver =
-            new PlaceholderResolver() {
-
-                @Override
-                public String resolvePlaceholder(String placeholderName) {
-                    return GeoServerEnvironment.this.resolvePlaceholder(placeholderName);
-                }
-            };
+    private final PlaceholderResolver resolver = name -> resolvePlaceholder(name);
 
     private FileWatcher<Properties> configFile;
 

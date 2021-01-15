@@ -1213,24 +1213,21 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
     @SuppressWarnings("unchecked")
     private Comparator<Object> comparator(final SortBy sortOrder) {
-        return new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Object v1 = OwsUtils.get(o1, sortOrder.getPropertyName().getPropertyName());
-                Object v2 = OwsUtils.get(o2, sortOrder.getPropertyName().getPropertyName());
-                if (v1 == null) {
-                    if (v2 == null) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-                } else if (v2 == null) {
-                    return 1;
+        return (o1, o2) -> {
+            Object v1 = OwsUtils.get(o1, sortOrder.getPropertyName().getPropertyName());
+            Object v2 = OwsUtils.get(o2, sortOrder.getPropertyName().getPropertyName());
+            if (v1 == null) {
+                if (v2 == null) {
+                    return 0;
+                } else {
+                    return -1;
                 }
-                Comparable c1 = (Comparable) v1;
-                Comparable c2 = (Comparable) v2;
-                return c1.compareTo(c2);
+            } else if (v2 == null) {
+                return 1;
             }
+            Comparable c1 = (Comparable) v1;
+            Comparable c2 = (Comparable) v2;
+            return c1.compareTo(c2);
         };
     }
 }

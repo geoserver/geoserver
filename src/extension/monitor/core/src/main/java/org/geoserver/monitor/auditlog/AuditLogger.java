@@ -20,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
@@ -349,31 +348,27 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                     if (files != null && files.length > 0) {
                         Arrays.sort(
                                 files,
-                                new Comparator<String>() {
-
-                                    @Override
-                                    public int compare(String o1, String o2) {
-                                        // extract dates and compare
-                                        final String[] o1s =
-                                                o1.substring(0, o1.length() - 4).split("_");
-                                        final String[] o2s =
-                                                o2.substring(0, o2.length() - 4).split("_");
-                                        int dateCompare;
-                                        try {
-                                            dateCompare =
-                                                    dateFormat
-                                                            .parse(o1s[2])
-                                                            .compareTo(dateFormat.parse(o2s[2]));
-                                        } catch (ParseException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                        if (dateCompare == 0) {
-                                            // compare counter
-                                            return Integer.valueOf(o1s[3])
-                                                    .compareTo(Integer.valueOf(o2s[3]));
-
-                                        } else return dateCompare;
+                                (o1, o2) -> {
+                                    // extract dates and compare
+                                    final String[] o1s =
+                                            o1.substring(0, o1.length() - 4).split("_");
+                                    final String[] o2s =
+                                            o2.substring(0, o2.length() - 4).split("_");
+                                    int dateCompare;
+                                    try {
+                                        dateCompare =
+                                                dateFormat
+                                                        .parse(o1s[2])
+                                                        .compareTo(dateFormat.parse(o2s[2]));
+                                    } catch (ParseException e) {
+                                        throw new RuntimeException(e);
                                     }
+                                    if (dateCompare == 0) {
+                                        // compare counter
+                                        return Integer.valueOf(o1s[3])
+                                                .compareTo(Integer.valueOf(o2s[3]));
+
+                                    } else return dateCompare;
                                 });
                         // get the max counter
                         final String target = files[files.length - 1];

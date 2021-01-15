@@ -8,7 +8,6 @@ import static org.geoserver.data.test.CiteTestData.ROAD_SEGMENTS;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -45,13 +44,8 @@ public class MetadataLinkEditorTest extends GeoServerWicketTestSupport {
         assertEquals(0, featureType.getMetadataLinks().size());
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new MetadataLinkEditor(id, new Model<>(featureType));
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new MetadataLinkEditor(id, new Model<>(featureType))));
 
         tester.executeAjaxEvent("form:panel:addlink", "click");
         print(tester.getLastRenderedPage(), true, true, true);

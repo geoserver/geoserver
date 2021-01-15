@@ -47,7 +47,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
@@ -153,22 +152,19 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     }
                 };
         netmasks.add(
-                new IValidator<List<String>>() {
-
-                    @Override
-                    public void validate(IValidatable<List<String>> validatable) {
-                        List<String> masks = validatable.getValue();
-                        for (String mask : masks) {
-                            try {
-                                new IpAddressMatcher(mask);
-                            } catch (Exception e) {
-                                form.error(
-                                        new ParamResourceModel("invalidMask", getPage(), mask)
-                                                .getString());
+                (IValidator<List<String>>)
+                        validatable -> {
+                            List<String> masks = validatable.getValue();
+                            for (String mask : masks) {
+                                try {
+                                    new IpAddressMatcher(mask);
+                                } catch (Exception e) {
+                                    form.error(
+                                            new ParamResourceModel("invalidMask", getPage(), mask)
+                                                    .getString());
+                                }
                             }
-                        }
-                    }
-                });
+                        });
         form.add(netmasks);
         form.add(
                 new AbstractFormValidator() {

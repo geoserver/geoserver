@@ -924,13 +924,9 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      *     input
      */
     private <T extends CatalogInfo> Function<T, T> securityWrapper(final Class<T> forClass) {
-        return new Function<T, T>() {
-
-            @Override
-            public T apply(T input) {
-                T checked = checkAccess(input);
-                return checked;
-            }
+        return input -> {
+            T checked = checkAccess(input);
+            return checked;
         };
     }
 

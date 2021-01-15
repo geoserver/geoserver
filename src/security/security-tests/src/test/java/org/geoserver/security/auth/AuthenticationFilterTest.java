@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.Cookie;
@@ -555,13 +554,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             request.setMethod("GET");
             response = new MockHttpServletResponse();
             chain = new MockFilterChain();
-            request.setUserPrincipal(
-                    new Principal() {
-                        @Override
-                        public String getName() {
-                            return testUserName;
-                        }
-                    });
+            request.setUserPrincipal(() -> testUserName);
             if (rs == J2EERoleSource.Header) {
                 request.addHeader("roles", derivedRole + ";" + rootRole);
             }
@@ -592,13 +585,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.setUserPrincipal(
-                new Principal() {
-                    @Override
-                    public String getName() {
-                        return GeoServerUser.ROOT_USERNAME;
-                    }
-                });
+        request.setUserPrincipal(() -> GeoServerUser.ROOT_USERNAME);
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -625,13 +612,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.setUserPrincipal(
-                new Principal() {
-                    @Override
-                    public String getName() {
-                        return testUserName;
-                    }
-                });
+        request.setUserPrincipal(() -> testUserName);
         request.addUserRole(derivedRole);
         getProxy().doFilter(request, response, chain);
 

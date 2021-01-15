@@ -56,13 +56,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     public void setupChooser(final File file) {
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model<>(file));
-                            }
-                        }));
+                        (ComponentBuilder) id -> new GeoServerFileChooser(id, new Model<>(file))));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
@@ -99,15 +93,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInDialog() throws Exception {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new GeoServerDialog(id);
-                            }
-                        }));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new GeoServerDialog(id)));
 
         tester.assertRenderedPage(FormTestPage.class);
 
@@ -140,12 +126,8 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     public void testHideFileSystem() throws Exception {
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model<>(), true);
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new GeoServerFileChooser(id, new Model<>(), true)));
 
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();

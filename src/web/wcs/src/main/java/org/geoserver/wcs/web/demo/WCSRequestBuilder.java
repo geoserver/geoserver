@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -53,13 +52,8 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
         add(xmlWindow);
         xmlWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    @Override
-                    public Page createPage() {
-                        return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
         // the output response window
         responseWindow = new ModalWindow("responseWindow");
@@ -68,23 +62,20 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    @Override
-                    public Page createPage() {
-                        DemoRequest request = new DemoRequest(null);
-                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        request.setRequestUrl(url);
-                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model<>(request));
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () -> {
+                            DemoRequest request = new DemoRequest(null);
+                            HttpServletRequest http = GeoServerApplication.get().servletRequest();
+                            String url =
+                                    ResponseUtils.buildURL(
+                                            ResponseUtils.baseURL(http),
+                                            "ows",
+                                            Collections.singletonMap("strict", "true"),
+                                            URLType.SERVICE);
+                            request.setRequestUrl(url);
+                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                            return new DemoRequestResponse(new Model<>(request));
+                        });
 
         form.add(
                 new AjaxSubmitLink("execute") {

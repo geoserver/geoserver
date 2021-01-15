@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -666,40 +665,36 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
                 }
                 Collections.sort(
                         geometryOperands,
-                        new Comparator<GeometryOperand>() {
-
-                            @Override
-                            public int compare(GeometryOperand o1, GeometryOperand o2) {
-                                if (o2.getLocalPart().contains("Envelope")) {
-                                    return -1;
-                                }
-
-                                if (o2.getLocalPart().contains("Point")) {
-                                    if (o1.getLocalPart().contains("Envelope")) {
-                                        return -1;
-                                    } else {
-                                        return 1;
-                                    }
-                                }
-
-                                if (o2.getLocalPart().contains("LineString")) {
-                                    if (o1.getLocalPart().contains("Point")) {
-                                        return -1;
-                                    } else {
-                                        return 1;
-                                    }
-                                }
-
-                                if (o2.getLocalPart().contains("Polygon")) {
-                                    if (o1.getLocalPart().contains("LineString")) {
-                                        return -1;
-                                    } else {
-                                        return 1;
-                                    }
-                                }
-
-                                return 0;
+                        (o1, o2) -> {
+                            if (o2.getLocalPart().contains("Envelope")) {
+                                return -1;
                             }
+
+                            if (o2.getLocalPart().contains("Point")) {
+                                if (o1.getLocalPart().contains("Envelope")) {
+                                    return -1;
+                                } else {
+                                    return 1;
+                                }
+                            }
+
+                            if (o2.getLocalPart().contains("LineString")) {
+                                if (o1.getLocalPart().contains("Point")) {
+                                    return -1;
+                                } else {
+                                    return 1;
+                                }
+                            }
+
+                            if (o2.getLocalPart().contains("Polygon")) {
+                                if (o1.getLocalPart().contains("LineString")) {
+                                    return -1;
+                                } else {
+                                    return 1;
+                                }
+                            }
+
+                            return 0;
                         });
             }
         }

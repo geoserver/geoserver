@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -71,34 +70,29 @@ public class ElevationParser {
         }
         final Set values =
                 new TreeSet(
-                        new Comparator() {
+                        (o1, o2) -> {
+                            final boolean o1Double = o1 instanceof Double;
+                            final boolean o2Double = o2 instanceof Double;
 
-                            @Override
-                            public int compare(Object o1, Object o2) {
-                                final boolean o1Double = o1 instanceof Double;
-                                final boolean o2Double = o2 instanceof Double;
-
-                                // o1 date
-                                if (o1Double) {
-                                    final Double left = (Double) o1;
-                                    if (o2Double) {
-                                        // o2 date
-                                        return left.compareTo((Double) o2);
-                                    }
-                                    // o2 number range
-                                    return left.compareTo(((NumberRange<Double>) o2).getMinValue());
-                                }
-
-                                // o1 number range
-                                final NumberRange left = (NumberRange) o1;
+                            // o1 date
+                            if (o1Double) {
+                                final Double left = (Double) o1;
                                 if (o2Double) {
                                     // o2 date
-                                    return left.getMinValue().compareTo(o2);
+                                    return left.compareTo((Double) o2);
                                 }
-                                // o2 daterange
-                                return left.getMinValue()
-                                        .compareTo(((NumberRange) o2).getMinValue());
+                                // o2 number range
+                                return left.compareTo(((NumberRange<Double>) o2).getMinValue());
                             }
+
+                            // o1 number range
+                            final NumberRange left = (NumberRange) o1;
+                            if (o2Double) {
+                                // o2 date
+                                return left.getMinValue().compareTo(o2);
+                            }
+                            // o2 daterange
+                            return left.getMinValue().compareTo(((NumberRange) o2).getMinValue());
                         });
         final String[] listValues = value.split(",");
         int maxValues = getMaxElevations();

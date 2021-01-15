@@ -6,7 +6,6 @@
 package org.geoserver.importer.format;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
@@ -207,13 +206,9 @@ public class GeoJSONFormat extends VectorFormat {
         if (data instanceof Directory) {
             return Iterables.find(
                             ((Directory) data).getFiles(),
-                            new Predicate<FileData>() {
-                                @Override
-                                public boolean apply(FileData input) {
-                                    return FilenameUtils.getBaseName(input.getFile().getName())
-                                            .equals(item.getLayer().getName());
-                                }
-                            })
+                            input ->
+                                    FilenameUtils.getBaseName(input.getFile().getName())
+                                            .equals(item.getLayer().getName()))
                     .getFile();
         } else {
             return maybeFile(data).get();

@@ -35,7 +35,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -96,60 +95,57 @@ public class ExternalGraphicPanel extends Panel {
         IModel<String> bind = styleModel.bind("legend.onlineResource");
         onlineResource = new TextField<>("onlineResource", bind);
         onlineResource.add(
-                new IValidator<String>() {
-
-                    @Override
-                    public void validate(IValidatable<String> input) {
-                        String value = input.getValue();
-                        int last = value == null ? -1 : value.lastIndexOf('.');
-                        if (last == -1
-                                || !Arrays.asList(EXTENSIONS)
-                                        .contains(value.substring(last + 1).toLowerCase())) {
-                            ValidationError error = new ValidationError();
-                            error.setMessage("Not an image");
-                            error.addKey("nonImage");
-                            input.error(error);
-                            return;
-                        }
-                        URI uri = null;
-                        try {
-                            uri = new URI(value);
-                        } catch (URISyntaxException e1) {
-                            // Unable to check if absolute
-                        }
-                        if (uri != null && uri.isAbsolute() && isUrl(value)) {
+                (IValidator<String>)
+                        input -> {
+                            String value = input.getValue();
+                            int last = value == null ? -1 : value.lastIndexOf('.');
+                            if (last == -1
+                                    || !Arrays.asList(EXTENSIONS)
+                                            .contains(value.substring(last + 1).toLowerCase())) {
+                                ValidationError error = new ValidationError();
+                                error.setMessage("Not an image");
+                                error.addKey("nonImage");
+                                input.error(error);
+                                return;
+                            }
+                            URI uri = null;
                             try {
-                                URL url = uri.toURL();
-                                URLConnection conn = url.openConnection();
-                                if ("text/html".equals(conn.getContentType())) {
+                                uri = new URI(value);
+                            } catch (URISyntaxException e1) {
+                                // Unable to check if absolute
+                            }
+                            if (uri != null && uri.isAbsolute() && isUrl(value)) {
+                                try {
+                                    URL url = uri.toURL();
+                                    URLConnection conn = url.openConnection();
+                                    if ("text/html".equals(conn.getContentType())) {
+                                        ValidationError error = new ValidationError();
+                                        error.setMessage("Unable to access image");
+                                        error.addKey("imageUnavailable");
+                                        input.error(error);
+                                        return; // error message back!
+                                    }
+                                } catch (IOException e) {
                                     ValidationError error = new ValidationError();
                                     error.setMessage("Unable to access image");
                                     error.addKey("imageUnavailable");
                                     input.error(error);
-                                    return; // error message back!
                                 }
-                            } catch (IOException e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Unable to access image");
-                                error.addKey("imageUnavailable");
-                                input.error(error);
-                            }
-                            return; // no further checks possible
-                        } else {
-                            try {
+                                return; // no further checks possible
+                            } else {
+                                try {
 
-                                WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
-                                getIconFromStyleDirectory(wsInfo, value);
-                            } catch (Exception e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage(
-                                        "File not found in styles directory or given path is invalid");
-                                error.addKey("imageNotFound");
-                                input.error(error);
+                                    WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
+                                    getIconFromStyleDirectory(wsInfo, value);
+                                } catch (Exception e) {
+                                    ValidationError error = new ValidationError();
+                                    error.setMessage(
+                                            "File not found in styles directory or given path is invalid");
+                                    error.addKey("imageNotFound");
+                                    input.error(error);
+                                }
                             }
-                        }
-                    }
-                });
+                        });
         onlineResource.setOutputMarkupId(true);
         table.add(onlineResource);
 

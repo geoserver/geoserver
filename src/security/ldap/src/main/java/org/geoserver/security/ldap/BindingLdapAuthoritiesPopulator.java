@@ -17,10 +17,8 @@ import javax.naming.directory.SearchControls;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.ldap.core.AuthenticatedLdapEntryContextCallback;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.LdapEntryIdentification;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.support.LdapUtils;
@@ -166,28 +164,14 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                                 LdapUtils.emptyLdapName(),
                                 userDn,
                                 password,
-                                new AuthenticatedLdapEntryContextCallback() {
-
-                                    @Override
-                                    public void executeWithContext(
-                                            DirContext ctx,
-                                            LdapEntryIdentification ldapEntryIdentification) {
-                                        ctxFunc.accept(ctx);
-                                    }
-                                });
+                                (ctx, ldapEntryIdentification) -> ctxFunc.accept(ctx));
                     };
             ldapTemplate.authenticate(
                     LdapUtils.emptyLdapName(),
                     userDn,
                     password,
-                    new AuthenticatedLdapEntryContextCallback() {
-
-                        @Override
-                        public void executeWithContext(
-                                DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
-                            getAllRoles(user, userDn, result, username, ctxConsumer);
-                        }
-                    });
+                    (ctx, ldapEntryIdentification) ->
+                            getAllRoles(user, userDn, result, username, ctxConsumer));
         } else {
             getAllRoles(user, userDn, result, username, (func) -> func.accept(null));
         }

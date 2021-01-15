@@ -52,13 +52,8 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new InspireAdminPanel(id, new Model<>(serviceInfo));
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new InspireAdminPanel(id, new Model<>(serviceInfo))));
     }
 
     @Test

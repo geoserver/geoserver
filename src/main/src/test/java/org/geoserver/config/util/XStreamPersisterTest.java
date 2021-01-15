@@ -1170,16 +1170,12 @@ public class XStreamPersisterTest {
 
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         factory.addInitializer(
-                new XStreamPersisterInitializer() {
-
-                    @Override
-                    public void init(XStreamPersister persister) {
-                        persister.getXStream().alias("sweetBanana", SweetBanana.class);
-                        persister
-                                .getXStream()
-                                .aliasAttribute(SweetBanana.class, "scientificName", "name");
-                        persister.registerBreifMapComplexType("sweetBanana", SweetBanana.class);
-                    }
+                persister -> {
+                    persister.getXStream().alias("sweetBanana", SweetBanana.class);
+                    persister
+                            .getXStream()
+                            .aliasAttribute(SweetBanana.class, "scientificName", "name");
+                    persister.registerBreifMapComplexType("sweetBanana", SweetBanana.class);
                 });
         XStreamPersister persister = factory.createXMLPersister();
 

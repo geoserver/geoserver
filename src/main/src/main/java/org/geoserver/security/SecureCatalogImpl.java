@@ -1658,13 +1658,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             final Class<T> forClass, MixedModeBehavior mixedModeBehavior) {
 
         final Authentication user = user();
-        return new Function<T, T>() {
-
-            @Override
-            public T apply(T input) {
-                T checked = checkAccess(user, input, mixedModeBehavior);
-                return checked;
-            }
+        return input -> {
+            T checked = checkAccess(user, input, mixedModeBehavior);
+            return checked;
         };
     }
 

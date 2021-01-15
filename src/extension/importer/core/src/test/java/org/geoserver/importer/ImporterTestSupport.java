@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -248,14 +247,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
             final File dbFile = new File(databaseLocation);
             File container = dbFile.getParentFile();
             File[] dbFiles =
-                    container.listFiles(
-                            new FilenameFilter() {
-
-                                @Override
-                                public boolean accept(File dir, String name) {
-                                    return name.startsWith(dbFile.getName());
-                                }
-                            });
+                    container.listFiles((dir, name1) -> name1.startsWith(dbFile.getName()));
             for (File f : dbFiles) {
                 assertTrue("Failed to remove file " + f.getPath(), FileUtils.deleteQuietly(f));
             }

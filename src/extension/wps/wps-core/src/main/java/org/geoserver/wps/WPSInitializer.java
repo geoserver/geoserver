@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.config.ConfigurationListenerAdapter;
@@ -202,17 +201,13 @@ public class WPSInitializer implements GeoServerInitializer {
         // ensure there is a stable order across invocations, JDK and so on
         Collections.sort(
                 factories,
-                new Comparator<ProcessFactory>() {
-
-                    @Override
-                    public int compare(ProcessFactory o1, ProcessFactory o2) {
-                        if (o1 == null) {
-                            return o2 == null ? 0 : -1;
-                        } else if (o2 == null) {
-                            return 1;
-                        } else {
-                            return o1.getClass().getName().compareTo(o2.getClass().getName());
-                        }
+                (o1, o2) -> {
+                    if (o1 == null) {
+                        return o2 == null ? 0 : -1;
+                    } else if (o2 == null) {
+                        return 1;
+                    } else {
+                        return o1.getClass().getName().compareTo(o2.getClass().getName());
                     }
                 });
 

@@ -15,7 +15,6 @@ import org.geoserver.util.PropertyRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 import org.springframework.context.ApplicationContext;
 
 public class GeoServerPropertyFactoryBeanTest {
@@ -64,28 +63,16 @@ public class GeoServerPropertyFactoryBeanTest {
 
     @Test
     public void testGetUnsetDefault() throws Exception {
-        assertThrows(
-                IllegalStateException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        factory.createInstance();
-                    }
-                });
+        assertThrows(IllegalStateException.class, () -> factory.createInstance());
     }
 
     @Test
     public void testGetBadDefault() throws Exception {
         assertThrows(
                 IllegalStateException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        factory.setDefaultValue("UNKNOWN");
-                        factory.createInstance();
-                    }
+                () -> {
+                    factory.setDefaultValue("UNKNOWN");
+                    factory.createInstance();
                 });
     }
 

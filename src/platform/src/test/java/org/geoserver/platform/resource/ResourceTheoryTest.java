@@ -36,7 +36,6 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource.Type;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
-import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 
 /**
@@ -177,15 +176,7 @@ public abstract class ResourceTheoryTest {
         Resource res = getResource(path);
         assumeThat(res, is(directory()));
 
-        assertThrows(
-                IllegalStateException.class,
-                new ThrowingRunnable() {
-
-                    @Override
-                    public void run() throws Throwable {
-                        res.in().close();
-                    }
-                });
+        assertThrows(IllegalStateException.class, () -> res.in().close());
     }
 
     @Theory
@@ -193,14 +184,7 @@ public abstract class ResourceTheoryTest {
         Resource res = getResource(path);
         assumeThat(res, is(directory()));
 
-        assertThrows(
-                IllegalStateException.class,
-                new ThrowingRunnable() {
-                    @Override
-                    public void run() throws Throwable {
-                        res.out().close();
-                    }
-                });
+        assertThrows(IllegalStateException.class, () -> res.out().close());
     }
 
     @Theory

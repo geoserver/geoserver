@@ -233,18 +233,14 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             }
             // zip all the files produced
             final FilenameFilter filter =
-                    new FilenameFilter() {
-
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            name = name.toLowerCase();
-                            return name.endsWith(".shp")
-                                    || name.endsWith(".shx")
-                                    || name.endsWith(".dbf")
-                                    || name.endsWith(".prj")
-                                    || name.endsWith(".cst")
-                                    || name.endsWith(".txt");
-                        }
+                    (dir, name) -> {
+                        name = name.toLowerCase();
+                        return name.endsWith(".shp")
+                                || name.endsWith(".shx")
+                                || name.endsWith(".dbf")
+                                || name.endsWith(".prj")
+                                || name.endsWith(".cst")
+                                || name.endsWith(".txt");
                     };
             ZipOutputStream zipOut = new ZipOutputStream(output);
             IOUtils.zipDirectory(tempDir, zipOut, filter);

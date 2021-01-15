@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -218,14 +217,10 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
             // submit the source output format execution, tracking exceptions
             Future<Void> future =
                     executor.submit(
-                            new Callable<Void>() {
-
-                                @Override
-                                public Void call() throws Exception {
-                                    sourceResponse.write(featureCollection, pos, sourceOperation);
-                                    pos.close(); // or the piped input stream will never finish
-                                    return null;
-                                }
+                            () -> {
+                                sourceResponse.write(featureCollection, pos, sourceOperation);
+                                pos.close(); // or the piped input stream will never finish
+                                return null;
                             });
 
             // run the transformation

@@ -20,7 +20,6 @@ import java.util.Properties;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -619,13 +618,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
         final Capture<Filter> cap = Capture.newInstance(CaptureType.LAST);
         expect(catalog.list(eq(clazz), capture(cap)))
-                .andStubAnswer(
-                        new IAnswer<CloseableIterator<T>>() {
-                            @Override
-                            public CloseableIterator<T> answer() throws Throwable {
-                                return makeCIterator(source, cap.getValue());
-                            }
-                        });
+                .andStubAnswer(() -> makeCIterator(source, cap.getValue()));
         expect(
                         catalog.list(
                                 eq(clazz),
@@ -633,13 +626,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                                 EasyMock.anyInt(),
                                 EasyMock.anyInt(),
                                 anyObject()))
-                .andStubAnswer(
-                        new IAnswer<CloseableIterator<T>>() {
-                            @Override
-                            public CloseableIterator<T> answer() throws Throwable {
-                                return makeCIterator(source, cap.getValue());
-                            }
-                        });
+                .andStubAnswer(() -> makeCIterator(source, cap.getValue()));
     }
 
     static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {

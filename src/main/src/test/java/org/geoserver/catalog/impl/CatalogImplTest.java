@@ -1982,14 +1982,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(2, styles.size());
 
         // test immutability
-        Comparator<StyleInfo> comparator =
-                new Comparator<StyleInfo>() {
-
-                    @Override
-                    public int compare(StyleInfo o1, StyleInfo o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                };
+        Comparator<StyleInfo> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         try {
             Collections.sort(styles, comparator);
             fail("Expected runtime exception, immutable collection");

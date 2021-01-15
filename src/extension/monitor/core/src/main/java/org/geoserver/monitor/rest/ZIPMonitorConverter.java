@@ -14,7 +14,6 @@ import java.util.zip.ZipOutputStream;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.RequestDataVisitor;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
@@ -50,14 +49,11 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         if (object instanceof Query) {
             monitor.query(
                     (Query) object,
-                    new RequestDataVisitor() {
-                        @Override
-                        public void visit(RequestData data, Object... aggregates) {
-                            try {
-                                writeBodyAndError(data, zout, body, error, true);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                    (data, aggregates) -> {
+                        try {
+                            writeBodyAndError(data, zout, body, error, true);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                     });
         } else if (object instanceof List) {

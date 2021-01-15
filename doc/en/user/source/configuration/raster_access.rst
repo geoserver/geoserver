@@ -51,7 +51,7 @@ Max Oversampling Factor
 -----------------------
 When dealing with reprojection, the underlying raster read operation might do some oversampling in order to provide the requested output resolution. Depending on the reprojection and the requested area, the oversampling factor might be high.
 
-Think about doing an untiled whole world request of an EPSG:4326 raster to a target EPSG:3857 projection to fill a 1024x768 image. Due to the big distortion introduced by the Mercator Projection when going far from the equator, the underlying read operation may result in actually reading 20000x8000 pixels, so an oversampling of almost 20. Related processing operations will work on that big image before returning back the desired 1024x768 image.
+Consider an untiled whole world request of an EPSG:4326 raster, towards EPSG:3857, filling a 1024x768 image. Due to the big distortion introduced by the Mercator Projection at high latitudes, the underlying read operation may result in actually reading 20000x8000 pixels, in other words, an oversampling factor of almost 20. Image processing operations will work on that big input image before returning back the desired 1024x768 image.
 
 This can be very time consuming (you may notice long rendering time for that) so you may want to put a limit on the maximum oversampling factor by adding the following java option to GeoServer startup script and restart it:
 

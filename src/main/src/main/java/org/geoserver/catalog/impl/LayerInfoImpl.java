@@ -467,4 +467,9 @@ public class LayerInfoImpl implements LayerInfo {
     private void checkMetadataNotNull() {
         if (metadata == null) metadata = new MetadataMap();
     }
+
+    @Override
+    public int compareByName(LayerInfo other) {
+        return getName().compareTo(other.getName());
+    }
 }

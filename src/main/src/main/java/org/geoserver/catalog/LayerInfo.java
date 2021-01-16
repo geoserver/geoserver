@@ -14,6 +14,15 @@ import java.util.Set;
  */
 public interface LayerInfo extends PublishedInfo {
 
+    /**
+     * Compare this LayerInfo with another by name.
+     *
+     * @param other the name of the other layer
+     * @return a negative integer, zero, or a positive integer if the name is less than, equal to,
+     *     or greater than the name of {@code other}
+     */
+    public int compareByName(LayerInfo other);
+
     enum WMSInterpolation {
         Nearest,
         Bilinear,

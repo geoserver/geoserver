@@ -214,4 +214,9 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public void setDateModified(Date dateModified) {
         delegate.setDateModified(dateModified);
     }
+
+    @Override
+    public int compareByName(LayerInfo other) {
+        return delegate.compareByName(other);
+    }
 }

@@ -990,13 +990,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             final List<LayerInfo> data = new ArrayList<>(layerTree.getData());
             final Collection<LayerTree> children = layerTree.getChildrens();
 
-            Collections.sort(
-                    data,
-                    new Comparator<LayerInfo>() {
-                        public int compare(LayerInfo o1, LayerInfo o2) {
-                            return o1.getName().compareTo(o2.getName());
-                        }
-                    });
+            Collections.sort(data, LayerInfo::compareByName);
 
             for (LayerInfo layer : data) {
                 // no sense in exposing a geometryless layer through wms...

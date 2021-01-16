@@ -1454,10 +1454,16 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         lB.setDefaultStyle(s);
         lB.setEnabled(true);
 
+        assertEquals(lA.compareByName(lB), 0);
+        assertEquals(lB.compareByName(lA), 0);
+
         LayerInfo lC = catalog.getFactory().createLayer();
         lC.setResource(ftC);
         lC.setDefaultStyle(s);
         lC.setEnabled(true);
+
+        assertTrue(lA.compareByName(lC) < 0);
+        assertTrue(lC.compareByName(lA) > 0);
 
         catalog.add(lA);
         catalog.add(lB);

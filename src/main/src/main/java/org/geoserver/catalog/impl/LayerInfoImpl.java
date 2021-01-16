@@ -472,4 +472,26 @@ public class LayerInfoImpl implements LayerInfo {
     public int compareByName(LayerInfo other) {
         return getName().compareTo(other.getName());
     }
+
+    @Override
+    public int compareBySRS(LayerInfo other) {
+        // split out authority and code
+        String[] srs1 = getResource().getSRS().split(":");
+        String[] srs2 = other.getResource().getSRS().split(":");
+
+        // use sign to control sort order
+        if (srs1[0].equalsIgnoreCase(srs2[0]) && srs1.length > 1 && srs2.length > 1) {
+            try {
+                // in case of same authority, compare numbers
+                return Integer.valueOf(srs1[1]).compareTo(Integer.valueOf(srs2[1]));
+            } catch (NumberFormatException e) {
+                // a handful of codes are not numeric,
+                // handle the general case as well
+                return srs1[1].compareTo(srs2[1]);
+            }
+        } else {
+            // compare authorities
+            return srs1[0].compareToIgnoreCase(srs2[0]);
+        }
+    }
 }

@@ -219,4 +219,9 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public int compareByName(LayerInfo other) {
         return delegate.compareByName(other);
     }
+
+    @Override
+    public int compareBySRS(LayerInfo other) {
+        return delegate.compareBySRS(other);
+    }
 }

@@ -65,7 +65,6 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
     private List<Resource> getItemsInternal() {
         // else, grab the resource list
         try {
-            List<Resource> result;
             StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
 
             Map<String, Resource> resources = new HashMap<>();
@@ -170,7 +169,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     resource.setPublished(true);
                 }
             }
-            result = new ArrayList<>(resources.values());
+            List<Resource> result = new ArrayList<>(resources.values());
 
             // return by natural order
             Collections.sort(result);

@@ -39,8 +39,8 @@ public class WMSExtensions {
     public static GetMapOutputFormat findMapProducer(
             final String outputFormat, final ApplicationContext applicationContext) {
 
-        final Collection<GetMapOutputFormat> producers;
-        producers = WMSExtensions.findMapProducers(applicationContext);
+        final Collection<GetMapOutputFormat> producers =
+                WMSExtensions.findMapProducers(applicationContext);
 
         return findMapProducer(outputFormat, producers);
     }

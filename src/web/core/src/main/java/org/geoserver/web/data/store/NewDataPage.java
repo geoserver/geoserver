@@ -78,8 +78,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                         final DataAccessFactory factory =
                                 getAvailableDataStores().get(dataStoreFactoryName);
                         final String description = factory.getDescription();
-                        SubmitLink link;
-                        link =
+                        SubmitLink link =
                                 new SubmitLink("resourcelink") {
                                     @Override
                                     public void onSubmit() {
@@ -110,8 +109,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                         final Map<String, Format> coverages = getAvailableCoverageStores();
                         Format format = coverages.get(coverageFactoryName);
                         final String description = format.getDescription();
-                        SubmitLink link;
-                        link =
+                        SubmitLink link =
                                 new SubmitLink("resourcelink") {
                                     @Override
                                     public void onSubmit() {
@@ -138,8 +136,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                     protected void populateItem(ListItem item) {
                         final OtherStoreDescription store =
                                 (OtherStoreDescription) item.getModelObject();
-                        SubmitLink link;
-                        link =
+                        SubmitLink link =
                                 new SubmitLink("resourcelink") {
                                     @Override
                                     public void onSubmit() {
@@ -176,8 +173,8 @@ public class NewDataPage extends GeoServerSecuredPage {
         // dataStores is transient, a back button may get us to the serialized version so check for
         // it
         if (dataStores == null) {
-            final Iterator<DataAccessFactory> availableDataStores;
-            availableDataStores = DataStoreUtils.getAvailableDataStoreFactories().iterator();
+            final Iterator<DataAccessFactory> availableDataStores =
+                    DataStoreUtils.getAvailableDataStoreFactories().iterator();
 
             Map<String, DataAccessFactory> storeNames = new HashMap<>();
 

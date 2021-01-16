@@ -115,8 +115,7 @@ public class StreamingSVGMap extends WebMap {
 
         for (Layer layer : layers) {
             SimpleFeatureIterator featureReader = null;
-            SimpleFeatureSource fSource;
-            fSource = (SimpleFeatureSource) layer.getFeatureSource();
+            SimpleFeatureSource fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
 
             try {
@@ -137,12 +136,9 @@ public class StreamingSVGMap extends WebMap {
                 featureReader = fSource.getFeatures(finalQuery).features();
                 LOGGER.fine("got FeatureReader, now writing");
 
-                String groupId = null;
-                String styleName = null;
+                String groupId = schema.getTypeName();
 
-                groupId = schema.getTypeName();
-
-                styleName = layer.getStyle().getName();
+                String styleName = layer.getStyle().getName();
 
                 writer.write("<g id=\"" + groupId + "\"");
 

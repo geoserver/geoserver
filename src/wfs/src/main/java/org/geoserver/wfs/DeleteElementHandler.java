@@ -133,8 +133,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             if ((request.getLockId() != null)
                     && store instanceof FeatureLocking
                     && (request.isReleaseActionSome())) {
-                SimpleFeatureLocking locking;
-                locking = (SimpleFeatureLocking) store;
+                SimpleFeatureLocking locking = (SimpleFeatureLocking) store;
 
                 // TODO: Revisit Lock/Delete interaction in gt2
                 // This a bit better and what should be done, we
@@ -149,8 +148,8 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 // would be extra work when doing release mode ALL.
                 //
                 DataStore data = (DataStore) store.getDataStore();
-                FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-                writer = data.getFeatureWriter(typeName, filter, store.getTransaction());
+                FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                        data.getFeatureWriter(typeName, filter, store.getTransaction());
 
                 try {
                     while (writer.hasNext()) {

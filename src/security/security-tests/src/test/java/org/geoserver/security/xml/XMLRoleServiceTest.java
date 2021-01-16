@@ -113,9 +113,8 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
 
             // obtain a lock
             store1.addRole(role_test1);
-            boolean fail;
             String failMessage = "Concurrent lock not allowed";
-            fail = true;
+            boolean fail = true;
             try {
                 store2.clear();
             } catch (IOException ex) {

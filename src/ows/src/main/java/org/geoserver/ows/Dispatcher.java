@@ -203,10 +203,9 @@ public class Dispatcher extends AbstractController {
 
     protected void preprocessRequest(HttpServletRequest request) throws Exception {
         // set the charset
-        Charset charSet = null;
 
         // TODO: make this server settable
-        charSet = UTF8;
+        Charset charSet = UTF8;
         if (request.getCharacterEncoding() != null)
             try {
                 charSet = Charset.forName(request.getCharacterEncoding());

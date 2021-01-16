@@ -143,9 +143,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
             // obtain a lock
             store1.addUser(user);
-            boolean fail;
             String failMessage = "Concurrent lock not allowed";
-            fail = true;
+            boolean fail = true;
             try {
                 store2.clear();
             } catch (IOException ex) {

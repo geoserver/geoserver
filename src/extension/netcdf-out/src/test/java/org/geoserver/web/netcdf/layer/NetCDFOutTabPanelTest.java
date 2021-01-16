@@ -139,9 +139,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                                 "form:panel:netcdfeditor:container:dataPacking");
         assertEquals(dataPacking.getModelObject(), container.getDataPacking());
 
-        FormTester formTester;
-
-        formTester = tester.newFormTester("form");
+        FormTester formTester = tester.newFormTester("form");
         formTester.setValue("panel:netcdfeditor:container:standardName", "test-name");
         formTester.setValue("panel:netcdfeditor:container:uom", "test-uom");
         formTester.submit();

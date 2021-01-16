@@ -49,8 +49,8 @@ public class CachingOptionsPanel extends Panel {
 
         super(id, gwcConfigModel);
 
-        final IModel<Boolean> autoCacheLayersModel;
-        autoCacheLayersModel = new PropertyModel<>(gwcConfigModel, "cacheLayersByDefault");
+        final IModel<Boolean> autoCacheLayersModel =
+                new PropertyModel<>(gwcConfigModel, "cacheLayersByDefault");
         final CheckBox autoCacheLayers = new CheckBox("cacheLayersByDefault", autoCacheLayersModel);
         add(autoCacheLayers);
 
@@ -89,8 +89,8 @@ public class CachingOptionsPanel extends Panel {
                         new LocalizedChoiceRenderer(this));
         configs.add(lockProviderChoice);
 
-        IModel<Boolean> nonDefaultStylesModel;
-        nonDefaultStylesModel = new PropertyModel<>(gwcConfigModel, "cacheNonDefaultStyles");
+        IModel<Boolean> nonDefaultStylesModel =
+                new PropertyModel<>(gwcConfigModel, "cacheNonDefaultStyles");
         CheckBox cacheNonDefaultStyles =
                 new CheckBox("cacheNonDefaultStyles", nonDefaultStylesModel);
         configs.add(cacheNonDefaultStyles);
@@ -140,8 +140,8 @@ public class CachingOptionsPanel extends Panel {
         }
 
         {
-            List<String> formats;
-            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
+            List<String> formats =
+                    new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
             IModel<List<String>> rasterFormatsModel =
                     new PropertyModel<>(gwcConfigModel, "defaultCoverageCacheFormats");
             mergeExisting(formats, rasterFormatsModel.getObject());
@@ -161,8 +161,8 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup.add(formatsList);
         }
         {
-            List<String> formats;
-            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
+            List<String> formats =
+                    new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
             IModel<List<String>> otherFormatsModel =
                     new PropertyModel<>(gwcConfigModel, "defaultOtherCacheFormats");
             mergeExisting(formats, otherFormatsModel.getObject());

@@ -442,8 +442,7 @@ public class RulesBuilder {
         Filter f;
         List<Rule> list = new ArrayList<>();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
-        PercentagesManager percMan = null;
-        percMan = new PercentagesManager(groups.getPercentages());
+        PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
         try {
             /* First class */
             for (int i = 0; i < groups.getSize(); i++) {

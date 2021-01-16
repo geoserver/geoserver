@@ -92,9 +92,8 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                     StructuredGridCoverage2DReader reader =
                             (StructuredGridCoverage2DReader)
                                     ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
-                    String name;
                     // Getting the coverage name
-                    name = codec.getCoverageName(ci);
+                    String name = codec.getCoverageName(ci);
                     // Query the reader
                     GranuleSource source = reader.getGranules(name, true);
                     Query q = new Query();

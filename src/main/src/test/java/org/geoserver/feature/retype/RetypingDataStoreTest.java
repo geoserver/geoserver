@@ -134,7 +134,6 @@ public class RetypingDataStoreTest {
         try (FeatureReader<SimpleFeatureType, SimpleFeature> fr =
                 rts.getFeatureReader(new Query(RENAMED), Transaction.AUTO_COMMIT)) {
             SimpleFeature sf = fr.next();
-
             assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
 
             // check the feature ids have been renamed as well
@@ -181,8 +180,7 @@ public class RetypingDataStoreTest {
     public void testDelete() throws Exception {
         final Query queryAll = new Query(RENAMED);
 
-        SimpleFeatureStore store;
-        store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
+        SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
         int count = store.getCount(queryAll);
         store.removeFeatures(fidFilter);
 
@@ -191,8 +189,7 @@ public class RetypingDataStoreTest {
 
     @Test
     public void testModify() throws Exception {
-        SimpleFeatureStore store;
-        store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
+        SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
         SimpleFeature original = store.getFeatures(fidFilter).features().next();
         String newAddress = original.getAttribute("ADDRESS") + " xxx";
 
@@ -247,16 +244,14 @@ public class RetypingDataStoreTest {
 
     @Test
     public void testLockUnlockFilter() throws Exception {
-        SimpleFeatureLocking fl;
-        fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+        SimpleFeatureLocking fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
         final FeatureLock lock = new FeatureLock("abc", 10 * 60 * 1000);
         try (Transaction t = new DefaultTransaction()) {
             t.addAuthorization(lock.getAuthorization());
             fl.setTransaction(t);
             fl.setFeatureLock(lock);
 
-            SimpleFeatureLocking fl2;
-            fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+            SimpleFeatureLocking fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
             fl.setFeatureLock(lock);
             fl2.setTransaction(new DefaultTransaction());
 
@@ -270,8 +265,7 @@ public class RetypingDataStoreTest {
 
     @Test
     public void testLockUnlockQuery() throws Exception {
-        SimpleFeatureLocking fl;
-        fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+        SimpleFeatureLocking fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
         final FeatureLock lock = new FeatureLock("abc", 10 * 60 * 1000);
         try (Transaction t = new DefaultTransaction()) {
             t.addAuthorization(lock.getAuthorization());

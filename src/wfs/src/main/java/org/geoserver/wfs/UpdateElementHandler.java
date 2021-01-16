@@ -332,8 +332,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                 if ((request.getLockId() != null)
                         && store instanceof FeatureLocking
                         && (request.isReleaseActionSome())) {
-                    SimpleFeatureLocking locking;
-                    locking = (SimpleFeatureLocking) store;
+                    SimpleFeatureLocking locking = (SimpleFeatureLocking) store;
                     locking.unLockFeatures(filter);
                 }
             }

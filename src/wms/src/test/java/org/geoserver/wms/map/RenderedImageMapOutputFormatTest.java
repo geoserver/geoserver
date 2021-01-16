@@ -1608,9 +1608,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         final SimpleFeatureSource featureSource =
                 (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
 
-        DecoratingFeatureSource source;
         // This source should make the renderer fail when asking for the features
-        source =
+        DecoratingFeatureSource source =
                 new DecoratingFeatureSource(featureSource) {
                     @Override
                     public SimpleFeatureCollection getFeatures(Query query) throws IOException {

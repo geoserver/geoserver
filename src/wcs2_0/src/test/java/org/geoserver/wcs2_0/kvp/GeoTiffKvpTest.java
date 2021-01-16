@@ -477,18 +477,17 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         // one
         // across X and Y
         // //
-        MockHttpServletResponse response = null;
-        byte[] tiffContents = null;
 
         // Reading native resolution
-        response =
+        MockHttpServletResponse response =
                 getAsServletResponse(
                         "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
+                                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www"
+                                + ".opengis.net/def/axis/OGC/1/i(180),"
                                 + "http://www.opengis.net/def/axis/OGC/1/j(180)");
 
         assertEquals("image/tiff", response.getContentType());
-        tiffContents = getBinary(response);
+        byte[] tiffContents = getBinary(response);
         File fileNative = File.createTempFile("native", "native.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(fileNative, tiffContents);
 

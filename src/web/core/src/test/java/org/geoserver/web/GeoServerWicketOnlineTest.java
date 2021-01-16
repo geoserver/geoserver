@@ -95,15 +95,14 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
 
     private void addServiceAccessRuleWicket(String jsessionid, int i, boolean setReferer)
             throws IOException {
-        HttpURLConnection connection;
-
         // Post service selection
         // NOTE: This is required, as wicket checks the model content against the form content
         // we post later on
         String body = "service=4";
-        connection =
+        HttpURLConnection connection =
                 preparePost(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
+                        "web/wicket/bookmarkable/org.geoserver.security.web.service"
+                                + ".NewServiceAccessRulePage?"
                                 + i
                                 + "-1.IBehaviorListener.0-form-service",
                         body.length(),

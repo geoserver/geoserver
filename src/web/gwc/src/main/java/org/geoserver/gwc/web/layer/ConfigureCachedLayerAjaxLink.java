@@ -51,8 +51,8 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
         final GeoServerTileLayer geoserverTileLayer = (GeoServerTileLayer) getModelObject();
         PublishedInfo publishedInfo = geoserverTileLayer.getPublishedInfo();
         if (publishedInfo instanceof LayerInfo) {
-            ResourceConfigurationPage resourceConfigPage;
-            resourceConfigPage = new ResourceConfigurationPage((LayerInfo) publishedInfo, false);
+            ResourceConfigurationPage resourceConfigPage =
+                    new ResourceConfigurationPage((LayerInfo) publishedInfo, false);
             // tell the resource/layer edit page to start up on the tile cache tab
             resourceConfigPage.setSelectedTab(LayerCacheOptionsTabPanel.class);
             if (returnPage != null) {

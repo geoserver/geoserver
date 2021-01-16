@@ -218,9 +218,8 @@ public class DefaultProcessManager
                 }
 
                 // execute the process
-                Map<String, Object> result = null;
                 Process p = pf.create(processName);
-                result = p.execute(inputs, listener);
+                Map<String, Object> result = p.execute(inputs, listener);
                 return result;
             } finally {
                 // clean up the thread locals

@@ -181,9 +181,9 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
      */
     @Test
     public void testRestconfig() throws Exception {
-        MockHttpServletResponse response;
         // create workspace
-        response = postAsServletResponse("/rest/workspaces", WORKSPACE, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse("/rest/workspaces", WORKSPACE, "text/xml");
         assertEquals(201, response.getStatus());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gsml");
         assertNotNull(ws);

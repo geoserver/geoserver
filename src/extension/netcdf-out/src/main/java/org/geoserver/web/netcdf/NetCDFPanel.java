@@ -118,8 +118,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<GlobalAttribute> list;
-                                            list =
+                                            List<GlobalAttribute> list =
                                                     new ArrayList<>(
                                                             globalAttributes.getModelObject());
                                             final GlobalAttribute attribute =
@@ -197,8 +196,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<VariableAttribute> list;
-                                            list =
+                                            List<VariableAttribute> list =
                                                     new ArrayList<>(
                                                             variableAttributes.getModelObject());
                                             VariableAttribute attribute =
@@ -280,8 +278,9 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<ExtraVariable> list;
-                                            list = new ArrayList<>(extraVariables.getModelObject());
+                                            List<ExtraVariable> list =
+                                                    new ArrayList<>(
+                                                            extraVariables.getModelObject());
                                             final ExtraVariable attribute =
                                                     (ExtraVariable) getDefaultModelObject();
                                             list.remove(attribute);

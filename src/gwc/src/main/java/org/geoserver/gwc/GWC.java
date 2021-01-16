@@ -584,10 +584,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             String formatName,
             Map<String, String> parameters) {
         final int threadCount = 1;
-        int zoomStart;
-        int zoomStop;
-        zoomStart = gridSubset.getZoomStart();
-        zoomStop = gridSubset.getZoomStop();
+        int zoomStart = gridSubset.getZoomStart();
+        int zoomStop = gridSubset.getZoomStop();
         final TYPE taskType = TRUNCATE;
         SeedRequest req =
                 new SeedRequest(
@@ -828,13 +826,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             final List<GridSubset> crsMatchingGridSubsets;
             {
                 CoordinateReferenceSystem crs = request.getCrs();
-                int epsgId;
                 // are we in wms 1.3 land?
                 if (CRS.getAxisOrder(crs) == AxisOrder.NORTH_EAST) {
                     axisFlip = true;
                 }
                 String srs = request.getSRS();
-                epsgId = Integer.parseInt(srs.substring(srs.lastIndexOf(':') + 1));
+                int epsgId = Integer.parseInt(srs.substring(srs.lastIndexOf(':') + 1));
                 SRS srs2 = SRS.getSRS(epsgId);
                 crsMatchingGridSubsets = tileLayer.getGridSubsetsForSRS(srs2);
             }
@@ -892,12 +889,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             return null;
         }
 
-        ConveyorTile tileReq;
         final String gridSetId = gridSubset.getName();
         HttpServletRequest servletReq = null;
         HttpServletResponse servletResp = null;
         String layerName = tileLayer.getName();
-        tileReq =
+        ConveyorTile tileReq =
                 new ConveyorTile(
                         storageBroker,
                         layerName,

@@ -576,8 +576,7 @@ public class ResourcePool {
                             // if we grabbed the factory, check that the factory actually supports
                             // a namespace parameter, if we could not get the factory, assume that
                             // it does
-                            boolean supportsNamespace = true;
-                            supportsNamespace = false;
+                            boolean supportsNamespace = false;
 
                             for (Param p : params) {
                                 if ("namespace".equalsIgnoreCase(p.key)) {
@@ -1987,9 +1986,7 @@ public class ResourcePool {
             name = info.getNativeName();
         }
 
-        WMTSCapabilities caps = null;
-
-        caps = info.getStore().getWebMapTileServer(null).getCapabilities();
+        WMTSCapabilities caps = info.getStore().getWebMapTileServer(null).getCapabilities();
 
         for (WMTSLayer layer : caps.getLayerList()) {
             if (layer != null && name.equals(layer.getName())) {
@@ -2670,8 +2667,7 @@ public class ResourcePool {
 
     private void flushState(ContentDataStore contentDataStore, String nativeName)
             throws IOException {
-        ContentFeatureSource featureSource;
-        featureSource = contentDataStore.getFeatureSource(nativeName);
+        ContentFeatureSource featureSource = contentDataStore.getFeatureSource(nativeName);
         featureSource.getState().flush();
     }
 

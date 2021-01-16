@@ -206,8 +206,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         result = prime * result + (allowNativeWarp ? 1231 : 1237);
         result = prime * result + (imageIOCache ? 1231 : 1237);
         result = prime * result + (jpegAcceleration ? 1231 : 1237);
-        long temp;
-        temp = Double.doubleToLongBits(memoryCapacity);
+        long temp = Double.doubleToLongBits(memoryCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(memoryThreshold);
         result = prime * result + (int) (temp ^ (temp >>> 32));

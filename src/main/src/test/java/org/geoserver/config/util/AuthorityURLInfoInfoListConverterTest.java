@@ -34,8 +34,7 @@ public class AuthorityURLInfoInfoListConverterTest {
         auth2.setHref("http://geoserver.org/auth2;someparam=somevalue&");
         expected.add(auth2);
 
-        List<AuthorityURLInfo> actual;
-        actual = AuthorityURLInfoInfoListConverter.fromString(serialized);
+        List<AuthorityURLInfo> actual = AuthorityURLInfoInfoListConverter.fromString(serialized);
 
         assertEquals(expected, actual);
     }

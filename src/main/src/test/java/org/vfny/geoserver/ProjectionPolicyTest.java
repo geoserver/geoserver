@@ -142,8 +142,8 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
         assertEquals("EPSG:3857", ci.getSRS());
 
         // now get the reader via the coverage info
-        GridCoverage2DReader r;
-        r = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+        GridCoverage2DReader r =
+                (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
         assertTrue(
                 CRS.equalsIgnoreMetadata(
                         CRS.decode("EPSG:3857"), r.getCoordinateReferenceSystem()));

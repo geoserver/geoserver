@@ -362,11 +362,9 @@ public class GeoServerTileLayerTest {
         ParameterFilter stylesParamFilter = layerInfoTileLayer.getParameterFilters().get(0);
         List<String> legalValues = stylesParamFilter.getLegalValues();
 
-        Map<String, String> requestParams;
-        Map<String, String> modifiedParams;
-
-        requestParams = Collections.singletonMap("sTyLeS", "");
-        modifiedParams = layerInfoTileLayer.getModifiableParameters(requestParams, "UTF-8");
+        Map<String, String> requestParams = Collections.singletonMap("sTyLeS", "");
+        Map<String, String> modifiedParams =
+                layerInfoTileLayer.getModifiableParameters(requestParams, "UTF-8");
         assertEquals(0, modifiedParams.size());
 
         for (String legalStyle : legalValues) {

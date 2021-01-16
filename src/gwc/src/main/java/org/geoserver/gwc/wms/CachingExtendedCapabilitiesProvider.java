@@ -115,8 +115,8 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         }
 
         final String namespacePrefixFilter = request.getNamespace();
-        Iterable<? extends TileLayer> tileLayers;
-        tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
+        Iterable<? extends TileLayer> tileLayers =
+                gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
         final String nsPrefix;
         {
@@ -167,8 +167,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         tx.chars(srsStr);
         tx.end("SRS");
 
-        AttributesImpl atts;
-        atts = new AttributesImpl();
+        AttributesImpl atts = new AttributesImpl();
         atts.addAttribute("", "SRS", "SRS", "", srsStr);
         atts.addAttribute("", "minx", "minx", "", bs[0]);
         atts.addAttribute("", "miny", "miny", "", bs[1]);

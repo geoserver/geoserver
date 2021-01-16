@@ -80,8 +80,8 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
             return null;
         }
 
-        List<String> infoFormats;
-        infoFormats = wms.getCapabilities().getRequest().getGetFeatureInfo().getFormats();
+        List<String> infoFormats =
+                wms.getCapabilities().getRequest().getGetFeatureInfo().getFormats();
         if (!infoFormats.contains("application/vnd.ogc.gml")) {
             return null;
         }

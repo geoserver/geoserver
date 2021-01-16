@@ -195,7 +195,6 @@ public class RewindableInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        int b = 0;
 
         // Byte to be read is already in out buffer, simply returning it
         if (fOffset < fLength) {
@@ -226,7 +225,7 @@ public class RewindableInputStream extends InputStream {
 
         // Reading byte from the underlying stream, storing it in buffer and
         // then returning it.
-        b = fInputStream.read();
+        int b = fInputStream.read();
 
         if (b == -1) {
             fEndOffset = fOffset;
@@ -348,13 +347,12 @@ public class RewindableInputStream extends InputStream {
      */
     @Override
     public long skip(long n) throws IOException {
-        int bytesLeft;
 
         if (n <= 0) {
             return 0;
         }
 
-        bytesLeft = fLength - fOffset;
+        int bytesLeft = fLength - fOffset;
 
         // If end of buffer is reached, using `skip()` of the underlying input
         // stream

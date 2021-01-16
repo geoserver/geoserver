@@ -86,8 +86,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         // the style name and layer name will be ws qualified instead
         String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
 
-        final LegendGraphicAjaxUpdater defaultStyleUpdater;
-        defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
+        final LegendGraphicAjaxUpdater defaultStyleUpdater =
+                new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
 
         defaultStyle.add(
                 new OnChangeAjaxBehavior() {

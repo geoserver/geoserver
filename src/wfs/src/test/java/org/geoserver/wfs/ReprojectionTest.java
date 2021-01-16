@@ -212,7 +212,6 @@ public class ReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureWithProjectedBoxGet() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String q =
@@ -228,7 +227,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + cr[3]
                         + ","
                         + TARGET_CRS_CODE;
-        dom = getAsDOM(q);
+        Document dom = getAsDOM(q);
 
         assertEquals(
                 1,
@@ -241,7 +240,6 @@ public class ReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureWithProjectedBoxPost() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String xml =
@@ -289,7 +287,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
 
-        dom = postAsDOM("wfs", xml);
+        Document dom = postAsDOM("wfs", xml);
 
         assertEquals(
                 1,
@@ -303,7 +301,6 @@ public class ReprojectionTest extends WFSTestSupport {
     /** See GEOT-3760 */
     @Test
     public void testGetFeatureWithProjectedBoxIntersectsPost() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String xml =
@@ -351,7 +348,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
 
-        dom = postAsDOM("wfs", xml);
+        Document dom = postAsDOM("wfs", xml);
 
         assertEquals(
                 1,

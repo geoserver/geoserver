@@ -114,8 +114,8 @@ public class WMSExtensionsTest {
         replay(mockProducer);
 
         // note the lookup shall be case insensitive..
-        GetMapOutputFormat producer;
-        producer = WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
+        GetMapOutputFormat producer =
+                WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
         assertSame(mockProducer, producer);
 
         producer = WMSExtensions.findMapProducer("notARegisteredFormat", mockContext); // call#2

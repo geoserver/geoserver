@@ -579,8 +579,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // Add a render listener that ignores well known rendering exceptions and reports back non
         // ignorable ones
-        final RenderExceptionStrategy nonIgnorableExceptionListener;
-        nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
+        final RenderExceptionStrategy nonIgnorableExceptionListener =
+                new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
         RenderTimeStatistics statistics = null;
         if (!request.getRequest().equalsIgnoreCase("GETFEATUREINFO")) {
@@ -1656,12 +1656,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final GridCoverage2DReader reader = context.reader;
         final Object params = context.params;
 
-        GridCoverage2D coverage;
         GeneralParameterValue[] readParams =
                 getReadParameters(
                         params, envelope, requestedRasterArea, interpolation, bgColor, bandIndices);
 
-        coverage = reader.read(readParams);
+        GridCoverage2D coverage = reader.read(readParams);
         context.params = readParams;
         return coverage;
     }

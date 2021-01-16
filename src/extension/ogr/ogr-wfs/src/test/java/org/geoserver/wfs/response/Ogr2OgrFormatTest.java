@@ -152,10 +152,9 @@ public class Ogr2OgrFormatTest {
 
         // unzip the result
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(bos.toByteArray()));
-        Document dom = null;
         ZipEntry entry = zis.getNextEntry();
         assertEquals("Buildings.kml", entry.getName());
-        dom = dom(zis);
+        Document dom = dom(zis);
 
         // some very light assumptions on the contents, since we
         // cannot control how ogr encodes the kml... let's just assess

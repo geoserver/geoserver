@@ -211,7 +211,6 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testCreateWsWithAccessRules() throws IOException {
         AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
-        WorkspaceInfo wsInfo = null;
         FormTester form = tester.newFormTester("form");
         form.setValue("tabs:panel:name", "cba");
         form.setValue("tabs:panel:uri", "http://www.geoserver2.org");
@@ -219,7 +218,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("tabs:panel:listContainer:rules:0:admin", true);
         form.submit("submit");
         tester.assertNoErrorMessage();
-        wsInfo = getCatalog().getWorkspaceByName("cba");
+        WorkspaceInfo wsInfo = getCatalog().getWorkspaceByName("cba");
         assertEquals("cba", wsInfo.getName());
         assertEquals(1, manager.getResourceRule(wsInfo.getName(), wsInfo).size());
     }

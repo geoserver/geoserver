@@ -41,8 +41,8 @@ public class PasswordParamPanel extends Panel implements ParamPanel<String> {
         // keep the password value
         passwordField.setResetPassword(false);
 
-        FormComponentFeedbackBorder requiredFieldFeedback;
-        requiredFieldFeedback = new FormComponentFeedbackBorder("border");
+        FormComponentFeedbackBorder requiredFieldFeedback =
+                new FormComponentFeedbackBorder("border");
 
         requiredFieldFeedback.add(passwordField);
 

@@ -280,7 +280,6 @@ class CRSRequestHandler {
         String coverageName = reader.getGridCoverageNames()[0];
         GranuleSource granules = structuredReader.getGranules(coverageName, true);
         List<Filter> filters = new ArrayList<>();
-        Query query = Query.ALL;
 
         GeometryDescriptor geomDescriptor = granules.getSchema().getGeometryDescriptor();
         CoordinateReferenceSystem indexCRS = geomDescriptor.getCoordinateReferenceSystem();
@@ -298,7 +297,7 @@ class CRSRequestHandler {
             filters.add(filter);
         }
         // Set the query filter
-        query = new Query();
+        Query query = new Query();
         query.setFilter(Predicates.and(filters));
         query.setHints(new Hints(GranuleSource.NATIVE_BOUNDS, true));
         SimpleFeatureCollection features = granules.getGranules(query);

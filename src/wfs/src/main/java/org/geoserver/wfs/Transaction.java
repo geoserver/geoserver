@@ -225,8 +225,8 @@ public class Transaction {
                             meta.getFeatureSource(null, null);
 
                     if (source instanceof FeatureStore) {
-                        FeatureStore<? extends FeatureType, ? extends Feature> store;
-                        store = (FeatureStore<? extends FeatureType, ? extends Feature>) source;
+                        FeatureStore<? extends FeatureType, ? extends Feature> store =
+                                (FeatureStore<? extends FeatureType, ? extends Feature>) source;
                         store.setTransaction(transaction);
                         stores.put(elementName, (FeatureStore) source);
 

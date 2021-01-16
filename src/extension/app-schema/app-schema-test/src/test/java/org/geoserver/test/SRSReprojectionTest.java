@@ -63,10 +63,10 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testNonFeatureTypeProxy() {
-        Document doc = null;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4326");
+                        "wfs?request=GetFeature&version=1.1"
+                                + ".0&typename=gsml:MappedFeature&srsName=EPSG:4326");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(
                 "value01",

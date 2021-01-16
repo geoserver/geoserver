@@ -126,8 +126,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
                         String paramName = item.getDefaultModelObjectAsString();
                         ParamInfo paramMetadata = paramsMetadata.get(paramName);
 
-                        Component inputComponent;
-                        inputComponent =
+                        Component inputComponent =
                                 getInputComponent("parameterPanel", paramsModel, paramMetadata);
 
                         String description = paramMetadata.getTitle();

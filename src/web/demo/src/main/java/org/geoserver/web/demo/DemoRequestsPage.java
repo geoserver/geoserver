@@ -223,9 +223,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         password.setRequired(false);
         demoRequestsForm.add(password);
 
-        final ModalWindow responseWindow;
-
-        responseWindow = new ModalWindow("responseWindow");
+        final ModalWindow responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
 
         // responseWindow.setPageMapName("demoResponse");

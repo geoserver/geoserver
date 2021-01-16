@@ -88,7 +88,6 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
             return null;
         }
         // do nothing, give up
-        UsernamePasswordAuthenticationToken result = null;
         Set<GrantedAuthority> roles = new HashSet<>();
         if (details != null) {
             roles.addAll(details.getAuthorities());
@@ -101,7 +100,7 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
             }
         }
         roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-        result =
+        UsernamePasswordAuthenticationToken result =
                 new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), null, roles);
         result.setDetails(authentication.getDetails());
         return result;

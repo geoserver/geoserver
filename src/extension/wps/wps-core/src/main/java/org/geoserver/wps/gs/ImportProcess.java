@@ -567,7 +567,6 @@ public class ImportProcess implements GeoServerProcess {
             DataStoreInfo storeInfo,
             ProgressListener listener)
             throws IOException, ProcessException {
-        SimpleFeatureType targetType;
         // grab the data store
         DataStore ds = (DataStore) storeInfo.getDataStore(null);
 
@@ -585,7 +584,7 @@ public class ImportProcess implements GeoServerProcess {
 
         // try to get the target feature type (might have slightly different
         // name and structure)
-        targetType = ds.getSchema(sourceType.getTypeName());
+        SimpleFeatureType targetType = ds.getSchema(sourceType.getTypeName());
         if (targetType == null) {
             // ouch, the name was changed... we can only guess now...
             // try with the typical Oracle mangling

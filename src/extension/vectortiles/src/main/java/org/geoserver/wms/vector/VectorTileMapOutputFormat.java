@@ -212,10 +212,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             while (it.hasNext()) {
                 feature = it.next();
                 total++;
-                Geometry originalGeom;
                 Geometry finalGeom;
 
-                originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
+                Geometry originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
                 try {
                     finalGeom = pipeline.execute(originalGeom);
                 } catch (Exception processingException) {

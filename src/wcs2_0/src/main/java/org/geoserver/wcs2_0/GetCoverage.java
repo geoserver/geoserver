@@ -401,7 +401,6 @@ public class GetCoverage {
             ImageSizeRecorder incrementalInputSize,
             final GridCoverageFactory coverageFactory)
             throws Exception {
-        List<GridCoverage2D> coverages = null;
         double[] preAppliedScale = {Double.NaN, Double.NaN};
         //
         // we setup the params to force the usage of imageread and to make it use
@@ -410,7 +409,7 @@ public class GetCoverage {
         // we specify to work in streaming fashion
         // TODO elevation
         ScalingType scaling = extractScaling(extensions);
-        coverages =
+        List<GridCoverage2D> coverages =
                 readCoverage(
                         helper,
                         gridCoverageRequest,
@@ -1267,7 +1266,6 @@ public class GetCoverage {
             }
         }
 
-        GridCoverage2D coverage = null;
         //
         // kk, now build a good GG to read the smallest available area for the following operations
         //
@@ -1330,7 +1328,7 @@ public class GetCoverage {
         if (request.getOverviewPolicy() != null) {
             readHints.add(new Hints(Hints.OVERVIEW_POLICY, request.getOverviewPolicy()));
         }
-        coverage =
+        GridCoverage2D coverage =
                 RequestUtils.readBestCoverage(
                         reader,
                         readParameters,

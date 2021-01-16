@@ -51,8 +51,7 @@ public class XMLDescribeLayerResponse extends DescribeLayerResponse {
     @Override
     public void write(DescribeLayerModel results, DescribeLayerRequest request, OutputStream out)
             throws ServiceException, IOException {
-        DescribeLayerTransformer transformer;
-        transformer = new DescribeLayerTransformer(request.getBaseUrl());
+        DescribeLayerTransformer transformer = new DescribeLayerTransformer(request.getBaseUrl());
         Charset encoding = wms.getCharSet();
         transformer.setEncoding(encoding);
         if (wms.getGeoServer().getSettings().isVerbose()) {

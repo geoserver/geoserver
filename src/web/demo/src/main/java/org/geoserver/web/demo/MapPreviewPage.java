@@ -159,8 +159,8 @@ public class MapPreviewPage extends GeoServerBasePage {
         formats = new ArrayList<>();
 
         final GeoServerApplication application = getGeoServerApplication();
-        final List<GetMapOutputFormat> outputFormats;
-        outputFormats = application.getBeansOfType(GetMapOutputFormat.class);
+        final List<GetMapOutputFormat> outputFormats =
+                application.getBeansOfType(GetMapOutputFormat.class);
         for (GetMapOutputFormat producer : outputFormats) {
             Set<String> producerFormats = new HashSet<>(producer.getOutputFormatNames());
             producerFormats.add(producer.getMimeType());

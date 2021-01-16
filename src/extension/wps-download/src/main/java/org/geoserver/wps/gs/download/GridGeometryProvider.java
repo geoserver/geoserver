@@ -584,8 +584,6 @@ class GridGeometryProvider {
             throws TransformException, FactoryException, IOException {
         List<Filter> filters = new ArrayList<>();
 
-        Query query = Query.ALL;
-
         // Set bbox query if a ROI has been provided
         ROIManager roiManager = crsRequestHandler.getRoiManager();
         if (roiManager != null) {
@@ -625,7 +623,7 @@ class GridGeometryProvider {
         }
 
         // Set the query filter
-        query = new Query();
+        Query query = new Query();
         query.setFilter(Predicates.and(filters));
         query.setHints(new Hints(GranuleSource.NATIVE_BOUNDS, true));
 

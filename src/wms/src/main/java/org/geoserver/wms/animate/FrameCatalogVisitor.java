@@ -166,7 +166,6 @@ class FrameLoader implements Callable<RenderedImage> {
 
     @Override
     public RenderedImage call() throws Exception {
-        org.geoserver.wms.WebMap wmsResponse;
 
         // Making a shallow copy of the original request and replacing param's values
         GetMapRequest frameRequest = replaceRequestParams(this.request, this.aparam, this.avalue);
@@ -192,7 +191,7 @@ class FrameLoader implements Callable<RenderedImage> {
             }
         }
 
-        wmsResponse = this.wms.getMap(frameRequest);
+        org.geoserver.wms.WebMap wmsResponse = this.wms.getMap(frameRequest);
 
         return ((RenderedImageMap) wmsResponse).getImage();
     }

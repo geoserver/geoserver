@@ -196,27 +196,23 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
                         item.add(new Label("zoomLevel", String.valueOf(index)));
 
-                        final TextField<Double> resolution;
-                        final TextField<Double> scale;
-                        final TextField<String> name;
-                        final Label tiles;
                         final Component removeLink;
 
-                        resolution =
+                        final TextField<Double> resolution =
                                 new DecimalTextField(
                                         "resolution",
                                         new PropertyModel<>(item.getModel(), "resolution"));
                         resolution.setOutputMarkupId(true);
                         item.add(resolution);
 
-                        scale =
+                        final TextField<Double> scale =
                                 new DecimalTextField(
                                         "scale",
                                         new PropertyModel<>(item.getModel(), "scaleDenom"));
                         scale.setOutputMarkupId(true);
                         item.add(scale);
 
-                        name =
+                        final TextField<String> name =
                                 new TextField<>(
                                         "name", new PropertyModel<>(item.getModel(), "name"));
                         item.add(name);
@@ -276,7 +272,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                                     }
                                 };
 
-                        tiles = new Label("tiles", tilesModel);
+                        final Label tiles = new Label("tiles", tilesModel);
                         tiles.setOutputMarkupId(true);
                         item.add(tiles);
 

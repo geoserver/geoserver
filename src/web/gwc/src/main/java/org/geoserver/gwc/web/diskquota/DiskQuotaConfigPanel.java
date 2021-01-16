@@ -257,8 +257,8 @@ public class DiskQuotaConfigPanel extends Panel {
 
         List<? extends StorageUnit> units =
                 Arrays.asList(StorageUnit.MiB, StorageUnit.GiB, StorageUnit.TiB);
-        DropDownChoice<StorageUnit> quotaUnitChoice;
-        quotaUnitChoice = new DropDownChoice<>("globalQuotaUnits", unitModel, units);
+        DropDownChoice<StorageUnit> quotaUnitChoice =
+                new DropDownChoice<>("globalQuotaUnits", unitModel, units);
         add(quotaUnitChoice);
     }
 
@@ -266,17 +266,17 @@ public class DiskQuotaConfigPanel extends Panel {
         IModel<ExpirationPolicy> globalQuotaPolicyModel =
                 new PropertyModel<>(diskQuotaModel, "globalExpirationPolicyName");
 
-        RadioGroup<ExpirationPolicy> globalQuotaPolicy;
-        globalQuotaPolicy = new RadioGroup<>("globalQuotaExpirationPolicy", globalQuotaPolicyModel);
+        RadioGroup<ExpirationPolicy> globalQuotaPolicy =
+                new RadioGroup<>("globalQuotaExpirationPolicy", globalQuotaPolicyModel);
         add(globalQuotaPolicy);
 
         IModel<ExpirationPolicy> lfuModel = new Model<>(ExpirationPolicy.LFU);
         IModel<ExpirationPolicy> lruModel = new Model<>(ExpirationPolicy.LRU);
 
-        Radio<ExpirationPolicy> globalQuotaPolicyLFU;
-        Radio<ExpirationPolicy> globalQuotaPolicyLRU;
-        globalQuotaPolicyLFU = new Radio<>("globalQuotaPolicyLFU", lfuModel);
-        globalQuotaPolicyLRU = new Radio<>("globalQuotaPolicyLRU", lruModel);
+        Radio<ExpirationPolicy> globalQuotaPolicyLFU =
+                new Radio<>("globalQuotaPolicyLFU", lfuModel);
+        Radio<ExpirationPolicy> globalQuotaPolicyLRU =
+                new Radio<>("globalQuotaPolicyLRU", lruModel);
 
         globalQuotaPolicy.add(globalQuotaPolicyLFU);
         globalQuotaPolicy.add(globalQuotaPolicyLRU);
@@ -295,8 +295,8 @@ public class DiskQuotaConfigPanel extends Panel {
             diskQuotaConfig.setCacheCleanUpUnits(TimeUnit.SECONDS);
         }
 
-        IModel<Integer> cleanUpFreqModel;
-        cleanUpFreqModel = new PropertyModel<>(diskQuotaModel, "cacheCleanUpFrequency");
+        IModel<Integer> cleanUpFreqModel =
+                new PropertyModel<>(diskQuotaModel, "cacheCleanUpFrequency");
         TextField<Integer> cleanUpFreq = new TextField<>("cleanUpFreq", cleanUpFreqModel);
         cleanUpFreq.setRequired(true);
         cleanUpFreq.add(

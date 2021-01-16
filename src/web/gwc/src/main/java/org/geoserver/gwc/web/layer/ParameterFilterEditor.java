@@ -201,8 +201,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                         "class", index % 2 == 0 ? "even" : "odd"));
 
                         // Create form
-                        final Label keyLabel;
-                        keyLabel =
+                        final Label keyLabel =
                                 new Label("key", new PropertyModel<String>(item.getModel(), "key"));
                         item.add(keyLabel);
 
@@ -210,9 +209,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                 getSubform("subform", new Model<>(item.getModelObject()));
                         item.add(subForm);
 
-                        final AjaxSubmitLink removeLink;
-
-                        removeLink =
+                        final AjaxSubmitLink removeLink =
                                 new AjaxSubmitLink("removeLink") {
                                     private static final long serialVersionUID = 1L;
 

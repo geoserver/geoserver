@@ -1574,11 +1574,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     protected MockHttpServletResponse dispatch(HttpServletRequest request, String charset)
             throws Exception {
-        MockHttpServletResponse response = null;
         if (charset == null) {
             charset = Charset.defaultCharset().name();
         }
-        response = new MockHttpServletResponse();
+        MockHttpServletResponse response = new MockHttpServletResponse();
         response.setCharacterEncoding(charset);
 
         dispatch(request, response);

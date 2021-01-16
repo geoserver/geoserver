@@ -108,8 +108,7 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
 
     @Override
     public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
-        StyleInfo s;
-        s = catalog.getStyleByName(namedStyle.getName());
+        StyleInfo s = catalog.getStyleByName(namedStyle.getName());
         if (s == null) {
             String failMessage = "couldn't find style named '" + namedStyle.getName() + "'";
             if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {

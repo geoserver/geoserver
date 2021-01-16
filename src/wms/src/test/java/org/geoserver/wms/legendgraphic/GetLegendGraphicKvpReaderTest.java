@@ -152,10 +152,10 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testStrictParameter() throws Exception {
-        GetLegendGraphicRequest request;
 
         // default value
-        request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
+        GetLegendGraphicRequest request =
+                requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
         assertTrue(request.isStrict());
 
         allParameters.put("STRICT", "false");
@@ -166,9 +166,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testLayerGroup() throws Exception {
-        GetLegendGraphicRequest request;
 
-        request =
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertEquals(1, request.getLegends().size());
@@ -182,9 +181,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testLanguage() throws Exception {
-        GetLegendGraphicRequest request;
 
-        request =
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertNull(request.getLocale());
@@ -195,11 +193,10 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testStylesForLayerGroup() throws Exception {
-        GetLegendGraphicRequest request;
 
         requiredParameters.put("LAYER", NATURE_GROUP);
         requiredParameters.put("STYLE", "style1,style2");
-        request =
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertEquals(2, request.getLegends().size());
@@ -207,11 +204,10 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testRulesForLayerGroup() throws Exception {
-        GetLegendGraphicRequest request;
 
         requiredParameters.put("LAYER", NATURE_GROUP);
         requiredParameters.put("RULE", "rule1,rule2");
-        request =
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertEquals(2, request.getLegends().size());
@@ -219,10 +215,9 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testLabelsForLayerGroup() throws Exception {
-        GetLegendGraphicRequest request;
 
         requiredParameters.put("LAYER", NATURE_GROUP);
-        request =
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertNotNull(

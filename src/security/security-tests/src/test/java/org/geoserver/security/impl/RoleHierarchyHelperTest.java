@@ -100,9 +100,8 @@ public class RoleHierarchyHelperTest {
     public void testInValidTree1() throws Exception {
         Map<String, String> map = createFromArray(new String[][] {{"node1", "node1"}});
         RoleHierarchyHelper helper = new RoleHierarchyHelper(map);
-        boolean fail;
 
-        fail = true;
+        boolean fail = true;
         try {
             helper.getParent("node1");
         } catch (RuntimeException e) {
@@ -144,11 +143,10 @@ public class RoleHierarchyHelperTest {
                             {"node2", "node1"}
                         });
         RoleHierarchyHelper helper = new RoleHierarchyHelper(map);
-        boolean fail;
 
         helper.getParent("node1"); // ok
 
-        fail = true;
+        boolean fail = true;
         try {
             helper.getAncestors("node1");
         } catch (RuntimeException e) {

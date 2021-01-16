@@ -70,8 +70,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
     public void testCreateOwnModelNew() {
         final boolean isNew = true;
 
-        IModel<GeoServerTileLayerInfo> ownModel;
-        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertNotNull(ownModel);
         GeoServerTileLayerInfoImpl expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         assertEquals(expected, ownModel.getObject());
@@ -82,8 +81,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
 
         final boolean isNew = false;
 
-        IModel<GeoServerTileLayerInfo> ownModel;
-        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertNotNull(ownModel);
         GeoServerTileLayerInfo expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         assertEquals(expected, ownModel.getObject());
@@ -105,8 +103,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         // enable value is not replaced with true
         final boolean isNew = false;
 
-        IModel<GeoServerTileLayerInfo> ownModel;
-        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertNotNull(ownModel);
         GeoServerTileLayerInfo expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         assertEquals(expected, ownModel.getObject());

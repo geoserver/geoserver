@@ -83,13 +83,13 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         String xml = "<featureType><name>pdsa</name><store>pds</store></featureType>";
 
-        MockHttpServletResponse response;
         String ws1FetureTypesPath =
                 BASEPATH + "/workspaces/" + ws1 + "/datastores/pds/featuretypes";
         String ws2FeatureTypesPath =
                 BASEPATH + "/workspaces/" + ws2 + "/datastores/pds/featuretypes";
 
-        response = postAsServletResponse(ws1FetureTypesPath, xml, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse(ws1FetureTypesPath, xml, "text/xml");
         assertEquals(201, response.getStatus());
 
         response = postAsServletResponse(ws2FeatureTypesPath, xml, "text/xml");

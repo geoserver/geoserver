@@ -132,19 +132,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         byte[][] dData = dst.getByteDataArrays();
-        byte[] srcData;
-        byte[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getByteDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        byte[] srcData = rasterArray.getByteDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        byte[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];
@@ -179,19 +176,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         short[][] dData = dst.getShortDataArrays();
-        short[] srcData;
-        short[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getShortDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        short[] srcData = rasterArray.getShortDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        short[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];
@@ -227,19 +221,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         short[][] dData = dst.getShortDataArrays();
-        short[] srcData;
-        short[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getShortDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        short[] srcData = rasterArray.getShortDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        short[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];
@@ -274,19 +265,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         int[][] dData = dst.getIntDataArrays();
-        int[] srcData;
-        int[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getIntDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        int[] srcData = rasterArray.getIntDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        int[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];
@@ -322,19 +310,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         float[][] dData = dst.getFloatDataArrays();
-        float[] srcData;
-        float[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getFloatDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        float[] srcData = rasterArray.getFloatDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        float[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];
@@ -370,19 +355,16 @@ public class VerticalTransformOpImage extends PointOpImage {
         int[] dBandOffsets = dst.getBandOffsets();
 
         double[][] dData = dst.getDoubleDataArrays();
-        double[] srcData;
-        double[] d;
 
         int srcX = rasterArray.getX();
         int srcY = rasterArray.getY();
 
-        int srcLineOffset;
         int srcPixelOffset;
 
-        srcData = rasterArray.getDoubleDataArray(0);
-        srcLineOffset = srcBandOffsets[0];
+        double[] srcData = rasterArray.getDoubleDataArray(0);
+        int srcLineOffset = srcBandOffsets[0];
 
-        d = dData[0];
+        double[] d = dData[0];
         double[] srcPoints = new double[3];
         double[] destPoints = new double[3];
         int dLineOffset = dBandOffsets[0];

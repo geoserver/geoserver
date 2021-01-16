@@ -120,8 +120,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             add(placeHolder);
         }
 
-        final IModel<List<GeoServerHomePageContentProvider>> contentProviders;
-        contentProviders = getContentProviders(GeoServerHomePageContentProvider.class);
+        final IModel<List<GeoServerHomePageContentProvider>> contentProviders =
+                getContentProviders(GeoServerHomePageContentProvider.class);
         ListView<GeoServerHomePageContentProvider> contentView =
                 new ListView<GeoServerHomePageContentProvider>(
                         "contributedContent", contentProviders) {
@@ -141,8 +141,8 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 };
         add(contentView);
 
-        final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders;
-        capsProviders = getContentProviders(CapabilitiesHomePageLinkProvider.class);
+        final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders =
+                getContentProviders(CapabilitiesHomePageLinkProvider.class);
 
         ListView<CapabilitiesHomePageLinkProvider> capsView =
                 new ListView<CapabilitiesHomePageLinkProvider>("providedCaps", capsProviders) {

@@ -55,10 +55,9 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
 
     @Test
     public void testUserGroupStoreWrapper() throws Exception {
-        boolean failed;
         UserGroupStoreValidationWrapper store = createStore("test");
 
-        failed = false;
+        boolean failed = false;
         try {
             store.addUser(store.createUserObject("", "", true));
         } catch (IOException ex) {

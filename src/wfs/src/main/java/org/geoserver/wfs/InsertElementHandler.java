@@ -133,8 +133,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
                 final QName elementName =
                         new QName(schema.getName().getNamespaceURI(), schema.getTypeName());
-                SimpleFeatureStore store;
-                store = DataUtilities.simple((FeatureStore) featureStores.get(elementName));
+                SimpleFeatureStore store =
+                        DataUtilities.simple((FeatureStore) featureStores.get(elementName));
 
                 if (store == null) {
                     throw new WFSException(

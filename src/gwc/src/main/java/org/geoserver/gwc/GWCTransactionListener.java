@@ -222,8 +222,7 @@ public class GWCTransactionListener implements TransactionCallback {
             final TransactionRequest transaction) {
 
         final Map<Object, Object> extendedProperties = transaction.getExtendedProperties();
-        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions;
-        byLayerDirtyRegions =
+        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions =
                 (Map<String, List<ReferencedEnvelope>>)
                         extendedProperties.get(GWC_TRANSACTION_INFO_PLACEHOLDER);
         if (byLayerDirtyRegions == null) {

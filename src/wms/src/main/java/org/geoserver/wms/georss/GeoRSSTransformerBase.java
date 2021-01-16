@@ -269,8 +269,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
 
                 SimpleFeatureCollection features = null;
                 try {
-                    SimpleFeatureSource source;
-                    source = (SimpleFeatureSource) layer.getFeatureSource();
+                    SimpleFeatureSource source = (SimpleFeatureSource) layer.getFeatureSource();
 
                     GeometryDescriptor gd = source.getSchema().getGeometryDescriptor();
                     if (gd == null) {

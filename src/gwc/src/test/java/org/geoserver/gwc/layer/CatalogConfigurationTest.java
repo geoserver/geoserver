@@ -345,9 +345,7 @@ public class CatalogConfigurationTest {
             assertTrue(true);
         }
 
-        String layerName;
-
-        layerName = tileLayerName(layer1);
+        String layerName = tileLayerName(layer1);
         assertNotNull(config.getLayer(layerName));
 
         final int initialCount = config.getLayerCount();

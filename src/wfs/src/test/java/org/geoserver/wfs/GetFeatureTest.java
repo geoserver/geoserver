@@ -136,8 +136,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetNullGeometies() throws Exception {
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&typeName="
                                 + getLayerId(NULL_GEOMETRIES)
@@ -158,10 +157,10 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testGetWithFeatureId() throws Exception {
 
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.0.0&service=wfs&featureid=Fifteen.2");
+                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.0"
+                                + ".0&service=wfs&featureid=Fifteen.2");
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());

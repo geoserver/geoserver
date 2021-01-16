@@ -521,7 +521,6 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     private StructuredGridCoverage2DReader uploadGeotiffAndCheck(
             CoverageStoreInfo storeInfo, byte[] bytes, String filename) throws Exception {
-        StructuredGridCoverage2DReader reader2;
         // Create the POST request
         MockHttpServletRequest request =
                 createRequest(
@@ -535,7 +534,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Get The response
         assertEquals(202, dispatch(request).getStatus());
         // Get the Mosaic Reader
-        reader2 =
+        StructuredGridCoverage2DReader reader2 =
                 (StructuredGridCoverage2DReader)
                         storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present

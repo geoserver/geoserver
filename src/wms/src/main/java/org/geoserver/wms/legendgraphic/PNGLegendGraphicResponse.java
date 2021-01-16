@@ -62,8 +62,8 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // Getting a writer
         //
         // /////////////////////////////////////////////////////////////////
-        final Iterator<ImageWriter> it;
-        it = ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
+        final Iterator<ImageWriter> it =
+                ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
         ImageWriter writer = null;
 
         if (!it.hasNext()) {

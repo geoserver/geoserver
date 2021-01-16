@@ -239,8 +239,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             // move on to the bounding boxes
             if (mapping.isIncludeEnvelope()) {
-                ReferencedEnvelope bbox = null;
-                bbox = resource.getBounds();
+                ReferencedEnvelope bbox = resource.getBounds();
                 if (bbox != null) {
                     builder.addBoundingBox(bbox);
                 }

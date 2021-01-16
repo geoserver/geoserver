@@ -98,9 +98,8 @@ public abstract class AbstractMapResponse extends Response {
      */
     @Override
     public boolean canHandle(final Operation operation) {
-        GetMapRequest request;
         Object[] parameters = operation.getParameters();
-        request = OwsUtils.parameter(parameters, GetMapRequest.class);
+        GetMapRequest request = OwsUtils.parameter(parameters, GetMapRequest.class);
         if (request == null) {
             return false;
         }

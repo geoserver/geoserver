@@ -125,9 +125,8 @@ public final class Service {
 
     @Override
     public int hashCode() {
-        int result = 0;
 
-        result = id.hashCode();
+        int result = id.hashCode();
 
         if (version != null) {
             result = (result * 17) + version.hashCode();

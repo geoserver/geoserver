@@ -425,7 +425,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      */
     @Override
     public LayerMetaInformation getMetaInformation() {
-        LayerMetaInformation meta = null;
         String title = getName();
         String description = "";
         List<String> keywords = Collections.emptyList();
@@ -454,7 +453,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 }
             }
         }
-        meta = new LayerMetaInformation(title, description, keywords, contacts);
+        LayerMetaInformation meta =
+                new LayerMetaInformation(title, description, keywords, contacts);
         return meta;
     }
 
@@ -578,8 +578,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         // Final preflight check, throws OutsideCoverageException if necessary
         gridSubset.checkCoverage(gridLoc);
 
-        ConveyorTile returnTile;
-
         int metaX;
         int metaY;
         if (mime.supportsTiling()) {
@@ -589,7 +587,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             metaX = metaY = 1;
         }
 
-        returnTile = getMetatilingReponse(tile, true, metaX, metaY);
+        ConveyorTile returnTile = getMetatilingReponse(tile, true, metaX, metaY);
 
         sendTileRequestedEvent(returnTile);
 
@@ -716,7 +714,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     private GeoServerMetaTile createMetaTile(ConveyorTile tile, final int metaX, final int metaY) {
-        GeoServerMetaTile metaTile;
 
         String tileGridSetId = tile.getGridSetId();
         GridSubset gridSubset = getGridSubset(tileGridSetId);
@@ -724,7 +721,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         FormatModifier formatModifier = null;
         long[] tileGridPosition = tile.getTileIndex();
         int gutter = responseFormat.isVector() ? 0 : info.getGutter();
-        metaTile =
+        GeoServerMetaTile metaTile =
                 new GeoServerMetaTile(
                         gridSubset,
                         responseFormat,

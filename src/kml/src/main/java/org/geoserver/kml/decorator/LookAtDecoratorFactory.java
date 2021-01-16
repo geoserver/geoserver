@@ -149,10 +149,9 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
     }
 
     private double[] getGeographic(double x, double y, double z) {
-        double theta, phi, radius;
-        radius = distance(new double[] {x, y, z}, new double[] {0, 0, 0});
-        theta = Math.atan2(Math.sqrt(x * x + y * y), z);
-        phi = Math.atan2(y, x);
+        double radius = distance(new double[] {x, y, z}, new double[] {0, 0, 0});
+        double theta = Math.atan2(Math.sqrt(x * x + y * y), z);
+        double phi = Math.atan2(y, x);
 
         double lat = 90 - (theta * 180 / Math.PI);
         double lon = 90 - (phi * 180 / Math.PI);

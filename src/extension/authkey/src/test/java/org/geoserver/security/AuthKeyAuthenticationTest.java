@@ -583,12 +583,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         loadPropFile(authKeyFile, props);
         assertEquals(2, props.size());
 
-        String user1KeyA = null,
-                user2KeyA = null,
-                user3KeyA = null,
-                user1KeyB = null,
-                user2KeyB = null,
-                user3KeyB = null;
+        String user1KeyA = null, user2KeyA = null, user3KeyA = null;
 
         for (Entry<Object, Object> entry : props.entrySet()) {
             if ("user1".equals(entry.getValue())) user1KeyA = (String) entry.getKey();
@@ -604,9 +599,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // user property mapper
         assertEquals(2, userpropMapper.synchronize());
         u1 = (GeoServerUser) ugservice.loadUserByUsername("user1");
-        user1KeyB = u1.getProperties().getProperty(userpropMapper.getUserPropertyName());
+        String user1KeyB = u1.getProperties().getProperty(userpropMapper.getUserPropertyName());
         u2 = (GeoServerUser) ugservice.loadUserByUsername("user2");
-        user2KeyB = u2.getProperties().getProperty(userpropMapper.getUserPropertyName());
+        String user2KeyB = u2.getProperties().getProperty(userpropMapper.getUserPropertyName());
 
         assertEquals(u1, userpropMapper.getUser(user1KeyB));
         assertEquals(u2, userpropMapper.getUser(user2KeyB));
@@ -642,7 +637,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertEquals(
                 user2KeyB, u2.getProperties().getProperty(userpropMapper.getUserPropertyName()));
         u3 = (GeoServerUser) ugservice.loadUserByUsername("user3");
-        user3KeyB = u3.getProperties().getProperty(userpropMapper.getUserPropertyName());
+        String user3KeyB = u3.getProperties().getProperty(userpropMapper.getUserPropertyName());
 
         assertNull(userpropMapper.getUser(user1KeyB));
         assertEquals(u2, userpropMapper.getUser(user2KeyB));

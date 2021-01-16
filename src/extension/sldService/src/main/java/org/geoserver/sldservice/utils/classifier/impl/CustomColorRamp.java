@@ -148,12 +148,9 @@ public class CustomColorRamp implements ColorRamp {
         int red;
         int green;
         int blue;
-        double sRed;
-        double sGreen;
-        double sBlue;
-        sRed = ((double) end.getRed() - start.getRed()) / (double) (samples - 1);
-        sGreen = ((double) end.getGreen() - start.getGreen()) / (double) (samples - 1);
-        sBlue = ((double) end.getBlue() - start.getBlue()) / (double) (samples - 1);
+        double sRed = ((double) end.getRed() - start.getRed()) / (double) (samples - 1);
+        double sGreen = ((double) end.getGreen() - start.getGreen()) / (double) (samples - 1);
+        double sBlue = ((double) end.getBlue() - start.getBlue()) / (double) (samples - 1);
         for (int i = 0; i < samples; i++) {
             red = (int) (sRed * i + start.getRed());
             green = (int) (sGreen * i + start.getGreen());

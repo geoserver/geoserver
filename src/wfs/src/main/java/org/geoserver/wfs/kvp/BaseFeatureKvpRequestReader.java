@@ -233,8 +233,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
     @SuppressWarnings("unchecked")
     private List<List<QName>> getTypeNames(Map<String, Object> kvp) {
-        List<List<QName>> typeNames;
-        typeNames = (List) kvp.get("typeName");
+        List<List<QName>> typeNames = (List) kvp.get("typeName");
         if (typeNames == null) {
             typeNames = (List) kvp.get("typeNames");
         }

@@ -2743,11 +2743,10 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         ft3 = catalog.getFeatureType(ft3.getId());
 
         Filter filter = acceptAll();
-        Set<? extends CatalogInfo> expected;
-        Set<? extends CatalogInfo> actual;
 
-        expected = Sets.newHashSet(ft1, ft2, ft3);
-        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        Set<? extends CatalogInfo> expected = Sets.newHashSet(ft1, ft2, ft3);
+        Set<? extends CatalogInfo> actual =
+                Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
 
@@ -2842,14 +2841,11 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         ft3.setDescription("FT3");
         catalog.save(ft3);
 
-        Filter filter = acceptAll();
-        Set<? extends CatalogInfo> expected;
-        Set<? extends CatalogInfo> actual;
-
         // opposite equality
-        filter = factory.equal(factory.literal(ft1.getId()), factory.property("id"), true);
-        expected = Sets.newHashSet(ft1);
-        actual = Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
+        Filter filter = factory.equal(factory.literal(ft1.getId()), factory.property("id"), true);
+        Set<? extends CatalogInfo> expected = Sets.newHashSet(ft1);
+        Set<? extends CatalogInfo> actual =
+                Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
         assertEquals(expected, actual);
 
         // match case
@@ -3070,13 +3066,9 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         assertEquals(3, catalog.getLayers().size());
 
-        Filter filter;
-        SortBy sortOrder;
-        List<LayerInfo> expected;
-
-        filter = acceptAll();
-        sortOrder = asc("resource.name");
-        expected = Lists.newArrayList(l1, l2, l3);
+        Filter filter = acceptAll();
+        SortBy sortOrder = asc("resource.name");
+        List<LayerInfo> expected = Lists.newArrayList(l1, l2, l3);
 
         testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
 

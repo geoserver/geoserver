@@ -146,9 +146,7 @@ public class PredicatesTest {
     @Test
     public void testPropertyEqualsConverters() {
 
-        Object expected;
-
-        expected = featureType.getMaxFeatures();
+        Object expected = featureType.getMaxFeatures();
         assertTrue(equal("resource.maxFeatures", expected).evaluate(vectorLayer));
 
         expected = String.valueOf(featureType.getMaxFeatures());

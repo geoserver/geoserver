@@ -24,7 +24,6 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
 
     @Override
     public void visit(Rule rule) {
-        Rule copy = null;
 
         Filter filterCopy = null;
 
@@ -45,7 +44,7 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         Description descCopy = rule.getDescription();
         descCopy = copy(descCopy);
 
-        copy =
+        Rule copy =
                 new StyleFactoryImpl()
                         .createRule(
                                 symsCopy,

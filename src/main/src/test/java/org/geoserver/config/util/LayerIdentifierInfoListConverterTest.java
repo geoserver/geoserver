@@ -34,8 +34,7 @@ public class LayerIdentifierInfoListConverterTest {
         id2.setIdentifier("IDENTIFIER_2");
         expected.add(id2);
 
-        List<LayerIdentifierInfo> actual;
-        actual = LayerIdentifierInfoListConverter.fromString(serialized);
+        List<LayerIdentifierInfo> actual = LayerIdentifierInfoListConverter.fromString(serialized);
 
         assertEquals(expected, actual);
     }

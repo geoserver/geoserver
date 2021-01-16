@@ -110,8 +110,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(
             Class<T> extensionPoint, ApplicationContext context) {
-        Collection<String> names;
-        names = extensionNames(extensionPoint, context);
+        Collection<String> names = extensionNames(extensionPoint, context);
 
         // lookup extension filters preventing recursion
         List<ExtensionFilter> filters;

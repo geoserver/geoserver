@@ -153,7 +153,6 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
     @Override
     public void visit(Graphic gr) {
-        Graphic copy = null;
 
         Displacement displacementCopy = copy(gr.getDisplacement());
         Expression rotationCopy = copy(gr.getRotation());
@@ -193,7 +192,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
             }
         }
 
-        copy = sf.createDefaultGraphic();
+        Graphic copy = sf.createDefaultGraphic();
         copy.setDisplacement(displacementCopy);
         copy.setAnchorPoint(anchorCopy);
         copy.setOpacity(LITERAL_ONE);

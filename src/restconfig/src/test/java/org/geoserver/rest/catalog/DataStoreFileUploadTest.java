@@ -362,7 +362,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         InputStream in = getClass().getResourceAsStream("/test-data/mappedPolygons.xml");
         if (in != null) {
             byte[] original = toBytes(in);
-            byte[] modified;
 
             String originalAsString = new String(original, Charset.forName("UTF-8"));
             // modify paths in the original mapping file
@@ -372,7 +371,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                             .replace("commonSchemas_new/", "../commonSchemas_new/")
                             .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
 
-            modified = modifiedAsString.getBytes(Charset.forName("UTF-8"));
+            byte[] modified = modifiedAsString.getBytes(Charset.forName("UTF-8"));
 
             return modified;
         } else {

@@ -373,8 +373,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 tmp = contact.getAddressType();
 
                 if (StringUtils.isNotBlank(tmp)) {
-                    String addr = "";
-                    addr = contact.getAddress();
+                    String addr = contact.getAddress();
 
                     if (StringUtils.isNotBlank(addr)) {
                         element("wcs:deliveryPoint", tmp + " " + addr);
@@ -680,12 +679,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
             if (cv.isEnabled()) {
                 start("wcs:CoverageOfferingBrief");
 
-                String tmp;
-
                 for (MetadataLinkInfo mdl : cv.getMetadataLinks())
                     handleMetadataLink(mdl, "simple");
 
-                tmp = cv.getDescription();
+                String tmp = cv.getDescription();
 
                 if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:description", tmp);

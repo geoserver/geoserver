@@ -1320,8 +1320,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         for (String layerName : requestedLayerNames) {
             // search into the remote WFS if there is any
             if (remoteTypeNames.contains(layerName)) {
-                SimpleFeatureSource remoteSource;
-                remoteSource = remoteWFS.getFeatureSource(layerName);
+                SimpleFeatureSource remoteSource = remoteWFS.getFeatureSource(layerName);
                 if (remoteSource != null) {
                     layersOrGroups.add(new MapLayerInfo(remoteSource));
                     continue;

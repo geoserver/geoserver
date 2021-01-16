@@ -62,13 +62,11 @@ public class StringParameterFilterSubform
     public StringParameterFilterSubform(String id, IModel<StringParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue;
-
-        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue =
+                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextArea<List<String>> values;
-        values =
+        final TextArea<List<String>> values =
                 new TextArea<List<String>>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;

@@ -251,9 +251,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     protected abstract void doSaveInternal() throws IOException;
 
     public void setSelectedTab(Class<? extends PublishedEditTabPanel<?>> selectedTabClass) {
-        int selectedTabIndex;
         // relying on LinkedHashMap here
-        selectedTabIndex = new ArrayList<>(tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
+        int selectedTabIndex =
+                new ArrayList<>(tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
         if (selectedTabIndex > -1) {
             // add differential to match index of tabPanelCustomModels with total tabs count
             int diff = (tabbedPanel.getTabs().size() - tabPanelCustomModels.size());

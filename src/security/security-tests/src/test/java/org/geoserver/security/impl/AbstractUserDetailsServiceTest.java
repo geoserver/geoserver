@@ -78,14 +78,13 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         theUser = usergroupStore.createUserObject(username, "", true);
         usergroupStore.addUser(theUser);
 
-        GeoServerRole role = null;
         Set<GeoServerRole> roles = new HashSet<>();
 
         // no roles
         checkRoles(username, roles);
 
         // first direct role
-        role = roleStore.createRoleObject("userrole1");
+        GeoServerRole role = roleStore.createRoleObject("userrole1");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, username);
         roles.add(role);
@@ -185,17 +184,14 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         insertValues(usergroupStore);
 
         String username = "persUser";
-        GeoServerUser theUser = null;
 
-        theUser = usergroupStore.createUserObject(username, "", true);
+        GeoServerUser theUser = usergroupStore.createUserObject(username, "", true);
         theUser.getProperties().put("propertyA", "A");
         theUser.getProperties().put("propertyB", "B");
         theUser.getProperties().put("propertyC", "C");
         usergroupStore.addUser(theUser);
 
-        GeoServerRole role = null;
-
-        role = roleStore.createRoleObject("persrole1");
+        GeoServerRole role = roleStore.createRoleObject("persrole1");
         role.getProperties().put("propertyA", "");
         role.getProperties().put("propertyX", "X");
         roleStore.addRole(role);

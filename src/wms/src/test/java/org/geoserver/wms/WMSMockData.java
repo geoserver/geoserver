@@ -229,9 +229,8 @@ public class WMSMockData {
     }
 
     public GetMapRequest createRequest() {
-        GetMapRequest request;
 
-        request = new GetMapRequest();
+        GetMapRequest request = new GetMapRequest();
         request.setFormat(DummyRasterMapProducer.MIME_TYPE);
         request.setWidth(512);
         request.setHeight(256);
@@ -310,8 +309,8 @@ public class WMSMockData {
 
     public SimpleFeature addFeature(final SimpleFeatureType featureType, final Object[] values)
             throws IOException, ParseException {
-        SimpleFeatureStore fs;
-        fs = (SimpleFeatureStore) dataStore.getFeatureSource(featureType.getName());
+        SimpleFeatureStore fs =
+                (SimpleFeatureStore) dataStore.getFeatureSource(featureType.getName());
 
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(featureType);
         sfb.addAll(values);

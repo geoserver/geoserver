@@ -400,8 +400,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     private List<LayerInfo> filterLayers(final Filter filter) {
 
-        CloseableIterator<LayerInfo> iterator;
-        iterator = list(LayerInfo.class, filter);
+        CloseableIterator<LayerInfo> iterator = list(LayerInfo.class, filter);
         try {
             return ImmutableList.copyOf(iterator);
         } finally {

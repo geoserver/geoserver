@@ -142,8 +142,8 @@ public class ShapeZipTest extends WFSTestSupport {
 
     @Test
     public void testCharset() throws Exception {
-        FeatureSource<? extends FeatureType, ? extends Feature> fs;
-        fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                getFeatureSource(SystemTestData.BASIC_POLYGONS);
         ShapeZipOutputFormat zip =
                 new ShapeZipOutputFormat(
                         GeoServerExtensions.bean(GeoServer.class),
@@ -473,8 +473,8 @@ public class ShapeZipTest extends WFSTestSupport {
     @Test
     public void testESRIFormat() throws Exception {
         setupESRIPropertyFile();
-        FeatureSource<? extends FeatureType, ? extends Feature> fs;
-        fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                getFeatureSource(SystemTestData.BASIC_POLYGONS);
         ShapeZipOutputFormat zip =
                 new ShapeZipOutputFormat(getGeoServer(), getCatalog(), getResourceLoader());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

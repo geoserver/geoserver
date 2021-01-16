@@ -812,8 +812,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * @throws RuntimeException For any errors.
              */
             protected void handleFeatureType(FeatureTypeInfo info) {
-                Envelope bbox = null;
-                bbox = info.getLatLonBoundingBox();
+                Envelope bbox = info.getLatLonBoundingBox();
 
                 start("FeatureType");
                 element("Name", info.prefixedName());
@@ -1706,8 +1705,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     }
                 }
 
-                Envelope bbox = null;
-                bbox = featureType.getLatLonBoundingBox();
+                Envelope bbox = featureType.getLatLonBoundingBox();
 
                 start("ows:WGS84BoundingBox");
 

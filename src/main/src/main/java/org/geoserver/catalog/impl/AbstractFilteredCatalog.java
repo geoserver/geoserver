@@ -913,8 +913,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
         // create secured decorators on-demand
         final Function<T, T> securityWrapper = securityWrapper(of);
-        final CloseableIterator<T> filteredWrapped;
-        filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
+        final CloseableIterator<T> filteredWrapped =
+                CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         return filteredWrapped;
     }

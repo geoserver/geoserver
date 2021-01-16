@@ -136,7 +136,6 @@ class VectorDownload {
             }
         }
         // and with the ROI if we have one
-        SimpleFeatureCollection originalFeatures;
         final boolean hasROI = roiManager != null;
         if (hasROI) {
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -158,7 +157,7 @@ class VectorDownload {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Reading the filtered features");
         }
-        originalFeatures = featureSource.getFeatures(ra);
+        SimpleFeatureCollection originalFeatures = featureSource.getFeatures(ra);
         DownloadUtilities.checkIsEmptyFeatureCollection(originalFeatures);
 
         //

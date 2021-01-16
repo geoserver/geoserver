@@ -78,8 +78,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                                         "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                         // Authority name
-                        TextField<String> authName;
-                        authName =
+                        TextField<String> authName =
                                 new TextField<>(
                                         "authName", new PropertyModel<>(item.getModel(), "name"));
                         authName.setRequired(true);
@@ -90,8 +89,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         authNameBorder.add(authName);
 
                         // Authority URL
-                        TextField<String> authURL;
-                        authURL =
+                        TextField<String> authURL =
                                 new TextField<>(
                                         "authorityURL",
                                         new PropertyModel<>(item.getModel(), "href"));

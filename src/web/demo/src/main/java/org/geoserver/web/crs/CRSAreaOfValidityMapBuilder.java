@@ -245,7 +245,6 @@ class CRSAreaOfValidityMapBuilder {
     }
 
     private SimpleFeature createCrsBoundsFeature(Geometry geom, CoordinateReferenceSystem crs) {
-        SimpleFeatureType featureType;
 
         SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
         sftb.setName("Bounds");
@@ -255,7 +254,7 @@ class CRSAreaOfValidityMapBuilder {
             throw new RuntimeException(e);
         }
 
-        featureType = sftb.buildFeatureType();
+        SimpleFeatureType featureType = sftb.buildFeatureType();
 
         SimpleFeature feature = SimpleFeatureBuilder.template(featureType, null);
         feature.setAttribute("the_geom", geom);
@@ -280,13 +279,9 @@ class CRSAreaOfValidityMapBuilder {
 
         MapContent mapContent = new MapContent();
 
-        Style style;
-        URL shpfile;
-        SimpleFeatureSource source;
-
-        shpfile = getClass().getResource("TM_WORLD_BORDERS.shp");
-        source = getFeatureSource(shpfile);
-        style = getStyle("TM_WORLD_BORDERS.sld");
+        URL shpfile = getClass().getResource("TM_WORLD_BORDERS.shp");
+        SimpleFeatureSource source = getFeatureSource(shpfile);
+        Style style = getStyle("TM_WORLD_BORDERS.sld");
         mapContent.addLayer(new FeatureLayer(source, style));
 
         source = getLatLonFeatureSource();
@@ -332,16 +327,14 @@ class CRSAreaOfValidityMapBuilder {
                 ds.getFeatureWriterAppend("latlon", Transaction.AUTO_COMMIT)) {
             for (int lon = -180; lon < 180; lon += 5) {
                 for (int lat = -90; lat < 90; lat += 5) {
-                    LineString geom;
-                    int level;
 
-                    geom =
+                    LineString geom =
                             gf.createLineString(
                                     new Coordinate[] {
                                         new Coordinate(lon, lat), new Coordinate(lon, lat + 5)
                                     });
 
-                    level = 1;
+                    int level = 1;
                     if (lon % 10 == 0) {
                         level = 10;
                     }
@@ -349,8 +342,7 @@ class CRSAreaOfValidityMapBuilder {
                         level = 30;
                     }
 
-                    SimpleFeature f;
-                    f = writer.next();
+                    SimpleFeature f = writer.next();
                     f.setAttribute(0, geom);
                     f.setAttribute(1, Integer.valueOf(level));
                     writer.write();

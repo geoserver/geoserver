@@ -1015,7 +1015,6 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         List<LayerInfo> ly = catalog.getLayers();
         Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
         // Checking if the roads layer is present
-        boolean hasRoadsLayer = false;
         // Ensure the base layer is present
         boolean hasBasesLayer = false;
         while (it1.hasNext()) {
@@ -1025,7 +1024,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
             hasBasesLayer |= next.equals(basesLayer);
         }
         assertTrue(hasBasesLayer);
-        hasRoadsLayer = false;
+        boolean hasRoadsLayer = false;
         hasBasesLayer = false;
         it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security2));
         while (it1.hasNext()) {

@@ -280,9 +280,8 @@ public class FeatureTemplate {
             String template,
             Class lookup)
             throws IOException {
-        Template t = null;
 
-        t = lookupTemplate(featureType, template, lookup);
+        Template t = lookupTemplate(featureType, template, lookup);
 
         try {
             t.process(feature, writer);
@@ -298,11 +297,10 @@ public class FeatureTemplate {
      */
     private Template lookupTemplate(SimpleFeatureType featureType, String template, Class lookup)
             throws IOException {
-        Template t;
 
         // lookup the cache first
         TemplateKey key = new TemplateKey(featureType, template);
-        t = templateCache.get(key);
+        Template t = templateCache.get(key);
         if (t != null) return t;
 
         // otherwise, build a loader and do the lookup

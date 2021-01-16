@@ -137,8 +137,8 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         assertNotEquals(MockData.WCS_PREFIX, workspace.getName());
 
         // was the namespace for the datastore resources updated?
-        List<CoverageInfo> resourcesByStore;
-        resourcesByStore = catalog.getResourcesByStore(store, CoverageInfo.class);
+        List<CoverageInfo> resourcesByStore =
+                catalog.getResourcesByStore(store, CoverageInfo.class);
 
         assertFalse(resourcesByStore.isEmpty());
 

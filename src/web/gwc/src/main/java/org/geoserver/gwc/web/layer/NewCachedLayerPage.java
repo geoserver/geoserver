@@ -120,9 +120,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
     private Component nameLink(String id, IModel<TileLayer> itemModel) {
 
-        Component link;
-
-        link = new ConfigureCachedLayerAjaxLink(id, itemModel, NewCachedLayerPage.class);
+        Component link = new ConfigureCachedLayerAjaxLink(id, itemModel, NewCachedLayerPage.class);
 
         return link;
     }

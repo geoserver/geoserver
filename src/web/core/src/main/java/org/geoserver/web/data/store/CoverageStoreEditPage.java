@@ -198,8 +198,8 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             final String prefix = info.getWorkspace().getName();
             final NamespaceInfo namespace = catalog.getNamespaceByPrefix(prefix);
 
-            List<CoverageInfo> alreadyConfigured;
-            alreadyConfigured = catalog.getResourcesByStore(info, CoverageInfo.class);
+            List<CoverageInfo> alreadyConfigured =
+                    catalog.getResourcesByStore(info, CoverageInfo.class);
 
             for (CoverageInfo coverage : alreadyConfigured) {
                 coverage.setNamespace(namespace);

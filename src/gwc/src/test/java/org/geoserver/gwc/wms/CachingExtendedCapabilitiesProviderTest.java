@@ -149,9 +149,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         final String localName = MockData.BASIC_POLYGONS.getLocalPart();
         final String qualifiedName = super.getLayerId(MockData.BASIC_POLYGONS);
 
-        Document dom;
-
-        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
         assertXpathExists(tileSetPath + "/Layers[text() = '" + qualifiedName + "']", dom);
 
         dom = dom(get("cite/wms?request=getCapabilities&version=1.1.1&tiled=true"), false);

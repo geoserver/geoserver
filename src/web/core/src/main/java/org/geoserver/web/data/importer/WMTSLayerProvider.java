@@ -46,7 +46,6 @@ public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
 
             // else, grab the resource list
             try {
-                List<LayerResource> result;
                 StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
 
                 Map<String, LayerResource> resources = new HashMap<>();
@@ -74,7 +73,7 @@ public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
                     LayerResource resource = resources.get(type.getNativeName());
                     if (resource != null) resource.setStatus(LayerStatus.PUBLISHED);
                 }
-                result = new ArrayList<>(resources.values());
+                List<LayerResource> result = new ArrayList<>(resources.values());
 
                 // return by natural order
                 Collections.sort(result);

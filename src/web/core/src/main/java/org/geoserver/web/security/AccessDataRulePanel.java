@@ -64,9 +64,8 @@ public class AccessDataRulePanel extends Panel {
 
     public void save() throws IOException {
         AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
-        Set<DataAccessRule> rules;
         Set<String> roles = manager.getAvailableRoles();
-        rules = manager.getResourceRule(workspaceName, info);
+        Set<DataAccessRule> rules = manager.getResourceRule(workspaceName, info);
         boolean globalLayerGroup =
                 info instanceof LayerGroupInfo && workspaceName == null ? true : false;
         Set<DataAccessRule> news =

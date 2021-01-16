@@ -35,8 +35,7 @@ public class LayerIdentifierInfoListConverter {
     public static List<LayerIdentifierInfo> fromString(String str) throws IllegalArgumentException {
 
         try {
-            final JSONArray array;
-            array = JSONArray.fromObject(str);
+            final JSONArray array = JSONArray.fromObject(str);
             final int size = array.size();
             List<LayerIdentifierInfo> list = new ArrayList<>(size);
             JSONObject jsonAuth;

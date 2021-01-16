@@ -73,8 +73,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
             jdbcQuotaConfiguration = gwc.getJDBCDiskQuotaConfig();
         }
 
-        final Form<Map<String, Serializable>> form;
-        form = new Form<>("form");
+        final Form<Map<String, Serializable>> form = new Form<>("form");
         add(form);
 
         final IModel<DiskQuotaConfig> diskQuotaModel = new Model<>(diskQuotaConfig);

@@ -398,11 +398,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
-        String request;
-        MockHttpServletResponse response;
 
-        request = buildGetMap(true, layerName, "EPSG:4326", null);
-        response = getAsServletResponse(request);
+        String request = buildGetMap(true, layerName, "EPSG:4326", null);
+        MockHttpServletResponse response = getAsServletResponse(request);
 
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
@@ -428,11 +426,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
-        String request;
-        MockHttpServletResponse response;
 
-        request = buildGetMap(true, layerName, "EPSG:4326", null);
-        response = getAsServletResponse(request);
+        String request = buildGetMap(true, layerName, "EPSG:4326", null);
+        MockHttpServletResponse response = getAsServletResponse(request);
 
         gwc.getConfig().setRequireTiledParameter(true);
         response = getAsServletResponse(request);

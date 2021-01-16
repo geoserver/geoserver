@@ -98,8 +98,8 @@ public class RetypingDataStore extends DecoratingDataStore {
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-        writer = wrapped.getFeatureWriter(map.getOriginalName(), transaction);
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                wrapped.getFeatureWriter(map.getOriginalName(), transaction);
         if (map.isUnchanged()) return writer;
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
@@ -109,8 +109,8 @@ public class RetypingDataStore extends DecoratingDataStore {
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-        writer = wrapped.getFeatureWriterAppend(map.getOriginalName(), transaction);
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                wrapped.getFeatureWriterAppend(map.getOriginalName(), transaction);
         if (map.isUnchanged()) return writer;
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
@@ -161,8 +161,8 @@ public class RetypingDataStore extends DecoratingDataStore {
             Query query, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(query.getTypeName(), true);
         updateMap(map, false);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader;
-        reader = wrapped.getFeatureReader(retypeQuery(query, map), transaction);
+        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                wrapped.getFeatureReader(retypeQuery(query, map), transaction);
         if (map.isUnchanged()) return reader;
         return new RetypingFeatureCollection.RetypingFeatureReader(
                 reader, map.getFeatureType(query));

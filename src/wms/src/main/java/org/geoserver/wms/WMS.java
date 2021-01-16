@@ -734,8 +734,8 @@ public class WMS implements ApplicationContextAware {
      */
     public Set<String> getAvailableMapFormatNames() {
 
-        final Collection<GetMapOutputFormat> producers;
-        producers = WMSExtensions.findMapProducers(applicationContext);
+        final Collection<GetMapOutputFormat> producers =
+                WMSExtensions.findMapProducers(applicationContext);
         final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
@@ -747,8 +747,8 @@ public class WMS implements ApplicationContextAware {
     /** @return all allowed GetMap format names */
     public Set<String> getAllowedMapFormatNames() {
 
-        final Collection<GetMapOutputFormat> producers;
-        producers = WMSExtensions.findMapProducers(applicationContext);
+        final Collection<GetMapOutputFormat> producers =
+                WMSExtensions.findMapProducers(applicationContext);
         final Set<String> formats = new HashSet<>();
 
         for (GetMapOutputFormat producer : producers) {
@@ -798,8 +798,8 @@ public class WMS implements ApplicationContextAware {
 
     public Set<String> getAvailableLegendGraphicsFormats() {
 
-        List<GetLegendGraphicOutputFormat> formats;
-        formats = WMSExtensions.findLegendGraphicFormats(applicationContext);
+        List<GetLegendGraphicOutputFormat> formats =
+                WMSExtensions.findLegendGraphicFormats(applicationContext);
 
         Set<String> mimeTypes = new HashSet<>();
         for (GetLegendGraphicOutputFormat format : formats) {
@@ -850,8 +850,8 @@ public class WMS implements ApplicationContextAware {
      *     {@code null} if none if found
      */
     public GetFeatureInfoOutputFormat getFeatureInfoOutputFormat(String requestFormat) {
-        List<GetFeatureInfoOutputFormat> outputFormats;
-        outputFormats = WMSExtensions.findFeatureInfoFormats(applicationContext);
+        List<GetFeatureInfoOutputFormat> outputFormats =
+                WMSExtensions.findFeatureInfoFormats(applicationContext);
 
         for (GetFeatureInfoOutputFormat format : outputFormats) {
             if (format.canProduce(requestFormat)) {
@@ -890,8 +890,8 @@ public class WMS implements ApplicationContextAware {
      *     found
      */
     public GetMapOutputFormat getMapOutputFormat(final String mimeType) {
-        GetMapOutputFormat outputFormat;
-        outputFormat = WMSExtensions.findMapProducer(mimeType, applicationContext);
+        GetMapOutputFormat outputFormat =
+                WMSExtensions.findMapProducer(mimeType, applicationContext);
         return outputFormat;
     }
 
@@ -901,8 +901,8 @@ public class WMS implements ApplicationContextAware {
      *     none is found
      */
     public GetLegendGraphicOutputFormat getLegendGraphicOutputFormat(final String outputFormat) {
-        GetLegendGraphicOutputFormat format;
-        format = WMSExtensions.findLegendGraphicFormat(outputFormat, applicationContext);
+        GetLegendGraphicOutputFormat format =
+                WMSExtensions.findLegendGraphicFormat(outputFormat, applicationContext);
         return format;
     }
 

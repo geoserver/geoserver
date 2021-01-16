@@ -207,8 +207,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             // Add a render listener that ignores well known rendering exceptions and reports back
             // non
             // ignorable ones
-            final RenderExceptionStrategy nonIgnorableExceptionListener;
-            nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
+            final RenderExceptionStrategy nonIgnorableExceptionListener =
+                    new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
             // enforce max memory usage

@@ -94,13 +94,11 @@ public class IntegerParameterFilterSubform
     public IntegerParameterFilterSubform(String id, IModel<IntegerParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue;
-
-        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue =
+                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextArea<List<Integer>> values;
-        values =
+        final TextArea<List<Integer>> values =
                 new TextArea<List<Integer>>("values", new PropertyModel<>(model, "values")) {
                     private static final long serialVersionUID = 1397063859210766872L;
 
@@ -116,8 +114,7 @@ public class IntegerParameterFilterSubform
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        final Component threshold;
-        threshold =
+        final Component threshold =
                 new TextField<Integer>("threshold", new PropertyModel<>(model, "threshold")) {
                     private static final long serialVersionUID = -3975284862791672686L;
 

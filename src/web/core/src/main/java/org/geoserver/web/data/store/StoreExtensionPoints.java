@@ -168,8 +168,8 @@ public class StoreExtensionPoints {
                 factoryClass = storeFactory.getClass();
             }
         } else if (storeInfo instanceof CoverageStoreInfo) {
-            AbstractGridFormat gridFormat;
-            gridFormat = resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
+            AbstractGridFormat gridFormat =
+                    resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
             if (gridFormat != null) {
                 factoryClass = gridFormat.getClass();
             }

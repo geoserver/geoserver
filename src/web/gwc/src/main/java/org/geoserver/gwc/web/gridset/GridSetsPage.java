@@ -76,9 +76,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
             final boolean isInternal =
                     GWC.get().getGridSetBroker().getEmbeddedNames().contains(gridSetName);
 
-            SimpleBookmarkableLink link;
-
-            link =
+            SimpleBookmarkableLink link =
                     new SimpleBookmarkableLink(
                             id,
                             GridSetEditPage.class,
@@ -99,8 +97,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
 
         @Override
         protected Component actionLink(final String id, String gridSetName) {
-            SimpleBookmarkableLink link;
-            link =
+            SimpleBookmarkableLink link =
                     new SimpleBookmarkableLink(
                             id,
                             GridSetNewPage.class,

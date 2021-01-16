@@ -144,8 +144,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                             try {
                                 final Class<ResourceConfigurationPanel> componentClass =
                                         panelInfo.getComponentClass();
-                                final Constructor<ResourceConfigurationPanel> constructor;
-                                constructor =
+                                final Constructor<ResourceConfigurationPanel> constructor =
                                         componentClass.getConstructor(String.class, IModel.class);
                                 ResourceConfigurationPanel panel =
                                         constructor.newInstance("content", myResourceModel);

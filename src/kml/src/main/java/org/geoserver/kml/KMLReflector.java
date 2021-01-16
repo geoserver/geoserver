@@ -36,9 +36,8 @@ public class KMLReflector {
 
     static {
         Map<String, Map<String, Object>> temp = new HashMap<>();
-        Map<String, Object> options;
 
-        options = new HashMap<>();
+        Map<String, Object> options = new HashMap<>();
         options.put("superoverlay", true);
         options.put("mode", "superoverlay");
         temp.put("superoverlay", options);

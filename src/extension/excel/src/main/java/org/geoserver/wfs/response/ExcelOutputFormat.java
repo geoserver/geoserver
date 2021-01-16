@@ -90,9 +90,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                 Row header = sheet.createRow(0);
 
                 SimpleFeatureType ft = fc.getSchema();
-                Cell cell;
 
-                cell = header.createCell(0);
+                Cell cell = header.createCell(0);
                 cell.setCellValue(helper.createRichTextString("FID"));
                 for (int i = 0; i < ft.getAttributeCount() && i < colLimit; i++) {
                     AttributeDescriptor ad = ft.getDescriptor(i);

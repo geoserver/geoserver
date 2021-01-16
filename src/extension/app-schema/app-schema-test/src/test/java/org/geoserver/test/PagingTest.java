@@ -590,10 +590,11 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureReproject()
             throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
                     TransformException {
-        Document doc = null;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def:crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
+                        "wfs?request=GetFeature&version=1.1"
+                                + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
+                                + ":crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf4", "//gsml:MappedFeature/@gml:id", doc);

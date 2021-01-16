@@ -215,9 +215,8 @@ public class WorkspaceController extends AbstractCatalogController {
     }
 
     private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
-        UriComponents uriComponents;
 
-        uriComponents = builder.path("/workspaces/{id}").buildAndExpand(name);
+        UriComponents uriComponents = builder.path("/workspaces/{id}").buildAndExpand(name);
 
         return uriComponents;
     }

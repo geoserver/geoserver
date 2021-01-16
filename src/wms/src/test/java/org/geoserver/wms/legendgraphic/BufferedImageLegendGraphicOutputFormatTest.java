@@ -145,8 +145,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
             req.setLegendOptions(new HashMap());
@@ -433,8 +433,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
             layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
@@ -493,8 +493,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
             layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
@@ -952,8 +952,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(transformStyle);
             req.setLegendOptions(new HashMap());
@@ -1025,8 +1025,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
             req.setLegendOptions(new HashMap());
@@ -1206,8 +1206,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
             Map<String, String> legendOptions = new HashMap<>();

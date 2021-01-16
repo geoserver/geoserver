@@ -294,8 +294,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         cacheFormats.setLabel(new ResourceModel("cacheFormats"));
         configs.add(cacheFormats);
 
-        final List<String> formats;
-        formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
+        final List<String> formats =
+                Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
         mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList =
@@ -320,13 +320,13 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         expireClients = new TextField<>("expireClients", expireClientsModel);
         configs.add(expireClients);
 
-        IModel<Set<XMLGridSubset>> gridSubsetsModel;
-        gridSubsetsModel = new PropertyModel<>(getModel(), "gridSubsets");
+        IModel<Set<XMLGridSubset>> gridSubsetsModel =
+                new PropertyModel<>(getModel(), "gridSubsets");
         gridSubsets = new GridSubsetsEditor("cachedGridsets", gridSubsetsModel);
         configs.add(gridSubsets);
 
-        IModel<Set<ParameterFilter>> parameterFilterModel;
-        parameterFilterModel = new PropertyModel<>(getModel(), "parameterFilters");
+        IModel<Set<ParameterFilter>> parameterFilterModel =
+                new PropertyModel<>(getModel(), "parameterFilters");
         parameterFilters =
                 new ParameterFilterEditor("parameterFilters", parameterFilterModel, layerModel);
         configs.add(parameterFilters);

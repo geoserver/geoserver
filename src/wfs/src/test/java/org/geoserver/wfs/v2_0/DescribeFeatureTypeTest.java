@@ -353,13 +353,12 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
             String path =
                     "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
                             + typeName.getLocalPart();
-            Document doc;
 
             // first, non cite compliant mode should find the type even if namespace is not
             // specified
             service.setCiteCompliant(false);
             geoServer.save(service);
-            doc = getAsDOM(path);
+            Document doc = getAsDOM(path);
             print(doc);
             assertSchema(doc, typeName);
 

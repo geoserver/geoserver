@@ -123,8 +123,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
         if (oldStyleName.equals(newStyleName)) {
             return;
         }
-        List<GeoServerTileLayer> affectedLayers;
-        affectedLayers = mediator.getTileLayersForStyle(oldStyleName);
+        List<GeoServerTileLayer> affectedLayers = mediator.getTileLayersForStyle(oldStyleName);
 
         for (GeoServerTileLayer tl : affectedLayers) {
             if (!(tl.getPublishedInfo() instanceof LayerInfo)) {

@@ -94,13 +94,11 @@ public class FloatParameterFilterSubform
     public FloatParameterFilterSubform(String id, IModel<FloatParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue;
-
-        defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue =
+                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextArea<List<Float>> values;
-        values =
+        final TextArea<List<Float>> values =
                 new TextArea<List<Float>>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
@@ -117,8 +115,7 @@ public class FloatParameterFilterSubform
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        final Component threshold;
-        threshold =
+        final Component threshold =
                 new TextField<Float>("threshold", new PropertyModel<>(model, "threshold")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;

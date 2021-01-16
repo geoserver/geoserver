@@ -172,11 +172,10 @@ public class DataTransformer {
     }
 
     private Object decodeLiteralData(final LiteralDataType input, final Class<?> type) {
-        Object data = null;
 
         LiteralTransmuter transmuter = (LiteralTransmuter) this.getDefaultTransmuter(type);
 
-        data = transmuter.decode(input.getValue());
+        Object data = transmuter.decode(input.getValue());
 
         return data;
     }

@@ -100,8 +100,7 @@ public class ListAttributesController extends AbstractCatalogController {
             Collection<PropertyDescriptor> attributes = null;
             /* Check if it's feature type or coverage */
             if (obj instanceof FeatureTypeInfo) {
-                FeatureTypeInfo fTpInfo;
-                fTpInfo = (FeatureTypeInfo) obj;
+                FeatureTypeInfo fTpInfo = (FeatureTypeInfo) obj;
 
                 LayerAttributesList out = new LayerAttributesList(layerName);
                 try {

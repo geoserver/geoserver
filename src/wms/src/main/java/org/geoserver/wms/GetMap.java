@@ -692,7 +692,6 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSLayer Layer = null;
 
                     String style = request.getStyles().get(i).getName();
                     style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
@@ -710,7 +709,7 @@ public class GetMap {
                     if (!wmsLayer.isFormatValid(imageFormat))
                         imageFormat = wmsLayer.getPreferredFormat();
 
-                    Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+                    WMSLayer Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
 
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
@@ -1008,8 +1007,7 @@ public class GetMap {
 
         try {
             // transform requested enevelope to resource`s native bounds
-            ReferencedEnvelope transformedRequestEnv;
-            transformedRequestEnv =
+            ReferencedEnvelope transformedRequestEnv =
                     requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);
             return !layerEnevelope.intersection(transformedRequestEnv).isEmpty();
         } catch (Exception e) {

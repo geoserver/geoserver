@@ -99,7 +99,6 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     @Override
     public FeatureCollection<FeatureType, Feature> getRecords(
             Query q, Transaction t, RecordDescriptor rdOutput) throws IOException {
-        RecordDescriptor rd;
         Name typeName = null;
         if (q.getTypeName() == null) {
             typeName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
@@ -108,7 +107,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         } else {
             typeName = new NameImpl(q.getTypeName());
         }
-        rd = descriptorByType.get(typeName);
+        RecordDescriptor rd = descriptorByType.get(typeName);
 
         if (rd == null) {
             throw new IOException(q.getTypeName() + " is not a supported type");

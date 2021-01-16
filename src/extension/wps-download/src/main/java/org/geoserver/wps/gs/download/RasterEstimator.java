@@ -107,7 +107,6 @@ class RasterEstimator {
         crsRequestHandler.init();
 
         // Area to read in pixel
-        final long areaRead;
         // take scaling into account
         ScaleToTarget scaling = null;
         if (roi != null) {
@@ -157,7 +156,7 @@ class RasterEstimator {
             gg = scaling.getGridGeometry();
         }
 
-        areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
+        final long areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
 
         // checks on the area we want to download
         if (LOGGER.isLoggable(Level.FINE)) {

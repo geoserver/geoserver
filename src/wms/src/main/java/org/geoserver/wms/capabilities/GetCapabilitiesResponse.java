@@ -208,8 +208,8 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
     private String getInternalDTDDeclaration(final GetCapabilitiesRequest request) {
 
         // do we need to add internal DTD declarations?
-        List<ExtendedCapabilitiesProvider> providers;
-        providers = wms.getAvailableExtendedCapabilitiesProviders();
+        List<ExtendedCapabilitiesProvider> providers =
+                wms.getAvailableExtendedCapabilitiesProviders();
 
         StringBuilder vendorSpecificCapsElements =
                 new StringBuilder("<!ELEMENT VendorSpecificCapabilities (");

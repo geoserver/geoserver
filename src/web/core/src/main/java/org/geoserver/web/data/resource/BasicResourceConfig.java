@@ -314,13 +314,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         @Override
         public void validate(final Form<?> form) {
-            CoordinateReferenceSystem nativeCrs;
-            CoordinateReferenceSystem declaredCrs;
-            ProjectionPolicy policy;
 
-            nativeCrs = (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
-            declaredCrs = (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
-            policy = (ProjectionPolicy) projectionPolicy.getConvertedInput();
+            CoordinateReferenceSystem nativeCrs =
+                    (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
+            CoordinateReferenceSystem declaredCrs =
+                    (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
+            ProjectionPolicy policy = (ProjectionPolicy) projectionPolicy.getConvertedInput();
             if (policy == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 final boolean lenient = true;
                 try {

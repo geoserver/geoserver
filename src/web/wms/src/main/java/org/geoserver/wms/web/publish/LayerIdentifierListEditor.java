@@ -136,8 +136,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                         IModel<List<String>> authNamesModel = new AuthListModel();
 
                         // Authority name
-                        DropDownChoice<String> authorities;
-                        authorities =
+                        DropDownChoice<String> authorities =
                                 new DropDownChoice<>(
                                         "authority", authModel, authNamesModel.getObject());
 
@@ -149,8 +148,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                         item.add(authFeedbak);
 
                         // Identifier
-                        TextField<String> identifier;
-                        identifier =
+                        TextField<String> identifier =
                                 new TextField<>(
                                         "identifier",
                                         new PropertyModel<>(item.getModel(), "identifier"));

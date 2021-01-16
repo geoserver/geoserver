@@ -184,9 +184,8 @@ public class NamespaceController extends AbstractCatalogController {
     }
 
     private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
-        UriComponents uriComponents;
 
-        uriComponents = builder.path("/namespaces/{id}").buildAndExpand(name);
+        UriComponents uriComponents = builder.path("/namespaces/{id}").buildAndExpand(name);
 
         return uriComponents;
     }

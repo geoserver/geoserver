@@ -118,8 +118,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(rootLayerEnabledField);
 
         // authority URLs and Identifiers for the root layer
-        LayerAuthoritiesAndIdentifiersPanel authAndIds;
-        authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
+        LayerAuthoritiesAndIdentifiersPanel authAndIds =
+                new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
         form.add(authAndIds);
 
         // limited srs list

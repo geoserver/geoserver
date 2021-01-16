@@ -495,10 +495,10 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testErrorResponseCodes() throws Exception {
-        MockHttpServletResponse response;
 
         // get resource that doesn't exist
-        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/doesntexist");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/doesntexist");
         Assert.assertEquals(404, response.getStatus());
 
         // delete resource that doesn't exist

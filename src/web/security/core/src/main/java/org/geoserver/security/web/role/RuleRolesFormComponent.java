@@ -115,8 +115,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
         @Override
         protected List<GeoServerRole> load() {
 
-            Map<String, GeoServerRole> roleMap;
-            roleMap = new HashMap<>();
+            Map<String, GeoServerRole> roleMap = new HashMap<>();
             try {
                 for (GeoServerRole role :
                         GeoServerApplication.get().getSecurityManager().getRolesForAccessControl())

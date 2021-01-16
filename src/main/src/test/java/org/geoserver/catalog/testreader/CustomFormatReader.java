@@ -212,7 +212,6 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     private static synchronized RenderedImage readImage(File inFile) throws IOException {
         final ParameterBlock readParams = new ParameterBlock();
         ImageInputStreamSpi lSpi = ImageIOExt.getImageInputStreamSPI(inFile);
-        PlanarImage lImage = null;
         @SuppressWarnings("PMD.CloseResource") // stream will be closed along with JAI op
         ImageInputStream lImgIn = lSpi.createInputStreamInstance(inFile, false, null);
         readParams.add(lImgIn);
@@ -224,7 +223,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         readParams.add(null);
         readParams.add(null);
         readParams.add(READER_SPI.createReaderInstance());
-        lImage = JAI.create("ImageRead", readParams, null);
+        PlanarImage lImage = JAI.create("ImageRead", readParams, null);
         final String lFileName = inFile.getName();
         final int lExtIndex = lFileName.lastIndexOf('.');
         final String lFileNameNoExt = lExtIndex < 0 ? lFileName : lFileName.substring(0, lExtIndex);
@@ -247,8 +246,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                         new Color[] {new Color(0, 0, 0, 0)},
                         NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
         Category[] categories = {noDataCategory};
-        GridSampleDimension[] bands;
-        bands = new GridSampleDimension[1];
+        GridSampleDimension[] bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);
         final Map<String, Object> properties = new HashMap<>();
         CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);

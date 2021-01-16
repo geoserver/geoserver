@@ -49,11 +49,9 @@ public class KvpUtilsTest {
 
     @Test
     public void testWellKnownTokenizers() {
-        String[] expected;
-        List actual;
 
-        expected = new String[] {"1", "2", "3", ""};
-        actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
+        String[] expected = {"1", "2", "3", ""};
+        List actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
         assertKvp(expected, actual);
 
         expected = new String[] {"abc", "def", ""};
@@ -83,10 +81,9 @@ public class KvpUtilsTest {
 
     @Test
     public void testRadFlatUnkownDelimiter() {
-        List actual;
 
         final String[] expected = {"1", "2", "3", ""};
-        actual = KvpUtils.readFlat("1^2^3^", "\\^");
+        List actual = KvpUtils.readFlat("1^2^3^", "\\^");
         assertKvp(expected, actual);
 
         actual = KvpUtils.readFlat("1-2-3-", "-");

@@ -332,11 +332,8 @@ public class TopoJSONEncoder {
             precisionModel.makePrecise(buff);
             addCoordinate(arc, buff); // first coordinate as-is
 
-            double lastX;
-            double lastY;
-
-            lastX = buff.x;
-            lastY = buff.y;
+            double lastX = buff.x;
+            double lastY = buff.y;
 
             for (int i = 1; i < size; i++) { // subsequent coordinates delta encoded
                 coords.getCoordinate(i, buff);

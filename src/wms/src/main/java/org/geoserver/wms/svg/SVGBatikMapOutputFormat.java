@@ -96,8 +96,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
     }
 
     private StreamingRenderer setUpRenderer(WMSMapContent mapContent) {
-        StreamingRenderer renderer;
-        renderer = new StreamingRenderer();
+        StreamingRenderer renderer = new StreamingRenderer();
 
         // optimized data loading was not here, but yet it seems sensible to
         // have it...
@@ -163,8 +162,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             // Add a render listener that ignores well known rendering exceptions and reports back
             // non
             // ignorable ones
-            final RenderExceptionStrategy nonIgnorableExceptionListener;
-            nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
+            final RenderExceptionStrategy nonIgnorableExceptionListener =
+                    new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
             renderer.paint(
@@ -196,7 +195,6 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
     private SVGGeneratorContext setupContext()
             throws FactoryConfigurationError, ParserConfigurationException {
-        Document document = null;
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -204,7 +202,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
         // Create an instance of org.w3c.dom.Document
         String svgNamespaceURI = "http://www.w3.org/2000/svg";
-        document = db.getDOMImplementation().createDocument(svgNamespaceURI, "svg", null);
+        Document document = db.getDOMImplementation().createDocument(svgNamespaceURI, "svg", null);
 
         // Set up the context
         return SVGGeneratorContext.createDefault(document);

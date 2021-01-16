@@ -121,8 +121,7 @@ public class GeoServerEnvironment {
     }
 
     protected String resolvePlaceholder(String placeholder) {
-        String propVal = null;
-        propVal = resolveSystemProperty(placeholder);
+        String propVal = resolveSystemProperty(placeholder);
 
         if (configFile != null && configFile.isModified()) {
             try {

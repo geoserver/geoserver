@@ -184,8 +184,7 @@ public class GWCInitializer implements GeoServerReinitializer {
                 continue;
             }
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
+                GeoServerTileLayerInfo tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
                 if (tileLayerInfo != null) {
                     tileLayerCatalog.save(tileLayerInfo);
                     MetadataMap metadata = layer.getMetadata();
@@ -204,8 +203,7 @@ public class GWCInitializer implements GeoServerReinitializer {
 
         for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
+                GeoServerTileLayerInfo tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
                 if (tileLayerInfo != null) {
                     tileLayerCatalog.save(tileLayerInfo);
                     MetadataMap metadata = layer.getMetadata();
@@ -234,8 +232,8 @@ public class GWCInitializer implements GeoServerReinitializer {
                 continue;
             }
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo =
+                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
                 MetadataMap metadata = layer.getMetadata();
                 if (metadata.containsKey(LegacyTileLayerInfoLoader.CONFIG_KEY_ENABLED)) {
@@ -254,8 +252,8 @@ public class GWCInitializer implements GeoServerReinitializer {
 
         for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo =
+                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
 
                 MetadataMap metadata = layer.getMetadata();

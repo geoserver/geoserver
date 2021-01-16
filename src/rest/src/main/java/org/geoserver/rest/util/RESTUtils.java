@@ -310,14 +310,13 @@ public class RESTUtils {
             String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store
         // config
-        String item;
 
         // ////////////////////////////////////
         //
         // Check Store info if present
         //
         // ////////////////////////////////////
-        item = extractMapItem(loadMapfromStore(storeName, catalog), key);
+        String item = extractMapItem(loadMapfromStore(storeName, catalog), key);
 
         // ////////////////////////////////////
         //

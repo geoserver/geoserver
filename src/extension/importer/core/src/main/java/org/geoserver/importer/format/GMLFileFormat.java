@@ -258,10 +258,9 @@ public class GMLFileFormat extends VectorFormat {
         Map<String, AttributeDescriptor> guessedTypes = new HashMap<>();
         SimpleFeatureType result = null;
         try (FileInputStream fis = new FileInputStream(file)) {
-            SimpleFeature sf = null;
             PullParser parser =
                     new PullParser(version.getConfiguration(), fis, SimpleFeature.class);
-            sf = (SimpleFeature) parser.parse();
+            SimpleFeature sf = (SimpleFeature) parser.parse();
             while (sf != null) {
                 if (hasSchema) {
                     // we trust the feature type found by the parser then, but we still

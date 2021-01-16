@@ -475,8 +475,7 @@ public class GWCTest {
         final String newName = "TEST_CHANGED";
 
         final GridSet oldGridset = gridSetBroker.get(oldName);
-        final GridSet newGridset;
-        newGridset = namedGridsetCopy(newName, oldGridset);
+        final GridSet newGridset = namedGridsetCopy(newName, oldGridset);
 
         assertNotNull(tileLayer.getGridSubset(oldName));
         assertNotNull(tileLayerGroup.getGridSubset(oldName));
@@ -755,9 +754,9 @@ public class GWCTest {
 
         when(storageBroker.getCachedParameters(layerName)).thenReturn(cachedParameters);
 
-        ReferencedEnvelope bounds;
         // bounds outside layer bounds (which are -180,0,0,90)
-        bounds = new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope bounds =
+                new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
         BoundingBox layerBounds = tileLayer.getGridSubset("EPSG:4326").getOriginalExtent();
 
         assertFalse(bounds.intersects(layerBounds.getMinX(), layerBounds.getMinY()));
@@ -827,9 +826,9 @@ public class GWCTest {
 
         when(storageBroker.getCachedParameters(layerName)).thenReturn(cachedParameters);
 
-        ReferencedEnvelope bounds;
         // bounds outside layer bounds (which are -180,0,0,90)
-        bounds = new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope bounds =
+                new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
         BoundingBox layerBounds =
                 tileLayer.getGridSubset("EPSG:4326").getGridSet().getOriginalExtent();
 
@@ -1139,10 +1138,8 @@ public class GWCTest {
 
         StringBuilder target = new StringBuilder();
 
-        boolean cachingPossible;
-
         request.setElevation(Arrays.asList((Object) null));
-        cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
+        boolean cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
         assertTrue(cachingPossible);
         assertEquals(0, target.length());
         request.setElevation(Collections.emptyList());
@@ -1240,8 +1237,7 @@ public class GWCTest {
         tileLayer = mockTileLayer("mockLayer", gridSetNames);
 
         // make the request match a tile in the expected gridset
-        BoundingBox bounds;
-        bounds = tileLayer.getGridSubset(expectedGridset).boundsFromIndex(tileIndex);
+        BoundingBox bounds = tileLayer.getGridSubset(expectedGridset).boundsFromIndex(tileIndex);
 
         Envelope reqBbox =
                 new Envelope(
@@ -1330,8 +1326,8 @@ public class GWCTest {
         // tileLayer = mockTileLayer("mockLayer", ImmutableList.of("EPSG:900913", "EPSG:4326"));
 
         // make the request match a tile in the expected gridset
-        BoundingBox bounds;
-        bounds = tileLayer.getGridSubset("EPSG:900913").boundsFromIndex(new long[] {0, 0, 1});
+        BoundingBox bounds =
+                tileLayer.getGridSubset("EPSG:900913").boundsFromIndex(new long[] {0, 0, 1});
 
         Envelope reqBbox =
                 new Envelope(

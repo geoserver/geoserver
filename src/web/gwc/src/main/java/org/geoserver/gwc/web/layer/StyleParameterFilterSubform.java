@@ -197,8 +197,6 @@ public class StyleParameterFilterSubform
     public void onInitialize() {
         super.onInitialize();
 
-        final Component defaultValue;
-
         final String allStyles = getLocalizer().getString("allStyles", this);
         final String layerDefault = getLocalizer().getString("layerDefault", this);
 
@@ -212,7 +210,7 @@ public class StyleParameterFilterSubform
                 new LabelledEmptyStringModel(
                         new PropertyModel<>(getModel(), "realDefault"), layerDefault);
 
-        defaultValue =
+        final Component defaultValue =
                 new DropDownChoice<>(
                         "defaultValue", selectedDefaultModel, availableStylesModelDefault);
         add(defaultValue);

@@ -243,8 +243,7 @@ public class EncodeHTMLImageMap extends WebMap {
     @SuppressWarnings("unchecked")
     private void writeLayers() throws IOException, AbortedException {
         for (Layer layer : mapContent.layers()) {
-            SimpleFeatureSource fSource;
-            fSource = (SimpleFeatureSource) layer.getFeatureSource();
+            SimpleFeatureSource fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
             /*FeatureSource fSource = layer.getFeatureSource();
             FeatureType schema = fSource.getSchema();*/
@@ -274,9 +273,7 @@ public class EncodeHTMLImageMap extends WebMap {
                                 null);
                 Query q = new Query(schema.getTypeName(), bboxFilter);
 
-                String mapId = null;
-
-                mapId = schema.getTypeName();
+                String mapId = schema.getTypeName();
 
                 writer.write("<map name=\"" + mapId + "\">\n");
 

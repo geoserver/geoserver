@@ -134,8 +134,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         // this needs to be called within a synchronized section
         assert Thread.holdsLock(this);
 
-        WaitToken token;
-        token = queue.poll();
+        WaitToken token = queue.poll();
         if (token != null) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.log(Level.FINER, "Releasing request with priority " + token.priority);

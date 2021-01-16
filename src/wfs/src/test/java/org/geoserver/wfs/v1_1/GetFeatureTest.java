@@ -100,10 +100,10 @@ public class GetFeatureTest extends WFSTestSupport {
     @RunTestSetup
     public void testGetWithFeatureId() throws Exception {
 
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.1.0&service=wfs&featureid=Fifteen.2");
+                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.1"
+                                + ".0&service=wfs&featureid=Fifteen.2");
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -129,8 +129,7 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testGetWithTwoFeatureId() throws Exception {
 
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&&version=1.1.0&service=wfs&featureid=Fifteen.1,Fifteen.2");
 

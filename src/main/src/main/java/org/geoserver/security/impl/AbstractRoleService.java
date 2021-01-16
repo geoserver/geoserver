@@ -208,12 +208,11 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
     public Properties personalizeRoleParams(
             String roleName, Properties roleParams, String userName, Properties userProps)
             throws IOException {
-        Properties props = null;
 
         // this is true if the set is modified --> common
         // property names exist
 
-        props = new Properties();
+        Properties props = new Properties();
         boolean personalized = false;
 
         for (Object key : roleParams.keySet()) {

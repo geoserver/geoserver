@@ -156,12 +156,10 @@ public class UserPasswordControllerTest extends GeoServerSystemTestSupport {
         GeoServerUserGroupService service =
                 getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
-        GeoServerUser user;
-
         login();
 
         // store proper starting encoding
-        user = service.getUserByUsername(USERNAME);
+        GeoServerUser user = service.getUserByUsername(USERNAME);
         String originalPw = user.getPassword();
 
         String body = MessageFormat.format(xmlTemplate, "pw01");

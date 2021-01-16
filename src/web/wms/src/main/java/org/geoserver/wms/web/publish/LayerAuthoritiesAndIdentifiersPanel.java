@@ -29,8 +29,7 @@ public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
         super(id);
 
         // authority URLs for the this layer
-        IModel<List<AuthorityURLInfo>> authURLsModel;
-        authURLsModel =
+        IModel<List<AuthorityURLInfo>> authURLsModel =
                 LiveCollectionModel.list(
                         new PropertyModel<List<AuthorityURLInfo>>(layerModel, "authorityURLs"));
         AuthorityURLListEditor authUrlEditor =
@@ -38,8 +37,7 @@ public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
         add(authUrlEditor);
 
         // Layer Identifiers for this layer
-        IModel<List<LayerIdentifierInfo>> identifiersModel;
-        identifiersModel =
+        IModel<List<LayerIdentifierInfo>> identifiersModel =
                 LiveCollectionModel.list(
                         new PropertyModel<List<LayerIdentifierInfo>>(layerModel, "identifiers"));
 

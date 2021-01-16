@@ -40,8 +40,8 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         tester.startPage(GeoServerHomePage.class);
 
         GeoServerApplication geoServerApplication = getGeoServerApplication();
-        List<GeoServerHomePageContentProvider> providers;
-        providers = geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
+        List<GeoServerHomePageContentProvider> providers =
+                geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
         assertFalse(providers.isEmpty());
         tester.assertListView("contributedContent", providers);
     }

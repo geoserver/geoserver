@@ -93,8 +93,8 @@ public abstract class AbstractNetworkLinkBuilder {
             final Layer Layer = mapLayers.get(i);
             final MapLayerInfo layerInfo = layerInfos.get(i);
 
-            ReferencedEnvelope layerLatLongBbox;
-            layerLatLongBbox = computeLayerBounds(Layer, layerInfo, computeQueryBounds);
+            ReferencedEnvelope layerLatLongBbox =
+                    computeLayerBounds(Layer, layerInfo, computeQueryBounds);
             try {
                 layerLatLongBbox =
                         layerLatLongBbox.transform(

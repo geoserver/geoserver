@@ -397,13 +397,12 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             CoverageInfo coverageInfo = mli.getCoverage();
             // it much safer to wrap a reader rather than a coverage in most cases, OOM can
             // occur otherwise
-            final GridCoverage2DReader reader;
-            reader =
+            final GridCoverage2DReader reader =
                     (GridCoverage2DReader)
                             coverageInfo.getGridCoverageReader(
                                     new NullProgressListener(), GeoTools.getDefaultHints());
-            final SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverageReader(reader, null);
+            final SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverageReader(reader, null);
             return feature.getSchema();
         }
         return null;

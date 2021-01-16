@@ -524,8 +524,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                                         "application/json"));
         // print(json);
         String state = null;
-        int importId;
-        importId = json.getJSONObject("import").getInt("id");
+        int importId = json.getJSONObject("import").getInt("id");
 
         // wait until PENDING:
         if (async) {

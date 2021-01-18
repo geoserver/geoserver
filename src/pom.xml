@@ -1287,7 +1287,7 @@
     <dependency>
      <groupId>com.github.oshi</groupId>
      <artifactId>oshi-core</artifactId>
-     <version>5.3.3</version>
+     <version>5.4.0</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

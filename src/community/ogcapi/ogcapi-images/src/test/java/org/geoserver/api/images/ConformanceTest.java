@@ -7,6 +7,7 @@ package org.geoserver.api.images;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.api.ConformanceClass;
 import org.junit.Test;
 
 public class ConformanceTest extends ImagesTestSupport {
@@ -18,8 +19,8 @@ public class ConformanceTest extends ImagesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(ImagesService.CORE, json.read("$.conformsTo[0]", String.class));
-        assertEquals(ImagesService.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
+        assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
+        assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
         assertEquals(ImagesService.IMAGES_CORE, json.read("$.conformsTo[2]", String.class));
         assertEquals(
                 ImagesService.IMAGES_TRANSACTIONAL, json.read("$.conformsTo[3]", String.class));

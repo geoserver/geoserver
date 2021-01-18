@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.AbstractLandingPageDocument;
+import org.geoserver.api.ConformanceClass;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DocumentCallback;
 import org.geoserver.api.FreemarkerTemplateSupport;
@@ -24,7 +25,6 @@ import org.geoserver.api.features.FeaturesLandingPage;
 import org.geoserver.api.tiles.TileMatrixSets;
 import org.geoserver.api.tiles.TilesDocument;
 import org.geoserver.api.tiles.TilesLandingPage;
-import org.geoserver.api.tiles.TilesService;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.context.ApplicationListener;
@@ -151,7 +151,7 @@ public class TiledFeaturesExtension
     }
 
     public void extendConformanceClasses(ConformanceDocument conformance) {
-        conformance.getConformsTo().add(TilesService.CC_CORE);
+        conformance.getConformsTo().add(ConformanceClass.CORE);
     }
 
     private void extendCollectionDocument(CollectionDocument collection) {

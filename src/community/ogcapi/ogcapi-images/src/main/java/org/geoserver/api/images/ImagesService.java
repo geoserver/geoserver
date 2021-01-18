@@ -33,6 +33,7 @@ import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
+import org.geoserver.api.ConformanceClass;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
@@ -102,9 +103,6 @@ public class ImagesService implements ApplicationContextAware {
 
     static final Logger LOGGER = Logging.getLogger(ImagesService.class);
 
-    static final String CORE = "http://www.opengis.net/spec/ogcapi-common-1/1.0/req/core";
-    static final String COLLECTIONS =
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/req/collections";
     static final String IMAGES_CORE = "http://www.opengis.net/spec/ogcapi-images-1/1.0/req/core";
     static final String IMAGES_TRANSACTIONAL =
             "http://www.opengis.net/spec/ogcapi-images-1/1.0/req/transactional";
@@ -144,7 +142,12 @@ public class ImagesService implements ApplicationContextAware {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, COLLECTIONS, IMAGES_CORE, IMAGES_TRANSACTIONAL);
+        List<String> classes =
+                Arrays.asList(
+                        ConformanceClass.CORE,
+                        ConformanceClass.COLLECTIONS,
+                        IMAGES_CORE,
+                        IMAGES_TRANSACTIONAL);
         return new ConformanceDocument(classes);
     }
 

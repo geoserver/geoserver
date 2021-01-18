@@ -7,6 +7,7 @@ package org.geoserver.api.tiles;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.api.ConformanceClass;
 import org.junit.Test;
 
 public class ConformanceTest extends TilesTestSupport {
@@ -18,9 +19,11 @@ public class ConformanceTest extends TilesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(TilesService.CC_CORE, json.read("$.conformsTo[0]", String.class));
-        assertEquals(TilesService.CC_MULTITILE, json.read("$.conformsTo[1]", String.class));
-        assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[2]", String.class));
+        assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
+        assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
+        assertEquals(TilesService.CC_TILESET, json.read("$.conformsTo[2]", String.class));
+        assertEquals(TilesService.CC_MULTITILES, json.read("$.conformsTo[3]", String.class));
+        assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[4]", String.class));
         // check the others as they get implemented
     }
 

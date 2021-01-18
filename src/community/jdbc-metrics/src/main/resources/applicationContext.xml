@@ -4,7 +4,6 @@
 <beans>
     <bean id="jdbcMetricsFilter" class="org.geoserver.jdbc.metrics.RequestMetricsFilter"/>
     <bean id="jdbcMetricsController" class="org.geoserver.jdbc.metrics.RequestMetricsController"/>
-
     <bean id="jdbcMetricsMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="alwaysUseFullPath" value="true"/>
         <property name="mappings">

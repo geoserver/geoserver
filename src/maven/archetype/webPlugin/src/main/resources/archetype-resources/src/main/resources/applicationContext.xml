@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-  <bean id="myWebPluginPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="componentClass" value="${groupId}.MyWebPluginPage"/>
-    <property name="titleKey" value="MyWebPluginPage.title"/>
-    <property name="descriptionKey" value="MyWebPluginPage.description"/>
-  </bean>
+    <bean id="myWebPluginPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="componentClass" value="${groupId}.MyWebPluginPage"/>
+        <property name="titleKey" value="MyWebPluginPage.title"/>
+        <property name="descriptionKey" value="MyWebPluginPage.description"/>
+    </bean>
 </beans>

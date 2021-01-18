@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" default-lazy-init="true" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
     <context:component-scan base-package="org.geoserver.taskmanager.beans"/>
     <context:component-scan base-package="org.geoserver.taskmanager.fileservice"/>
-
     <!--H2 setup -->
     <bean class="org.geoserver.taskmanager.external.impl.H2DbSourceImpl">
         <property name="name" value="testsourcedb"/>
@@ -23,12 +17,11 @@
         <property name="createDBSqlResource" value="classpath:h2/dbtarget/create-target.sql"/>
         <property name="createDataSqlResource" value=""/>
         <property name="roles">
-        	<list>
-        		<value>ROLE_SOMEONE</value>
-        	</list>
+            <list>
+                <value>ROLE_SOMEONE</value>
+            </list>
         </property>
     </bean>
-    
     <!--postgres setup -->
     <!-- <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
         <property name="name" value="testsourcedb"/>
@@ -48,39 +41,37 @@
         		<value>ROLE_SOMEONE</value>
         	</list>
         </property>
-    </bean> --> 
-    
+    </bean> -->
     <!-- for local db pub tests, jndi -->
     <bean class="org.geoserver.taskmanager.external.impl.PostgisJndiDbSourceImpl">
-        <property name="name" value="myjndidb" />
-        <property name="jndiName" value="myjndi" />
-        <property name="schema" value="gw_beleid" />
+        <property name="name" value="myjndidb"/>
+        <property name="jndiName" value="myjndi"/>
+        <property name="schema" value="gw_beleid"/>
         <property name="targetJndiNames">
             <map>
-                <entry key="mygs" value="mytargetjndi" />
+                <entry key="mygs" value="mytargetjndi"/>
             </map>
-        </property>     
+        </property>
         <property name="roles">
-        	<list>
-        		<value>ROLE_SOMEONE_ELSE</value>
-        	</list>
-        </property> 
-    </bean> 
+            <list>
+                <value>ROLE_SOMEONE_ELSE</value>
+            </list>
+        </property>
+    </bean>
     <!-- for remote db pub tests, postgres -->
     <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
-        <property name="name" value="mypostgresdb" />
-        <property name="host" value="localhost" />
-        <property name="db" value="testtargetdb" />
-        <property name="username" value="postgres" />
-        <property name="password" value="postgres" />
-         <property name="roles">
-        	<list>
-        		<value>ROLE_SOMEONE</value>
-        		<value>ROLE_SOMEONE_ELSE</value>
-        	</list>
-        </property>      
-    </bean>    
-
+        <property name="name" value="mypostgresdb"/>
+        <property name="host" value="localhost"/>
+        <property name="db" value="testtargetdb"/>
+        <property name="username" value="postgres"/>
+        <property name="password" value="postgres"/>
+        <property name="roles">
+            <list>
+                <value>ROLE_SOMEONE</value>
+                <value>ROLE_SOMEONE_ELSE</value>
+            </list>
+        </property>
+    </bean>
     <!-- external geoserver for testing -->
     <bean class="org.geoserver.taskmanager.external.impl.ExternalGSImpl">
         <property name="name" value="mygs"/>
@@ -88,7 +79,6 @@
         <property name="username" value="admin"/>
         <property name="password" value="geoserver"/>
     </bean>
-
     <!-- File Services -->
     <!--  don't actually use this service for file access because tests will break in windows -->
     <bean class="org.geoserver.taskmanager.external.impl.FileServiceImpl">
@@ -96,17 +86,14 @@
         <property name="name" value="temp-directory"/>
         <property name="description" value="Temporary Directory"/>
     </bean>
-   
-   <!-- configure the timestamp task type -->
-   <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-    <property name="properties">
-      <props>      
-        <!--  set data directory in default file service  -->
-        <prop key="timeStampTaskType.dataTimestampProperty">revisionDate</prop>
-        <prop key="timeStampTaskType.metadataTimestampProperty">custom._timestamp</prop>
-      </props>
-    </property>  
-  </bean>
-    
-
+    <!-- configure the timestamp task type -->
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+        <property name="properties">
+            <props>
+                <!--  set data directory in default file service  -->
+                <prop key="timeStampTaskType.dataTimestampProperty">revisionDate</prop>
+                <prop key="timeStampTaskType.metadataTimestampProperty">custom._timestamp</prop>
+            </props>
+        </property>
+    </bean>
 </beans>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
     <bean id="pageResourceBrowser" class="org.geoserver.web.ToolLinkInfo">
         <property name="id" value="pageResourceBrowser"/>
@@ -13,7 +13,7 @@
         <property name="descriptionKey" value="PageResourceBrowser.page.description"/>
         <property name="componentClass" value="org.geoserver.web.resources.PageResourceBrowser"/>
         <property name="authorizer">
-          <bean class="org.geoserver.web.AdminComponentAuthorizer"/>
+            <bean class="org.geoserver.web.AdminComponentAuthorizer"/>
         </property>
     </bean>
 </beans>

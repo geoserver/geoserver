@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-
-  <bean class="org.geoserver.platform.ModuleStatusImpl">
-    <constructor-arg index="0" value="gs-web-demo"/>
-    <constructor-arg index="1" value="GeoServer Web Demos"/>
-  </bean>
-<!-- 
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-web-demo"/>
+        <constructor-arg index="1" value="GeoServer Web Demos"/>
+    </bean>
+    <!-- 
   <bean id="layerListDemo" class="org.geoserver.web.DemoLinkInfo">
     <property name="id" value="layerListDemo"/>
     <property name="titleKey" value="MapPreviewPage.page.title"/>
@@ -20,65 +19,59 @@
     <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>
   </bean>
    -->
-  
-  <bean id="layerListDemo2" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="layerListDemo"/>
-    <property name="titleKey" value="MapPreviewPage.title"/>
-    <property name="icon" value="../img/icons/geosilk/map.png"/>
-    <property name="category" ref="dataCategory"/>
-    <property name="order" value="5"/>
-    <property name="descriptionKey" value="MapPreviewPage.description"/>
-    <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>
-  </bean>
-  
-  <bean id="mapPreviewKeyShortcut" class="org.geoserver.web.HeaderContribution">
-    <property name="scope" value="org.geoserver.web.demo.MapPreviewPage"/>
-    <property name="javaScriptFilename" value="mappreview_keyshortcut.js"/>
-  </bean>
-  
-  <bean id="openLayersPreview" class="org.geoserver.web.demo.OpenLayersFormatLink">
-    <property name="id" value="ol"/>
-    <property name="titleKey" value="ol.title"/>
-    <property name="order" value="10"/>
-  </bean>
-  <bean id="gMLPreview" class="org.geoserver.web.demo.GMLFormatLink">
-    <property name="id" value="gml"/>
-    <property name="titleKey" value="gml.title"/>
-    <property name="order" value="20"/>
-    <property name="geoserver">
-      <ref bean="geoServer"/>
-    </property>
-  </bean>
-  <bean id="kMLPreview" class="org.geoserver.web.demo.KMLFormatLink">
-    <property name="id" value="kml"/>
-    <property name="titleKey" value="kml.title"/>
-    <property name="order" value="30"/>
-  </bean>
-  <bean id="demoRequests" class="org.geoserver.web.DemoLinkInfo">
-    <property name="id" value="demoRequests"/>
-    <property name="titleKey" value="DemoRequestsPage.title"/>
-    <property name="descriptionKey" value="DemoRequestsPage.shortDescription"/>
-    <property name="componentClass" value="org.geoserver.web.demo.DemoRequestsPage"/>
-  </bean>
-  
-  <bean id="srsList" class="org.geoserver.web.DemoLinkInfo">
-    <property name="id" value="demoRequests"/>
-    <property name="titleKey" value="SRSListPage.title"/>
-    <property name="descriptionKey" value="SRSListPage.shortDescription"/>
-    <property name="componentClass" value="org.geoserver.web.demo.SRSListPage"/>
-  </bean>
-  
-  <bean id="reprojectionConsole" class="org.geoserver.web.DemoLinkInfo">
-    <property name="id" value="reprojectionConsole"/>
-    <property name="titleKey" value="ReprojectPage.title"/>
-    <property name="descriptionKey" value="ReprojectPage.description"/>
-    <property name="componentClass" value="org.geoserver.web.demo.ReprojectPage"/>
-  </bean>
-
-  <bean id="CatalogStresser" class="org.geoserver.web.ToolLinkInfo">
-    <property name="id" value="CatalogStressTester" />
-    <property name="titleKey" value="CatalogStressTester.title" />
-    <property name="descriptionKey" value="CatalogStressTester.description" />
-    <property name="componentClass" value="org.geoserver.web.catalogstresstool.CatalogStressTester" />
-  </bean>
+    <bean id="layerListDemo2" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="layerListDemo"/>
+        <property name="titleKey" value="MapPreviewPage.title"/>
+        <property name="icon" value="../img/icons/geosilk/map.png"/>
+        <property name="category" ref="dataCategory"/>
+        <property name="order" value="5"/>
+        <property name="descriptionKey" value="MapPreviewPage.description"/>
+        <property name="componentClass" value="org.geoserver.web.demo.MapPreviewPage"/>
+    </bean>
+    <bean id="mapPreviewKeyShortcut" class="org.geoserver.web.HeaderContribution">
+        <property name="scope" value="org.geoserver.web.demo.MapPreviewPage"/>
+        <property name="javaScriptFilename" value="mappreview_keyshortcut.js"/>
+    </bean>
+    <bean id="openLayersPreview" class="org.geoserver.web.demo.OpenLayersFormatLink">
+        <property name="id" value="ol"/>
+        <property name="titleKey" value="ol.title"/>
+        <property name="order" value="10"/>
+    </bean>
+    <bean id="gMLPreview" class="org.geoserver.web.demo.GMLFormatLink">
+        <property name="id" value="gml"/>
+        <property name="titleKey" value="gml.title"/>
+        <property name="order" value="20"/>
+        <property name="geoserver">
+            <ref bean="geoServer"/>
+        </property>
+    </bean>
+    <bean id="kMLPreview" class="org.geoserver.web.demo.KMLFormatLink">
+        <property name="id" value="kml"/>
+        <property name="titleKey" value="kml.title"/>
+        <property name="order" value="30"/>
+    </bean>
+    <bean id="demoRequests" class="org.geoserver.web.DemoLinkInfo">
+        <property name="id" value="demoRequests"/>
+        <property name="titleKey" value="DemoRequestsPage.title"/>
+        <property name="descriptionKey" value="DemoRequestsPage.shortDescription"/>
+        <property name="componentClass" value="org.geoserver.web.demo.DemoRequestsPage"/>
+    </bean>
+    <bean id="srsList" class="org.geoserver.web.DemoLinkInfo">
+        <property name="id" value="demoRequests"/>
+        <property name="titleKey" value="SRSListPage.title"/>
+        <property name="descriptionKey" value="SRSListPage.shortDescription"/>
+        <property name="componentClass" value="org.geoserver.web.demo.SRSListPage"/>
+    </bean>
+    <bean id="reprojectionConsole" class="org.geoserver.web.DemoLinkInfo">
+        <property name="id" value="reprojectionConsole"/>
+        <property name="titleKey" value="ReprojectPage.title"/>
+        <property name="descriptionKey" value="ReprojectPage.description"/>
+        <property name="componentClass" value="org.geoserver.web.demo.ReprojectPage"/>
+    </bean>
+    <bean id="CatalogStresser" class="org.geoserver.web.ToolLinkInfo">
+        <property name="id" value="CatalogStressTester"/>
+        <property name="titleKey" value="CatalogStressTester.title"/>
+        <property name="descriptionKey" value="CatalogStressTester.description"/>
+        <property name="componentClass" value="org.geoserver.web.catalogstresstool.CatalogStressTester"/>
+    </bean>
 </beans>

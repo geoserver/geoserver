@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!--
   ~    GeoTools - The Open Source Java GIS Toolkit
   ~    http://geotools.org
@@ -16,16 +18,12 @@
   ~    Lesser General Public License for more details.
   ~
   -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-
-  <bean id="ogrDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <property name="id" value="ogrDataStorePanel"/>
-    <property name="factoryClass" value="org.geotools.data.ogr.jni.JniOGRDataStoreFactory"/>
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
-    <property name="icon" value="img/icons/geosilk/database_vector.png"/>
-    <property name="componentClass" value="org.geoserver.ogr.OGRDataStorePanel"/>
-  </bean>
-
+    <bean id="ogrDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+        <property name="id" value="ogrDataStorePanel"/>
+        <property name="factoryClass" value="org.geotools.data.ogr.jni.JniOGRDataStoreFactory"/>
+        <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+        <property name="icon" value="img/icons/geosilk/database_vector.png"/>
+        <property name="componentClass" value="org.geoserver.ogr.OGRDataStorePanel"/>
+    </bean>
 </beans>

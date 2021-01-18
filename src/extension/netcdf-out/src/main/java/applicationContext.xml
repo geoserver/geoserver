@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-  <bean class="org.geoserver.netcdfout.NetCDFOutStatus"/>  
-
+    <bean class="org.geoserver.netcdfout.NetCDFOutStatus"/>
     <bean id="netcdfCoverageResponseDelegate" class="org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate">
         <constructor-arg ref="geoServer"/>
     </bean>
@@ -19,19 +18,12 @@
         <property name="componentClass" value="org.geoserver.web.netcdf.NetCDFOutSettingsPanel"/>
         <property name="priority" value="100"/>
     </bean>
-
     <bean id="netcdfOutInitializer" class="org.geoserver.wcs.responses.NetCDFOutInitializer"/>
-
-    <bean id="netcdfOutXStreamInitializer" class="org.geoserver.web.netcdf.NetCDFContainerXStreamInitializer" />
-
-    <bean id="globalAttributeXStreamInitializer" class="org.geoserver.web.netcdf.GlobalAttributeXStreamInitializer" />
-
-    <bean id="variableAttributeXStreamInitializer" class="org.geoserver.web.netcdf.VariableAttributeXStreamInitializer" />
-
-    <bean id="extraVariableXStreamInitializer" class="org.geoserver.web.netcdf.ExtraVariableXStreamInitializer" />
-
-    <bean id="netcdfParser" class="org.geoserver.web.netcdf.layer.NetCDFParserBean" />
-    
+    <bean id="netcdfOutXStreamInitializer" class="org.geoserver.web.netcdf.NetCDFContainerXStreamInitializer"/>
+    <bean id="globalAttributeXStreamInitializer" class="org.geoserver.web.netcdf.GlobalAttributeXStreamInitializer"/>
+    <bean id="variableAttributeXStreamInitializer" class="org.geoserver.web.netcdf.VariableAttributeXStreamInitializer"/>
+    <bean id="extraVariableXStreamInitializer" class="org.geoserver.web.netcdf.ExtraVariableXStreamInitializer"/>
+    <bean id="netcdfParser" class="org.geoserver.web.netcdf.layer.NetCDFParserBean"/>
     <bean id="netcdfOutEditTabPanelInfo" class="org.geoserver.web.netcdf.layer.NetCDFOutEditTabPanelInfo">
         <property name="id" value="netcdfOutEditTabPanelInfo"/>
         <property name="titleKey" value="NetCDFOut.title"/>
@@ -39,6 +31,5 @@
         <property name="componentClass" value="org.geoserver.web.netcdf.layer.NetCDFOutTabPanel"/>
         <property name="order" value="400"/>
     </bean>
-  
-  <bean id="defaultNetCDFEncoderFactory" class="org.geoserver.wcs.responses.DefaultNetCDFEncoderFactory"/>
+    <bean id="defaultNetCDFEncoderFactory" class="org.geoserver.wcs.responses.DefaultNetCDFEncoderFactory"/>
 </beans>

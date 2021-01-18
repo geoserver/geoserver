@@ -1721,7 +1721,11 @@
                 <artifactId>xml-format-maven-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <includes>**/pom.xml</includes>
+                    <includes>
+                        <include>**/pom.xml</include>
+                        <include>**/applicationContext.xml</include>
+                        <include>**/applicationSecurityContext.xml</include>
+                    </includes>
                     <skip>${fmt.skip}</skip>
                     <indentSize>4</indentSize>
                     <encoding>UTF-8</encoding>

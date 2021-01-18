@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
     Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
     This code is licensed under the GPL 2.0 license, available at the root
     application directory.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.geoserver.community</groupId>
         <artifactId>gs-app-schema-community</artifactId>
         <version>2.19-SNAPSHOT</version>
     </parent>
-
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-webservice-test</artifactId>
     <name>Web Service with Application Schema Integration Test</name>
-
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
@@ -109,7 +105,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <testResources>
             <testResource>
@@ -122,5 +117,4 @@
             </testResource>
         </testResources>
     </build>
-
 </project>

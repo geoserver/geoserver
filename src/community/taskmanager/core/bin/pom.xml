@@ -1,31 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <!-- set parent pom to taskmanager pom -->
     <parent>
         <groupId>org.geoserver.community</groupId>
         <artifactId>gs-taskmanager</artifactId>
         <version>2.12.2-dov-1.0-SNAPSHOT</version>
     </parent>
-
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager-core</artifactId>
     <packaging>jar</packaging>
     <version>2.12.2-dov-1.0-SNAPSHOT</version>
-
     <name>GeoServer Task Manager Core</name>
-    <description>
-        GeoServer Task Manager
-
-        Setup of the source DB . Usage:
-        mvn db:schema -Ptestsourcedb
-
-        Setup of the target DB . Usage:
-        mvn db:schema -Ptesttargetdb
-    </description>
-
+    <description>GeoServer Task Manager Setup of the source DB . Usage: mvn db:schema -Ptestsourcedb Setup of the target DB . Usage: mvn db:schema -Ptesttargetdb</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -41,7 +29,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate-version}</version>
-        </dependency>         
+        </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
@@ -56,8 +44,7 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>1.4</version>
-        </dependency>	
-				
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -104,9 +91,9 @@
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-	   <classifier>tests</classifier>
+            <classifier>tests</classifier>
             <scope>test</scope>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>simple-jndi</groupId>
@@ -115,32 +102,29 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-      <build>
+    <build>
         <resources>
             <resource>
-            <directory>${basedir}/src/main/java</directory>
-              <includes>
-                <include>**/*.html</include>
-              </includes>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.html</include>
+                </includes>
             </resource>
             <resource>
-              <directory>${basedir}/src/main/resources</directory>
-              <includes>
-                 <include>**/*</include>
-              </includes>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
             </resource>
         </resources>
     </build>
-    
     <repositories>
-      <repository>
-       <id>acd</id>
-       <name>ACD Maven Repository</name>
-       <url>https://www.milieuinfo.be/artifactory/acd</url>
-     </repository>
-   </repositories>
-
+        <repository>
+            <id>acd</id>
+            <name>ACD Maven Repository</name>
+            <url>https://www.milieuinfo.be/artifactory/acd</url>
+        </repository>
+    </repositories>
     <profiles>
         <profile>
             <id>testsourcedb</id>
@@ -174,9 +158,7 @@
                             <dbCreateStatements>
                                 <!--schema creation is put in the sql script-->
                             </dbCreateStatements>
-                            <dbDropStatements>
-
-                            </dbDropStatements>
+                            <dbDropStatements/>
                         </configuration>
                         <dependencies>
                             <!--Choose the driver version of your postgres installation: 8.1-407.jdbc3/8.1-407.jdbc4-->
@@ -219,12 +201,8 @@
                             <dbSchemaScriptsDirectory>
                                 <param>src/test/resources/postgres/targetdb</param>
                             </dbSchemaScriptsDirectory>
-                            <dbCreateStatements>
-
-                            </dbCreateStatements>
-                            <dbDropStatements>
-
-                            </dbDropStatements>
+                            <dbCreateStatements/>
+                            <dbDropStatements/>
                         </configuration>
                         <dependencies>
                             <!--Choose the driver version of your postgres installation: 8.1-407.jdbc3/8.1-407.jdbc4-->
@@ -239,6 +217,4 @@
             </build>
         </profile>
     </profiles>
-    
 </project>
-

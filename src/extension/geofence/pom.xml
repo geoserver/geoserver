@@ -1,25 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <!-- set parent pom to extension pom -->
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>extension</artifactId>
         <version>2.19-SNAPSHOT</version>
     </parent>
-
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-geofence</artifactId>
     <packaging>jar</packaging>
     <name>GeoFence security integration</name>
-
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
-<!--            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-expression</artifactId>
@@ -39,7 +36,6 @@
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wms</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.geoserver.geofence</groupId>
             <artifactId>geofence-services-api</artifactId>
@@ -50,34 +46,28 @@
             <artifactId>geofence-model</artifactId>
             <version>${gf.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-rest</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
-		</dependency>
-
+        </dependency>
         <dependency>
             <groupId>org.geotools.jdbc</groupId>
             <artifactId>gt-jdbc-postgis</artifactId>
         </dependency>
-
         <!-- test dependencies -->
         <dependency>
             <groupId>org.geoserver</groupId>
@@ -91,7 +81,6 @@
             </exclusions>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
@@ -99,7 +88,6 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-restconfig</artifactId>
@@ -107,18 +95,14 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -171,4 +155,3 @@
         </plugins>
     </build>
 </project>
-

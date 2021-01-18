@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
     Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
     This code is licensed under the GPL 2.0 license, available at the root
     application directory.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-app-schema</artifactId>
         <version>2.19-SNAPSHOT</version>
     </parent>
-
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-app-schema-test</artifactId>
     <name>Application Schema Integration Test</name>
-
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
@@ -210,7 +206,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <!-- Include data ref set tests -->
@@ -284,8 +279,7 @@
                                 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
                             </excludes>
-                            <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
-                                -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}</argLine>
+                            <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -306,5 +300,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

@@ -1,25 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <!-- set parent pom to taskmanager pom -->
     <parent>
         <groupId>org.geoserver.community</groupId>
         <artifactId>gs-taskmanager</artifactId>
         <version>2.19-SNAPSHOT</version>
     </parent>
-
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager-metadata</artifactId>
     <packaging>jar</packaging>
     <version>2.19-SNAPSHOT</version>
-
     <name>GeoServer Task Manager Metadata</name>
-    <description>
-        GeoServer Task Manager Metadata
-    </description>
-
+    <description>GeoServer Task Manager Metadata</description>
     <dependencies>
         <dependency>
             <groupId>org.geoserver.community</groupId>
@@ -57,6 +51,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-        
 </project>
-

@@ -1753,7 +1753,31 @@
        </execution>
      </executions>
    </plugin>
-   
+
+   <plugin>
+    <groupId>au.com.acegi</groupId>
+    <artifactId>xml-format-maven-plugin</artifactId>
+    <version>3.1.2</version>
+    <configuration>
+      <includes>**/pom.xml</includes>
+      <skip>${fmt.skip}</skip>
+      <indentSize>4</indentSize>
+     <encoding>UTF-8</encoding>
+     <lineEnding>LF</lineEnding>
+     <omitEncoding>false</omitEncoding>
+     <suppressDeclaration>false</suppressDeclaration>
+     <tabIndent>false</tabIndent>
+     <newLineAfterDeclaration>true</newLineAfterDeclaration>
+    </configuration>
+    <executions>
+      <execution>
+        <goals>
+          <goal>${fmt-xml.action}</goal>
+        </goals>
+      </execution>
+    </executions>
+   </plugin>
+
    <plugin>
     <groupId>org.commonjava.maven.plugins</groupId>
     <artifactId>directory-maven-plugin</artifactId>
@@ -2008,6 +2032,7 @@
   <hazelcast.version>3.11.1</hazelcast.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
+  <fmt-xml.action>xml-format</fmt-xml.action>
   <fmt.skip>false</fmt.skip>
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.4</errorProne.version>

@@ -5,16 +5,16 @@
  */
 package org.geoserver.wfs.web;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 public class WFSAdminPageTest extends GeoServerWicketTestSupport {
     @Test
@@ -76,7 +76,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         // value was updated
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertEquals("testValue1 = 100", 100, (int) wfs.getMaxNumberOfFeaturesForPreview());
-        //test Apply includeWFSRequestDumpFile
+        // test Apply includeWFSRequestDumpFile
         tester.startPage(WFSAdminPage.class);
         ft = tester.newFormTester("form");
         ft.setValue("includeWFSRequestDumpFile", true);

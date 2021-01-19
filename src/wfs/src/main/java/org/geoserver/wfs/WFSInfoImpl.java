@@ -69,6 +69,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setCanonicalSchemaLocation(boolean canonicalSchemaLocation) {
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
+
     public void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile) {
         this.includeWFSRequestDumpFile = includeWFSRequestDumpFile;
     }

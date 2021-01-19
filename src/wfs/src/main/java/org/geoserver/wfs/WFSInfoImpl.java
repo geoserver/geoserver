@@ -21,6 +21,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean canonicalSchemaLocation = false;
     protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
+    protected boolean includeWFSRequestDumpFile = true;
     protected List<String> srs = new ArrayList<>();
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
@@ -68,7 +69,13 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setCanonicalSchemaLocation(boolean canonicalSchemaLocation) {
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
+    public void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile) {
+        this.includeWFSRequestDumpFile = includeWFSRequestDumpFile;
+    }
 
+    public boolean getIncludeWFSRequestDumpFile() {
+        return includeWFSRequestDumpFile;
+    }
     /*
      * @see org.geoserver.wfs.WFSInfo#isEncodingFeatureMember()
      */
@@ -142,6 +149,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + ((gml == null) ? 0 : gml.hashCode());
         result = prime * result + (hitsIgnoreMaxFeatures ? 1231 : 1237);
         result = prime * result + maxFeatures;
+        result = prime * result + (includeWFSRequestDumpFile ? 1231 : 1237);
         result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         result = prime * result + (allowGlobalQueries == null ? 0 : allowGlobalQueries.hashCode());
@@ -170,6 +178,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         } else if (!serviceLevel.equals(other.getServiceLevel())) return false;
         if (encodeFeatureMember != other.isEncodeFeatureMember()) return false;
         if (hitsIgnoreMaxFeatures != other.isHitsIgnoreMaxFeatures()) return false;
+        if (includeWFSRequestDumpFile != other.getIncludeWFSRequestDumpFile()) return false;
         if (srs == null) {
             if (other.getSRS() != null) return false;
         } else if (!srs.equals(other.getSRS())) return false;

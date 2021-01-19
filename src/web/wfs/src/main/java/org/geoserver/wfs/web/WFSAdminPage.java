@@ -126,7 +126,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                 new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
         CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
         form.add(defaultPrjFormat);
-
+        form.add(new CheckBox("includeWFSRequestDumpFile"));
         try {
             // This is a temporary meassure until we fully implement ESRI WKT support in GeoTools.
             // See discussion in GEOS-4503

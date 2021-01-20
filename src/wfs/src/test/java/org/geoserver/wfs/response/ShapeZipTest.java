@@ -763,10 +763,9 @@ public class ShapeZipTest extends WFSTestSupport {
         }
         zis.close();
         if (includeWFSRequestDumpFile) {
-            assertTrue("Found wfsrequest.txt in shapefile/zip output", foundWFSRequestDumpFile);
+            assertTrue("Found wfsrequest.txt in shape/zip output", foundWFSRequestDumpFile);
         } else {
-            assertFalse(
-                    "Did not find wfsrequest.txt in shapefile/zip output", foundWFSRequestDumpFile);
+            assertFalse("Did not find wfsrequest.txt in shape/zip output", foundWFSRequestDumpFile);
         }
     }
     /**

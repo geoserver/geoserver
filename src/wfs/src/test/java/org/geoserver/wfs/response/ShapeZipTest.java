@@ -733,7 +733,6 @@ public class ShapeZipTest extends WFSTestSupport {
         while ((entry = zis.getNextEntry()) != null) {
             final String name = entry.getName();
             found.add(name);
-            System.out.println(name);
             if (name.toLowerCase().endsWith(".txt")) {
                 // not part of the shapefile, it's the request dump
                 continue;
@@ -758,10 +757,8 @@ public class ShapeZipTest extends WFSTestSupport {
         byte[] bytes = new byte[1024];
         boolean foundWFSRequestDumpFile = false;
         while ((entry = zis.getNextEntry()) != null) {
-            System.out.println(entry.getName());
             if (entry.getName().endsWith(".txt")) {
                 foundWFSRequestDumpFile = true;
-                // zis.read(bytes);
             }
         }
         zis.close();

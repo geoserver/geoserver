@@ -87,7 +87,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WFSAdminPage.class);
         // value was updated
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertTrue("includeWFSRequestDUmpFile = true", wfs.getIncludeWFSRequestDumpFile());
+        assertTrue("includeWFSRequestDumpFile = true", wfs.getIncludeWFSRequestDumpFile());
     }
 
     @Test

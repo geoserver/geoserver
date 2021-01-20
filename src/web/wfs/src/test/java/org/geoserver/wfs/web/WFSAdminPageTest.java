@@ -8,6 +8,8 @@ package org.geoserver.wfs.web;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
@@ -59,7 +61,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("includeWFSRequestDumpFile", false);
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertEquals("includeWFSRequestDumpFile= false", false, wfs.getIncludeWFSRequestDumpFile());
+        assertFalse("includeWFSRequestDumpFile= false", wfs.getIncludeWFSRequestDumpFile());
     }
 
     @Test
@@ -85,7 +87,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WFSAdminPage.class);
         // value was updated
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertEquals("includeWFSRequestDUmpFile = true", true, wfs.getIncludeWFSRequestDumpFile());
+        assertTrue("includeWFSRequestDUmpFile = true", wfs.getIncludeWFSRequestDumpFile());
     }
 
     @Test

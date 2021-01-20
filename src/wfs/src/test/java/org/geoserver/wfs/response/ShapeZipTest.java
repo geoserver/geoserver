@@ -560,6 +560,43 @@ public class ShapeZipTest extends WFSTestSupport {
                 get4326_ESRI_WKTContent());
     }
 
+    @Test
+    public void testDoNotIncludeWFSRequestDumpFile() throws Exception {
+        final FeatureSource fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        GeoServer g = getGeoServer();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        g,
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
+        zip.gs.getService(WFSInfo.class).setIncludeWFSRequestDumpFile(false);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        fct.getFeature().add(fs.getFeatures());
+
+        // add the charset
+        Map options = new HashMap();
+        gft.setFormatOptions(options);
+        zip.write(fct, bos, op);
+
+        byte[] byteArrayZip = bos.toByteArray();
+        ByteArrayInputStream b = new ByteArrayInputStream(byteArrayZip);
+        checkForWFSRequestDumpFile(b, false);
+    }
+
+    @Test
+    public void testIncludeWFSRequestDumpFile() throws Exception {
+        GeoServer gs = getGeoServer();
+        gs.getService(WFSInfo.class).setIncludeWFSRequestDumpFile(true);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wfs?service=WFS&version=1.0.0"
+                                + "&request=GetFeature&typeName="
+                                + getLayerId(SystemTestData.BASIC_POLYGONS)
+                                + "&outputFormat=SHAPE-ZIP");
+        checkForWFSRequestDumpFile(getBinaryInputStream(response), true);
+    }
     /**
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
      */
@@ -696,6 +733,7 @@ public class ShapeZipTest extends WFSTestSupport {
         while ((entry = zis.getNextEntry()) != null) {
             final String name = entry.getName();
             found.add(name);
+            System.out.println(name);
             if (name.toLowerCase().endsWith(".txt")) {
                 // not part of the shapefile, it's the request dump
                 continue;
@@ -713,6 +751,27 @@ public class ShapeZipTest extends WFSTestSupport {
         zis.close();
     }
 
+    private void checkForWFSRequestDumpFile(final InputStream in, boolean includeWFSRequestDumpFile)
+            throws IOException {
+        ZipInputStream zis = new ZipInputStream(in);
+        ZipEntry entry = null;
+        byte[] bytes = new byte[1024];
+        boolean foundWFSRequestDumpFile = false;
+        while ((entry = zis.getNextEntry()) != null) {
+            System.out.println(entry.getName());
+            if (entry.getName().endsWith(".txt")) {
+                foundWFSRequestDumpFile = true;
+                // zis.read(bytes);
+            }
+        }
+        zis.close();
+        if (includeWFSRequestDumpFile) {
+            assertTrue("Found wfsrequest.txt in shapefile/zip output", foundWFSRequestDumpFile);
+        } else {
+            assertFalse(
+                    "Did not find wfsrequest.txt in shapefile/zip output", foundWFSRequestDumpFile);
+        }
+    }
     /**
      * Asserts the contents for the file named {@code fileName} contained in the zip file given by
      * the {@code zippedIn} matched the {@code expectedContent}

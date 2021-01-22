@@ -22,6 +22,8 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
         String responseTxt = tester.getLastResponse().getDocument();
         // System.out.println(responseTxt);
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals("../../../j_spring_security_check", tagTester.getAttribute("action"));
+        assertEquals(
+                "http://localhost/context/j_spring_security_check",
+                tagTester.getAttribute("action"));
     }
 }

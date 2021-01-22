@@ -102,12 +102,15 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         casLogoutURL =
                 GeoServerCasConstants.createCasURl(
                         authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
-        if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
+        if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage())) {
             casLogoutURL +=
                     "?"
                             + GeoServerCasConstants.LOGOUT_URL_PARAM
                             + "="
                             + URLEncoder.encode(authConfig.getUrlInCasLogoutPage(), "utf-8");
+            casLogoutURL +=
+                    "&returnTo=" + URLEncoder.encode("https://localhost:8442/geoserver", "utf-8");
+        }
 
         singleSignOut = authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);
@@ -216,6 +219,10 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         HttpServletRequest httpReq = (HttpServletRequest) req;
         HttpServletResponse httpRes = (HttpServletResponse) res;
 
+        if (httpReq.getRequestURI().endsWith("j_spring_cas_login")) {
+            aep.commence(httpReq, httpRes, null);
+        }
+
         SingleSignOutHandler handler = getHandler();
         // check for sign out request from cas server
         if (isLogoutRequest(httpReq)) {
@@ -270,6 +277,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
             HttpServletResponse response,
             Authentication authentication) {
         request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, casLogoutURL);
+        request.setAttribute("returnTo", "https://localhost:8442/geoserver");
     }
 
     @Override

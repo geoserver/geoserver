@@ -63,7 +63,7 @@ public class GeoServerCasAuthenticationEntryPoint implements AuthenticationEntry
         // standard cas redirect
         ServiceProperties sp = new ServiceProperties();
         sp.setSendRenew(authConfig.isSendRenew());
-        sp.setService(GeoServerCasAuthenticationFilter.retrieveService(request));
+        sp.setService(getService(request));
 
         try {
             sp.afterPropertiesSet();
@@ -80,6 +80,17 @@ public class GeoServerCasAuthenticationEntryPoint implements AuthenticationEntry
             throw new IOException(e);
         }
         aep.commence(request, response, authException);
+    }
+
+    private String getService(HttpServletRequest request) {
+        // the callback is what's usually recorded in CAS, the request might be going through
+        // http(s)://server/geoserver/j_spring_cas_login, which is not known to CAS
+        String service = authConfig.getProxyCallbackUrlPrefix();
+        if (service == null) {
+            // fallback in case the proxy callback is not configured
+            service = GeoServerCasAuthenticationFilter.retrieveService(request);
+        }
+        return service;
     }
 
     public void sendUnauthorized(ServletResponse response) throws IOException {

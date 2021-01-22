@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
@@ -24,6 +25,8 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
     @Before
     public void init() throws Exception {
         deactivateRORoleService();
+        // needed to use the tag tester
+        tester.getApplication().getMarkupSettings().setStripWicketTags(false);
     }
 
     @Test
@@ -72,5 +75,17 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
             if (o.getClass() == aClass) return true;
         }
         return false;
+    }
+
+    @Test
+    public void testLogoutLocation() {
+        login();
+        tester.startPage(AuthenticationPage.class);
+        tester.assertRenderedPage(AuthenticationPage.class);
+        TagTester logoutform = tester.getTagByWicketId("logoutform");
+        // used to be http://localhost/j_spring_security_logout
+        assertEquals(
+                "http://localhost/context/j_spring_security_logout",
+                logoutform.getAttribute("action"));
     }
 }

@@ -43,7 +43,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -196,9 +195,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         item.add(loginForm);
 
                         boolean filterInChain = false;
-                        List<GeoServerSecurityProvider> securityProviders =
-                                getGeoServerApplication()
-                                        .getBeansOfType(GeoServerSecurityProvider.class);
                         for (String filterName : securityFilters) {
                             if (filterName.toLowerCase().contains(info.getName())) {
                                 filterInChain = true;

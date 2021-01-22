@@ -18,4 +18,27 @@
         <property name="titleKey" value="CasAuthFilterPanel.title"/>
         <property name="descriptionKey" value="CasAuthFilterPanel.description"/>
    </bean>
+
+    <!-- login button -->
+    <bean id="casFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+        <property name="id" value="casFormLoginButton" />
+        <property name="titleKey" value="" />
+        <property name="descriptionKey" value="CasAuthFilterPanelInfo.description" />
+        <property name="componentClass" value="org.geoserver.security.web.cas.CasAuthFilterPanel" />
+        <property name="name" value="cas" />
+        <property name="icon" value="cas.png" />
+        <property name="filterClass" value="org.geoserver.security.cas.GeoServerCasAuthenticationFilter" />
+        <property name="loginPath" value="web/j_spring_cas_login" />
+    </bean>
+
+    <!-- logout button, so that is shows up even if form auth is not present -->
+    <bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
+        <property name="id" value="geoserverFormLogoutButton" />
+        <property name="titleKey" value="logout" />
+        <property name="descriptionKey" value="GeoServerBasePage.description" />
+        <property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
+        <property name="name" value="casgs" />
+        <property name="icon" value="img/icons/silk/door-out.png" />
+        <property name="logoutPath" value="j_spring_security_logout" />
+    </bean>
 </beans>

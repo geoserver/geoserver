@@ -19,7 +19,7 @@
 >
 
   <!-- <mvc:annotation-driven/> -->
-  <context:component-scan base-package="org.geoserver.api"/>
+  <context:component-scan base-package="org.geoserver.ogcapi"/>
 
   <bean id="apiClasspathPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -37,7 +37,7 @@
   </bean>
   
   <!-- The api dispatcher -->
-  <bean id="apiDispatcher" class="org.geoserver.api.APIDispatcher"/>
+  <bean id="apiDispatcher" class="org.geoserver.ogcapi.APIDispatcher"/>
   
   <!-- api http url mapping -->
   <bean id="apiURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
@@ -54,6 +54,6 @@
     </property>
   </bean>
   
-  <bean id="apiFilterParser" class="org.geoserver.api.APIFilterParser"/>
+  <bean id="apiFilterParser" class="org.geoserver.ogcapi.APIFilterParser"/>
   
 </beans>

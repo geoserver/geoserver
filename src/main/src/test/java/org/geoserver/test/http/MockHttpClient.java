@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.data.ows.HTTPResponse;
+import org.geotools.http.HTTPResponse;
 
 /**
  * A simple mock http client, allows to set expectations on requests and provide canned responses on

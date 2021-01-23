@@ -5,7 +5,7 @@
 package org.geoserver.catalog;
 
 import java.net.URL;
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 import org.junit.rules.ExternalResource;
 
 /**

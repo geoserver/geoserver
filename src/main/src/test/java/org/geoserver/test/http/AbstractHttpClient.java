@@ -5,7 +5,7 @@
  */
 package org.geoserver.test.http;
 
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 
 /**
  * A base class for HTTPClient

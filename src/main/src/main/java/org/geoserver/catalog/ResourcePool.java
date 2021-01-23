@@ -81,8 +81,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.Repository;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentFeatureSource;
@@ -95,9 +93,13 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPConnectionPooling;
+import org.geotools.http.HTTPFactoryFinder;
+import org.geotools.http.SimpleHttpClient;
+import org.geotools.http.commons.MultithreadedHttpClient;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
-import org.geotools.ows.wms.MultithreadedHttpClient;
 import org.geotools.ows.wms.WMSCapabilities;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.xml.WMSSchema;
@@ -1927,14 +1929,18 @@ public class ResourcePool {
 
         HTTPClient client;
         if (info.isUseConnectionPooling()) {
-            client = new MultithreadedHttpClient();
-            if (info.getMaxConnections() > 0) {
+            client =
+                    HTTPFactoryFinder.createClient(
+                            new Hints(Hints.HTTP_CLIENT, MultithreadedHttpClient.class));
+            if (info.getMaxConnections() > 0 && client instanceof HTTPConnectionPooling) {
                 int maxConnections = info.getMaxConnections();
-                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
+                HTTPConnectionPooling mtClient = (HTTPConnectionPooling) client;
                 mtClient.setMaxConnections(maxConnections);
             }
         } else {
-            client = new SimpleHttpClient();
+            client =
+                    HTTPFactoryFinder.createClient(
+                            new Hints(Hints.HTTP_CLIENT, SimpleHttpClient.class));
         }
         String username = info.getUsername();
         String password = info.getPassword();

@@ -25,7 +25,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.kml.KMZMapOutputFormat;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;

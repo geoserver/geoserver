@@ -18,7 +18,7 @@ import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.StringRawData;
-import org.geotools.data.Base64;
+import org.geotools.util.Base64;
 import org.opengis.util.ProgressListener;
 
 /**

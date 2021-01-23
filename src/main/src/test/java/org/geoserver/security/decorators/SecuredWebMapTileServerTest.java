@@ -9,7 +9,7 @@ import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.junit.Rule;

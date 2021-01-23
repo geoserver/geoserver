@@ -56,7 +56,7 @@ import org.geoserver.wps.process.RawData;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.http.HTTPClient;
-import org.geotools.http.HTTPFactoryFinder;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.response.GetMapResponse;
@@ -89,7 +89,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private Service service;
     // defaulting to a stateless but reliable http client
     private Supplier<org.geotools.http.HTTPClient> httpClientSupplier =
-            () -> HTTPFactoryFinder.createClient();
+            () -> HTTPClientFinder.createClient();
 
     public DownloadMapProcess(GeoServer geoServer) {
         // TODO: make these configurable

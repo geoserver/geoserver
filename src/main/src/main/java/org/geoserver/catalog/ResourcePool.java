@@ -94,10 +94,9 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
 import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.http.HTTPConnectionPooling;
-import org.geotools.http.HTTPFactoryFinder;
 import org.geotools.http.SimpleHttpClient;
-import org.geotools.http.commons.MultithreadedHttpClient;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.WMSCapabilities;
@@ -1929,17 +1928,16 @@ public class ResourcePool {
 
         HTTPClient client;
         if (info.isUseConnectionPooling()) {
-            client =
-                    HTTPFactoryFinder.createClient(
-                            new Hints(Hints.HTTP_CLIENT, MultithreadedHttpClient.class));
+            client = HTTPClientFinder.createClient(HTTPConnectionPooling.class);
             if (info.getMaxConnections() > 0 && client instanceof HTTPConnectionPooling) {
                 int maxConnections = info.getMaxConnections();
+                @SuppressWarnings("PMD.CloseResource") // wrapped and returned
                 HTTPConnectionPooling mtClient = (HTTPConnectionPooling) client;
                 mtClient.setMaxConnections(maxConnections);
             }
         } else {
             client =
-                    HTTPFactoryFinder.createClient(
+                    HTTPClientFinder.createClient(
                             new Hints(Hints.HTTP_CLIENT, SimpleHttpClient.class));
         }
         String username = info.getUsername();

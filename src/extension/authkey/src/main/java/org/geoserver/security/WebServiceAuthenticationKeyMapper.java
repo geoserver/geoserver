@@ -21,7 +21,7 @@ import java.util.regex.PatternSyntaxException;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geotools.http.HTTPClient;
-import org.geotools.http.HTTPFactoryFinder;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.http.HTTPResponse;
 import org.springframework.util.StringUtils;
 
@@ -75,7 +75,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     private HTTPClient getHttpClient() {
         if (httpClient == null) {
-            httpClient = HTTPFactoryFinder.createClient();
+            httpClient = HTTPClientFinder.createClient();
         }
         return httpClient;
     }

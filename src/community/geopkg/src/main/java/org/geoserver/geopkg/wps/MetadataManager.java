@@ -24,7 +24,7 @@ import org.geotools.geopkg.GeoPkgMetadata;
 import org.geotools.geopkg.GeoPkgMetadataExtension;
 import org.geotools.geopkg.GeoPkgMetadataReference;
 import org.geotools.http.HTTPClient;
-import org.geotools.http.HTTPFactoryFinder;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.http.HTTPResponse;
 import org.geotools.util.logging.Logging;
 
@@ -100,7 +100,7 @@ class MetadataManager {
     }
 
     private String getMetadataBody(MetadataLinkInfo link) throws IOException {
-        HTTPClient client = HTTPFactoryFinder.createClient();
+        HTTPClient client = HTTPClientFinder.createClient();
         client.setConnectTimeout(METADATA_CONNECT_TIMEOUT);
         client.setReadTimeout(METADATA_READ_TIMEOUT);
         HTTPResponse response = client.get(new URL(link.getContent()));

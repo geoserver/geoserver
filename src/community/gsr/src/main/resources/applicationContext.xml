@@ -33,7 +33,7 @@
     <bean id="gsrDispatcher" class="org.geoserver.gsr.GSRDispatcher"/>
     <bean id="gsrExceptionHandler" class="org.geoserver.gsr.GSRExceptionHandler"/>
 
-    <bean id="gsrServiceFactory" class="org.geoserver.api.APIServiceFactoryBean">
+    <bean id="gsrServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="GSR"/>
         <constructor-arg index="1" value="10.51"/>
     </bean>

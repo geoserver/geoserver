@@ -5,12 +5,12 @@
 package org.geoserver.gsr.api.feature;
 
 import java.util.Arrays;
-import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gsr.api.AbstractGSRController;
 import org.geoserver.gsr.model.AbstractGSRModel.Link;
 import org.geoserver.gsr.model.map.LayersAndTables;
 import org.geoserver.gsr.translate.map.LayerDAO;
+import org.geoserver.ogcapi.HTMLResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;

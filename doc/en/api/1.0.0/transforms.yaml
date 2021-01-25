@@ -17,6 +17,8 @@ paths:
 
     get:
       operationId: getTransforms
+      tags:
+       - "Transforms"
       summary: List available transformations.
       description: Displays a list of all the transforms information available on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles.xml" for XML).
       produces:
@@ -59,6 +61,8 @@ paths:
 
     post:
       operationId: postTransform
+      tags:
+       - "Transforms"
       summary: Add a new transform
       description: Adds a new transform to the server. If the content type used is application/xml the server will assume a <transform> definition is being posted, and the XSLT will have to be uploaded separately using a PUT request with content type application/xslt+xml against the transformation resource. If the content type used is application/xslt+xml the server will assume the XSLT itself is being posted, and the name, sourceFormat, outputFormat, outputMimeType query parameters will be used to fill in the transform configuration instead.
       parameters:
@@ -104,6 +108,8 @@ paths:
 
     put:
       operationId: putTransform
+      tags:
+       - "Transforms"
       description: Invalid. Use POST for adding a new transformation.
       responses:
         405:
@@ -111,6 +117,8 @@ paths:
 
     delete:
       operationId: deleteTransform
+      tags:
+       - "Transforms"
       description: Invalid.
       responses:
         405:
@@ -121,6 +129,8 @@ paths:
 
     get:
       operationId: getTransform
+      tags:
+       - "Transforms"
       summary: Retrieve a transformation.
       description: Retrieves a single transformation.
       produces:
@@ -195,6 +205,8 @@ paths:
 
     post:
       operationId: postTranform
+      tags:
+       - "Transforms"
       description: Invalid.
       responses:
         405:
@@ -202,6 +214,8 @@ paths:
 
     put:
       operationId: putTranform
+      tags:
+       - "Transforms"
       summary: Modify a single transform
       description: Modifies a single transform.
       parameters:
@@ -228,6 +242,8 @@ paths:
 
     delete:
       operationId: deleteTranform
+      tags:
+       - "Transforms"
       summary: Delete transformation
       description: Deletes a transformation.
       parameters:

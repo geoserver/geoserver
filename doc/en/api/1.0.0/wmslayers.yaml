@@ -16,6 +16,8 @@ paths:
 
     get:
       operationId: getWMSStoreLayers
+      tags:
+       - "WMSLayers"
       description: Retrieves the WMS layers available on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmslayers" for XML).
       parameters:
         - name: workspace
@@ -74,6 +76,8 @@ paths:
 
     post:
       operationId: postWMSStoreLayers
+      tags:
+       - "WMSLayers"
       description: Publishes a new WMS store layer.
       parameters:
         - name: workspace
@@ -100,6 +104,8 @@ paths:
 
     put:
       operationId: putWMSStoreLayers
+      tags:
+       - "WMSLayers"
       description: Invalid. Use POST for adding a new layer, or PUT on an individual layer to edit it.
       responses:
         405:
@@ -107,6 +113,8 @@ paths:
 
     delete:
       operationId: deleteWMSStoreLayers
+      tags:
+       - "WMSLayers"
       description: Invalid. Can only delete an individual layer.
       responses:
         405:
@@ -117,6 +125,8 @@ paths:
 
     get:
       operationId: getWMSStoreLayer
+      tags:
+       - "WMSLayers"
       description: Retrieves an individual WMS layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmslayers/{wmslayer}.xml" for XML).
       produces:
         - application/xml
@@ -252,6 +262,8 @@ paths:
 
     post:
       operationId: postWMSStoreLayer
+      tags:
+       - "WMSLayers"
       description: Invalid. Use PUT to edit a layer, or POST on the /wmslayers endpoint to add a new layer.
       responses:
         405:
@@ -259,6 +271,8 @@ paths:
 
     put:
       operationId: putWMSStoreLayer
+      tags:
+       - "WMSLayers"
       description: Edits an existing WMS store layer.
       parameters:
         - name: workspace
@@ -301,6 +315,8 @@ paths:
 
     delete:
       operationId: deleteWMSStoreLayer
+      tags:
+       - "WMSLayers"
       description: Deletes a layer from the server.
       parameters:
         - name: workspace
@@ -328,6 +344,8 @@ paths:
 
     get:
       operationId: getWMSStoreStoreLayers
+      tags:
+       - "WMSLayers"
       description: Retrieves the WMS store layers available in the given store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers.xml" for XML).
       parameters:
         - name: workspace
@@ -391,6 +409,8 @@ paths:
 
     post:
       operationId: postWMSStoreStoreLayers
+      tags:
+       - "WMSLayers"
       description: Publishes a new WMS store layer in the given store.
       parameters:
         - name: workspace
@@ -422,6 +442,8 @@ paths:
 
     put:
       operationId: putWMSStoreStoreLayers
+      tags:
+       - "WMSLayers"
       description: Invalid. Use POST for adding a new layer, or PUT on an individual layer to edit it.
       responses:
         405:
@@ -429,6 +451,8 @@ paths:
 
     delete:
       operationId: deleteWMSStoreStoreLayers
+      tags:
+       - "WMSLayers"
       description: Invalid. Can only delete an individual layer.
       responses:
         405:
@@ -439,6 +463,8 @@ paths:
 
     get:
       operationId: getWMSStoreStoreLayer
+      tags:
+       - "WMSLayers"
       description: Retrieves an individual WMS store layer for a given store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers/{wmslayer}.xml" for XML).
       produces:
         - application/xml
@@ -526,6 +552,8 @@ paths:
 
     post:
       operationId: postWMSStoreStoreLayer
+      tags:
+       - "WMSLayers"
       description: Invalid. Use PUT to edit a layer, or POST on the /wmslayers endpoint to add a new layer.
       responses:
         405:
@@ -533,6 +561,8 @@ paths:
 
     put:
       operationId: putWMSStoreStoreLayer
+      tags:
+       - "WMSLayers"
       description: Edits an existing WMS store layer.
       parameters:
         - name: workspace
@@ -580,6 +610,8 @@ paths:
 
     delete:
       operationId: deleteWMSStoreStoreLayer
+      tags:
+       - "WMSLayers"
       description: Deletes a layer from the server.
       parameters:
         - name: workspace

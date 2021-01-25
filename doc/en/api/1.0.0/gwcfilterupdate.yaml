@@ -19,6 +19,8 @@ paths:
         - application/xml
         - application/zip
       operationId: filterUpdatePost
+      tags:
+       - "GwcFilterUpdate"
       summary: Updates a given layer filter by way of xml or zip file.
       description: Restfully updates the given filterName with parameters provided in the xml or zip
       parameters:

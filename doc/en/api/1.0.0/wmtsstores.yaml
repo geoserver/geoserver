@@ -17,6 +17,8 @@ paths:
 
     get:
       operationId: getWMTSStores
+      tags:
+       - "WMTSStores"
       summary: Get a list of WMTS stores
       description: Displays a list of all WMTS stores on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/rest/workspaces/{workspace}/wmtsstores.xml" for XML).
       produces:
@@ -46,6 +48,8 @@ paths:
 
     post:
       operationId: postWMTSStores
+      tags:
+       - "WMTSStores"
       summary: Add a new WMTS store
       description: Adds a new WMTS store entry to the server.
       parameters:
@@ -70,6 +74,8 @@ paths:
 
     put:
       operationId: putWMTSStores
+      tags:
+       - "WMTSStores"
       description: Invalid. Use POST for adding a new WMTS store, or PUT on /workspaces/{workspace}/wmtsstores/{wmtsstore} to edit an existing WMTS store.
       responses:
         401:
@@ -79,6 +85,8 @@ paths:
 
     delete:
       operationId: deleteWMTSStores
+      tags:
+       - "WMTSStores"
       description: Invalid. Use /workspaces/{workspace}/wmtsstores/{wmtsstore} instead.
       responses:
         401:
@@ -91,6 +99,8 @@ paths:
 
     get:
       operationId: getWMTSStore
+      tags:
+       - "WMTSStores"
       summary: Retrieve a WMTS store in a given workspace
       description: Displays a representation of the WMTS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmtsstores/{store}.xml" for XML). Defaults to HTML representation.
       produces:
@@ -160,6 +170,8 @@ paths:
 
     post:
       operationId: postWMTSStore
+      tags:
+       - "WMTSStores"
       description: Invalid. Use POST on /workspaces/{workspace}/WMTSstores for adding a new WMTS store, or PUT on /workspaces/{workspace}/wmtsstores/{store} to edit/upload an existing WMTS store.
       responses:
         401:
@@ -169,6 +181,8 @@ paths:
 
     put:
       operationId: putWMTSStore
+      tags:
+       - "WMTSStores"
       summary: Modify a single WMTS store.
       description: Modifies a single WMTS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
       parameters:
@@ -194,6 +208,8 @@ paths:
 
     delete:
       operationId: deleteWMTSStore
+      tags:
+       - "WMTSStores"
       summary: Delete WMTS store
       description: Deletes a WMTS store
       parameters:

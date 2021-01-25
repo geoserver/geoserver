@@ -16,6 +16,8 @@ paths:
   /layers:
     get:
       operationId: layersGet
+      tags:
+       - "GwcLayers"
       summary: Get a list of cached layers
       description: Displays a list of all cached layers on the server.
       produces:
@@ -42,6 +44,8 @@ paths:
   /layers/{layerName}:
     get:
       operationId: layersNameGet
+      tags:
+       - "GwcLayers"
       summary: Retrieve a cached layer
       description: Retrieves a single cached layer definition.
       produces:
@@ -96,6 +100,8 @@ paths:
 
     put:
       operationId: layersNamePut
+      tags:
+       - "GwcLayers"
       summary: Create or update a cached layer.
       description: Creates a new cached layer on the server, or modifies an existing cached layer.
       parameters:
@@ -121,6 +127,8 @@ paths:
 
     post:
       operationId: layersNamePost
+      tags:
+       - "GwcLayers"
       summary: Modify a cached layer (Deprecated).
       description: Modifies an existing cached layer on the server. Deprecated - use PUT instead.
       parameters:
@@ -144,6 +152,8 @@ paths:
 
     delete:
       operationId: layersNameDelete
+      tags:
+       - "GwcLayers"
       summary: Delete cached layer
       description: Deletes a cached layer from the server.
       parameters:

@@ -21,6 +21,8 @@ paths:
         description: The full path to the resource. Required, but may be empty; a request to `/resource` references the top level resource directory.
     get:
       operationId: resourceGet
+      tags:
+       - "Resource"
       description: | 
         Download a resource, list contents of directory, or show formatted resource metadata.
 
@@ -199,6 +201,8 @@ paths:
           description: Resource not found.
     head:
       operationId: resourceHead
+      tags:
+       - "Resource"
       description: Show resource metadata in HTTP headers.
       responses:
         200:
@@ -223,12 +227,16 @@ paths:
           description: Resource not found.
     post: 
       operationId: resourcePost
+      tags:
+       - "Resource"
       description: Invalid. Use PUT to create a resource.
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: resourcePut
+      tags:
+       - "Resource"
       description: Upload/move/copy a resource, create directories on the fly (overwrite if exists). For move/copy operations, place source path in body. Copying is not supported for directories.
       parameters:
         - name: operation
@@ -261,6 +269,8 @@ paths:
 
     delete:
       operationId: resourceDelete
+      tags:
+       - "Resource"
       description: Delete a resource (recursively if directory)
       responses:
         200:

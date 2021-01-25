@@ -15,6 +15,8 @@ paths:
   /workspaces:
     get:
       operationId: getWorkspaces
+      tags:
+       - "Workspaces"
       summary: Get a list of workspaces
       description: Displays a list of all workspaces on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces.xml" for XML)
       produces:
@@ -59,6 +61,8 @@ paths:
           
     post:
       operationId: postWorkspaces
+      tags:
+       - "Workspaces"
       summary: add a new workspace to GeoServer
       description: Adds a new workspace to the server
       parameters:
@@ -95,12 +99,16 @@ paths:
      
     put:
       operationId: putWorkspaces
+      tags:
+       - "Workspaces"
       responses:
         405:
           description: Not permitted
     
     delete:
       operationId: deleteWorkspaces
+      tags:
+       - "Workspaces"
       responses:
         405:
           description: Not permitted
@@ -108,6 +116,8 @@ paths:
   /workspaces/{workspaceName}:
     get:
       operationId: getWorkspace
+      tags:
+       - "Workspaces"
       summary: Retrieve a layer group
       description: Retrieves a single workspace definition. Use the "Accept:" header to specify format or 
         append an extension to the endpoint (example "/workspaces/{workspace}.xml" for XML).
@@ -159,6 +169,8 @@ paths:
           description: workspace does not exist
     put:
       summary: Update a workspace
+      tags:
+       - "Workspaces"
       description: takes the body of the post and modifies the workspace from it.
       operationId: putWorkspace
       consumes:
@@ -185,12 +197,16 @@ paths:
             $ref: "#/definitions/Workspace"
     post:
       operationId: postWorkspace
+      tags:
+       - "Workspaces"
       responses:
         405:
           description: Forbidden to post to an existing workspace (use PUT)
           
     delete:
       operationId: deleteWorkspace
+      tags:
+       - "Workspaces"
       parameters:
         - name: workspaceName
           in: path

@@ -17,6 +17,8 @@ paths:
 
     get:
       operationId: getWMSSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Map Service settings globally for the server.
       produces:
         - application/xml
@@ -135,6 +137,8 @@ paths:
 
     post:
       operationId: postWMSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -142,6 +146,8 @@ paths:
 
     put:
       operationId: putWMSSettings
+      tags:
+       - "OWSServices"
       description: Edits a global WMS setting.
       parameters:
         - name: WMSSettingsBody
@@ -159,6 +165,8 @@ paths:
 
     delete:
       operationId: deleteWMSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit settings.
       responses:
         405:
@@ -174,6 +182,8 @@ paths:
         description: The workspace name
     get:
       operationId: getWMSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Map Service settings for a given workspace.
       produces:
         - application/xml
@@ -298,6 +308,8 @@ paths:
 
     post:
       operationId: postWMSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -305,6 +317,8 @@ paths:
 
     put:
       operationId: putWMSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Edits a workspace-specific WMS setting.
       parameters:
         - name: WMSSettingsBody
@@ -322,6 +336,8 @@ paths:
 
     delete:
       operationId: deleteWMSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Deletes a workspace-specific WMS setting.
       responses:
         200:
@@ -332,6 +348,8 @@ paths:
 
     get:
       operationId: getWFSSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Feature Service settings globally for the server.
       produces:
         - application/xml
@@ -480,6 +498,8 @@ paths:
 
     post:
       operationId: postWFSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -487,6 +507,8 @@ paths:
 
     put:
       operationId: putWFSSettings
+      tags:
+       - "OWSServices"
       description: Edits a global WFS setting.
       parameters:
         - name: WFSSettingsBody
@@ -504,6 +526,8 @@ paths:
 
     delete:
       operationId: deleteWFSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit settings.
       responses:
         405:
@@ -519,6 +543,8 @@ paths:
         description: The workspace name
     get:
       operationId: getWFSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Feature Service settings for a given workspace.
       produces:
         - application/xml
@@ -673,6 +699,8 @@ paths:
 
     post:
       operationId: postWFSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -680,6 +708,8 @@ paths:
 
     put:
       operationId: putWFSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Edits a workspace-specific WFS setting.
       parameters:
         - name: WFSSettingsBody
@@ -697,6 +727,8 @@ paths:
 
     delete:
       operationId: deleteWFSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Deletes a workspace-specific WFS setting.
       responses:
         200:
@@ -707,6 +739,8 @@ paths:
 
     get:
       operationId: getWCSSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Coverage Service settings globally for the server.
       produces:
         - application/xml
@@ -808,6 +842,8 @@ paths:
 
     post:
       operationId: postWCSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -815,6 +851,8 @@ paths:
 
     put:
       operationId: putWCSSettings
+      tags:
+       - "OWSServices"
       description: Edits a global WCS setting.
       parameters:
         - name: WCSSettingsBody
@@ -832,6 +870,8 @@ paths:
 
     delete:
       operationId: deleteWCSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit settings.
       responses:
         405:
@@ -847,6 +887,8 @@ paths:
         description: The workspace name
     get:
       operationId: getWCSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Coverage Service settings for a given workspace.
       produces:
         - application/xml
@@ -957,6 +999,8 @@ paths:
 
     post:
       operationId: postWCSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -964,6 +1008,8 @@ paths:
 
     put:
       operationId: putWCSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Edits a workspace-specific WCS setting.
       parameters:
         - name: WCSSettingsBody
@@ -981,6 +1027,8 @@ paths:
 
     delete:
       operationId: deleteWCSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Deletes a workspace-specific WCS setting.
       responses:
         200:
@@ -989,6 +1037,8 @@ paths:
   /services/wmts/settings:
     get:
       operationId: getWMTSSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Map Tile Service settings globally for the server.
       produces:
         - application/xml
@@ -1065,12 +1115,16 @@ paths:
               }
     post:
       operationId: postWMTSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
           description: Method Not Allowed
     put:
       operationId: putWMTSSettings
+      tags:
+       - "OWSServices"
       description: Edits a global WMTS setting.
       parameters:
         - name: WMTSSettingsBody
@@ -1088,6 +1142,8 @@ paths:
 
     delete:
       operationId: deleteWMTSSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit settings.
       responses:
         405:
@@ -1103,6 +1159,8 @@ paths:
         description: The workspace name
     get:
       operationId: getWMTSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Retrieves Web Map Tile Service settings for a given workspace.
       produces:
         - application/xml
@@ -1186,6 +1244,8 @@ paths:
 
     post:
       operationId: postWMTSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Invalid. Use PUT to edit a service setting.
       responses:
         405:
@@ -1193,6 +1253,8 @@ paths:
 
     put:
       operationId: putWMTSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Edits a workspace-specific WMTS setting.
       parameters:
         - name: WMTSSettingsBody
@@ -1209,6 +1271,8 @@ paths:
           description: Created
     delete:
       operationId: deleteWMTSWorkspaceSettings
+      tags:
+       - "OWSServices"
       description: Deletes a workspace-specific WMTS setting.
       responses:
         200:

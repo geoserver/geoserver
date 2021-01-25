@@ -16,6 +16,8 @@ paths:
   /styles:
     get:
       operationId: getStyles
+      tags:
+       - "Styles"
       summary: Get a list of styles
       description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles.xml" for XML).
       produces:
@@ -49,6 +51,8 @@ paths:
 
     post:
       operationId: postStyles
+      tags:
+       - "Styles"
       summary: Add a new style
       description: |
           Adds a new style entry to the server. 
@@ -80,6 +84,8 @@ paths:
 
     put:
       operationId: putStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST for adding a new style, or use PUT with /styles/{style} to edit/upload an existing style.
       responses:
         405:
@@ -87,6 +93,8 @@ paths:
 
     delete:
       operationId: deleteStyles
+      tags:
+       - "Styles"
       description: Invalid. Use /styles/{style} instead.
       responses:
         405:
@@ -97,6 +105,8 @@ paths:
 
     get:
       operationId: getStyle
+      tags:
+       - "Styles"
       summary: Retrieve a style
       description: |
         Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
@@ -171,6 +181,8 @@ paths:
 
     post:
       operationId: postStyle
+      tags:
+       - "Styles"
       description: Invalid. Use PUT to edit a style, or POST with /styles to add a new style.
       parameters:
         - name: style
@@ -184,6 +196,8 @@ paths:
 
     put:
       operationId: putStyle
+      tags:
+       - "Styles"
       summary: Modify a single style
       description: |
         Modifies a single style. 
@@ -219,6 +233,8 @@ paths:
 
     delete:
       operationId: deleteStyle
+      tags:
+       - "Styles"
       summary: Delete style
       description: Deletes a style.
       parameters:
@@ -250,6 +266,8 @@ paths:
 
     get:
       operationId: getWorkspaceStyles
+      tags:
+       - "Styles"
       summary: Get a list of styles in a given workspace
       description: Displays a list of all styles in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles.xml" for XML).
       parameters:
@@ -298,6 +316,8 @@ paths:
 
     post:
       operationId: postWorkspaceStyles
+      tags:
+       - "Styles"
       summary: Add a new style to a given workspace
       description:  |
           Adds a new style entry to the server. 
@@ -334,6 +354,8 @@ paths:
 
     put:
       operationId: putWorkspaceStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST for adding a new style, or use PUT with /workspaces/{workspace}/styles/{style} to edit/upload an existing style.
       parameters:
         - name: workspace
@@ -347,6 +369,8 @@ paths:
 
     delete:
       operationId: deleteWorkspaceStyles
+      tags:
+       - "Styles"
       description: Invalid. Use /workspaces/{workspace}/styles/{style} instead.
       parameters:
         - name: workspace
@@ -363,6 +387,8 @@ paths:
 
     get:
       operationId: getWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Retrieve a style from a given workspace
       description: |
         Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
@@ -449,6 +475,8 @@ paths:
               </StyledLayerDescriptor>              
     post:
       operationId: postWorkspaceStyle
+      tags:
+       - "Styles"
       description: Invalid. Use PUT to edit a style, or POST with /workspaces/{workspace}/styles to add a new style.
       parameters:
         - name: workspace
@@ -467,6 +495,8 @@ paths:
 
     put:
       operationId: putWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Modify a single style in a given workspace
       description: |
         Modifies a single style in a given workspace. 
@@ -506,6 +536,8 @@ paths:
 
     delete:
       operationId: deleteWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Delete style in a given workspace
       description: Deletes a style in a given workspace.
       parameters:
@@ -542,6 +574,8 @@ paths:
 
     get:
       operationId: getLayerStyles
+      tags:
+       - "Styles"
       summary: Get a list of layer alternate styles
       description: Displays a list of all alternate styles for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles.xml" for XML).
       parameters:
@@ -590,6 +624,8 @@ paths:
 
     post:
       operationId: postLayerStyles
+      tags:
+       - "Styles"
       summary: Add a new style
       description: Adds a new style entry to the layer. The style named in styleBody must already exist, and will not be altered by this request. 
       parameters:
@@ -619,6 +655,8 @@ paths:
 
     put:
       operationId: putLayerStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST to modify the styles for a layer.
       parameters:
         - name: layer
@@ -632,6 +670,8 @@ paths:
 
     delete:
       operationId: deleteLayerStyles
+      tags:
+       - "Styles"
       description: Invalid.
       parameters:
         - name: layer

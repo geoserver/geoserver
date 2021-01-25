@@ -16,6 +16,8 @@ paths:
   /about/system-status:
     get:
       operationId: getMonitorRequests
+      tags:
+       - "SystemStatus"
       summary: Get a list of requests
       description: |
                    Returns a list of system-level information.

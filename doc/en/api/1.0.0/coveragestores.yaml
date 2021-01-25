@@ -15,6 +15,8 @@ paths:
   /workspaces/{workspace}/coveragestores:
     get:
       operationId: getCoverageStores
+      tags:
+        - "CoverageStores"
       summary: Get a list of all coverage stores in {workspace}
       description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/coveragestores.xml" for XML). Defaults to HTML representation.
       produces:
@@ -66,6 +68,8 @@ paths:
 
     post:
       operationId: postCoverageStores
+      tags:
+        - "CoverageStores"
       summary: Add a new coverage store
       description: Adds a new coverage store entry to the server.
       parameters:
@@ -92,6 +96,8 @@ paths:
 
     put:
       operationId: putCoverageStores
+      tags:
+        - "CoverageStores"
       description: Invalid. Use POST for adding a new coverage store, or PUT on /coveragestores/{store} to edit/upload an existing coverage store.
       responses:
         401:
@@ -101,6 +107,8 @@ paths:
 
     delete:
       operationId: deleteCoverageStores
+      tags:
+        - "CoverageStores"
       description: Invalid. Use /coverage/{style} instead.
       responses:
         401:
@@ -110,6 +118,8 @@ paths:
   /workspaces/{workspace}/coveragestores/{store}:
     get:
       operationId: getCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Get a coverage store named {store} in the {workspace} workspace
       description: Displays a representation of the coverage store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/{store}.xml" for XML). Defaults to HTML representation.
       produces:
@@ -177,6 +187,8 @@ paths:
 
     post:
       operationId: postCoverageStore
+      tags:
+        - "CoverageStores"
       description: Invalid. Use POST on /workspaces/{workspace}/coveragestores for adding a new coverage store, or PUT on /workspaces/{workspace}/coveragestores/{store} to edit/upload an existing coverage store.
       responses:
         401:
@@ -186,6 +198,8 @@ paths:
 
     put:
       operationId: putCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Modify a single coverage store.
       description: Modifies a single coverage store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
       parameters:
@@ -211,6 +225,8 @@ paths:
           
     delete:
       operationId: deleteCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Delete coverage store
       description: Deletes a coverage store
       parameters:
@@ -247,6 +263,8 @@ paths:
   /workspaces/{workspace}/coveragestores/{store}/{method}.{format}:
     get:
       operationId: getCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Invalid, only used for uploads
       responses:
         401:
@@ -256,6 +274,8 @@ paths:
 
     post:
       operationId: postCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Used to harvest new granules in a writable structured grid coverage reader (e.g., image mosaic). Attempting to harvest a file into any other reader will result in a HTTP 405, method not allowed. Multiple granules can be uploaded by wrapping them in a ZIP file. 
       parameters:
         - name: workspace
@@ -300,6 +320,8 @@ paths:
 
     put:
       operationId: putCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       summary: Creates or overwrites the files for a coverage store
       description: Creates or modified a single coverage store by uploading its raster data files. Multi-file stores like mosaic can be created by uploading a zip file and setting the content type to "application/zip"
       parameters:
@@ -355,6 +377,8 @@ paths:
           
     delete:
       operationId: deleteCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Invalid, only used for uploads
       responses:
         401:

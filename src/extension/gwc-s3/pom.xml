@@ -6,11 +6,11 @@
   <!-- set parent pom to community pom -->
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.19-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-gwc-s3</artifactId>
   <packaging>jar</packaging>
   <name>GeoWebCache S3</name>

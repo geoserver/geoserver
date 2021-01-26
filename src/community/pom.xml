@@ -59,7 +59,6 @@
           <descriptor>release/ext-solr.xml</descriptor>
           <descriptor>release/ext-elasticsearch.xml</descriptor>
           <descriptor>release/ext-gwc-distributed.xml</descriptor>
-          <descriptor>release/ext-gwc-s3.xml</descriptor>
           <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
@@ -244,7 +243,6 @@
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
-        <module>gwc-s3</module>
         <module>gwc-azure-blob</module>
         <module>backup-restore</module>
         <module>ncwms</module>
@@ -473,12 +471,6 @@
         <modules>
           <module>gdal</module>
         </modules>
-    </profile>
-    <profile>
-      <id>gwc-s3</id>
-      <modules>
-        <module>gwc-s3</module>
-      </modules>
     </profile>
     <profile>
       <id>gwc-azure-blob</id>

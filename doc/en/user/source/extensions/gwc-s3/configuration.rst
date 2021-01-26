@@ -1,20 +1,7 @@
-.. _community_s3_tilecache:
-
-GWC S3 BlobStore plugin
-========================
-This plugin supports the use of the `AWS <https://aws.amazon.com>`_ Simple Storage Service (`Amazon S3 <https://aws.amazon.com/s3/>`_) as storage medium for :ref:`gwc_webadmin`.
-
-Installing the S3 BlobStore plugin
-----------------------------------
-
- #. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
-
-    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
-
- #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+.. _gwc_s3_configuration:
 
 Configuring the S3 BlobStore plugin
------------------------------------
+===================================
 
 Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
 Afterwards, cached layers can be explicitly assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.

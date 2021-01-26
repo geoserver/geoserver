@@ -358,6 +358,11 @@
      <artifactId>gs-params-extractor</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-gwc-s3</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

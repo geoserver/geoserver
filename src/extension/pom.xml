@@ -368,6 +368,13 @@
       </modules>
     </profile>
 
+    <profile>      
+      <id>gwc-s3</id>
+      <modules>
+        <module>gwc-s3</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -413,6 +420,7 @@
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
+        <module>gwc-s3</module>
       </modules>
     </profile>
 
@@ -461,6 +469,7 @@
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
+        <module>gwc-s3</module>
       </modules>
     </profile>
   </profiles>

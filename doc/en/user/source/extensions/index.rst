@@ -35,3 +35,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    geofence-server/index
    cas/index
    params-extractor/index
+   gwc-s3/index
+

@@ -29,80 +29,46 @@ public class S3BlobStorePanel extends Panel {
     public S3BlobStorePanel(String id, final IModel<S3BlobStoreInfo> configModel) {
         super(id, configModel);
 
+        add(new TextField<>("bucket").setRequired(true).add(titleModifier("bucket.title")));
         add(
-                new TextField<String>("bucket")
+                new TextField<>("awsAccessKey")
                         .setRequired(true)
-                        .add(new AttributeModifier("title", new ResourceModel("bucket.title"))));
+                        .add(titleModifier("awsAccessKey.title")));
         add(
-                new TextField<String>("awsAccessKey")
+                new TextField<>("awsSecretKey")
                         .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("awsAccessKey.title"))));
+                        .add(titleModifier("awsSecretKey.title")));
+        add(new TextField<>("prefix").add(titleModifier("prefix.title")));
+        add(new TextField<>("endpoint").add(titleModifier("endpoint.title")));
         add(
-                new TextField<String>("awsSecretKey")
+                new TextField<>("maxConnections")
                         .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("awsSecretKey.title"))));
-        add(
-                new TextField<String>("prefix")
-                        .add(new AttributeModifier("title", new ResourceModel("prefix.title"))));
-        add(
-                new TextField<String>("endpoint")
-                        .add(new AttributeModifier("title", new ResourceModel("endpoint.title"))));
-        add(
-                new TextField<Integer>("maxConnections")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("maxConnections.title"))));
-        add(
-                new CheckBox("useHTTPS")
-                        .add(new AttributeModifier("title", new ResourceModel("useHTTPS.title"))));
-        add(
-                new TextField<String>("proxyDomain")
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("proxyDomain.title"))));
-        add(
-                new TextField<String>("proxyWorkstation")
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("proxyWorkstation.title"))));
-        add(
-                new TextField<String>("proxyHost")
-                        .add(new AttributeModifier("title", new ResourceModel("proxyHost.title"))));
-        add(
-                new TextField<Integer>("proxyPort")
-                        .add(new AttributeModifier("title", new ResourceModel("proxyPort.title"))));
-        add(
-                new TextField<String>("proxyUsername")
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("proxyUsername.title"))));
-        add(
-                new TextField<String>("proxyPassword")
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("proxyPassword.title"))));
-        add(
-                new CheckBox("useGzip")
-                        .add(new AttributeModifier("title", new ResourceModel("useGzip.title"))));
+                        .add(titleModifier("maxConnections.title")));
+        add(new CheckBox("useHTTPS").add(titleModifier("useHTTPS.title")));
+        add(new TextField<>("proxyDomain").add(titleModifier("proxyDomain.title")));
+        add(new TextField<>("proxyWorkstation").add(titleModifier("proxyWorkstation.title")));
+        add(new TextField<>("proxyHost").add(titleModifier("proxyHost.title")));
+        add(new TextField<>("proxyPort").add(titleModifier("proxyPort.title")));
+        add(new TextField<>("proxyUsername").add(titleModifier("proxyUsername.title")));
+        add(new TextField<>("proxyPassword").add(titleModifier("proxyPassword.title")));
+        add(new CheckBox("useGzip").add(titleModifier("useGzip.title")));
 
-        IModel<Access> accessModel = new PropertyModel<Access>(configModel, "access");
+        IModel<Access> accessModel = new PropertyModel<>(configModel, "access");
 
-        RadioGroup<Access> accessType = new RadioGroup<Access>("accessType", accessModel);
+        RadioGroup<Access> accessType = new RadioGroup<>("accessType", accessModel);
         add(accessType);
 
-        IModel<Access> accessPublicModel = new Model<Access>(Access.PUBLIC);
-        IModel<Access> accessPrivateModel = new Model<Access>(Access.PRIVATE);
+        IModel<Access> accessPublicModel = new Model<>(Access.PUBLIC);
+        IModel<Access> accessPrivateModel = new Model<>(Access.PRIVATE);
 
-        Radio<Access> accessTypePublic = new Radio<Access>("accessTypePublic", accessPublicModel);
-        Radio<Access> accessTypePrivate =
-                new Radio<Access>("accessTypePrivate", accessPrivateModel);
+        Radio<Access> accessTypePublic = new Radio<>("accessTypePublic", accessPublicModel);
+        Radio<Access> accessTypePrivate = new Radio<>("accessTypePrivate", accessPrivateModel);
 
         accessType.add(accessTypePublic);
         accessType.add(accessTypePrivate);
+    }
+
+    private AttributeModifier titleModifier(String s) {
+        return new AttributeModifier("title", new ResourceModel(s));
     }
 }

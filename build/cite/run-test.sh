@@ -21,9 +21,9 @@ _show_logs() {
 }
 
 _parse_logs(){
-  _show_logs | grep "Failed"
+  _show_logs | grep -iv "Failed"
   local grep_exit_code=$?
-  if [ "$grep_exit_code" -ne "1" ]; then
+  if [ "$grep_exit_code" -ne "0" ]; then
       echo "Failed tests found in logs! (grep exit code: $grep_exit_code)" >&2
       return 3
   else

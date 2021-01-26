@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 public class QueryablesDocument extends AbstractDocument {
 
     private final String collectionId;
-    List<Queryable> queryables = new ArrayList();
+    List<Queryable> queryables = new ArrayList<>();
 
     public QueryablesDocument(FeatureTypeInfo fti) throws IOException {
         this.collectionId = fti.prefixedName();

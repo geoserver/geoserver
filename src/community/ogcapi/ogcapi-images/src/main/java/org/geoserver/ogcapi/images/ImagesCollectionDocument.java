@@ -26,16 +26,16 @@ import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
-public class ImagesCollectionDocument extends AbstractCollectionDocument {
+public class ImagesCollectionDocument extends AbstractCollectionDocument<CoverageInfo> {
     static final Logger LOGGER = Logging.getLogger(ImagesCollectionDocument.class);
     StructuredGridCoverage2DReader reader;
 
     /**
      * Builds a description of an image collection
      *
-     * @param reader The {@link StructuredGridCoverage2DReader}
+     * @param coverage The {@link CoverageInfo} that backs the images collection
      * @param summary If true, the info provided is minimal and assumed to be part of a {@link
-     *     IImageCollectionsDocument}, otherwise it's full and assumed to be the main response
+     *     ImagesCollectionsDocument}, otherwise it's full and assumed to be the main response
      */
     public ImagesCollectionDocument(CoverageInfo coverage, boolean summary)
             throws FactoryException, TransformException, IOException {

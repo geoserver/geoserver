@@ -15,7 +15,7 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.OpenAPIBuilder;
 
-/** Builds the OpenAPI definition for the iles service */
+/** Builds the OpenAPI definition for the tiles service */
 public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
 
     private final GWC gwc;

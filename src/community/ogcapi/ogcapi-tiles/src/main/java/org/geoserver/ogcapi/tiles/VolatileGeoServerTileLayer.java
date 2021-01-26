@@ -39,7 +39,6 @@ class VolatileGeoServerTileLayer extends GeoServerTileLayer {
     @Override
     protected void saveTiles(MetaTile metaTile, ConveyorTile tileProto, long requestTime)
             throws GeoWebCacheException {
-        final long[] gridLoc = tileProto.getTileIndex();
         final GridSubset gridSubset = getGridSubset(tileProto.getGridSetId());
         final long[] gridPos = metaTile.getTilesGridPositions()[0];
         if (!gridSubset.covers(gridPos)) {

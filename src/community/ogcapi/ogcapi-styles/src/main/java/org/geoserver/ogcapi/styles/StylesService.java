@@ -351,7 +351,7 @@ public class StylesService {
             // write out the style body
             catalog.getResourcePool().writeStyle(styleInfo, new ByteArrayInputStream(rawData));
 
-            MultiValueMap headers = new HttpHeaders();
+            MultiValueMap<String, String> headers = new HttpHeaders();
             String href =
                     ResponseUtils.buildURL(
                             APIRequestInfo.get().getBaseURL(),

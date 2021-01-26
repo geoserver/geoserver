@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.gwc.GWC;
@@ -15,7 +16,10 @@ import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.wms.WMS;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.layer.TileLayer;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -24,6 +28,7 @@ import org.springframework.http.HttpStatus;
  */
 @JsonPropertyOrder({"links", "collections"})
 public class TiledCollectionsDocument extends AbstractDocument {
+    static final Logger LOGGER = Logging.getLogger(TiledCollectionsDocument.class);
 
     private final GWC gwc;
     private final GeoServer gs;
@@ -65,7 +70,7 @@ public class TiledCollectionsDocument extends AbstractDocument {
 
                         next = collection;
                         return true;
-                    } catch (Exception e) {
+                    } catch (FactoryException | TransformException e) {
                         if (skipInvalid) {
                             LOGGER.log(Level.WARNING, "Skipping tile layer " + tileLayers);
                         } else {

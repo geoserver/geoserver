@@ -14,18 +14,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
 
 /** Base OGC API document class with shared link generation facilities */
 public class AbstractDocument {
-    protected static final Logger LOGGER = Logging.getLogger(AbstractDocument.class);
 
     protected String id;
     protected String htmlTitle;

@@ -8,7 +8,6 @@ import static org.geoserver.ogcapi.tiles.TilesService.isStyleGroup;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -43,7 +42,7 @@ import org.springframework.http.HttpStatus;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
-public class TiledCollectionDocument extends AbstractCollectionDocument {
+public class TiledCollectionDocument extends AbstractCollectionDocument<TileLayer> {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
     public static final String DEFAULT_STYLE_NAME = "_";
     WMS wms;
@@ -61,7 +60,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
      *     TiledCollectionsDocument}, otherwise it's full and assumed to be the main response
      */
     public TiledCollectionDocument(WMS wms, TileLayer tileLayer, boolean summary)
-            throws FactoryException, TransformException, IOException {
+            throws FactoryException, TransformException {
         super(tileLayer);
         // basic info
         this.layer = tileLayer;
@@ -115,16 +114,17 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
             if (tileLayer instanceof GeoServerTileLayer) {
                 PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
                 if (published instanceof LayerInfo) {
-                    LayerInfo layer = (LayerInfo) published;
-                    LinkedHashSet<StyleInfo> styles =
-                            new LinkedHashSet<>(Arrays.asList(layer.getDefaultStyle()));
-                    styles.addAll(layer.getStyles());
-                    for (StyleInfo style : styles) {
-                        this.styles.add(new StyleDocument(style));
-                    }
+                    LayerInfo layerInfo = (LayerInfo) published;
+                    LinkedHashSet<StyleInfo> stylesInfo =
+                            new LinkedHashSet<>(Arrays.asList(layerInfo.getDefaultStyle()));
+                    stylesInfo.addAll(layerInfo.getStyles());
+                    stylesInfo.forEach(
+                            style -> {
+                                this.styles.add(new StyleDocument(style));
+                            });
                 } else {
                     LayerGroupInfo group = (LayerGroupInfo) published;
-                    if (isStyleGroup(group)) {
+                    if (group != null && isStyleGroup(group)) {
                         StyleDocument styleDocument = new StyleDocument(group.getStyles().get(0));
                         this.styles.add(styleDocument);
                     } else {
@@ -149,7 +149,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
                 addLinksFor(
                         "ogc/tiles/collections/" + id + "/queryables",
                         QueryablesDocument.class,
-                        "Collection queryables",
+                        "Collection queryables as ",
                         "queryables",
                         null,
                         "queryables");
@@ -157,7 +157,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         }
     }
 
-    CollectionExtents getExtentFromGridsets(TileLayer tileLayer)
+    private CollectionExtents getExtentFromGridsets(TileLayer tileLayer)
             throws FactoryException, TransformException {
         Set<String> srsSet =
                 layer.getGridSubsets()
@@ -208,7 +208,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         return new CollectionExtents(re);
     }
 
-    public CollectionExtents getExtentsFromPublished(PublishedInfo published) {
+    private CollectionExtents getExtentsFromPublished(PublishedInfo published) {
         try {
             ReferencedEnvelope bbox = null;
             if (published instanceof LayerInfo) {
@@ -233,6 +233,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         return null;
     }
 
+    @Override
     public List<StyleDocument> getStyles() {
         return styles;
     }

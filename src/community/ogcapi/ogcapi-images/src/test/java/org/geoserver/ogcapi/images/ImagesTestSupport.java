@@ -54,7 +54,7 @@ public class ImagesTestSupport extends OGCApiTestSupport {
      * StructuredGridCoverage2DReader}
      */
     protected Stream<CoverageInfo> getStructuredCoverages() {
-        return Streams.stream(getCatalog().getCoverages())
+        return Streams.stream(getCatalog().getCoverages().iterator())
                 .filter(
                         c -> {
                             try {

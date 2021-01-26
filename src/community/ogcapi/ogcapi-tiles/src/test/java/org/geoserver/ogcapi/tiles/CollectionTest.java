@@ -32,7 +32,7 @@ public class CollectionTest extends TilesTestSupport {
 
     @Test
     public void testOnlyMapLinks() throws Exception {
-        // this one only has rendered formats assocaited
+        // this one only has rendered formats associated
         String lakesId = getLayerId(MockData.LAKES);
         DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + lakesId, 200);
 
@@ -43,7 +43,7 @@ public class CollectionTest extends TilesTestSupport {
 
     @Test
     public void testOnlyDataLinks() throws Exception {
-        // this one only has rendered formats assocaited
+        // this one only has rendered formats associated
         String forestsId = getLayerId(MockData.FORESTS);
 
         DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + forestsId, 200);
@@ -82,13 +82,18 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals("generic", json.read("$.styles[1].id"));
         assertEquals("Generic", json.read("$.styles[1].title"));
 
-        // queryable links
+        // queryables
         String queryablesLink =
                 readSingle(
                         json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/queryables?f=application%2Fjson",
                 queryablesLink);
+        String queryablesTitle =
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='queryables' && @.type=='application/json')].title");
+        assertEquals("Collection queryables as application/json", queryablesTitle);
     }
 
     @Test

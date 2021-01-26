@@ -18,7 +18,7 @@ import org.opengis.feature.simple.SimpleFeature;
 /** Propagates image listener events to all listeners */
 class ImageListenerSupport {
 
-    private List<ImageListener> imageListeners;
+    private final List<ImageListener> imageListeners;
 
     public ImageListenerSupport(List<ImageListener> imageListeners) {
         this.imageListeners = imageListeners;

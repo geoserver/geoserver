@@ -33,7 +33,7 @@ public class TilesDocument extends AbstractDocument {
                 tileLayer
                         .getGridSubsets()
                         .stream()
-                        .map(id -> new TileMatrixSetLink(tileLayer.getGridSubset(id)))
+                        .map(subsetId -> new TileMatrixSetLink(tileLayer.getGridSubset(subsetId)))
                         .collect(Collectors.toList());
         this.id =
                 tileLayer instanceof GeoServerTileLayer
@@ -51,15 +51,19 @@ public class TilesDocument extends AbstractDocument {
         List<MimeType> tileTypes = tileLayer.getMimeTypes();
         String baseURL = APIRequestInfo.get().getBaseURL();
         if (type == Type.RawTiles) {
-            for (MimeType dataFormat :
-                    tileTypes.stream().filter(mt -> mt.isVector()).collect(Collectors.toList())) {
-                addTilesLinkForFormat(
-                        this.id,
-                        baseURL,
-                        dataFormat.getFormat(),
-                        "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-                        TILE_REL);
-            }
+            tileTypes
+                    .stream()
+                    .filter(mt -> mt.isVector())
+                    .collect(Collectors.toList())
+                    .forEach(
+                            dataFormat -> {
+                                addTilesLinkForFormat(
+                                        this.id,
+                                        baseURL,
+                                        dataFormat.getFormat(),
+                                        "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+                                        TILE_REL);
+                            });
 
             // tileJSON
             addLinksFor(
@@ -72,24 +76,27 @@ public class TilesDocument extends AbstractDocument {
         } else {
             List<MimeType> imageFormats =
                     tileTypes.stream().filter(mt -> !mt.isVector()).collect(Collectors.toList());
-            for (MimeType imgeFormat : imageFormats) {
-                addTilesLinkForFormat(
-                        this.id,
-                        baseURL,
-                        imgeFormat.getFormat(),
-                        "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-                        TILE_REL);
-            }
+            imageFormats.forEach(
+                    imageFormat -> {
+                        addTilesLinkForFormat(
+                                this.id,
+                                baseURL,
+                                imageFormat.getFormat(),
+                                "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+                                TILE_REL);
+                    });
 
             // add the info links (might be needed only for maps, but we always have a style so...)
-            for (String infoFormat : wms.getAvailableFeatureInfoFormats()) {
-                addTilesLinkForFormat(
-                        this.id,
-                        baseURL,
-                        infoFormat,
-                        "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info",
-                        "info");
-            }
+            wms.getAvailableFeatureInfoFormats()
+                    .forEach(
+                            infoFormat -> {
+                                addTilesLinkForFormat(
+                                        this.id,
+                                        baseURL,
+                                        infoFormat,
+                                        "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info",
+                                        "info");
+                            });
 
             // tileJSON
             addLinksFor(
@@ -111,7 +118,7 @@ public class TilesDocument extends AbstractDocument {
         return tileMatrixSetLinks;
     }
 
-    protected void addTilesLinkForFormat(
+    protected final void addTilesLinkForFormat(
             String layerName, String baseURL, String format, String path, String rel) {
         String apiUrl =
                 ResponseUtils.buildURL(
@@ -119,7 +126,7 @@ public class TilesDocument extends AbstractDocument {
                         "ogc/tiles/collections/" + ResponseUtils.urlEncode(layerName) + path,
                         Collections.singletonMap("f", format),
                         URLMangler.URLType.SERVICE);
-        Link link = new Link(apiUrl, rel, format, layerName + " tiles as " + format.toString());
+        Link link = new Link(apiUrl, rel, format, layerName + " tiles as " + format);
         link.setTemplated(true);
         addLink(link);
     }

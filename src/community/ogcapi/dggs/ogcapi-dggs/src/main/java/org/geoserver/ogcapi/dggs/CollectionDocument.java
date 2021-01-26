@@ -38,7 +38,7 @@ import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "dggs-id", "resolutions", "links"})
-public class CollectionDocument extends AbstractCollectionDocument {
+public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeInfo> {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
     private final DGGSFeatureSource fs;
 

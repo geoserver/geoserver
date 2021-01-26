@@ -11,13 +11,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-import org.geotools.util.logging.Logging;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
 public class AbstractCollectionDocument<T> extends AbstractDocument {
-    static final Logger LOGGER = Logging.getLogger(AbstractCollectionDocument.class);
 
     protected String title;
     protected String description;

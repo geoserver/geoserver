@@ -8,6 +8,7 @@ import com.google.common.collect.Streams;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 
-/** Builds the OpenAPI definition for the iles service */
+/** Builds the OpenAPI definition for the Images service */
 public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
 
     static final Logger LOGGER = Logging.getLogger(ImagesAPIBuilder.class);
@@ -57,13 +58,13 @@ public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
                 geoServer.getGlobal().getResourceErrorHandling()
                         == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
         List<String> validCollectionIds =
-                Streams.stream(geoServer.getCatalog().getCoverages())
+                Streams.stream(geoServer.getCatalog().getCoverages().iterator())
                         .filter(
                                 c -> {
                                     try {
                                         return c.getGridCoverageReader(null, null)
                                                 instanceof StructuredGridCoverage2DReader;
-                                    } catch (Exception e) {
+                                    } catch (IOException e) {
                                         if (skipInvalid) {
                                             LOGGER.log(Level.WARNING, "Skipping coverage  " + c);
                                             return false;

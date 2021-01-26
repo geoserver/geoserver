@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 public class ImageResponseMessageConverter extends MessageConverterResponseAdapter<ImagesResponse> {
 
     private static final Version V2 = new Version("2.0");
-    List<Response> responses;
 
     public ImageResponseMessageConverter() {
         super(ImagesResponse.class, FeatureCollectionResponse.class);

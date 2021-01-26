@@ -36,7 +36,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
  */
 public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessageConverter<T> {
 
-    protected final Class binding;
+    protected final Class<?> binding;
     protected final GeoServer geoServer;
     protected final FreemarkerTemplateSupport templateSupport;
     protected final Class<? extends ServiceInfo> serviceConfigurationClass;
@@ -50,7 +50,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      * @param geoServer The
      */
     public AbstractHTMLMessageConverter(
-            Class binding,
+            Class<?> binding,
             Class<? extends ServiceInfo> serviceConfigurationClass,
             FreemarkerTemplateSupport templateSupport,
             GeoServer geoServer) {

@@ -482,7 +482,7 @@ public class TilesService {
         }
     }
 
-    /** Checks the specified griset is supported by the tile layer, and returns it */
+    /** Checks the specified gridset is supported by the tile layer, and returns it */
     public static GridSubset getGridSubset(TileLayer tileLayer, String tileMatrixSetId) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
         if (gridSubset == null) {

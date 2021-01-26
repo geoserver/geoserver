@@ -17,6 +17,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -480,6 +481,147 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
         } finally {
             removeLayerGroup(group1, group2);
             deleteRules(ruleService, idRule, idRule2);
+        }
+    }
+
+    @Test
+    public void testLayerGroupsClipAndIntersectsSpatialFilterUnion() throws Exception {
+        // test that when having two layergroups each with two rules with clip and intersects
+        // allowed area, the geometries are correctly merged
+        Long idRule = null;
+        Long idRule2 = null;
+        Long idRule3 = null;
+        Long idRule4 = null;
+        LayerGroupInfo group1 = null;
+        LayerGroupInfo group2 = null;
+
+        try {
+            Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS", "ROLE_ANONYMOUS2");
+            login("admin", "geoserver", new String[] {"ROLE_ADMINISTRATOR"});
+            Catalog catalog = getCatalog();
+            LayerInfo droutes = catalog.getLayerByName(getLayerId(MockData.DIVIDED_ROUTES));
+            LayerInfo ponds = catalog.getLayerByName(getLayerId(MockData.PONDS));
+            group1 =
+                    createsLayerGroup(
+                            catalog,
+                            "group61",
+                            LayerGroupInfo.Mode.NAMED,
+                            null,
+                            Arrays.asList(droutes, ponds));
+            // limit rule for anonymousUser on LayerGroup group1
+            idRule =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            null,
+                            "group61",
+                            10,
+                            ruleService);
+
+            idRule2 =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS2",
+                            "WMS",
+                            null,
+                            null,
+                            "group61",
+                            11,
+                            ruleService);
+
+            group2 =
+                    createsLayerGroup(
+                            catalog,
+                            "group62",
+                            LayerGroupInfo.Mode.NAMED,
+                            null,
+                            Arrays.asList(droutes, ponds));
+            // limit rule for anonymousUser on LayerGroup group1
+            idRule3 =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            null,
+                            "group62",
+                            12,
+                            ruleService);
+
+            idRule4 =
+                    addRule(
+                            GrantType.LIMIT,
+                            "anonymousUser",
+                            "ROLE_ANONYMOUS2",
+                            "WMS",
+                            null,
+                            null,
+                            "group62",
+                            13,
+                            ruleService);
+
+            String areaWKT1 =
+                    "MultiPolygon (((-97.48185823120911664 0.02172899055096349, -97.4667765271758384 0.02148629646307176, -97.46795532703131926 0.01663241470523705, -97.48165020770520073 0.01607768536148451, -97.48185823120911664 0.02172899055096349)))";
+            String areaWKT2 =
+                    "MultiPolygon (((-97.48109547836145339 0.026374848804891, -97.46934215039070182 0.02672155464473634, -97.46993155031843514 0.02294246099042217, -97.48102613719348142 0.02294246099042217, -97.48109547836145339 0.026374848804891)))";
+            String areaWKT3 =
+                    "MultiPolygon (((-97.48119949011341134 0.00914356856457779, -97.46941149155865958 0.00973296849231486, -97.46955017389460352 0.00605788658995429, -97.48182356062513065 0.00581519250206256, -97.48119949011341134 0.00914356856457779)))";
+            String areaWKT4 =
+                    "MultiPolygon (((-97.48161553712121474 0.00449771031065027, -97.46889143279889822 0.00435902797471214, -97.46948083272663155 0.00127334600008865, -97.48178889004114467 0.00120400483211958, -97.48161553712121474 0.00449771031065027)))";
+            // add allowed Area to layer groups rules
+            addRuleLimits(idRule, CatalogMode.HIDE, areaWKT1, 4326, ruleService);
+            addRuleLimits(
+                    idRule2, CatalogMode.HIDE, areaWKT2, 4326, SpatialFilterType.CLIP, ruleService);
+            addRuleLimits(idRule3, CatalogMode.HIDE, areaWKT3, 4326, ruleService);
+            addRuleLimits(
+                    idRule4, CatalogMode.HIDE, areaWKT4, 4326, SpatialFilterType.CLIP, ruleService);
+            // mock a WMS request to check contained layers direct access
+            Request req = new Request();
+            req.setService("WMS");
+            req.setRequest("GetMap");
+            Dispatcher.REQUEST.set(req);
+            logout();
+
+            login("anonymousUser", "", new String[] {"ROLE_ANONYMOUS", "ROLE_ANONYMOUS2"});
+
+            VectorAccessLimits vl =
+                    (VectorAccessLimits) accessManager.getAccessLimits(user, droutes);
+            Geometry intersectsArea = vl.getIntersectVectorFilter();
+            Geometry clipArea = vl.getClipVectorFilter();
+            intersectsArea.normalize();
+            clipArea.normalize();
+
+            // union of the allowed area where the 3857 is reprojected to 4326
+            WKTReader reader = new WKTReader();
+            Geometry geom = reader.read(areaWKT1);
+            geom.setSRID(4326);
+            Geometry geom2 = new WKTReader().read(areaWKT2);
+            geom2.setSRID(4326);
+
+            Geometry geom3 = reader.read(areaWKT3);
+            geom.setSRID(4326);
+            Geometry geom4 = new WKTReader().read(areaWKT4);
+            geom2.setSRID(4326);
+
+            Geometry intersectUnion = geom.union(geom3);
+            intersectUnion.setSRID(4326);
+            intersectUnion.normalize();
+
+            Geometry clipUnion = geom2.union(geom4);
+            clipUnion.setSRID(4326);
+            clipUnion.normalize();
+
+            assertTrue(intersectsArea.equalsExact(intersectUnion, 10.0E-15));
+            assertTrue(clipArea.equalsExact(clipUnion, 10.0E-15));
+            logout();
+        } finally {
+            removeLayerGroup(group1, group2);
+            deleteRules(ruleService, idRule, idRule2, idRule3, idRule4);
         }
     }
 

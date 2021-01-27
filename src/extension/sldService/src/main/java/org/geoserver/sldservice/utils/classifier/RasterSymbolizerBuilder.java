@@ -272,7 +272,9 @@ public class RasterSymbolizerBuilder {
                 Number b = breaks[i];
                 ColorMapEntry entry = SF.createColorMapEntry();
                 entry.setQuantity(FF.literal(b));
-                entry.setLabel(format.format(b) + getPercentagesLabelPortion(percentages, i));
+                String label = format.format(b);
+                if (i > 0) label += getPercentagesLabelPortion(percentages, i - 1);
+                entry.setLabel(label);
                 colorMap.addColorMapEntry(entry);
             }
         } else {

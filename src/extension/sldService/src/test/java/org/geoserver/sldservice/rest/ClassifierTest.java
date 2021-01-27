@@ -2336,12 +2336,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
         assertEquals(entriesQuantile.length, 6);
+        double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2370,7 +2376,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 int i2 = label.indexOf("%)");
                 percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
         assertTrue(100.0 == percentagesSum);
@@ -2392,12 +2398,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cmJenks = rsJenks.getColorMap();
         ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
         assertEquals(entriesJenks.length, 6);
+        double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesJenks) {
             if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2416,12 +2428,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cmUnique = rsUnique.getColorMap();
         ColorMapEntry[] entriesUnique = cmUnique.getColorMapEntries();
         assertEquals(entriesUnique.length, 167);
+        double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesUnique) {
             if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
+        assertEquals(100.0, percentagesSum, 0.6d);
     }
 
     @Test
@@ -2471,12 +2489,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
         assertEquals(entriesQuantile.length, 6);
+        double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 
     @Test
@@ -2648,5 +2672,36 @@ public class ClassifierTest extends SLDServiceBaseTest {
             percentagesSum += Double.valueOf(label.substring(i + 1, i2));
         }
         assertEquals(100d, percentagesSum, 0d);
+    }
+
+    @Test
+    public void testPercentagesWithContinuousNotThrowsException() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=jenks&intervals=6"
+                        + "&ramp=red&fullSLD=true&percentages=true&continuous=true";
+        Document domjenks = getAsDOM(restPathJenks, 200);
+        RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
+        ColorMap cmJenks = rsJenks.getColorMap();
+        ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
+        assertEquals(entriesJenks.length, 6);
+        double percentagesSum = 0.0;
+        for (int i = 0; i < entriesJenks.length; i++) {
+            ColorMapEntry e = entriesJenks[i];
+            if (e.getLabel() != null && i > 0) {
+                String label = e.getLabel();
+                int i2 = label.lastIndexOf("(");
+                int i3 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i2 + 1, i3));
+                Matcher matcher = rgx.matcher(e.getLabel());
+                assertTrue(matcher.find());
+            }
+        }
+        assertEquals(100.0, percentagesSum, 0.0);
     }
 }

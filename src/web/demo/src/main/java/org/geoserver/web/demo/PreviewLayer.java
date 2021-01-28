@@ -228,8 +228,19 @@ public class PreviewLayer {
         params.put(
                 "styles",
                 request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "");
-
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
+    }
+
+    /**
+     * Build the KML reflector request.
+     *
+     * @return the KML reflector link in refresh mode, suitable for Google Earth.
+     */
+    public String getKmlLink() {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("layers", getName());
+        return ResponseUtils.buildURL(
+                getBaseURL(), getPath("wms/kml", false), params, URLType.SERVICE);
     }
 
     /**

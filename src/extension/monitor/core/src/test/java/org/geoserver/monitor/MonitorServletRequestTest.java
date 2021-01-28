@@ -137,4 +137,24 @@ public class MonitorServletRequestTest {
         ;
         assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
     }
+
+    @Test
+    public void testNPEIsNotThrownWithBufferSizeUnbounded() throws Exception {
+        byte[] data = data();
+        DelegatingServletInputStream mock =
+                new DelegatingServletInputStream(new ByteArrayInputStream(data));
+
+        MonitorInputStream in = new MonitorInputStream(mock, -1);
+        byte[] read = read(in);
+
+        assertEquals(data.length, read.length);
+
+        byte[] buffer = in.getData();
+
+        for (int i = 0; i < buffer.length; i++) {
+            assertEquals(data[i], buffer[i]);
+        }
+
+        assertEquals(data.length - 1, in.getBytesRead());
+    }
 }

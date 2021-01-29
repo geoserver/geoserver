@@ -66,6 +66,7 @@ public class RuleConverter implements Converter {
         addParameter(reader, attributeName, consumer, null);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> void addParameter(
             HierarchicalStreamReader reader,
             String attributeName,

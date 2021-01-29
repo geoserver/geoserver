@@ -18,6 +18,7 @@ import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 
 public final class Filter implements GeoServerFilter, ExtensionPriority {
@@ -26,6 +27,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     // this becomes true if the filter is initialized from the web container
     // via web.xml, so that we know we should ignore the spring initialized filter
+    // (there are always two, this static variable is how they know about each other state)
     static boolean USE_AS_SERVLET_FILTER = false;
 
     // marks the instance initialized via web.xml (if any) so that we can avoid
@@ -34,6 +36,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     private List<Rule> rules;
 
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public Filter() {
         // this is called if we initialize the filter in web.xml, so let's turn on the
         // flags for this scenario
@@ -49,8 +52,8 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     private void initRules(GeoServerDataDirectory dataDirectory) {
         if (dataDirectory != null) {
             Resource resource = dataDirectory.get(RulesDao.getRulesPath());
-            rules = RulesDao.getRules(resource.in());
-            resource.addListener(notify -> rules = RulesDao.getRules(resource.in()));
+            rules = RulesDao.getRules(() -> resource.in());
+            resource.addListener(notify -> rules = RulesDao.getRules(() -> resource.in()));
         }
     }
 

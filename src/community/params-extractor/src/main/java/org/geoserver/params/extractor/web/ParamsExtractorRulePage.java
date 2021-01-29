@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -69,7 +73,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
                         }
                     }
                 });
-        form.add(new BookmarkablePageLink("cancel", ParamsExtractorConfigPage.class));
+        form.add(new BookmarkablePageLink<>("cancel", ParamsExtractorConfigPage.class));
     }
 
     public abstract class WrappedTab extends AbstractTab {

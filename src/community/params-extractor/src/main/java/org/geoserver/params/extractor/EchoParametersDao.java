@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -55,6 +57,7 @@ public final class EchoParametersDao {
         return (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
     }
 
+    @SuppressWarnings("PMD.UseTryWithResources") // cannot use try-with-resources here
     public static List<EchoParameter> getEchoParameters(InputStream inputStream) {
         try {
             if (inputStream.available() == 0) {
@@ -73,14 +76,15 @@ public final class EchoParametersDao {
     public static void saveOrUpdateEchoParameter(EchoParameter echoParameter) {
         Resource echoParameters = getDataDirectory().get(getEchoParametersPath());
         Resource tmpEchoParameters = getDataDirectory().get(getTmpEchoParametersPath());
-        saveOrUpdateEchoParameter(echoParameter, echoParameters.in(), tmpEchoParameters.out());
+        saveOrUpdateEchoParameter(echoParameter, echoParameters, tmpEchoParameters);
         echoParameters.delete();
         tmpEchoParameters.renameTo(echoParameters);
     }
 
     public static void saveOrUpdateEchoParameter(
-            EchoParameter echoParameter, InputStream inputStream, OutputStream outputStream) {
-        try {
+            EchoParameter echoParameter, Resource input, Resource output) {
+        try (InputStream inputStream = input.in();
+                OutputStream outputStream = output.out()) {
             List<EchoParameter> echoParameters = getEchoParameters(inputStream);
             boolean exists = false;
             for (int i = 0; i < echoParameters.size() && !exists; i++) {
@@ -93,40 +97,38 @@ public final class EchoParametersDao {
                 echoParameters.add(echoParameter);
             }
             writeEchoParameters(echoParameters, outputStream);
-        } finally {
-            Utils.closeQuietly(inputStream);
-            Utils.closeQuietly(outputStream);
+        } catch (IOException e) {
+            LOGGER.log(Level.FINER, "Failed to cleanly close resources", e);
         }
     }
 
     public static void deleteEchoParameters(String... echoParametersIds) {
         Resource echoParameters = getDataDirectory().get(getEchoParametersPath());
         Resource tmpEchoParameters = getDataDirectory().get(getTmpEchoParametersPath());
-        deleteEchoParameters(echoParameters.in(), tmpEchoParameters.out(), echoParametersIds);
+        try (InputStream in = echoParameters.in();
+                OutputStream os = tmpEchoParameters.out()) {
+            deleteEchoParameters(in, os, echoParametersIds);
+        } catch (IOException e) {
+            LOGGER.log(Level.FINER, "Failed to cleanly close param files", e);
+        }
         echoParameters.delete();
         tmpEchoParameters.renameTo(echoParameters);
     }
 
     public static void deleteEchoParameters(
             InputStream inputStream, OutputStream outputStream, String... forwardParameterIds) {
-        try {
-            writeEchoParameters(
-                    getEchoParameters(inputStream)
-                            .stream()
-                            .filter(
-                                    forwardParameter ->
-                                            !Arrays.stream(forwardParameterIds)
-                                                    .anyMatch(
-                                                            forwardParameterId ->
-                                                                    forwardParameterId.equals(
-                                                                            forwardParameter
-                                                                                    .getId())))
-                            .collect(Collectors.toList()),
-                    outputStream);
-        } finally {
-            Utils.closeQuietly(inputStream);
-            Utils.closeQuietly(outputStream);
-        }
+        writeEchoParameters(
+                getEchoParameters(inputStream)
+                        .stream()
+                        .filter(
+                                forwardParameter ->
+                                        !Arrays.stream(forwardParameterIds)
+                                                .anyMatch(
+                                                        forwardParameterId ->
+                                                                forwardParameterId.equals(
+                                                                        forwardParameter.getId())))
+                        .collect(Collectors.toList()),
+                outputStream);
     }
 
     private static void writeEchoParameters(

@@ -18,7 +18,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules1.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(0));
                 });
     }
@@ -28,7 +28,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules2.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(0));
                 });
     }
@@ -38,7 +38,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules3.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),
@@ -57,7 +57,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules4.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),
@@ -76,7 +76,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules5.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(3));
                     checkRule(
                             findRule("0", rules),
@@ -113,7 +113,7 @@ public final class RulesDaoTest extends TestSupport {
         doWork(
                 "data/rules6.xml",
                 (InputStream inputStream) -> {
-                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    List<Rule> rules = RulesDao.getRules(() -> inputStream);
                     assertThat(rules.size(), is(1));
                     checkRule(
                             rules.get(0),

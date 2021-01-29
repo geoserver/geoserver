@@ -89,7 +89,7 @@ public class RulesController extends RestBaseController {
                                         new RestException(
                                                 "Rule with id " + id + " not found",
                                                 HttpStatus.NOT_FOUND));
-        return new RestWrapperAdapter(result, Rule.class, this);
+        return new RestWrapperAdapter<>(result, Rule.class, this);
     }
 
     @DeleteMapping(path = "{id}")

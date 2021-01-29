@@ -96,11 +96,11 @@ public final class Utils {
         return parameters;
     }
 
-    public static Map.Entry caseInsensitiveSearch(String key, Map<?, ?> map) {
+    public static <K, V> Map.Entry<K, V> caseInsensitiveSearch(String key, Map<K, V> map) {
         if (map != null) {
-            for (Map.Entry entry : map.entrySet()) {
+            for (Map.Entry<K, V> entry : map.entrySet()) {
                 if (entry.getKey() instanceof String
-                        && ((String) entry.getKey()).toLowerCase().equals(key.toLowerCase())) {
+                        && ((String) entry.getKey()).equalsIgnoreCase(key)) {
                     return entry;
                 }
             }

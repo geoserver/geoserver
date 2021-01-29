@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 public final class RequestWrapper extends HttpServletRequestWrapper {
 
     private final UrlTransform urlTransform;
-    private final Map originalParameters;
+    private final Map<String, String[]> originalParameters;
 
     private final String pathInfo;
     private final String servletPath;
@@ -46,7 +46,7 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
         parameters.putAll(urlTransform.getParameters());
     }
 
-    public Map getOriginalParameters() {
+    public Map<String, String[]> getOriginalParameters() {
         return originalParameters;
     }
 

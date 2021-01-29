@@ -96,7 +96,7 @@ public class EchoesController extends RestBaseController {
                                         new RestException(
                                                 "Parameter with id " + id + " not found",
                                                 HttpStatus.NOT_FOUND));
-        return new RestWrapperAdapter(result, EchoParameter.class, this);
+        return new RestWrapperAdapter<>(result, EchoParameter.class, this);
     }
 
     @DeleteMapping(path = "{id}")

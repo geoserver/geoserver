@@ -4,7 +4,8 @@
  */
 package org.geoserver.params.extractor;
 
-import java.net.URLDecoder;
+import static org.geoserver.ows.util.ResponseUtils.urlDecode;
+
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ public final class Rule {
         }
         urlTransform.removeMatch(matcher.group(remove != null ? remove : 1));
         urlTransform.addParameter(
-                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine, repeat);
+                parameter, urlDecode(matcher.replaceAll(transform)), combine, repeat);
         return urlTransform;
     }
 

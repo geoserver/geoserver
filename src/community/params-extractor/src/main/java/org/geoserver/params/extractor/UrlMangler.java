@@ -54,12 +54,12 @@ public class UrlMangler implements URLMangler {
             return;
         }
         forwardOriginalUri(request, path);
-        Map requestRawKvp = request.getRawKvp();
+        Map<String, Object> requestRawKvp = request.getRawKvp();
         HttpServletRequest httpRequest = getHttpRequest(request);
         if (httpRequest instanceof RequestWrapper) {
             RequestWrapper requestWrapper = (RequestWrapper) httpRequest;
-            Map parameters = requestWrapper.getOriginalParameters();
-            requestRawKvp = new KvpMap(KvpUtils.normalize(parameters));
+            Map<String, String[]> parameters = requestWrapper.getOriginalParameters();
+            requestRawKvp = new KvpMap<>(KvpUtils.normalize(parameters));
         }
         forwardParameters(requestRawKvp, kvp);
     }
@@ -78,17 +78,17 @@ public class UrlMangler implements URLMangler {
         path.append(matcher.group(2));
     }
 
-    private void forwardParameters(Map requestRawKvp, Map<String, String> kvp) {
+    private void forwardParameters(Map<String, Object> requestRawKvp, Map<String, String> kvp) {
         for (EchoParameter echoParameter : echoParameters) {
             if (!echoParameter.getActivated()) {
                 continue;
             }
-            Map.Entry rawParameter =
+            Map.Entry<String, Object> rawParameter =
                     Utils.caseInsensitiveSearch(echoParameter.getParameter(), requestRawKvp);
             if (rawParameter != null
                     && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
                 if (rawParameter.getValue() instanceof String) {
-                    kvp.put((String) rawParameter.getKey(), (String) rawParameter.getValue());
+                    kvp.put(rawParameter.getKey(), (String) rawParameter.getValue());
                 }
             }
         }

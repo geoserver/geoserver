@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -42,15 +43,15 @@ public final class RulesDao {
 
     public static List<Rule> getRules() {
         Resource rules = getDataDirectory().get(getRulesPath());
-        return getRules(rules.in());
+        return getRules(() -> rules.in());
     }
 
     private static GeoServerDataDirectory getDataDirectory() {
         return (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
     }
 
-    public static List<Rule> getRules(InputStream inputStream) {
-        try {
+    public static List<Rule> getRules(Supplier<InputStream> iss) {
+        try (InputStream inputStream = iss.get()) {
             if (inputStream.available() == 0) {
                 Utils.debug(LOGGER, "Rules files seems to be empty.");
                 return new ArrayList<>();
@@ -60,69 +61,59 @@ public final class RulesDao {
             return list.rules == null ? new ArrayList<>() : list.rules;
         } catch (Exception exception) {
             throw Utils.exception(exception, "Error parsing rules files.");
-        } finally {
-            Utils.closeQuietly(inputStream);
         }
     }
 
     public static void saveOrUpdateRule(Rule rule) {
         Resource rules = getDataDirectory().get(getRulesPath());
         Resource tmpRules = getDataDirectory().get(getTempRulesPath());
-        saveOrUpdateRule(rule, rules.in(), tmpRules.out());
+        saveOrUpdateRule(rule, () -> rules.in(), () -> tmpRules.out());
         rules.delete();
         tmpRules.renameTo(rules);
     }
 
     public static void saveOrUpdateRule(
-            Rule rule, InputStream inputStream, OutputStream outputStream) {
-        try {
-            List<Rule> rules = getRules(inputStream);
-            boolean exists = false;
-            for (int i = 0; i < rules.size() && !exists; i++) {
-                if (rules.get(i).getId().equals(rule.getId())) {
-                    rules.set(i, rule);
-                    exists = true;
-                }
+            Rule rule, Supplier<InputStream> iss, Supplier<OutputStream> oss) {
+        List<Rule> rules = getRules(iss);
+        boolean exists = false;
+        for (int i = 0; i < rules.size() && !exists; i++) {
+            if (rules.get(i).getId().equals(rule.getId())) {
+                rules.set(i, rule);
+                exists = true;
             }
-            if (!exists) {
-                rules.add(rule);
-            }
-            writeRules(rules, outputStream);
-        } finally {
-            Utils.closeQuietly(inputStream);
-            Utils.closeQuietly(outputStream);
         }
+        if (!exists) {
+            rules.add(rule);
+        }
+        writeRules(rules, oss);
     }
 
     public static void deleteRules(String... rulesIds) {
         Resource rules = getDataDirectory().get(getRulesPath());
         Resource tmpRules = getDataDirectory().get(getTempRulesPath());
-        deleteRules(rules.in(), tmpRules.out(), rulesIds);
+        deleteRules(() -> rules.in(), () -> tmpRules.out(), rulesIds);
         rules.delete();
         tmpRules.renameTo(rules);
     }
 
     public static void deleteRules(
-            InputStream inputStream, OutputStream outputStream, String... ruleIds) {
-        try {
-            writeRules(
-                    getRules(inputStream)
-                            .stream()
-                            .filter(
-                                    rule ->
-                                            !Arrays.stream(ruleIds)
-                                                    .anyMatch(
-                                                            ruleId -> ruleId.equals(rule.getId())))
-                            .collect(Collectors.toList()),
-                    outputStream);
-        } finally {
-            Utils.closeQuietly(inputStream);
-            Utils.closeQuietly(outputStream);
-        }
+            Supplier<InputStream> inputStream,
+            Supplier<OutputStream> outputStream,
+            String... ruleIds) {
+        List<Rule> rules =
+                getRules(inputStream)
+                        .stream()
+                        .filter(rule -> !matchesAnyRuleId(rule, ruleIds))
+                        .collect(Collectors.toList());
+        writeRules(rules, outputStream);
     }
 
-    private static void writeRules(List<Rule> rules, OutputStream outputStream) {
-        try {
+    private static boolean matchesAnyRuleId(Rule rule, String[] ruleIds) {
+        return Arrays.stream(ruleIds).anyMatch(ruleId -> ruleId.equals(rule.getId()));
+    }
+
+    private static void writeRules(List<Rule> rules, Supplier<OutputStream> oss) {
+        try (OutputStream outputStream = oss.get()) {
             xStream.toXML(new RuleList(rules), outputStream);
         } catch (Exception exception) {
             throw Utils.exception(exception, "Something bad happen when writing rules.");

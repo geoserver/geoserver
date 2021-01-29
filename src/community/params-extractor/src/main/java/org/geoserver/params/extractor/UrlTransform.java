@@ -4,8 +4,12 @@
  */
 package org.geoserver.params.extractor;
 
-import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.geoserver.ows.util.ResponseUtils;
 
 public class UrlTransform {
 
@@ -42,7 +46,7 @@ public class UrlTransform {
             queryStringBuilder
                     .append(parameter.getKey())
                     .append("=")
-                    .append(URLEncoder.encode(parameter.getValue()[0]))
+                    .append(ResponseUtils.urlEncode(parameter.getValue()[0]))
                     .append("&");
         }
         if (queryStringBuilder.length() == 0) {

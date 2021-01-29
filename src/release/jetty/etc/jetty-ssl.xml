@@ -1,31 +1,46 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <!-- ============================================================= -->
-<!-- Configure a TLS (SSL) Context Factory                         -->
-<!-- This configuration must be used in conjunction with jetty.xml -->
-<!-- and either jetty-https.xml or jetty-spdy.xml (but not both)   -->
+<!-- Base SSL configuration                                        -->
+<!-- This configuration needs to be used together with 1 or more   -->
+<!-- of jetty-https.xml or jetty-http2.xml                         -->
 <!-- ============================================================= -->
-<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
-  <Set name="KeyStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.keystore" default="etc/keystore"/></Set>
-  <Set name="KeyStorePassword"><Property name="jetty.keystore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
-  <Set name="KeyManagerPassword"><Property name="jetty.keymanager.password" default="OBF:1u2u1wml1z7s1z7a1wnl1u2g"/></Set>
-  <Set name="TrustStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.truststore" default="etc/keystore"/></Set>
-  <Set name="TrustStorePassword"><Property name="jetty.truststore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
-  <Set name="EndpointIdentificationAlgorithm"></Set>
-  <Set name="NeedClientAuth"><Property name="jetty.ssl.needClientAuth" default="false"/></Set>
-  <Set name="WantClientAuth"><Property name="jetty.ssl.wantClientAuth" default="false"/></Set>
-  <Set name="ExcludeCipherSuites">
-    <Array type="String">
-      <Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
-      <Item>SSL_DHE_RSA_WITH_DES_CBC_SHA</Item>
-      <Item>SSL_DHE_DSS_WITH_DES_CBC_SHA</Item>
-      <Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
-      <Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-      <Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-      <Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
-    </Array>
-  </Set>
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+  <!-- =========================================================== -->
+  <!-- Add an SSL Connector with no protocol factories              -->
+  <!-- =========================================================== -->
+  <Call  name="addConnector">
+    <Arg>
+      <New id="sslConnector" class="org.eclipse.jetty.server.ServerConnector">
+        <Arg name="server"><Ref refid="Server" /></Arg>
+        <Arg name="acceptors" type="int"><Property name="jetty.ssl.acceptors" deprecated="ssl.acceptors" default="-1"/></Arg>
+        <Arg name="selectors" type="int"><Property name="jetty.ssl.selectors" deprecated="ssl.selectors" default="-1"/></Arg>
+        <Arg name="factories">
+          <Array type="org.eclipse.jetty.server.ConnectionFactory">
+            <!-- uncomment to support proxy protocol
+            <Item>
+              <New class="org.eclipse.jetty.server.ProxyConnectionFactory"/>
+            </Item>-->
+          </Array>
+        </Arg>
+
+        <Set name="host"><Property name="jetty.ssl.host" deprecated="jetty.host" /></Set>
+        <Set name="port"><Property name="jetty.ssl.port" deprecated="ssl.port" default="8443" /></Set>
+        <Set name="idleTimeout"><Property name="jetty.ssl.idleTimeout" deprecated="ssl.timeout" default="30000"/></Set>
+        <Set name="acceptorPriorityDelta"><Property name="jetty.ssl.acceptorPriorityDelta" deprecated="ssl.acceptorPriorityDelta" default="0"/></Set>
+        <Set name="acceptQueueSize"><Property name="jetty.ssl.acceptQueueSize" deprecated="ssl.acceptQueueSize" default="0"/></Set>
+        <Set name="reuseAddress"><Property name="jetty.ssl.reuseAddress" default="true"/></Set>
+        <Set name="acceptedTcpNoDelay"><Property name="jetty.ssl.acceptedTcpNoDelay" default="true"/></Set>
+        <Set name="acceptedReceiveBufferSize"><Property name="jetty.ssl.acceptedReceiveBufferSize" default="-1"/></Set>
+        <Set name="acceptedSendBufferSize"><Property name="jetty.ssl.acceptedSendBufferSize" default="-1"/></Set>
+        <Get name="SelectorManager">
+          <Set name="connectTimeout"><Property name="jetty.ssl.connectTimeout" default="15000"/></Set>
+        </Get>
+      </New>
+    </Arg>
+  </Call>
 
   <!-- =========================================================== -->
   <!-- Create a TLS specific HttpConfiguration based on the        -->
@@ -36,7 +51,14 @@
   <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
     <Arg><Ref refid="httpConfig"/></Arg>
     <Call name="addCustomizer">
-      <Arg><New class="org.eclipse.jetty.server.SecureRequestCustomizer"/></Arg>
+      <Arg>
+        <New class="org.eclipse.jetty.server.SecureRequestCustomizer">
+          <Arg name="sniRequired" type="boolean"><Property name="jetty.ssl.sniRequired" default="false"/></Arg>
+          <Arg name="sniHostCheck" type="boolean"><Property name="jetty.ssl.sniHostCheck" default="true"/></Arg>
+          <Arg name="stsMaxAgeSeconds" type="int"><Property name="jetty.ssl.stsMaxAgeSeconds" default="-1"/></Arg>
+          <Arg name="stsIncludeSubdomains" type="boolean"><Property name="jetty.ssl.stsIncludeSubdomains" default="false"/></Arg>
+        </New>
+      </Arg>
     </Call>
   </New>
 

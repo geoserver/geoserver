@@ -1,6 +1,8 @@
 #
 # Deploy Feature
 #
+[description]
+Enables webapplication deployment from the webapps directory.
 
 [depend]
 webapp
@@ -15,7 +17,18 @@ webapps/
 etc/jetty-deploy.xml
 
 [ini-template]
-## DeployManager configuration
-# Monitored Directory name (relative to jetty.base)
-# jetty.deploy.monitoredDirName=webapps
+# Monitored directory name (relative to $jetty.base)
+# jetty.deploy.monitoredDir=webapps
+# - OR -
+# Monitored directory path (fully qualified)
+# jetty.deploy.monitoredPath=/var/www/webapps
+
+# Defaults Descriptor for all deployed webapps
+# jetty.deploy.defaultsDescriptorPath=${jetty.base}/etc/webdefault.xml
+
+# Monitored directory scan period (seconds)
+# jetty.deploy.scanInterval=1
+
+# Whether to extract *.war files
+# jetty.deploy.extractWars=true
 

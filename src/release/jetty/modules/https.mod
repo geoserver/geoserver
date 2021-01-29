@@ -1,9 +1,21 @@
 #
 # Jetty HTTPS Connector
 #
+[description]
+Adds HTTPS protocol support to the TLS(SSL) Connector
+
+[tags]
+connector
+https
+http
+ssl
 
 [depend]
 ssl
+
+[optional]
+http2
+http-forwarded
 
 [xml]
 etc/jetty-https.xml
@@ -11,9 +23,6 @@ etc/jetty-https.xml
 [ini-template]
 ## HTTPS Configuration
 # HTTP port to listen on
-https.port=8443
+jetty.ssl.port=8443
 # HTTPS idle timeout in milliseconds
-https.timeout=30000
-# HTTPS Socket.soLingerTime in seconds. (-1 to disable)
-# https.soLingerTime=-1
-
+jetty.ssl.idleTimeout=30000

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+<Configure>
+    <New id="byteBufferPool" class="org.eclipse.jetty.io.ArrayByteBufferPool">
+        <Arg type="int"><Property name="jetty.byteBufferPool.minCapacity" default="0"/></Arg>
+        <Arg type="int"><Property name="jetty.byteBufferPool.factor" default="1024"/></Arg>
+        <Arg type="int"><Property name="jetty.byteBufferPool.maxCapacity" default="65536"/></Arg>
+        <Arg type="int"><Property name="jetty.byteBufferPool.maxQueueLength" default="-1"/></Arg>
+        <Arg type="long"><Property name="jetty.byteBufferPool.maxHeapMemory" default="-1"/></Arg>
+        <Arg type="long"><Property name="jetty.byteBufferPool.maxDirectMemory" default="-1"/></Arg>
+    </New>
+</Configure>

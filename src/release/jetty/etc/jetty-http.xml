@@ -39,6 +39,10 @@
         <Set name="idleTimeout"><Property name="jetty.http.idleTimeout" deprecated="http.timeout" default="30000"/></Set>
         <Set name="acceptorPriorityDelta"><Property name="jetty.http.acceptorPriorityDelta" deprecated="http.acceptorPriorityDelta" default="0"/></Set>
         <Set name="acceptQueueSize"><Property name="jetty.http.acceptQueueSize" deprecated="http.acceptQueueSize" default="0"/></Set>
+        <Set name="reuseAddress"><Property name="jetty.http.reuseAddress" default="true"/></Set>
+        <Set name="acceptedTcpNoDelay"><Property name="jetty.http.acceptedTcpNoDelay" default="true"/></Set>
+        <Set name="acceptedReceiveBufferSize"><Property name="jetty.http.acceptedReceiveBufferSize" default="-1"/></Set>
+        <Set name="acceptedSendBufferSize"><Property name="jetty.http.acceptedSendBufferSize" default="-1"/></Set>
         <Get name="SelectorManager">
           <Set name="connectTimeout"><Property name="jetty.http.connectTimeout" default="15000"/></Set>
         </Get>

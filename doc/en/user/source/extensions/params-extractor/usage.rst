@@ -1,7 +1,7 @@
-.. _community_params_extractor:
+.. _params_extractor_usage:
 
-Parameters Extractor
-====================
+Using the Parameters Extractor module
+=====================================
 
 This module allow us to entering specific request parameters as URL path fragments instead of using the query string.
 For example, we want to be able to apply a cql_filter using a URL in the following form::
@@ -35,6 +35,7 @@ if this module is configured to echo an existing cql_filter parameter the result
     /geoserver/ows?SERVICE=WMS&CQL_FILTER=CFCC%3D%27D68%27&
 
 This module is configured using three types of rules: echo parameter rules, basic rules and advanced rules. All of them can be managed in this module UI which is integrated in GeoServer UI.
+
 
 Echo Parameter Rules
 -----------------------------------

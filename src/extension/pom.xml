@@ -361,6 +361,12 @@
         <module>web-resource</module>
       </modules>
     </profile>
+    <profile>      
+      <id>params-extractor</id>
+      <modules>
+        <module>params-extractor</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -406,6 +412,7 @@
         <module>geofence-server</module>
         <module>authkey</module>
         <module>web-resource</module>
+        <module>params-extractor</module>
       </modules>
     </profile>
 
@@ -453,6 +460,7 @@
         <module>geofence-server</module>
         <module>authkey</module>
         <module>web-resource</module>
+        <module>params-extractor</module>
       </modules>
     </profile>
   </profiles>

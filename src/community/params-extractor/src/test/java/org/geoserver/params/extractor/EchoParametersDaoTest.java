@@ -46,7 +46,7 @@ public final class EchoParametersDaoTest extends TestSupport {
                     checkEchoParameter(
                             echoParameters.get(0),
                             new EchoParameterBuilder()
-                                    .withId("0")
+                                    .withId("1")
                                     .withParameter("CQL_FILTER")
                                     .withActivated(true)
                                     .build());

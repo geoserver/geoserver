@@ -2010,7 +2010,7 @@
   <oracle.jdbc.version>19.8.0.0</oracle.jdbc.version>
   <mysql.jdbc.version>8.0.23</mysql.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
-  <jacoco.version>0.8.1</jacoco.version>
+  <jacoco.version>0.8.6</jacoco.version>
   <hazelcast.version>3.11.1</hazelcast.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>

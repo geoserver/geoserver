@@ -38,6 +38,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
+import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 
 /**
  * Jetty starter, will run geoserver inside the Jetty web container.<br>
@@ -279,13 +280,15 @@ public class Start {
 
     private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname)
             throws Exception {
+        SubjectDnX509PrincipalExtractor ex = new SubjectDnX509PrincipalExtractor();
         Enumeration<String> e = ks.aliases();
         while (e.hasMoreElements()) {
             String alias = e.nextElement();
             if (ks.isCertificateEntry(alias)) {
                 Certificate c = ks.getCertificate(alias);
                 if (c instanceof X509Certificate) {
-                    X500Principal p = ((X509Certificate) c).getSubjectX500Principal();
+                    X500Principal p =
+                            (X500Principal) ((X509Certificate) c).getSubjectX500Principal();
                     if (p.getName().contains(hostname)) return true;
                 }
             }

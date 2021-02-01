@@ -114,6 +114,8 @@ is not selected, OGC WKT format will be used. If this checkbox is selected, ESRI
 
 Note: this requires an ``esri.properties`` file to be provided in the ``user_projections`` subdirectory of the GeoServer data directory. This may be obtained from the GeoTools EPSG extension.
 
+Selecting the :guilabel:`Include WFS request dump file` checkbox specifies if the file 'wfsrequest.txt' will be included in the Shapefile zip output. 'wfsrequest.txt' contains a dump of the full request URL used to get the Shapefile zip output.  If this checkbox is not selected, 'wfsrequest.txt' will not be included in the output. If this checkbox is selected, 'wfsrequest.txt' will be included in the output.
+
 Stored Queries
 --------------
 

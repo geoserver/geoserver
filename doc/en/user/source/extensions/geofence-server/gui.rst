@@ -28,7 +28,7 @@ Priority can be changed manually by specifying a priority number. If this priori
 If using the IP Address range to limit access then on Linux (and other systems with IPv6 enabled) to add the ``-Djava.net.preferIPv4Stack=true`` flag to the GeoServer startup options to make sure that the IP range matching works with IPv4 style 
 addresses. Currently, IPv6 style address ranges are not supported by GeoFence.
 
-When Access type LIMIT is selected, additional options are displayed that allows the user to select the Catalog Mode and the Allowed Area (WKT) associated with this rule.
+When Access type LIMIT is selected, additional options are displayed that allows the user to select the Catalog Mode and the Allowed Area (WKT) associated with this rule. The Spatial Filter Type parameter allows to define whether apply the Allowed Area filter to vector data as an Intersects or a Clip filter. 
 
 .. figure:: images/limit.png
    :align: center
@@ -38,6 +38,8 @@ When Access type ACCESS is selected as well as a specific layer, it becomes poss
 .. figure:: images/layerdetails.png
    :align: center
 
+
+Allowed area can be defined in whatever SRID. Geoserver will automatically reproject it to the resource CRS when needed.
 
 Layer groups
 ^^^^^^^^^^^^

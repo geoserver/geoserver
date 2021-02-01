@@ -16,6 +16,8 @@ paths:
   /global:
     get:
       operationId: globalGet
+      tags:
+       - "GwcGlobal"
       summary: Retrieve the global server configuration
       description: Retrieves configuration details about the GeoWebCache server as a whole.
       produces:
@@ -68,6 +70,8 @@ paths:
                 </global>
     put:
       operationId: globalPut
+      tags:
+       - "GwcGlobal"
       summary: Modifies the global configuration.
       description: Update one or more global configuration values
       parameters:

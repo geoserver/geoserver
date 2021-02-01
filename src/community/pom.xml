@@ -231,7 +231,6 @@
         <module>arcsde</module>
         <module>dds</module>
         <module>jdbcconfig</module>
-        <module>script</module>
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
@@ -306,30 +305,6 @@
         <module>jdbcconfig</module>
         <module>jdbcstore</module>
       </modules>
-    </profile>
-    <profile>
-      <id>script</id>
-      <activation>
-        <property><name>script</name></property>
-      </activation> 
-      <modules>
-        <module>script</module>
-      </modules>
-      <build>
-       <plugins>
-         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <descriptors>
-              <!--descriptor>release/ext-groovy.xml</descriptor-->
-              <descriptor>release/ext-javascript.xml</descriptor>
-              <!--descriptor>release/ext-python.xml</descriptor-->
-            </descriptors>
-          </configuration>
-         </plugin>
-       </plugins>
-      </build>
     </profile>
     <profile>
       <id>pgraster</id>

@@ -59,9 +59,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     public static final String FILTER_PARAM = "filter";
 
     /** METADATA MAP inside user session that remembers the filters user input inside the form */
-    private static final String FILTER_INPUTS = "userInput";
+    public static final String FILTER_INPUTS = "userInput";
 
-    private static final String SORT_INPUTS = "userSort";
+    public static final String SORT_INPUTS = "userSort";
 
     // filter form components
     TextField<String> filter;

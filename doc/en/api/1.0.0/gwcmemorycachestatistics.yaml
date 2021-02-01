@@ -16,6 +16,8 @@ paths:
   /statistics:
     get:
       operationId: statisticsGet
+      tags:
+       - "GwcMemoryCacheStatistics"
       summary: Returns XML or JSON response with memory cache statistics
       description: When appended with .json or .xml will respond with memory caches statistics in the requested format if
                    the blobstore used is an instance of MemoryBlobStore.

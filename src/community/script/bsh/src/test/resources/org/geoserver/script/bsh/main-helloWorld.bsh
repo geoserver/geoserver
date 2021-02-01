@@ -1,6 +1,0 @@
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-run(request,response) {
-  response.setContentType("text/plain");
-  response.getWriter().write("Hello World!");
-}

@@ -22,8 +22,8 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.web.data.layer.NewLayerPage;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.SimpleHttpClient;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.xml.DocumentFactory;
@@ -112,7 +112,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
         public void validate(IValidatable<String> validatable) {
             String url = validatable.getValue();
             try {
-                HTTPClient client = new SimpleHttpClient();
+                HTTPClient client = HTTPClientFinder.createClient();
                 usernamePanel.getFormComponent().processInput();
                 String user = usernamePanel.getFormComponent().getInput();
                 password.getFormComponent().processInput();

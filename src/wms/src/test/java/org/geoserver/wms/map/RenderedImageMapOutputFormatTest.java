@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -603,7 +602,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 returnedOp[0] = op;
                 return;
             } else {
-                Vector sources = op.getSources();
+                List sources = op.getSources();
                 if (sources != null && !sources.isEmpty()) {
                     Iterator iterator = sources.iterator();
                     while (iterator.hasNext() && returnedOp[0] == null) {

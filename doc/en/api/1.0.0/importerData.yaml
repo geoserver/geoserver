@@ -15,6 +15,8 @@ paths:
   /imports/{importId}/data:
     get:
       operationId: getData
+      tags:
+       - "ImporterData"
       summary: Retrieve the database connection parameters for an import with id {importId}. Only applies to database imports.
       description: Get import data
       produces:
@@ -31,6 +33,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/data:
     get:
       operationId: getTaskData
+      tags:
+       - "ImporterData"
       summary: Retrieve the table description for a task with id {taskId} within import with id {importId}. Only applies to database imports.
       produces:
         - application/json
@@ -47,6 +51,8 @@ paths:
   /imports/{importId}/data/files:
     get:
       operationId: getDataFiles
+      tags:
+       - "ImporterData"
       summary: Retrieve the list of files for an import with id {importId}. Only applies to file/directory imports.
       produces:
         - application/json
@@ -62,6 +68,8 @@ paths:
   /imports/{importId}/data/files/{filename}:
     get:
       operationId: getDataFile
+      tags:
+       - "ImporterData"
       summary: Retrieve information about the file with id {fileId} from the data of an import with id {importId}. Only applies to file/directory imports.
       produces:
         - application/json
@@ -77,6 +85,8 @@ paths:
             $ref: "#/definitions/File"
     delete:
       operationId: deleteImportDataFile
+      tags:
+       - "ImporterData"
       summary: Remove a specific file with id {filename} from the import with id {importId}. Only applies to file/directory imports.
       responses: 
         204: 
@@ -84,6 +94,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/data/files:
     get:
       operationId: getTaskDataFiles
+      tags:
+       - "ImporterData"
       summary: Retrieve the list of files for a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       produces:
         - application/json
@@ -100,6 +112,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/data/files/{filename}:
     get:
       operationId: getTaskDataFile
+      tags:
+       - "ImporterData"
       summary: Retrieve information about the file with id {fileId} from the data of a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       produces:
         - application/json
@@ -116,6 +130,8 @@ paths:
             $ref: "#/definitions/File"
     delete:
       operationId: deleteTaskDataFile
+      tags:
+       - "ImporterData"
       summary: Remove a specific file with id {filename} from the task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       responses: 
         204: 

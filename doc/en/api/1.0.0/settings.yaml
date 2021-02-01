@@ -15,6 +15,8 @@ paths:
   /settings:
     get:
       operationId: getSettings
+      tags:
+        - "Settings"
       summary: Get a list of all global settings
       description: Displays a list of all global settings on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
       produces:
@@ -123,13 +125,17 @@ paths:
             
     post:
       operationId: postSettings
+      tags:
+        - "Settings"
       description: Invalid. Use PUT to update settings.
       responses:
         405:
           description: Method Not Allowed
 
     put:
-      operationId: putSettings
+      operationId: putSettings*
+      tags:
+        - "Settings"
       summary: Update settings
       description: Updates global settings on the server.
 
@@ -149,6 +155,8 @@ paths:
 
     delete:
       operationId: deleteSettings
+      tags:
+        - "Settings"
       description: Invalid. Use PUT to update settings.
       responses:
         405:
@@ -158,6 +166,8 @@ paths:
   /settings/contact:
     get:
       operationId: getContactSettings
+      tags:
+        - "Settings"
       summary: Get a list of all global contact settings
       description: Displays a list of all global contact settings on the server. This is a subset of what is available at the /settings endpoint. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings/contact.xml" for XML).
       produces:
@@ -196,6 +206,8 @@ paths:
             
     post:
       operationId: postContactSettings
+      tags:
+        - "Settings"
       description: Invalid. Use PUT to update contact settings.
       responses:
         405:
@@ -203,6 +215,8 @@ paths:
 
     put:
       operationId: putContactSettings
+      tags:
+        - "Settings"
       summary: Update contact settings
       description: Updates global contact settings on the server.
 
@@ -222,6 +236,8 @@ paths:
 
     delete:
       operationId: deleteContactSettings
+      tags:
+        - "Settings"
       description: Invalid. Use PUT to update contact settings.
       responses:
         405:
@@ -237,6 +253,8 @@ paths:
         description: The workspace name
     get:
       operationId: getWorkspaceSettings
+      tags:
+        - "Settings"
       summary: Get a list of all workspace-specific settings
       description: Displays a list of all workspace-specific settings. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
       produces:
@@ -277,6 +295,8 @@ paths:
             
     post:
       operationId: postWorkspaceSettings
+      tags:
+        - "Settings"
       summary: Create workspace-specific settings
       description: Create new workspace-specific settings on the server.
       parameters:
@@ -297,6 +317,8 @@ paths:
 
     put:
       operationId: putWorkspaceSettings
+      tags:
+        - "Settings"
       summary: Update workspace-specific settings
       description: Updates workspace-specific settings on the server.
 
@@ -316,6 +338,8 @@ paths:
 
     delete:
       operationId: deleteWorkspaceSettings
+      tags:
+        - "Settings"
       description: Delete the settings for this workspace.
       responses:
         200:

@@ -18,6 +18,7 @@ import org.geotools.map.Layer;
  * rendering times of a raster render operation updating the rendering time whenever data is
  * computed
  */
+@SuppressWarnings("PMD.ReplaceVectorWithList")
 public class RenderedImageTimeDecorator implements RenderedImage {
 
     private RenderedImage delegate;

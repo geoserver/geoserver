@@ -34,7 +34,7 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.http.AbstractHttpClient;
-import org.geotools.data.ows.HTTPResponse;
+import org.geotools.http.HTTPResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -19,6 +19,8 @@ paths:
         - application/xml
         - application/json
       operationId: diskQuotaGet
+      tags:
+       - "GwcDiskQuota"
       summary: Returns the gwc Quota configuration
       description: Returns the GeoWebCache DiskQuota configurations which include disk usage limits and expritation policies for a gwc instance.
       responses:
@@ -58,6 +60,8 @@ paths:
         - application/xml
         - application/json
       operationId: diskQuotaPut
+      tags:
+       - "GwcDiskQuota"
       summary: Modify properties of a gwc instance disk quota configuration.
       description:  The request body for PUT should contain desired properties to be modified.
       parameters:

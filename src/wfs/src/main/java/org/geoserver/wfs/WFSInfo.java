@@ -277,4 +277,14 @@ public interface WFSInfo extends ServiceInfo {
      * compatible output formats.
      */
     void setSimpleConversionEnabled(boolean simpleConversionEnabled);
+    /**
+     * Flag that determines if the wfsRequest.txt dump file should be included in shapefile/zip
+     * output.
+     */
+    boolean getIncludeWFSRequestDumpFile();
+    /**
+     * Sets the flag that determines if the wfsRequest.txt dump file should be included in
+     * shapefile/zip output
+     */
+    void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile);
 }

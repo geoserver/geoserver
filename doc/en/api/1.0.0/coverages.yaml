@@ -14,6 +14,8 @@ basePath: /geoserver/rest
 paths:
   /workspaces/{workspace}/coveragestores/{store}/coverages:
     get:  
+      tags:
+       - "Coverages"
       operationId: getWorkspaceCoverageStore
       description: |
         Get the coverages available for the provided workspace and data store.
@@ -81,6 +83,8 @@ paths:
                 </coverages>
     post:
       operationId: postWorkspaceCoverageStore
+      tags:
+       - "Coverages"
       description: |
         Create a new coverage, the underlying data store must exist.
       parameters:
@@ -109,12 +113,16 @@ paths:
               type: string        
     put:
       operationId: putWorkspaceCoverageStore
+      tags:
+        - "Coverages"
       description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
       responses:
         405:
           description: Method not allowed.
     delete:
       operationId: deleteWorkspaceCoverageStore
+      tags:
+       - "Coverages"
       description: Invalid. Can only delete an individual coverage.
       responses:
         405:
@@ -123,6 +131,8 @@ paths:
   /workspaces/{workspace}/coverages:
       get:
         operationId: getCoverageStore
+        tags:
+         - "Coverages"
         description: |
           Get the coverages available for the provided workspace.
         parameters:
@@ -184,6 +194,8 @@ paths:
                   </coverages>
       post:
         operationId: postCoverageStore
+        tags:
+         - "Coverages"
         description: |
           Create a new coverage, the coverage definition needs to reference a store.
         parameters:
@@ -207,12 +219,16 @@ paths:
                 type: string
       put:
         operationId: putCoverageStore
+        tags:
+         - "Coverages"
         description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
         responses:
           405:
             description: Method not allowed.
       delete:
         operationId: deleteCoverageStore
+        tags:
+         - "Coverages"
         description: Invalid. Can only delete an individual coverage.
         responses:
           405:
@@ -221,6 +237,8 @@ paths:
   /workspaces/{workspace}/coverages/{coverage}:
       get:
         operationId: getCoverage
+        tags:
+         - "Coverages"
         description:  Get an individual coverage.
         produces:
           - text/html
@@ -495,18 +513,24 @@ paths:
 
       post:
             operationId: postCoverage
+            tags:
+             - "Coverages"
             description: Invalid. Use POST on the coverages endpoint to add a new coverage, or PUT on an individual coverage to edit it.
             responses:
               405:
                 description: Method not allowed.
       put:
             operationId: putCoverage
+            tags:
+             - "Coverages"
             description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
             responses:
               405:
                 description: Method not allowed.
       delete:
             operationId: deleteCoverage
+            tags:
+             - "Coverages"
             description: Invalid. Can only delete an individual coverage.
             responses:
               405:
@@ -515,6 +539,8 @@ paths:
   /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}:
     get:    
       operationId: getWorkspaceCoverage
+      tags:
+       - "Coverages"
       description:  Get an individual coverage.
       produces:
         - text/html
@@ -793,12 +819,16 @@ paths:
 
     post:
       operationId: postWorkspaceCoverage
+      tags:
+       - "Coverages"
       description: Invalid. Use POST on the coverages endpoint to add a new coverage, or PUT on an individual coverage to edit it.
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: putWorkspaceCoverage
+      tags:
+       - "Coverages"
       description: Update an individual coverage
       consumes:        
         - application/xml
@@ -843,6 +873,8 @@ paths:
           description: The coverage was successfully updated.
     delete:
       operationId: deleteWorkspaceCoverage
+      tags:
+       - "Coverages"
       description: Delete a coverage (optionally recursively deleting layers).
       parameters:
         - name: workspace

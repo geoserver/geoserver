@@ -224,8 +224,9 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             }
 
             // dump the request
-            createRequestDump(tempDir, request, collections.get(0));
-
+            if (this.gs.getService(WFSInfo.class).getIncludeWFSRequestDumpFile()) {
+                createRequestDump(tempDir, request, collections.get(0));
+            }
             // zip all the files produced
             final FilenameFilter filter =
                     new FilenameFilter() {

@@ -20,9 +20,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.validation.FilterConfigException;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.HTTPResponse;
-import org.geotools.data.ows.SimpleHttpClient;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
+import org.geotools.http.HTTPResponse;
 import org.springframework.util.StringUtils;
 
 /**
@@ -75,7 +75,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     private HTTPClient getHttpClient() {
         if (httpClient == null) {
-            httpClient = new SimpleHttpClient();
+            httpClient = HTTPClientFinder.createClient();
         }
         return httpClient;
     }

@@ -5,12 +5,12 @@
  */
 package org.geoserver.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.ConfigAttribute;
@@ -29,7 +29,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
     // ~ Instance fields
     // ================================================================================================
 
-    private Collection<EntryHolder> requestMap = new Vector<>();
+    private Collection<EntryHolder> requestMap = new ArrayList<>();
     private PathMatcher pathMatcher = new AntPathMatcher();
     private boolean convertUrlToLowercaseBeforeComparison = false;
 

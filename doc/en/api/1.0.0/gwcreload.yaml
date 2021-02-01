@@ -16,6 +16,8 @@ paths:
   /reload:
     post:
       operationId: reloadPost
+      tags:
+       - "GwcReload"
       summary: Reloads GWC settings/
       description: Reloads the GeoWebCache settings after making changes to the configuration.
       parameters:

@@ -12,10 +12,10 @@ package org.geoserver.gsr.api.relationship;
 
 import java.util.List;
 import java.util.logging.Logger;
-import org.geoserver.api.APIService;
 import org.geoserver.gsr.model.relationship.RelationshipClass;
 import org.geoserver.gsr.model.relationship.RelationshipClassErrorMessage;
 import org.geoserver.gsr.translate.relationship.RelationshipDAO;
+import org.geoserver.ogcapi.APIService;
 import org.geoserver.wfs.WFSInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

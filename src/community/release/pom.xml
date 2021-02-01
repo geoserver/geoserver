@@ -456,29 +456,6 @@
      </dependencies>
    </profile>
    <profile>
-     <id>script</id>
-     <activation>
-       <property><name>script</name></property>
-     </activation>
-     <dependencies>
-       <dependency>
-         <groupId>org.geoserver.script</groupId>
-         <artifactId>gs-script-py</artifactId>
-         <version>${project.version}</version>
-       </dependency>
-       <dependency>
-         <groupId>org.geoserver.script</groupId>
-         <artifactId>gs-script-js</artifactId>
-         <version>${project.version}</version>
-       </dependency>
-       <dependency>
-         <groupId>org.geoserver.script</groupId>
-         <artifactId>gs-script-groovy</artifactId>
-         <version>${project.version}</version>
-       </dependency>
-     </dependencies>
-   </profile>
-   <profile>
      <id>monitor-hibernate</id>
      <dependencies>
        <dependency>

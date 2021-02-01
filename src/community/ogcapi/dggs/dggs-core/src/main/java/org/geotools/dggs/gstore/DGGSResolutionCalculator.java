@@ -42,7 +42,6 @@ public class DGGSResolutionCalculator {
      * onto gs-wms */
     private static final String WMS_SCALE_DENOMINATOR = "WMS_SCALE_DENOMINATOR";
 
-    private static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
     private static final double DISTANCE_SCALE_FACTOR = 0.0254 / (25.4 / 0.28);
 
     double[] levelThresholds;

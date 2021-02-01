@@ -19,12 +19,13 @@ import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
-import org.geotools.data.ows.HTTPResponse;
-import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.GeoPkgMetadata;
 import org.geotools.geopkg.GeoPkgMetadataExtension;
 import org.geotools.geopkg.GeoPkgMetadataReference;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
+import org.geotools.http.HTTPResponse;
 import org.geotools.util.logging.Logging;
 
 /** Helper class that manages fetching and sharing metadata and references */
@@ -99,7 +100,7 @@ class MetadataManager {
     }
 
     private String getMetadataBody(MetadataLinkInfo link) throws IOException {
-        SimpleHttpClient client = new SimpleHttpClient();
+        HTTPClient client = HTTPClientFinder.createClient();
         client.setConnectTimeout(METADATA_CONNECT_TIMEOUT);
         client.setReadTimeout(METADATA_READ_TIMEOUT);
         HTTPResponse response = client.get(new URL(link.getContent()));

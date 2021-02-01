@@ -17,10 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.geoserver.api.APIExceptionHandler;
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.exception.ServiceError;
+import org.geoserver.ogcapi.APIExceptionHandler;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Component;
 

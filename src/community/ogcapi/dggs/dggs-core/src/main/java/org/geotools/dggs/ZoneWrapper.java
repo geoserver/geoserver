@@ -19,15 +19,12 @@ package org.geotools.dggs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
@@ -35,7 +32,6 @@ import org.locationtech.jts.precision.GeometryPrecisionReducer;
 /** Wraps the geometry of DGGS zones crossing the dateline TODO: handle the pole case too */
 public class ZoneWrapper {
 
-    private static final double EPS = 0.01;
     private static final double EPS_AREA = 1e-12;
 
     public enum DatelineLocation {
@@ -72,14 +68,7 @@ public class ZoneWrapper {
     public static CoordinateSequence includePole(
             GeometryFactory gf, CoordinateSequence cs, boolean north) {
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(cs.toCoordinateArray()));
-        Collections.sort(
-                coordinates,
-                new Comparator<Coordinate>() {
-                    @Override
-                    public int compare(Coordinate o1, Coordinate o2) {
-                        return (int) Math.signum(o1.x - o2.x);
-                    }
-                });
+        Collections.sort(coordinates, (o1, o2) -> (int) Math.signum(o1.x - o2.x));
         Coordinate low = coordinates.get(0);
         Coordinate high = coordinates.get(coordinates.size() - 1);
         // the polygon is polar, needs to go from dateline to dateline
@@ -153,64 +142,6 @@ public class ZoneWrapper {
         }
 
         return result;
-    }
-
-    private static Polygon getPolePolygon(
-            GeometryFactory gf, Coordinate west, Coordinate east, double poleLatitude) {
-        CoordinateSequenceFactory csf = gf.getCoordinateSequenceFactory();
-        CoordinateSequence cs = null;
-        double westDiff = Math.abs(west.y - poleLatitude);
-        double eastDiff = Math.abs(east.y - poleLatitude);
-        if (westDiff > EPS && eastDiff > EPS) {
-            cs = csf.create(5, 2);
-            cs.setOrdinate(0, 0, west.x);
-            cs.setOrdinate(0, 1, west.y);
-            cs.setOrdinate(1, 0, west.x);
-            cs.setOrdinate(1, 1, poleLatitude);
-            cs.setOrdinate(2, 0, east.x);
-            cs.setOrdinate(2, 1, poleLatitude);
-            cs.setOrdinate(3, 0, east.x);
-            cs.setOrdinate(3, 1, east.y);
-            cs.setOrdinate(4, 0, west.x);
-            cs.setOrdinate(4, 1, west.y);
-        } else if (eastDiff <= EPS) {
-            cs = csf.create(4, 2);
-            cs.setOrdinate(0, 0, west.x);
-            cs.setOrdinate(0, 1, west.y);
-            cs.setOrdinate(1, 0, west.x);
-            cs.setOrdinate(1, 1, poleLatitude);
-            cs.setOrdinate(2, 0, east.x);
-            cs.setOrdinate(2, 1, east.y);
-            cs.setOrdinate(3, 0, west.x);
-            cs.setOrdinate(4, 1, west.y);
-        } else if (westDiff <= EPS) {
-            cs = csf.create(4, 2);
-            cs.setOrdinate(0, 0, west.x);
-            cs.setOrdinate(0, 1, west.y);
-            cs.setOrdinate(1, 0, east.x);
-            cs.setOrdinate(1, 1, poleLatitude);
-            cs.setOrdinate(2, 0, east.x);
-            cs.setOrdinate(2, 1, east.y);
-            cs.setOrdinate(3, 0, west.x);
-            cs.setOrdinate(4, 1, west.y);
-        }
-
-        if (cs != null) {
-            LinearRing ring = gf.createLinearRing(cs);
-            return gf.createPolygon(ring);
-        }
-
-        return null;
-    }
-
-    private static Coordinate selectPoint(CoordinateSequence cs, AggregatePointSelector selector) {
-        Coordinate selected = cs.getCoordinate(0);
-        for (int i = 1; i < cs.size(); i++) {
-            Coordinate curr = cs.getCoordinate(i);
-            selected = selector.select(curr, selected);
-        }
-
-        return selected;
     }
 
     /**

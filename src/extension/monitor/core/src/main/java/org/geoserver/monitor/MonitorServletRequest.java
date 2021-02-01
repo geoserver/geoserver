@@ -76,7 +76,7 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         public MonitorInputStream(ServletInputStream delegate, long maxSize) {
             this.delegate = delegate;
             this.maxSize = maxSize;
-            if (maxSize > 0) {
+            if (maxSize > 0 || maxSize == BODY_SIZE_UNBOUNDED) {
                 buffer = new ByteArrayOutputStream();
             }
         }
@@ -156,7 +156,8 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         }
 
         boolean bufferIsFull() {
-            return maxSize == 0 || (buffer.size() >= maxSize && maxSize > 0);
+            return maxSize == 0
+                    || (buffer.size() >= maxSize && maxSize > 0 && maxSize != BODY_SIZE_UNBOUNDED);
         }
 
         public byte[] getData() {

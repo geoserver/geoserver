@@ -8,9 +8,14 @@
         <cve>CVE-2015-6737</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: gt-coverage]]></notes>
-        <gav regex="true">^org\.geotools:gt-coverage:.*$</gav>
-        <cve>CVE-2005-0406</cve>
+        <notes><![CDATA[file name: gt-coverage.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-coverage@.*$</packageUrl>
+        <cpe>cpe:/a:image_processing_software:image_processing_software</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-http-commons-25-SNAPSHOT.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-http\-commons@.*$</packageUrl>
+        <cpe>cpe:/a:apache:commons-httpclient</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: imageio-ext-arcgrid-1.1.24.jar]]></notes>

@@ -44,3 +44,13 @@ Paging is now supported in App-Schema. There are a few exceptions:
    * Paging with filters involving attributes that are mapped to functions will not be supported, as this cannot be translated into SQL.
 
 For more efficient SQL queries generation, please set ``isDenormalised`` to false where applicable (when a one to one database table is used). See :ref:`app-schema.mapping-file`.
+
+
+NumberMatched
+-------------
+
+The numberMatched valued in a GetFeature response contains the number of features that matches the criterion of the request. App-Schema supports it in the following cases:
+
+   * When the App-Schema underlying dataStores are JDBC dataStore, with the exception of the cases where the query has a filter that cannot be translated to SQL query and PropertyName points to a nested attribute.
+
+   * When the App-Schema underlying dataStores are different from JDBC dataStore and the query doesn't have filters.

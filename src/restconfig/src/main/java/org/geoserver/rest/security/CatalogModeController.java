@@ -44,7 +44,7 @@ public class CatalogModeController {
 
     protected void checkUserIsAdmin() {
         if (!getManager().checkAuthenticationForAdminRole()) {
-            throw new RestException("Amdinistrative priveleges required", HttpStatus.FORBIDDEN);
+            throw new RestException("Administrative privileges required", HttpStatus.FORBIDDEN);
         }
     }
 

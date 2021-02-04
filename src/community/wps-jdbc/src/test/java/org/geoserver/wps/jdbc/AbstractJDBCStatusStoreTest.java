@@ -26,7 +26,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
 import org.junit.After;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -45,13 +44,10 @@ public abstract class AbstractJDBCStatusStoreTest extends AbstractProcessStoreTe
 
     abstract String getFixtureId();
 
-    @Before
-    public void checkOnLine() {
-        Assume.assumeNotNull(getFixture());
-    }
-
     protected Properties getFixture() {
-        return GSFixtureUtilitiesDelegate.loadFixture(getFixtureId());
+        Properties properties = GSFixtureUtilitiesDelegate.loadFixture(getFixtureId());
+        Assume.assumeNotNull(properties);
+        return properties;
     }
 
     @After
@@ -114,6 +110,7 @@ public abstract class AbstractJDBCStatusStoreTest extends AbstractProcessStoreTe
     }
 
     @Test
+    @SuppressWarnings("unchecked") // EMF models without generics
     public void testRequest() {
         Wps10Factory f = Wps10Factory.eINSTANCE;
         ExecuteType ex = f.createExecuteType();

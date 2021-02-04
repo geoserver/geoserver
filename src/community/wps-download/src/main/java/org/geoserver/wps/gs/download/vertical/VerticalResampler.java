@@ -19,7 +19,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.*;
+import javax.media.jai.JAI;
+import javax.media.jai.OperationRegistry;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.registry.RenderedRegistryMode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -48,7 +50,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.ProgressListener;
 
 /**
  * A Resampling class applying a Vertical Grid Transform to an input coverage representing height
@@ -56,8 +57,6 @@ import org.opengis.util.ProgressListener;
  * a target VerticalCRS.
  */
 public class VerticalResampler {
-
-    private static final double DELTA = 1E-6;
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(VerticalResampler.class);
@@ -130,18 +129,10 @@ public class VerticalResampler {
                 new VerticalTransformCRIF());
     }
 
-    private ProgressListener progressListener;
-
     private final GridCoverageFactory gcFactory;
 
     /** The VerticalGridTransform being used by this resampler */
     private VerticalGridTransform verticalGridTransform;
-
-    /** Source Vertical CRS */
-    private CoordinateReferenceSystem sourceVerticalCRS;
-
-    /** Target Vertical CRS */
-    private CoordinateReferenceSystem targetVerticalCRS;
 
     /** VerticalGrid's internal CRS */
     private CoordinateReferenceSystem gridCRS;
@@ -152,18 +143,13 @@ public class VerticalResampler {
      * @param sourceVerticalCRS the source VerticalCRS
      * @param targetVerticalCRS the target VerticalCRS
      * @param gcFactory a GridCoverageFactory being used to produce an output GridCoverage
-     * @param progressListener
      * @throws FactoryException
      */
     public VerticalResampler(
             CoordinateReferenceSystem sourceVerticalCRS,
             CoordinateReferenceSystem targetVerticalCRS,
-            GridCoverageFactory gcFactory,
-            ProgressListener progressListener)
+            GridCoverageFactory gcFactory)
             throws FactoryException {
-        this.sourceVerticalCRS = sourceVerticalCRS;
-        this.targetVerticalCRS = targetVerticalCRS;
-        this.progressListener = progressListener;
         this.gcFactory = gcFactory;
         int sourceCode = CRS.lookupEpsgCode(sourceVerticalCRS, false);
         int targetCode = CRS.lookupEpsgCode(targetVerticalCRS, false);

@@ -37,7 +37,7 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
 
         // add water temperature
         testData.addStyle("temperature", "temperature.sld", DownloadMapProcess.class, catalog);
-        Map propertyMap = new HashMap();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(SystemTestData.LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WATERTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);

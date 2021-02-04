@@ -11,7 +11,7 @@ import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
 import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -469,7 +469,10 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     /** Retrieves the image from the remote web map server */
     private RenderedImage getImageFromWebMapServer(
-            Layer layer, CaseInsensitiveMap template, ReferencedEnvelope bbox, Map cache)
+            Layer layer,
+            Map<String, ?> template,
+            ReferencedEnvelope bbox,
+            Map<String, WebMapServer> cache)
             throws IOException, ServiceException, FactoryException {
         // using a WMS client so that it respects the GetMap URL from the capabilities
         WebMapServer server = getServer(layer, cache);
@@ -610,11 +613,12 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return result;
     }
 
-    private GetMapRequest produceGetMapRequest(Layer layer, Map kvpTemplate) throws Exception {
+    private GetMapRequest produceGetMapRequest(Layer layer, Map<String, Object> kvpTemplate)
+            throws Exception {
         GetMapRequest request = getMapReader.createRequest();
 
         // prepare raw and parsed KVP maps to mimick a GetMap request
-        CaseInsensitiveMap rawKvp = new CaseInsensitiveMap(new HashMap());
+        Map<String, Object> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         rawKvp.putAll(kvpTemplate);
         rawKvp.put("format", "image/png"); // fake format, we are building a RenderedImage
         rawKvp.put("layers", layer.getName());
@@ -626,10 +630,11 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Internal render of map with key/value params: " + rawKvp);
         }
-        CaseInsensitiveMap kvp = new CaseInsensitiveMap(new HashMap());
+
+        Map<String, Object> kvp = new CaseInsensitiveMap<>(new HashMap<>());
         kvp.putAll(rawKvp);
         List<Throwable> exceptions = KvpUtils.parse(kvp);
-        if (exceptions != null && exceptions.size() > 0) {
+        if (exceptions != null && !exceptions.isEmpty()) {
             throw new WPSException(
                     "Failed to build map for layer: " + layer.getName(), exceptions.get(0));
         }

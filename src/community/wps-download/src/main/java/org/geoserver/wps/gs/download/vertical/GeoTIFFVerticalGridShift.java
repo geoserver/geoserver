@@ -5,7 +5,6 @@
 package org.geoserver.wps.gs.download.vertical;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.*;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -53,8 +52,6 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
     /** The grid bbox 4 corners */
     private double minX;
 
-    private double maxX;
-    private double minY;
     private double maxY;
 
     private int tileWidth;
@@ -66,7 +63,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
     private double[] resolution;
 
     /** The geotiff reader used to load the grid file */
-    private GeoTiffReader reader = null;
+    private GeoTiffReader reader;
 
     private double noData = Double.NaN;
 
@@ -84,8 +81,6 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
         width = gridRange.getSpan(0);
         height = gridRange.getSpan(1);
         minX = envelope.getMinimum(0);
-        minY = envelope.getMinimum(1);
-        maxX = envelope.getMaximum(0);
         maxY = envelope.getMaximum(1);
 
         dataType = layout.getSampleModel(null).getDataType();

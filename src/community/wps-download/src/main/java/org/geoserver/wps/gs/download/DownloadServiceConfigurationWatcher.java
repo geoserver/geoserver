@@ -74,16 +74,17 @@ public class DownloadServiceConfigurationWatcher extends TimerTask
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Properties file not found");
             }
-            try {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Copying the default properties file inside the data directory");
-                }
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Copying the default properties file inside the data directory");
+            }
+            try (InputStream is =
+                    DownloadServiceConfigurationWatcher.class.getResourceAsStream(
+                            DEFAULT_PROPERTY_PATH)) {
+
                 // Copy the default property file into the data directory
-                InputStream is =
-                        DownloadServiceConfigurationWatcher.class.getResourceAsStream(
-                                DEFAULT_PROPERTY_PATH);
+
                 if (is != null) {
                     IOUtils.copy(is, properties.out());
                 }

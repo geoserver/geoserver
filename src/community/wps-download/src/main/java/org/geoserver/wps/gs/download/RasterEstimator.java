@@ -205,14 +205,12 @@ class RasterEstimator {
 
         // Use only selected bands for output, if specified
         if (bandIndices != null && bandIndices.length > 0) {
-            for (int i = 0; i < bandIndices.length; i++) {
+            for (int bandIndex : bandIndices) {
                 // Use valid indices
-                if (bandIndices[i] >= 0 && bandIndices[i] < bandsCount)
+                if (bandIndex >= 0 && bandIndex < bandsCount)
                     accumulatedPixelSizeInBits +=
                             TypeMap.getSize(
-                                    coverageDimensionInfoList
-                                            .get(bandIndices[i])
-                                            .getDimensionType());
+                                    coverageDimensionInfoList.get(bandIndex).getDimensionType());
             }
         } else {
             for (int i = 0; i < bandsCount; i++) {

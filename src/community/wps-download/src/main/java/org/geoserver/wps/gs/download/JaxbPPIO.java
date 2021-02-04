@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs.download;
 
 import java.io.ByteArrayInputStream;
@@ -17,14 +21,12 @@ import org.xml.sax.XMLReader;
 
 public class JaxbPPIO extends ComplexPPIO {
 
-    private final Class targetClass;
     private JAXBContext context;
     private EntityResolverProvider resolverProvider;
 
     public JaxbPPIO(Class targetClass, EntityResolverProvider resolverProvider)
             throws JAXBException, TransformerException {
         super(targetClass, targetClass, "text/xml");
-        this.targetClass = targetClass;
         this.resolverProvider = resolverProvider;
 
         // this creation is expensive, do it once and cache it

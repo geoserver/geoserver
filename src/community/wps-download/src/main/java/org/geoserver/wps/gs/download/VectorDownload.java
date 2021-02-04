@@ -289,6 +289,9 @@ class VectorDownload {
     private OutputStream getResourceOutputStream(Resource output, long limit) {
         OutputStream os = null;
         // If limits are configured we must create an OutputStream that checks limits
+
+        @SuppressWarnings("PMD.CloseResource") // The underlying outputStream will be closed
+        // by the close method invoked on the wrapping OutputStream
         final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(output.out());
         if (limit > DownloadServiceConfiguration.NO_LIMIT) {
             os =

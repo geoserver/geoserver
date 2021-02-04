@@ -28,7 +28,7 @@ public class VerticalCRSConfigurationPanel extends ResourceConfigurationPanel {
     private static final Set<SampleDimensionType> GOOD_CANDIDATES_FOR_VERTICAL_CRS;
 
     static {
-        GOOD_CANDIDATES_FOR_VERTICAL_CRS = new HashSet<SampleDimensionType>();
+        GOOD_CANDIDATES_FOR_VERTICAL_CRS = new HashSet<>();
         GOOD_CANDIDATES_FOR_VERTICAL_CRS.add(SampleDimensionType.REAL_32BITS);
         GOOD_CANDIDATES_FOR_VERTICAL_CRS.add(SampleDimensionType.REAL_64BITS);
         GOOD_CANDIDATES_FOR_VERTICAL_CRS.add(SampleDimensionType.SIGNED_16BITS);
@@ -57,8 +57,7 @@ public class VerticalCRSConfigurationPanel extends ResourceConfigurationPanel {
             SampleDimensionType type = dimension.getDimensionType();
             isGoodCandidateForVerticalCRS = GOOD_CANDIDATES_FOR_VERTICAL_CRS.contains(type);
         }
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
         MetadataMap objectMetadata = metadata.getObject();
         if (objectMetadata != null) {
             Serializable verticalCRSvalue = objectMetadata.get(VERTICAL_CRS_KEY);
@@ -69,13 +68,14 @@ public class VerticalCRSConfigurationPanel extends ResourceConfigurationPanel {
 
         CRSPanel verticalCRSPanel =
                 new CRSPanel(
-                        "verticalCRS", new SRSToCRSModel(new PropertyModel(this, "verticalCRS"))) {
+                        "verticalCRS",
+                        new SRSToCRSModel(new PropertyModel<>(this, "verticalCRS"))) {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         verticalCRS = srs;
                         if (verticalCRS != null) {
 
                             final PropertyModel<MetadataMap> metadata =
-                                    new PropertyModel<MetadataMap>(model, "metadata");
+                                    new PropertyModel<>(model, "metadata");
                             if (metadata.getObject() == null) {
                                 metadata.setObject(new MetadataMap());
                             }

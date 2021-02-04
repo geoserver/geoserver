@@ -425,7 +425,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                     LOGGER.log(Level.FINE, "Listing files");
                 }
                 // output
-                List<File> filesToDownload = new ArrayList<File>();
+                List<File> filesToDownload = new ArrayList<>();
                 filesToDownload.add(internalOutput.file());
 
                 if (LOGGER.isLoggable(Level.FINE)) {

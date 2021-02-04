@@ -5,12 +5,18 @@
 package org.geoserver.wps.gs.download.vertical.op;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Rectangle;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
-import javax.media.jai.*;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.PointOpImage;
+import javax.media.jai.RasterAccessor;
+import javax.media.jai.RasterFormatTag;
 import org.geoserver.wps.WPSException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -31,7 +37,6 @@ public class VerticalTransformOpImage extends PointOpImage {
     private final MathTransform coordinatesTransform;
     private final MathTransform verticalTransform;
     private final boolean hasNoData;
-    private Range noData;
     private double noDataDouble = Double.NaN;
 
     public VerticalTransformOpImage(
@@ -53,7 +58,6 @@ public class VerticalTransformOpImage extends PointOpImage {
 
         if (noData != null) {
             hasNoData = true;
-            this.noData = noData;
             this.noDataDouble = noData.getMin().doubleValue();
 
         } else {
@@ -416,9 +420,11 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
+    @SuppressWarnings({"unchecked", "PMD.ReplaceVectorWithList"})
     private static Vector<RenderedImage> vectorize(RenderedImage[] sources) {
 
-        Vector<RenderedImage> vec = new Vector<RenderedImage>(sources.length);
+        @SuppressWarnings("PMD.UseArrayListInsteadOfVector")
+        Vector<RenderedImage> vec = new Vector<>(sources.length);
 
         for (RenderedImage image : sources) {
             if (image != null) {
@@ -431,5 +437,11 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
 
         return vec;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "PMD.ReplaceVectorWithList"})
+    public Vector<RenderedImage> getSources() {
+        return super.getSources();
     }
 }

@@ -279,7 +279,7 @@ class CRSRequestHandler {
         }
         String coverageName = reader.getGridCoverageNames()[0];
         GranuleSource granules = structuredReader.getGranules(coverageName, true);
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         Query query = Query.ALL;
 
         GeometryDescriptor geomDescriptor = granules.getSchema().getGeometryDescriptor();

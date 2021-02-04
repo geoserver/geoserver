@@ -6,7 +6,7 @@ package org.geoserver.wps.gs.download.vertical.op;
 
 import com.sun.media.jai.opimage.RIFUtil;
 import it.geosolutions.jaiext.range.Range;
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import javax.media.jai.CRIFImpl;

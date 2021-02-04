@@ -5,10 +5,12 @@
 package org.geoserver.wps.gs.download.vertical.op;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
-import java.awt.image.renderable.RenderableImage;
-import javax.media.jai.*;
+import javax.media.jai.JAI;
+import javax.media.jai.OperationDescriptorImpl;
+import javax.media.jai.ParameterBlockJAI;
+import javax.media.jai.RenderedOp;
 import javax.media.jai.registry.RenderedRegistryMode;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -48,12 +50,14 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
 
     /** Constructor. */
     public VerticalTransformDescriptor() {
-        super(resources, paramClasses, paramNames, paramDefaults);
-    }
-
-    /** Returns <code>true</code> since renderable operation is supported. */
-    public boolean isRenderableSupported() {
-        return true;
+        super(
+                resources,
+                new String[] {RenderedRegistryMode.MODE_NAME},
+                1,
+                paramNames,
+                paramClasses,
+                paramDefaults,
+                null);
     }
 
     public static RenderedOp create(
@@ -76,28 +80,5 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
         pb.setParameter("verticalTransform", verticalTransform);
         pb.setParameter("noData", noData);
         return JAI.create("verticalTransform", pb, hints);
-    }
-
-    public static RenderableOp createRenderable(
-            MathTransform coordinatesTransform,
-            MathTransform verticalTransform,
-            Range noData,
-            RenderingHints hints,
-            RenderableImage... sources) {
-
-        ParameterBlockJAI pb =
-                new ParameterBlockJAI("verticalTransform", RenderedRegistryMode.MODE_NAME);
-        RenderableImage img = sources[0];
-        pb.setSource(img, 0);
-
-        if (pb.getNumSources() == 0) {
-            throw new IllegalArgumentException("The input images are Null");
-        }
-
-        pb.setParameter("coordinatesTransform", coordinatesTransform);
-        pb.setParameter("verticalTransform", verticalTransform);
-        pb.setParameter("noData", noData);
-
-        return JAI.createRenderable("verticalTransform", pb, hints);
     }
 }

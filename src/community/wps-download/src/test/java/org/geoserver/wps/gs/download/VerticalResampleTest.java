@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ExtremaDescriptor;
@@ -22,19 +23,21 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.web.wps.VerticalCRSConfigurationPanel;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.gs.download.vertical.GeoTIFFVerticalGridShift;
+import org.geoserver.wps.gs.download.vertical.VerticalGridTransform;
+import org.geoserver.wps.gs.download.vertical.VerticalResampler;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
-import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.opengis.referencing.FactoryException;
@@ -43,11 +46,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class VerticalResampleTest extends WPSTestSupport {
 
     private static final double DELTA = 1E-6;
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
-
-    private CoordinateReferenceSystem sourceVerticalCRS;
-    private GeneralEnvelope verticalGridEnvelope;
 
     private static QName HETEROGENEOUS_CRS2 = new QName(WCS_URI, "hcrs2", WCS_PREFIX);
 
@@ -89,14 +87,12 @@ public class VerticalResampleTest extends WPSTestSupport {
 
         testData.addRasterLayer(HETEROGENEOUS_CRS2, "heterogeneous_crs2.zip", null, getCatalog());
         CRS.reset("all");
-        sourceVerticalCRS = CRS.decode("EPSG:5778");
         setVerticalCRS();
         final File file =
                 new File(
                         this.getTestData().getDataDirectoryRoot(),
                         "user_projections/verticalgrid.tif");
         GeoTiffReader reader = new GeoTiffReader(file);
-        verticalGridEnvelope = reader.getOriginalEnvelope();
         reader.dispose();
     }
 
@@ -118,29 +114,35 @@ public class VerticalResampleTest extends WPSTestSupport {
             Parameters parameters = new Parameters();
             List<Parameter> parametersList = parameters.getParameters();
             parametersList.add(new Parameter("writenodata", "false"));
-            thrown.expect(ProcessException.class);
-            thrown.expectMessage(CoreMatchers.containsString("no source VerticalCRS"));
-            File rasterZip =
-                    downloadProcess.execute(
-                            getLayerId(HETEROGENEOUS_CRS2), // layerName
-                            null, // filter
-                            "image/tiff", // outputFormat
-                            targetCRS, // targetCRS
-                            targetCRS,
-                            bboxRoi, // roi
-                            false, // cropToGeometry
-                            null, // interpolation
-                            null, // targetSizeX
-                            null, // targetSizeY
-                            null, // bandSelectIndices
-                            parameters, // Writing params
-                            false,
-                            false,
-                            0d,
-                            CRS.decode("EPSG:9999", true),
-                            new NullProgressListener() // progressListener
-                            );
+            ProcessException e =
+                    Assert.assertThrows(
+                            ProcessException.class,
+                            new ThrowingRunnable() {
 
+                                @Override
+                                public void run() throws Throwable {
+                                    downloadProcess.execute(
+                                            getLayerId(HETEROGENEOUS_CRS2), // layerName
+                                            null, // filter
+                                            "image/tiff", // outputFormat
+                                            targetCRS, // targetCRS
+                                            targetCRS,
+                                            bboxRoi, // roi
+                                            false, // cropToGeometry
+                                            null, // interpolation
+                                            null, // targetSizeX
+                                            null, // targetSizeY
+                                            null, // bandSelectIndices
+                                            parameters, // Writing params
+                                            false,
+                                            false,
+                                            0d,
+                                            CRS.decode("EPSG:9999", true),
+                                            new NullProgressListener() // progressListener
+                                            );
+                                }
+                            });
+            assertTrue(e.getMessage().contains("no source VerticalCRS"));
         } finally {
             // clean up process
             resourceManager.finished(resourceManager.getExecutionId(true));
@@ -302,5 +304,31 @@ public class VerticalResampleTest extends WPSTestSupport {
         CoverageInfo coverageInfo = catalog.getCoverageByName(HETEROGENEOUS_CRS2.getLocalPart());
         coverageInfo.getMetadata().remove(VerticalCRSConfigurationPanel.VERTICAL_CRS_KEY);
         catalog.save(coverageInfo);
+    }
+
+    @AfterClass
+    public static void cleanUp() {
+        try {
+            CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:5778", true);
+            CoordinateReferenceSystem targetCRS1 = CRS.decode("EPSG:9998", true);
+            CoordinateReferenceSystem targetCRS2 = CRS.decode("EPSG:9999", true);
+            VerticalResampler resampler1 =
+                    new VerticalResampler(sourceCRS, targetCRS1, new GridCoverageFactory());
+            VerticalResampler resampler2 =
+                    new VerticalResampler(sourceCRS, targetCRS2, new GridCoverageFactory());
+            Field transform = VerticalResampler.class.getDeclaredField("verticalGridTransform");
+            transform.setAccessible(true);
+            VerticalGridTransform fieldValue1 = (VerticalGridTransform) transform.get(resampler1);
+            VerticalGridTransform fieldValue2 = (VerticalGridTransform) transform.get(resampler2);
+            GeoTIFFVerticalGridShift gtiff1 =
+                    (GeoTIFFVerticalGridShift) fieldValue1.getVerticalGridShift();
+            GeoTIFFVerticalGridShift gtiff2 =
+                    (GeoTIFFVerticalGridShift) fieldValue2.getVerticalGridShift();
+            gtiff1.dispose();
+            gtiff2.dispose();
+
+        } catch (FactoryException | NoSuchFieldException | IllegalAccessException e) {
+
+        }
     }
 }

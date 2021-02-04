@@ -143,10 +143,10 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         }
 
         // if height and width are an odd number fix them, cannot encode videos otherwise
-        if (width % 2 == 1) {
+        if (width % 2 != 0) {
             width++;
         }
-        if (height % 2 == 1) {
+        if (height % 2 != 0) {
             height++;
         }
 

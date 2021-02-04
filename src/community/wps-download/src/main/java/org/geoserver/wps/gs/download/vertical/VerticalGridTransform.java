@@ -17,8 +17,13 @@ import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.gridshift.GridShiftLocator;
 import org.geotools.referencing.operation.MathTransformProvider;
 import org.geotools.referencing.operation.transform.AbstractMathTransform;
+import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.parameter.*;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterDescriptorGroup;
+import org.opengis.parameter.ParameterNotFoundException;
+import org.opengis.parameter.ParameterValue;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchIdentifierException;
 import org.opengis.referencing.operation.MathTransform;
@@ -189,7 +194,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
          * default value is "".
          */
         public static final DefaultParameterDescriptor<URI> FILE =
-                new DefaultParameterDescriptor<URI>(
+                new DefaultParameterDescriptor<>(
                         toMap(
                                 new NamedIdentifier[] {
                                     new NamedIdentifier(Citations.EPSG, VERTICAL_OFFSET_FILE_KEY),
@@ -204,7 +209,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
                         true);
 
         public static final DefaultParameterDescriptor<Integer> INTERPOLATION_CRS_CODE =
-                new DefaultParameterDescriptor<Integer>(
+                new DefaultParameterDescriptor<>(
                         toMap(
                                 new NamedIdentifier[] {
                                     new NamedIdentifier(Citations.EPSG, INTERPOLATION_CRS_CODE_KEY),
@@ -261,11 +266,11 @@ public class VerticalGridTransform extends AbstractMathTransform {
      */
     @Override
     public ParameterValueGroup getParameterValues() {
-        final ParameterValue<URI> file = new Parameter<URI>(Provider.FILE);
+        final ParameterValue<URI> file = new Parameter<>(Provider.FILE);
         file.setValue(grid);
 
         final ParameterValue<Integer> interpolationCRSCode =
-                new Parameter<Integer>(Provider.INTERPOLATION_CRS_CODE);
+                new Parameter<>(Provider.INTERPOLATION_CRS_CODE);
         interpolationCRSCode.setValue(verticalGridShift.getCRSCode());
 
         return new ParameterGroup(
@@ -279,5 +284,18 @@ public class VerticalGridTransform extends AbstractMathTransform {
     @Override
     public int hashCode() {
         return this.grid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        } else if (object != null && this.getClass().equals(object.getClass())) {
+            VerticalGridTransform that = (VerticalGridTransform) object;
+            return Utilities.equals(this.getParameterValues(), that.getParameterValues())
+                    && this.grid.equals(that.grid);
+        } else {
+            return false;
+        }
     }
 }

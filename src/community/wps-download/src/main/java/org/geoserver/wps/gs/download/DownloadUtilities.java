@@ -286,7 +286,7 @@ final class DownloadUtilities {
      * @return all the underlying SLD {@link File}s for the provided GeoServer layer.
      */
     static List<Resource> collectStyles(LayerInfo layerInfo) throws IOException {
-        final List<Resource> styleFiles = new ArrayList<Resource>();
+        final List<Resource> styleFiles = new ArrayList<>();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Searching for default style");

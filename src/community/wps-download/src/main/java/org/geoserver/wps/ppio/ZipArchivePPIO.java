@@ -37,11 +37,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
     /** Parameter indicating the compression level to use */
     private int compressionLevel;
 
-    /**
-     * Instantiates a new zip archive ppio.
-     *
-     * @param resources the resources
-     */
+    /** Instantiates a new zip archive ppio. */
     public ZipArchivePPIO(int compressionLevel) {
         super(File.class, File.class, "application/zip");
         if (compressionLevel < ZipOutputStream.STORED

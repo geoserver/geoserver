@@ -16,11 +16,18 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.*;
+import javax.media.jai.BorderExtender;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.Interpolation;
+import javax.media.jai.InterpolationNearest;
+import javax.media.jai.JAI;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -38,7 +45,8 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.*;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.Parameter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -179,7 +187,7 @@ class RasterDownload {
             CoordinateReferenceSystem targetVerticalCRS)
             throws Exception {
 
-        List<GridCoverage2D> disposableSources = new ArrayList<GridCoverage2D>();
+        List<GridCoverage2D> disposableSources = new ArrayList<>();
         GridCoverage2D gridCoverage = null;
         try {
             // get a reader for this CoverageInfo
@@ -326,7 +334,7 @@ class RasterDownload {
                         }
 
                         disposableSources.add(gridCoverage);
-                        return writeRaster(mimeType, coverageInfo, gridCoverage, writeParams);
+                        return writeRaster(mimeType, gridCoverage, writeParams);
 
                     } else {
                         // Check if an actual crop is needed
@@ -344,7 +352,7 @@ class RasterDownload {
                             gridCoverage =
                                     extendToRegion(
                                             gridCoverage, requestedGridGeometry, backgroundValues);
-                            return writeRaster(mimeType, coverageInfo, gridCoverage, writeParams);
+                            return writeRaster(mimeType, gridCoverage, writeParams);
                         }
                     }
                 }
@@ -387,11 +395,7 @@ class RasterDownload {
                 }
                 if (!CRS.equalsIgnoreMetadata(sourceVerticalCRS, targetVerticalCRS)) {
                     VerticalResampler verticalResampler =
-                            new VerticalResampler(
-                                    sourceVerticalCRS,
-                                    targetVerticalCRS,
-                                    GC_FACTORY,
-                                    progressListener);
+                            new VerticalResampler(sourceVerticalCRS, targetVerticalCRS, GC_FACTORY);
                     gridCoverage = verticalResampler.resample(gridCoverage);
                 }
             }
@@ -399,7 +403,7 @@ class RasterDownload {
             //
             // Writing
             //
-            return writeRaster(mimeType, coverageInfo, gridCoverage, writeParams);
+            return writeRaster(mimeType, gridCoverage, writeParams);
 
         } finally {
             for (GridCoverage2D disposableCoverage : disposableSources) {
@@ -864,17 +868,13 @@ class RasterDownload {
      * Writes the provided GridCoverage to the requested output format
      *
      * @param mimeType result mimetype
-     * @param coverageInfo resource associated to the input coverage
      * @param gridCoverage gridcoverage to write
      * @param writeParams writing parameters
      * @return a {@link File} that points to the GridCoverage we wrote.
      */
+    @SuppressWarnings("unchecked")
     private Resource writeRaster(
-            String mimeType,
-            CoverageInfo coverageInfo,
-            GridCoverage2D gridCoverage,
-            Parameters writeParams)
-            throws Exception {
+            String mimeType, GridCoverage2D gridCoverage, Parameters writeParams) throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
         }
@@ -892,8 +892,7 @@ class RasterDownload {
         }
 
         // Search a proper PPIO
-        Parameter<GridCoverage2D> gridParam =
-                new Parameter<GridCoverage2D>("fakeParam", GridCoverage2D.class);
+        Parameter<GridCoverage2D> gridParam = new Parameter<>("fakeParam", GridCoverage2D.class);
         ProcessParameterIO ppio_ = DownloadUtilities.find(gridParam, context, mimeType, false);
         if (ppio_ == null) {
             throw new ProcessException("Don't know how to encode in mime type " + mimeType);
@@ -911,6 +910,9 @@ class RasterDownload {
 
         // the limit output stream will throw an exception if the process is trying to writer more
         // than the max allowed bytes
+
+        @SuppressWarnings("PMD.CloseResource") // This stream will be properly closed
+        // when closing the os variable
         final ImageOutputStream fileImageOutputStreamExtImpl =
                 new ImageOutputStreamAdapter(output.out());
         ImageOutputStream os = null;

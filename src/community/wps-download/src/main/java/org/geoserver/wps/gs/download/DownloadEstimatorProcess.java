@@ -58,8 +58,6 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
      *
      * @param layerName the layer name
      * @param filter the filter
-     * @param email the email
-     * @param outputFormat the output format
      * @param targetCRS the target crs
      * @param roiCRS the roi crs
      * @param roi the roi

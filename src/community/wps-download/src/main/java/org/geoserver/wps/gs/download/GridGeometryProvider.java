@@ -16,7 +16,10 @@ import org.geoserver.catalog.Predicates;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.*;
+import org.geotools.coverage.grid.io.DimensionDescriptor;
+import org.geotools.coverage.grid.io.GranuleSource;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -280,25 +283,30 @@ class GridGeometryProvider {
         public double[] getGranulesNativeResolutionIfSame(SimpleFeatureCollection granules) {
             if (granules == null || granules.isEmpty()) return null;
 
-            SimpleFeatureIterator iterator = granules.features();
-            TreeSet<Double> resolutionsX = new TreeSet<>();
-            TreeSet<Double> resolutionsY = new TreeSet<>();
-            Map<String, DimensionDescriptor> descriptors = crsRequestHandler.getDescriptors();
-            DimensionDescriptor resDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION);
-            DimensionDescriptor resXDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION_X);
-            DimensionDescriptor resYDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION_Y);
-            final String resXAttribute =
-                    hasBothResolutions
-                            ? resXDescriptor.getStartAttribute()
-                            : resDescriptor.getStartAttribute();
-            final String resYAttribute =
-                    hasBothResolutions
-                            ? resYDescriptor.getStartAttribute()
-                            : resDescriptor.getStartAttribute();
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                resolutionsX.add((Double) feature.getAttribute(resXAttribute));
-                resolutionsY.add((Double) feature.getAttribute(resYAttribute));
+            TreeSet<Double> resolutionsX;
+            TreeSet<Double> resolutionsY;
+            try (SimpleFeatureIterator iterator = granules.features()) {
+                resolutionsX = new TreeSet<>();
+                resolutionsY = new TreeSet<>();
+                Map<String, DimensionDescriptor> descriptors = crsRequestHandler.getDescriptors();
+                DimensionDescriptor resDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION);
+                DimensionDescriptor resXDescriptor =
+                        descriptors.get(DimensionDescriptor.RESOLUTION_X);
+                DimensionDescriptor resYDescriptor =
+                        descriptors.get(DimensionDescriptor.RESOLUTION_Y);
+                final String resXAttribute =
+                        hasBothResolutions
+                                ? resXDescriptor.getStartAttribute()
+                                : resDescriptor.getStartAttribute();
+                final String resYAttribute =
+                        hasBothResolutions
+                                ? resYDescriptor.getStartAttribute()
+                                : resDescriptor.getStartAttribute();
+                while (iterator.hasNext()) {
+                    SimpleFeature feature = iterator.next();
+                    resolutionsX.add((Double) feature.getAttribute(resXAttribute));
+                    resolutionsY.add((Double) feature.getAttribute(resYAttribute));
+                }
             }
             if (resolutionsX.size() > 1 || resolutionsY.size() > 1) {
                 return null;
@@ -505,10 +513,8 @@ class GridGeometryProvider {
         // requested gridGeometry such that the resulting scale doesn't perfectly match the
         // requested resolution
         if (Math.abs(scaleX - resolution[0]) > 1E-6 || (Math.abs(scaleY - resolution[1]) > 1E-6)) {
-            if (crsRequestHandler != null
-                    && crsRequestHandler.getReferenceFeatureForAlignment() != null) {
-                SimpleFeature referenceFeature =
-                        crsRequestHandler.getReferenceFeatureForAlignment();
+            SimpleFeature referenceFeature = crsRequestHandler.getReferenceFeatureForAlignment();
+            if (referenceFeature != null) {
                 // Tweak the requested envelope for better alignment so that the resolution get
                 // matched
                 BoundingBox refEnvelope =
@@ -579,7 +585,7 @@ class GridGeometryProvider {
      */
     private Query initQuery(GranuleSource granules)
             throws TransformException, FactoryException, IOException {
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
 
         Query query = Query.ALL;
 

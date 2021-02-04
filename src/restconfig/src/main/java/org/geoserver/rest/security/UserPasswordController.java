@@ -57,7 +57,7 @@ public class UserPasswordController extends RestBaseController {
                         GeoServerRole.AUTHENTICATED_ROLE))
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
             throw new RestException(
-                    "Amdinistrative privelges required", HttpStatus.METHOD_NOT_ALLOWED);
+                    "Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
 
         try {
             // Look for the service that handles the current user

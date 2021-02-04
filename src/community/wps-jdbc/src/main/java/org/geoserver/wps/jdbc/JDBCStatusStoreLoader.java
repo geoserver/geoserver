@@ -80,9 +80,9 @@ public class JDBCStatusStoreLoader implements DisposableBean {
             }
         }
 
-        OutputStream os = resource.out();
-        props.store(os, "saved by GeoServer @" + new Date());
-        os.close();
+        try (OutputStream os = resource.out()) {
+            props.store(os, "saved by GeoServer @" + new Date());
+        }
     }
 
     @Override

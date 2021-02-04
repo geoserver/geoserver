@@ -223,6 +223,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public void save(ExecutionStatus status) {
+        @SuppressWarnings("PMD.CloseResource")
         DefaultTransaction transaction = new DefaultTransaction("create");
         boolean committed = false;
         try {
@@ -263,6 +264,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
     @Override
     public ExecutionStatus remove(String executionId) {
         LOGGER.fine("removing status " + executionId);
+        @SuppressWarnings("PMD.CloseResource")
         DefaultTransaction transaction = new DefaultTransaction("create");
         boolean committed = false;
         try {
@@ -299,6 +301,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
     public int remove(Filter filter) {
         LOGGER.fine("removing statuses matching " + filter);
         int ret = 0;
+        @SuppressWarnings("PMD.CloseResource")
         DefaultTransaction transaction = new DefaultTransaction("create");
         boolean committed = false;
         try {

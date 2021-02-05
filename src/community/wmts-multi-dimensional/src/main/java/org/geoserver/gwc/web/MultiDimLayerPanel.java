@@ -23,8 +23,8 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
     public MultiDimLayerPanel(String id, IModel<? extends LayerInfo> model) {
         super(id, model);
 
-        MapModel expandLimitDefaultModel =
-                new MapModel(
+        MapModel<Integer> expandLimitDefaultModel =
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
                         MultiDimensionalExtension.EXPAND_LIMIT_KEY);
         TextField<Integer> expandLimitDefault =
@@ -32,8 +32,8 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
         expandLimitDefault.add(RangeValidator.minimum(0));
         add(expandLimitDefault);
 
-        MapModel expandLimitMaxModel =
-                new MapModel(
+        MapModel<Integer> expandLimitMaxModel =
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
                         MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY);
         TextField<Integer> expandLimitMax =

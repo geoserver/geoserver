@@ -9,27 +9,27 @@ import java.util.Set;
 /** Simple containers of statistics about a domain */
 class DomainSummary {
 
-    private Object min;
-    private Object max;
-    private Set<Object> uniqueValues;
+    private Comparable min;
+    private Comparable max;
+    private Set<Comparable> uniqueValues;
     private int count = -1;
 
-    public DomainSummary(Set<Object> uniqueValues) {
+    public DomainSummary(Set<Comparable> uniqueValues) {
         this.count = uniqueValues.size();
         this.uniqueValues = uniqueValues;
     }
 
-    public DomainSummary(Object min, Object max, Number count) {
+    public DomainSummary(Comparable min, Comparable max, Number count) {
         this.min = min;
         this.max = max;
         this.count = count == null ? 0 : count.intValue();
     }
 
-    public Object getMin() {
+    public Comparable getMin() {
         return min;
     }
 
-    public Object getMax() {
+    public Comparable getMax() {
         return max;
     }
 
@@ -37,7 +37,7 @@ class DomainSummary {
         return count;
     }
 
-    public Set<Object> getUniqueValues() {
+    public Set<Comparable> getUniqueValues() {
         return uniqueValues;
     }
 }

@@ -33,12 +33,13 @@ public abstract class RasterDimension extends Dimension {
     }
 
     @Override
-    public List<Object> getDomainValues(Filter filter, boolean noDuplicates) {
+    public List<Comparable> getDomainValues(Filter filter, boolean noDuplicates) {
         CoverageDimensionsReader reader =
                 CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         if (noDuplicates) {
             // no duplicate values should be included
-            Set<Object> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType);
+            Set<Comparable> values =
+                    reader.readWithoutDuplicates(getDimensionName(), filter, dataType);
             return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram

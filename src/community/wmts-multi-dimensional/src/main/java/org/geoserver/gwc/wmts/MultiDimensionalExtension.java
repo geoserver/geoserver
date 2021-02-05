@@ -54,7 +54,6 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -66,8 +65,6 @@ import org.springframework.http.HttpStatus;
  * requests.
  */
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
-
-    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
 
     private static final Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
     public static final String SPACE_DIMENSION = "bbox";
@@ -134,7 +131,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             HttpServletRequest request, HttpServletResponse response, StorageBroker storageBroker)
             throws GeoWebCacheException, OWSException {
         // parse the request parameters converting string raw values to java objects
-        KvpMap parameters = KvpUtils.normalize(request.getParameterMap());
+        KvpMap<String, Object> parameters = KvpUtils.normalize(request.getParameterMap());
         KvpUtils.parse(parameters);
         // let's see if we can handle this request
         String operationName = (String) parameters.get("request");
@@ -370,17 +367,6 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         return boundingBox;
     }
 
-    private Set<String> getRequestedDomains(SimpleConveyor conveyor, Operation operation) {
-        Set<String> requestedDomains;
-        if (operation == Operation.GET_DOMAIN_VALUES) {
-            requestedDomains =
-                    Collections.singleton((String) conveyor.getParameter("domain", true));
-        } else {
-            requestedDomains = getRequestedDomains(conveyor.getParameter("domains", false));
-        }
-        return requestedDomains;
-    }
-
     private int getExpandlimit(
             ResourceInfo resource, Object clientExpandLimit, HttpServletResponse response)
             throws OWSException {
@@ -490,6 +476,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     protected Filter appendDomainRestrictionsFilter(
             Filter filter, String startAttribute, String endAttribute, Object domainRestrictions) {
         DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(filterFactory);
+        @SuppressWarnings("unchecked")
         List<Object> restrictionList =
                 domainRestrictions instanceof Collection
                         ? new ArrayList<>((Collection) domainRestrictions)

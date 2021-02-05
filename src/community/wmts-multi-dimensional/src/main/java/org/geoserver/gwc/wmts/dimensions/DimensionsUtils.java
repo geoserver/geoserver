@@ -209,7 +209,7 @@ public final class DimensionsUtils {
      * Helper method that return the minimum value. If the first value of the tree set is a range
      * the minimum value of the range is returned.
      */
-    private static Object getMinValue(List<Object> values) {
+    private static Object getMinValue(List<Comparable> values) {
         Object minValue = values.get(0);
         if (minValue instanceof Range) {
             return ((Range) minValue).getMinValue();
@@ -221,7 +221,7 @@ public final class DimensionsUtils {
      * Helper method that return the maximum value. If the first value of the tree set is a range
      * the maximum value of the range is returned.
      */
-    private static Object getMaxValue(List<Object> values) {
+    private static Object getMaxValue(List<Comparable> values) {
         Object maxValue = values.get(values.size() - 1);
         if (maxValue instanceof Range) {
             return ((Range) maxValue).getMaxValue();
@@ -230,7 +230,7 @@ public final class DimensionsUtils {
     }
 
     /** Return the min a max values of a tree set of values converted to the provided type. */
-    static <T> Tuple<T, T> getMinMax(List<Object> values, Class<T> type) {
+    static <T> Tuple<T, T> getMinMax(List<Comparable> values, Class<T> type) {
         Object minValue = getMinValue(values);
         Object maxValue = getMaxValue(values);
         return Tuple.tuple(Converters.convert(minValue, type), Converters.convert(maxValue, type));
@@ -240,16 +240,17 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a specific
      * attribute removing duplicate values.
      */
-    static Set<Object> getValuesWithoutDuplicates(
+    static Set<Comparable> getValuesWithoutDuplicates(
             String attributeName, FeatureCollection featureCollection) {
-        Set uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
+        Set<Comparable> uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
 
         // dimension values are dates/numbers/strings, all comparable, native sorting is fine
-        Set<Object> values = new TreeSet<>(uniques);
+        Set<Comparable> values = new TreeSet<>(uniques);
         return values;
     }
 
-    static Set getUniqueValues(
+    @SuppressWarnings("unchecked")
+    static Set<Comparable> getUniqueValues(
             FeatureCollection featureCollection, String attributeName, int limit) {
         // using the unique visitor to remove duplicate values
         UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
@@ -270,15 +271,15 @@ public final class DimensionsUtils {
      * Helper method that extracts a set of aggregates on the given collection and attribute and
      * returns the results
      */
-    static Map<Aggregate, Object> getAggregates(
+    static Map<Aggregate, Comparable> getAggregates(
             String attributeName, FeatureCollection featureCollection, Aggregate... aggregates) {
-        Map<Aggregate, Object> result = new HashMap<>();
+        Map<Aggregate, Comparable> result = new HashMap<>();
         PropertyName property = FF.property(attributeName);
         for (Aggregate aggregate : aggregates) {
             FeatureCalc featureCalc = aggregate.create(property);
             try {
                 featureCollection.accepts(featureCalc, null);
-                Object value = featureCalc.getResult().getValue();
+                Comparable value = (Comparable) featureCalc.getResult().getValue();
                 result.put(aggregate, value);
             } catch (IOException e) {
                 throw new RuntimeException(
@@ -292,18 +293,20 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a specific
      * attribute keeping duplicate values.
      */
-    static List<Object> getValuesWithDuplicates(
+    @SuppressWarnings("unchecked")
+    static List<Comparable> getValuesWithDuplicates(
             String attributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
-        List<Object> values = new ArrayList<>();
-        FeatureIterator featuresIterator = featureCollection.features();
-        while (featuresIterator.hasNext()) {
-            // extracting the feature attribute that contain our dimension value
-            SimpleFeature feature = (SimpleFeature) featuresIterator.next();
-            values.add(feature.getAttribute(attributeName));
+        List<Comparable> values = new ArrayList<>();
+        try (FeatureIterator featuresIterator = featureCollection.features()) {
+            while (featuresIterator.hasNext()) {
+                // extracting the feature attribute that contain our dimension value
+                SimpleFeature feature = (SimpleFeature) featuresIterator.next();
+                values.add((Comparable) feature.getAttribute(attributeName));
+            }
+            Collections.sort(values, new ComparableComparator());
+            return values;
         }
-        Collections.sort(values, new ComparableComparator());
-        return values;
     }
 
     /** Compute the resource bounds based on the provided filter */

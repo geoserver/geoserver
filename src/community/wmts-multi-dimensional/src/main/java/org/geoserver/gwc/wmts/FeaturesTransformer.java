@@ -14,7 +14,13 @@ import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.geotools.xsd.Encoder;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.xml.sax.Attributes;
@@ -108,7 +114,6 @@ class FeaturesTransformer extends TransformerBase {
                 throw new RuntimeException(
                         "Cannot transform the specified geometry in GML.", exception);
             }
-            ;
         }
 
         /** Encodes a dimension extracting the dimension value from the feature. */

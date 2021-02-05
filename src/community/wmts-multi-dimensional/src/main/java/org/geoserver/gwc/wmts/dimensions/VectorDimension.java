@@ -57,11 +57,11 @@ public abstract class VectorDimension extends Dimension {
     }
 
     @Override
-    public List<Object> getDomainValues(Filter filter, boolean noDuplicates) {
+    public List<Comparable> getDomainValues(Filter filter, boolean noDuplicates) {
         FeatureCollection featureCollection = getDomain(new Query(null, filter));
         if (noDuplicates) {
             // no duplicate values should be included
-            Set<Object> values =
+            Set<Comparable> values =
                     DimensionsUtils.getValuesWithoutDuplicates(
                             dimensionInfo.getAttribute(), featureCollection);
             return new ArrayList<>(values);

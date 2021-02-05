@@ -230,6 +230,7 @@
                                 <exclude>**/DefaultGeometryTest.java</exclude>
                                 <exclude>**/GetFeaturesHitsTest.java</exclude>
                                 <exclude>**/FeatureChainingWfsTest.java</exclude>
+                                <exclude>**/NoIdExpressionTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
                             </excludes>
                         </configuration>
@@ -287,6 +288,7 @@
                                 <exclude>${test.exclude.pattern}</exclude>
                                 <exclude>**/GetFeaturesHitsTest.java</exclude>
                                 <exclude>**/FeatureChainingWfsTest.java</exclude>
+                                <exclude>**/NoIdExpressionTest.java</exclude>
                             </excludes>
                             <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
                                 -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}</argLine>

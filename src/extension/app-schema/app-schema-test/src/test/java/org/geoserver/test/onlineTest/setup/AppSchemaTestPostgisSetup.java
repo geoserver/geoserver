@@ -148,8 +148,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                     j++;
                 }
                 // Add numeric PK for sorting
-                fieldNames[j] = "PKEY";
-                createParams.add("\"PKEY\" TEXT");
+                String pkFieldName = schema.getTypeName() + "_PKEY";
+                fieldNames[j] = pkFieldName;
+                createParams.add("\"" + pkFieldName + "\" TEXT");
                 buf.append(StringUtils.join(createParams.iterator(), ", "));
                 buf.append(");\n");
                 buf.append(
@@ -159,7 +160,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                                 + tableName
                                 + "\" ADD CONSTRAINT "
                                 + tableName
-                                + "_PK PRIMARY KEY (\"PKEY\")\n");
+                                + "_PK PRIMARY KEY (\""
+                                + pkFieldName
+                                + "\")\n");
 
                 // add geometry columns
                 for (GeometryDescriptor geom : geoms) {

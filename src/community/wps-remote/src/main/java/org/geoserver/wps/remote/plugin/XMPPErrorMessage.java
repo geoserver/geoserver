@@ -4,8 +4,8 @@
  */
 package org.geoserver.wps.remote.plugin;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -38,12 +38,8 @@ public class XMPPErrorMessage implements XMPPMessage {
         Map<String, Object> metadata = new HashMap<String, Object>();
         metadata.put("serviceJID", packet.getFrom());
 
-        Exception cause = null;
-        try {
-            cause = new Exception(URLDecoder.decode(signalArgs.get("message"), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            cause = e;
-        }
+        Exception cause =
+                new Exception(URLDecoder.decode(signalArgs.get("message"), StandardCharsets.UTF_8));
         final String pID = (signalArgs != null ? signalArgs.get("id") : null);
 
         // NOTIFY LISTENERS

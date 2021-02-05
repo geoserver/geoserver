@@ -6,8 +6,8 @@
 package org.geoserver.wms.icons;
 
 import java.awt.Color;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -67,23 +67,19 @@ public class IconTestSupport {
     }
 
     protected String queryString(Map<String, String> params) {
-        try {
-            StringBuilder buff = new StringBuilder();
-            boolean first = true;
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                if (first) {
-                    first = false;
-                } else {
-                    buff.append("&");
-                }
-                buff.append(entry.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        StringBuilder buff = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (first) {
+                first = false;
+            } else {
+                buff.append("&");
             }
-            return buff.toString();
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            buff.append(entry.getKey())
+                    .append("=")
+                    .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
+        return buff.toString();
     }
 
     protected final Fill fill(Color color, Double opacity) {

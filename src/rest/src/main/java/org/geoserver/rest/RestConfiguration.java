@@ -4,8 +4,8 @@
  */
 package org.geoserver.rest;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -198,11 +198,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         @Override
         public String decodeRequestString(HttpServletRequest request, String source) {
             // compatibility with old Restlet based config, it also decodes "+" into space
-            try {
-                return URLDecoder.decode(source, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            return URLDecoder.decode(source, StandardCharsets.UTF_8);
         }
     }
 }

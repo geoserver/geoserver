@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import org.apache.log4j.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -47,7 +48,7 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
         } else {
             url = new URL(location);
         }
-        url = new URL(URLDecoder.decode(url.toExternalForm(), "UTF8"));
+        url = new URL(URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         return url;
     }
 

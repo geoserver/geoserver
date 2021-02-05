@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
@@ -44,7 +45,7 @@ public class GeneralizationInfosProviderImpl
             } else {
                 url = new URL(path);
             }
-            url = new URL(URLDecoder.decode(url.toExternalForm(), "UTF8"));
+            url = new URL(URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
             return url;
         }
         throw new IOException("Cannot read from " + source);

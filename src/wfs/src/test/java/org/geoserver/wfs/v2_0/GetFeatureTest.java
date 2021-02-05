@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
@@ -421,7 +422,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         String request =
                 "wfs?service=WFS&version=2.0.0&request=GetFeature&typename=sf:PrimitiveGeoFeature"
                         + "&namespace=xmlns("
-                        + URLEncoder.encode("sf=http://cite.opengeospatial.org/gmlsf", "UTF-8")
+                        + URLEncoder.encode(
+                                "sf=http://cite.opengeospatial.org/gmlsf", StandardCharsets.UTF_8)
                         + ")";
 
         Document doc = postAsDOM(request);
@@ -1056,7 +1058,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         testGetFifteenAll(
                 "wfs?request=GetFeature&typename=myPrefix:Fifteen&version=2.0.0&service=wfs&"
                         + "namespaces=xmlns(myPrefix,"
-                        + URLEncoder.encode(MockData.FIFTEEN.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(
+                                MockData.FIFTEEN.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")");
     }
 
@@ -1065,7 +1068,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         testGetFifteenAll(
                 "wfs?request=GetFeature&typename=Fifteen&version=2.0.0&service=wfs&"
                         + "namespace=xmlns("
-                        + URLEncoder.encode(MockData.FIFTEEN.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(
+                                MockData.FIFTEEN.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")");
     }
 

@@ -7,10 +7,10 @@ package org.geoserver.taskmanager.external.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -166,9 +166,9 @@ public class ResourceFileServiceImpl extends SecuredImpl implements FileService 
         try {
             return new URI(
                     "resource:"
-                            + URLEncoder.encode(rootFolder.get(path).path(), "UTF-8")
+                            + URLEncoder.encode(rootFolder.get(path).path(), StandardCharsets.UTF_8)
                                     .replaceAll("%2F", "/"));
-        } catch (UnsupportedEncodingException | URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }

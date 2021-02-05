@@ -6,9 +6,9 @@
 package org.geoserver.importer.web;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -406,11 +406,9 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
                 NamespaceInfo ns = cat.getFactory().createNamespace();
                 ns.setPrefix(wsName);
-                try {
-                    ns.setURI("http://opengeo.org/#" + URLEncoder.encode(wsName, "ASCII"));
-                } catch (UnsupportedEncodingException e) {
-                    error(e);
-                }
+                ns.setURI(
+                        "http://opengeo.org/#"
+                                + URLEncoder.encode(wsName, StandardCharsets.US_ASCII));
 
                 cat.add(targetWorkspace);
                 cat.add(ns);

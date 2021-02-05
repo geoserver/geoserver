@@ -5,6 +5,7 @@
 package org.geoserver.wps.remote.plugin;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,7 +55,8 @@ public class XMPPRegisterMessage implements XMPPMessage {
         final Name name = new NameImpl(serviceName[0], serviceName[1]);
 
         try {
-            String serviceDescriptorString = URLDecoder.decode(signalArgs.get("message"), "UTF-8");
+            String serviceDescriptorString =
+                    URLDecoder.decode(signalArgs.get("message"), StandardCharsets.UTF_8);
             JSONObject serviceDescriptorJSON =
                     (JSONObject) JSONSerializer.toJSON(serviceDescriptorString);
 

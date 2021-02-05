@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
@@ -345,7 +346,8 @@ public class FeatureTest extends WFS3TestSupport {
         genericEntity.setName("EntitéGénérique");
         getCatalog().save(genericEntity);
         try {
-            String encodedLocalName = URLEncoder.encode(genericEntity.getName(), "UTF-8");
+            String encodedLocalName =
+                    URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8);
             String typeName = MockData.GENERICENTITY.getPrefix() + "__" + encodedLocalName;
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =

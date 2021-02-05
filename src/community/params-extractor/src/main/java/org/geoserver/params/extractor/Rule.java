@@ -5,6 +5,7 @@
 package org.geoserver.params.extractor;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,7 +76,10 @@ public final class Rule {
         }
         urlTransform.removeMatch(matcher.group(remove != null ? remove : 1));
         urlTransform.addParameter(
-                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine, repeat);
+                parameter,
+                URLDecoder.decode(matcher.replaceAll(transform), StandardCharsets.UTF_8),
+                combine,
+                repeat);
         return urlTransform;
     }
 

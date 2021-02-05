@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +85,7 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
         for (String s : path) {
             b.append('/').append(s);
         }
-        String uri = URLEncoder.encode(b.toString(), "UTF-8");
+        String uri = URLEncoder.encode(b.toString(), StandardCharsets.UTF_8);
         request.setRequestURI(uri);
         if (modifiedSince != null) {
             request.addHeader("If-Modified-Since", modifiedSince);

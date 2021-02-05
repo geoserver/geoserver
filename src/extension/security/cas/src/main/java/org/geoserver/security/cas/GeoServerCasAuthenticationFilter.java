@@ -10,6 +10,7 @@ import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecif
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +108,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                     "?"
                             + GeoServerCasConstants.LOGOUT_URL_PARAM
                             + "="
-                            + URLEncoder.encode(authConfig.getUrlInCasLogoutPage(), "utf-8");
+                            + URLEncoder.encode(
+                                    authConfig.getUrlInCasLogoutPage(), StandardCharsets.UTF_8);
 
         singleSignOut = authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);

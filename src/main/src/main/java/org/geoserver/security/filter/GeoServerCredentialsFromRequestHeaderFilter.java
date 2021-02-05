@@ -6,6 +6,8 @@ package org.geoserver.security.filter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -120,8 +122,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
      * Try to authenticate. If credentials are found in the configured header(s), then
      * authentication is delegated to the AuthenticationProvider chain.
      */
-    protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response) {
 
         String usHeader = request.getHeader(userNameHeaderName);
         String pwHeader = request.getHeader(passwordHeaderName);
@@ -136,8 +137,8 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
             return;
         }
         if (decodeURI) {
-            us = java.net.URLDecoder.decode(us, "UTF-8");
-            pw = java.net.URLDecoder.decode(pw, "UTF-8");
+            us = URLDecoder.decode(us, StandardCharsets.UTF_8);
+            pw = URLDecoder.decode(pw, StandardCharsets.UTF_8);
         }
 
         UsernamePasswordAuthenticationToken result =
@@ -193,11 +194,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
             return null;
         }
         if (decodeURI) {
-            try {
-                username = java.net.URLDecoder.decode(username, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                LOGGER.log(Level.WARNING, "unsupported decode user name");
-            }
+            username = URLDecoder.decode(username, StandardCharsets.UTF_8);
         }
         if (username == null || password == null) {
             return null;

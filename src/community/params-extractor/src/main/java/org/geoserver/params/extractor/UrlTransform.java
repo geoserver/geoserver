@@ -5,6 +5,7 @@
 package org.geoserver.params.extractor;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class UrlTransform {
@@ -42,7 +43,7 @@ public class UrlTransform {
             queryStringBuilder
                     .append(parameter.getKey())
                     .append("=")
-                    .append(URLEncoder.encode(parameter.getValue()[0]))
+                    .append(URLEncoder.encode(parameter.getValue()[0], StandardCharsets.UTF_8))
                     .append("&");
         }
         if (queryStringBuilder.length() == 0) {

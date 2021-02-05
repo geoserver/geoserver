@@ -6,7 +6,6 @@ package org.geogig.geoserver.config;
 
 import com.google.common.base.Preconditions;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -164,24 +163,11 @@ public class PostgresConfigBean implements Serializable {
         MultiValueMap<String, String> queryParams = uri.getQueryParams();
         String username = queryParams.getFirst(USER);
         String password = queryParams.getFirst(PASSWORD);
-        try {
-            // username should be URLEncoded, decode it here
-            username = URLDecoder.decode(username, UTF8);
-        } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn(
-                    String.format(
-                            "Error decoding PostgreSQL username value, attempting to use undecoded value: %s",
-                            username),
-                    uee);
-        }
-        try {
-            // password should be URLEncoded, decode it here
-            password = URLDecoder.decode(password, UTF8);
-        } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn(
-                    "Error decoding PostgreSQL password value, attempting to use undecoded value",
-                    uee);
-        }
+        // username should be URLEncoded, decode it here
+        username = URLDecoder.decode(username, StandardCharsets.UTF_8);
+
+        // password should be URLEncoded, decode it here
+        password = URLDecoder.decode(password, StandardCharsets.UTF_8);
         PostgresConfigBean bean = new PostgresConfigBean();
         bean.setHost(host);
         bean.setPort(port);

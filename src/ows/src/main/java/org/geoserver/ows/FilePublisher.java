@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -64,7 +65,7 @@ public class FilePublisher extends AbstractURLPublisher {
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
-        reqPath = URLDecoder.decode(reqPath, "UTF-8");
+        reqPath = URLDecoder.decode(reqPath, StandardCharsets.UTF_8);
         reqPath = reqPath.substring(ctxPath.length());
 
         if ((reqPath.length() > 1) && reqPath.startsWith("/")) {

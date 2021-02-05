@@ -5,8 +5,8 @@
  */
 package org.geoserver.ows.util;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -279,11 +279,7 @@ public class KvpUtils {
         String clean = null;
 
         if (raw != null) {
-            try {
-                clean = java.net.URLDecoder.decode(raw, "UTF-8");
-            } catch (java.io.UnsupportedEncodingException e) {
-                LOGGER.finer("Bad encoding for decoder " + e);
-            }
+            clean = URLDecoder.decode(raw, StandardCharsets.UTF_8);
         } else {
             return "";
         }
@@ -293,7 +289,7 @@ public class KvpUtils {
         return clean;
     }
 
-    /** @param kvp unparsed/unormalized kvp set */
+    /** @param kvp unparsed/unnormalized kvp set */
     public static KvpMap<String, Object> normalize(Map<String, ?> kvp) {
         if (kvp == null) {
             return null;
@@ -627,14 +623,10 @@ public class KvpUtils {
             // check for any special characters
             if (keyValuePair.length > 1) {
                 // replace any equals or & characters
-                try {
-                    // if this one does not work first check if the url encoded content is really
-                    // properly encoded. I had good success with this:
-                    // http://meyerweb.com/eric/tools/dencoder/
-                    keyValuePair[1] = URLDecoder.decode(keyValuePair[1], "ISO-8859-1");
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException("Totally unexpected... is your JVM busted?", e);
-                }
+                // if this one does not work first check if the url encoded content is really
+                // properly encoded. I had good success with this:
+                // http://meyerweb.com/eric/tools/dencoder/
+                keyValuePair[1] = URLDecoder.decode(keyValuePair[1], StandardCharsets.ISO_8859_1);
             }
 
             String key = keyValuePair[0];

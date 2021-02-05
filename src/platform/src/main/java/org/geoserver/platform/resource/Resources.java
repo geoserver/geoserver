@@ -12,12 +12,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -596,10 +596,7 @@ public class Resources {
             url = url.substring(5); // remove 'file:' prefix
 
             // revert encoded special characters and spaces
-            try {
-                url = URLDecoder.decode(url, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-            }
+            url = URLDecoder.decode(url, StandardCharsets.UTF_8);
 
             File f = new File(url);
 

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -28,8 +27,7 @@ public class PostgresConfigBeanTest {
             String expectedRepoId,
             String expectedUser,
             String expectedPassword,
-            final URI uri)
-            throws UnsupportedEncodingException {
+            final URI uri) {
         // assert the URI is built correctly
         assertEquals("Unexpected HOST value", expectedHost, uri.getHost());
         if (expectedPort != null) {
@@ -76,10 +74,10 @@ public class PostgresConfigBeanTest {
         assertEquals("Malformed USER query parameter", 2, userParts.length);
         String[] passwordParts = passwordPair.split("=");
         assertEquals("Malformed PASSWORD query parameter", 2, passwordParts.length);
-        String decodedUser = URLDecoder.decode(userParts[1], UTF8);
+        String decodedUser = URLDecoder.decode(userParts[1], StandardCharsets.UTF_8);
         assertEquals(
                 "Unexpected URL decoded value for USER query parameter", expectedUser, decodedUser);
-        String decodedPassword = URLDecoder.decode(passwordParts[1], UTF8);
+        String decodedPassword = URLDecoder.decode(passwordParts[1], StandardCharsets.UTF_8);
         assertEquals(
                 "Unexpected URL decoded value for PASSWORD query parameter",
                 expectedPassword,
@@ -94,7 +92,7 @@ public class PostgresConfigBeanTest {
             String expectedRepoId,
             String expectedUser,
             String expectedPassword)
-            throws UnsupportedEncodingException, URISyntaxException {
+            throws URISyntaxException {
         // build the bean
         PostgresConfigBean bean = PostgresConfigBean.newInstance();
         bean.setHost(expectedHost);
@@ -116,7 +114,7 @@ public class PostgresConfigBeanTest {
             String expectedRepoId,
             String expectedUser,
             String expectedPassword)
-            throws UnsupportedEncodingException, URISyntaxException {
+            throws URISyntaxException {
         // build the bean and get the URI
         URI uri =
                 buildURIFromBean(
@@ -164,7 +162,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBuildUriForRepo() throws UnsupportedEncodingException, URISyntaxException {
+    public void testBuildUriForRepo() throws URISyntaxException {
         // set some typical values
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
@@ -185,8 +183,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBuildUriForRepo_specialCharacters_hash()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBuildUriForRepo_specialCharacters_hash() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -206,8 +203,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBuildUriForRepo_specialCharacters_ampersand()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBuildUriForRepo_specialCharacters_ampersand() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -227,8 +223,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBuildUriForRepo_specialCharacters_multi()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBuildUriForRepo_specialCharacters_multi() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -248,7 +243,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBeanFromURI() throws UnsupportedEncodingException, URISyntaxException {
+    public void testBeanFromURI() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -279,8 +274,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBeanFromURI_specialCharacters_hash()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBeanFromURI_specialCharacters_hash() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -311,8 +305,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBeanFromURI_specialCharacters_ampersand()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBeanFromURI_specialCharacters_ampersand() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";
@@ -343,8 +336,7 @@ public class PostgresConfigBeanTest {
     }
 
     @Test
-    public void testBeanFromURI_specialCharacters_multi()
-            throws UnsupportedEncodingException, URISyntaxException {
+    public void testBeanFromURI_specialCharacters_multi() throws URISyntaxException {
         final String expectedHost = "testHost";
         final Integer expectedPort = Integer.valueOf(5432);
         final String expectedDb = "testDb";

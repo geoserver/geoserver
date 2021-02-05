@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -155,7 +156,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
                 "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=myPrefix:"
                         + typeName.getLocalPart()
                         + "&namespace=xmlns(myPrefix%3D"
-                        + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(typeName.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")";
         Document doc = getAsDOM(path);
         // print(doc);
@@ -170,7 +171,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
                 "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
                         + typeName.getLocalPart()
                         + "&namespace=xmlns("
-                        + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(typeName.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")";
         Document doc = getAsDOM(path);
         // print(doc);

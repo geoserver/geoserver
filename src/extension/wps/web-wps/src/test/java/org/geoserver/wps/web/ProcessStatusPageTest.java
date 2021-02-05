@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         // submit a monkey process
         String request =
                 "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs="
-                        + URLEncoder.encode("id=x2", "ASCII");
+                        + URLEncoder.encode("id=x2", StandardCharsets.US_ASCII);
         Document dom = getAsDOM(request);
         // print(dom);
         assertXpathExists("//wps:ProcessAccepted", dom);

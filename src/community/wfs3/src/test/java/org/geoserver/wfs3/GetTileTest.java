@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import no.ecc.vectortile.VectorTileDecoder;
 import no.ecc.vectortile.VectorTileDecoder.Feature;
@@ -69,7 +70,8 @@ public class GetTileTest extends WFS3TestSupport {
                         + roadSegments
                         + "/tiles/GlobalCRS84Geometric/12/2047/4095"
                         + "?f="
-                        + URLEncoder.encode(RFCGeoJSONFeaturesResponse.MIME, "UTF-8");
+                        + URLEncoder.encode(
+                                RFCGeoJSONFeaturesResponse.MIME, StandardCharsets.UTF_8);
         DocumentContext jsdoc = getAsJSONPath(path, 200);
         // features[0].geometry.type = "MultiLineString"
         assertEquals(jsdoc.read("features[0].geometry.type", String.class), "MultiLineString");
@@ -101,7 +103,8 @@ public class GetTileTest extends WFS3TestSupport {
                         + roadSegments
                         + "/tiles/GoogleMapsCompatible/16/32768/32767"
                         + "?f="
-                        + URLEncoder.encode(RFCGeoJSONFeaturesResponse.MIME, "UTF-8");
+                        + URLEncoder.encode(
+                                RFCGeoJSONFeaturesResponse.MIME, StandardCharsets.UTF_8);
         ;
         DocumentContext jsdoc = getAsJSONPath(path, 200);
         assertEquals(jsdoc.read("features[0].geometry.type", String.class), "MultiLineString");

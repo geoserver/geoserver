@@ -10,8 +10,8 @@ import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
 import de.micromata.opengis.kml.v_2_2_0.RefreshMode;
 import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,13 +99,9 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             String href =
                     WMSRequests.getGetMapUrl(
                             requestCopy, layers.get(i).getName(), i, style, null, null);
-            try {
-                // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth
-                // 6 doesn't like URL encoded parameters. See GEOS-4483
-                href = URLDecoder.decode(href, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth
+            // 6 doesn't like URL encoded parameters. See GEOS-4483
+            href = URLDecoder.decode(href, StandardCharsets.UTF_8);
 
             Link url = nl.createAndSetUrl();
             url.setHref(href);

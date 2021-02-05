@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -433,7 +434,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        String masterPassword = URLEncoder.encode(getMasterPassword(), "UTF-8");
+        String masterPassword = URLEncoder.encode(getMasterPassword(), StandardCharsets.UTF_8);
         request.addHeader(
                 "X-Credentials",
                 "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=" + masterPassword);

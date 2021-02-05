@@ -18,10 +18,10 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -311,9 +311,9 @@ public class S3FileServiceImpl implements FileService {
                             + "://"
                             + rootFolder
                             + "/"
-                            + URLEncoder.encode(filePath.toString(), "UTF-8")
+                            + URLEncoder.encode(filePath, StandardCharsets.UTF_8)
                                     .replaceAll("%2F", "/"));
-        } catch (URISyntaxException | UnsupportedEncodingException e) {
+        } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }

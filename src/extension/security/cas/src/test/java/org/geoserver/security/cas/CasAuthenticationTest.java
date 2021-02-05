@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -174,7 +175,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             request.setMethod("POST");
             MockHttpServletResponse response = new MockHttpServletResponse();
             MockFilterChain chain = new MockFilterChain();
-            String paramValue = URLDecoder.decode(buff.toString(), "utf-8");
+            String paramValue = URLDecoder.decode(buff.toString(), StandardCharsets.UTF_8);
             request.addParameter(
                     "logoutRequest", paramValue.substring(paramValue.indexOf("=") + 1));
             try {

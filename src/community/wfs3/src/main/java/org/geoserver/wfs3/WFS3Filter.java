@@ -5,8 +5,8 @@
 package org.geoserver.wfs3;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -149,10 +149,12 @@ public class WFS3Filter implements GeoServerFilter {
                                 request = "getFeature";
                                 String layerName = matcher.group(1);
                                 if (layerName != null) {
-                                    layerName = urlDecode(layerName);
+                                    layerName =
+                                            URLDecoder.decode(layerName, StandardCharsets.UTF_8);
                                 }
                                 setLayerName(layerName);
-                                this.featureId = urlDecode(matcher.group(2));
+                                this.featureId =
+                                        URLDecoder.decode(matcher.group(2), StandardCharsets.UTF_8);
                             }
                             return matches;
                         });
@@ -165,7 +167,8 @@ public class WFS3Filter implements GeoServerFilter {
                                 request = "getFeature";
                                 String layerName = matcher.group(1);
                                 if (layerName != null) {
-                                    layerName = urlDecode(layerName);
+                                    layerName =
+                                            URLDecoder.decode(layerName, StandardCharsets.UTF_8);
                                 }
                                 setLayerName(layerName);
                             }
@@ -180,7 +183,8 @@ public class WFS3Filter implements GeoServerFilter {
                                 request = "tilingSchemes";
                                 String layerName = matcher.group(1);
                                 if (layerName != null) {
-                                    layerName = urlDecode(layerName);
+                                    layerName =
+                                            URLDecoder.decode(layerName, StandardCharsets.UTF_8);
                                 }
                                 setLayerName(layerName);
                             }
@@ -195,7 +199,8 @@ public class WFS3Filter implements GeoServerFilter {
                                 request = "collection";
                                 String layerName = matcher.group(1);
                                 if (layerName != null) {
-                                    layerName = urlDecode(layerName);
+                                    layerName =
+                                            URLDecoder.decode(layerName, StandardCharsets.UTF_8);
                                 }
                                 setLayerName(layerName);
                             }
@@ -222,13 +227,18 @@ public class WFS3Filter implements GeoServerFilter {
                                 request = "getTile";
                                 String layerName = matcher.group(1);
                                 if (layerName != null) {
-                                    layerName = urlDecode(layerName);
+                                    layerName =
+                                            URLDecoder.decode(layerName, StandardCharsets.UTF_8);
                                 }
                                 setLayerName(layerName);
-                                this.tilingScheme = urlDecode(matcher.group(2));
-                                this.level = urlDecode(matcher.group(3));
-                                this.row = urlDecode(matcher.group(4));
-                                this.col = urlDecode(matcher.group(5));
+                                this.tilingScheme =
+                                        URLDecoder.decode(matcher.group(2), StandardCharsets.UTF_8);
+                                this.level =
+                                        URLDecoder.decode(matcher.group(3), StandardCharsets.UTF_8);
+                                this.row =
+                                        URLDecoder.decode(matcher.group(4), StandardCharsets.UTF_8);
+                                this.col =
+                                        URLDecoder.decode(matcher.group(5), StandardCharsets.UTF_8);
                             }
                             return matches;
                         });
@@ -387,15 +397,5 @@ public class WFS3Filter implements GeoServerFilter {
                 return values[0];
             }
         }
-    }
-
-    /** URL decodes the given string */
-    private String urlDecode(String name) {
-        try {
-            name = URLDecoder.decode(name, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        return name;
     }
 }

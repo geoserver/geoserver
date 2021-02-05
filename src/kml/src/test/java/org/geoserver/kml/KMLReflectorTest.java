@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -465,7 +465,7 @@ public class KMLReflectorTest extends WMSTestSupport {
     @Test
     public void testRasterTransformerSLD() throws Exception {
         URL url = getClass().getResource("allsymbolizers.sld");
-        String urlExternal = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String urlExternal = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         final String requestUrl =
                 "wms/reflect?layers="
                         + getLayerId(MockData.BASIC_POLYGONS)
@@ -481,7 +481,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         String href =
                 XMLUnit.newXpathEngine()
                         .evaluate("//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
-        href = URLDecoder.decode(href, "UTF-8");
+        href = URLDecoder.decode(href, StandardCharsets.UTF_8);
         assertTrue(href.startsWith("http://localhost:8080/geoserver/wms"));
         assertTrue(href.contains("request=GetMap"));
         assertTrue(href.contains("format=image/png"));
@@ -1118,11 +1118,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             String key = kvp[0].toUpperCase();
             String value = kvp.length > 1 ? kvp[1] : null;
             if (value != null) {
-                try {
-                    value = URLDecoder.decode(value, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
+                value = URLDecoder.decode(value, StandardCharsets.UTF_8);
             }
             kvpMap.put(key, value);
         }

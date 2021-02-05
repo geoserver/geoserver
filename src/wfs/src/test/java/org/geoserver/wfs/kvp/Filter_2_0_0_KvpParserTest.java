@@ -6,6 +6,7 @@
 package org.geoserver.wfs.kvp;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class Filter_2_0_0_KvpParserTest {
                         + "%3C/fes:Literal%3E%" //
                         + "3C/fes:PropertyIsLike%3E" //
                         + "%3C/fes:Filter%3E";
-        String xml = URLDecoder.decode(encodedXml, "UTF-8");
+        String xml = URLDecoder.decode(encodedXml, StandardCharsets.UTF_8);
         @SuppressWarnings("unchecked")
         List<Filter> filters = (List<Filter>) new Filter_2_0_0_KvpParser(null).parse(xml);
         Assert.assertEquals(1, filters.size());

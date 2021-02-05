@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -2126,7 +2127,7 @@ public class ExecuteTest extends WPSTestSupport {
     }
 
     String urlEncode(String string) throws Exception {
-        return URLEncoder.encode(string, "ASCII");
+        return URLEncoder.encode(string, StandardCharsets.US_ASCII);
     }
 
     private void checkShapefileIntegrity(String[] typeNames, final InputStream in)

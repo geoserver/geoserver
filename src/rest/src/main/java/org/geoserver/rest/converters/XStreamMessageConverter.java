@@ -6,8 +6,8 @@ package org.geoserver.rest.converters;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import org.geoserver.rest.RequestInfo;
 import org.geotools.util.logging.Logging;
@@ -58,12 +58,7 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
     }
 
     public String encode(String component) {
-        try {
-            return URLEncoder.encode(component, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.warning("Unable to URL-encode component: " + component);
-            return component;
-        }
+        return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }
 
     /** The extension used for resources of the type being encoded */

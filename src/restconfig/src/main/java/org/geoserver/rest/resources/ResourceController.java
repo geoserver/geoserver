@@ -12,9 +12,9 @@ import freemarker.template.ObjectWrapper;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,13 +158,7 @@ public class ResourceController extends RestBaseController {
         // Strip off "/resource"
         path = path.substring(9);
         // handle special characters
-        try {
-            path = URLDecoder.decode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RestException(
-                    "Could not decode the resource URL to UTF-8 format",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        path = URLDecoder.decode(path, StandardCharsets.UTF_8);
         return resources.get(path);
     }
 

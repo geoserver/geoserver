@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -463,7 +464,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
         // the kvp should be already in decoded form
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",
@@ -485,7 +486,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // no style name, but the sld has a default for that layer
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",
@@ -583,7 +584,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testSldDisabled() throws Exception {
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",
@@ -640,7 +641,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // style name matching one in the sld
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",
@@ -662,7 +663,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // nothing matches the required style name
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
-        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         kvp.put(
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -685,7 +686,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         URL url = new URL("http://hostthatdoesnotexist/");
 
-        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         kvp.put(
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -708,7 +709,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         URL url = new URL(GetMapKvpRequestReaderTest.class.getResource(""), "does-not-exist");
 
-        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         kvp.put(
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -731,7 +732,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         URL url = GetMapKvpRequestReaderTest.class.getResource("paletted.tif");
 
-        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         kvp.put(
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -756,7 +757,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 GetMapKvpRequestReaderTest.class.getResource(
                         "WMSPostLayerGroupNonDefaultStyle.xml");
 
-        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
         kvp.put(
                 "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -777,7 +778,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // no styles, no layer, the full definition is in the sld
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsFeatureTypeConstaint.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
 
         GetMapRequest request = reader.createRequest();
@@ -806,7 +807,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // no styles, no layer, the full definition is in the sld
         HashMap kvp = new HashMap();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsFeatureTypeConstaint.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",
@@ -932,7 +933,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         kvp.put("format", "image/png");
         final URL url = GetMapKvpRequestReader.class.getResource("BaseMapGroup.sld");
         // URLDecoder.decode fixes GEOS-3709
-        kvp.put("sld", URLDecoder.decode(url.toString(), "UTF-8"));
+        kvp.put("sld", URLDecoder.decode(url.toString(), StandardCharsets.UTF_8));
         kvp.put("version", "1.1.1");
 
         GetMapRequest request = reader.createRequest();
@@ -1032,7 +1033,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testMissingLayersAndStylesParametersWithSld() throws Exception {
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
 
         // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
         HashMap raw = new HashMap();
@@ -1183,7 +1184,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             // nothing matches the required style name
             HashMap kvp = new HashMap();
             URL url = new URL("http://localhost:" + port + "/sld/style.sld");
-            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
             kvp.put(
                     "layers",
                     MockData.BASIC_POLYGONS.getPrefix()
@@ -1227,7 +1228,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             // nothing matches the required style name
             HashMap kvp = new HashMap();
             URL url = new URL("http://localhost:" + port + "/sld/style.sld");
-            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8));
             kvp.put(
                     "layers",
                     MockData.BASIC_POLYGONS.getPrefix()

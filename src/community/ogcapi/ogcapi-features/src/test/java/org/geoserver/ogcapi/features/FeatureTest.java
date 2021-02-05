@@ -491,9 +491,9 @@ public class FeatureTest extends FeaturesTestSupport {
         getCatalog().save(genericEntity);
         try {
             String encodedLocalName =
-                    URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8.name());
+                    URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8);
             String typeName =
-                    URLEncoder.encode(genericEntity.prefixedName(), StandardCharsets.UTF_8.name());
+                    URLEncoder.encode(genericEntity.prefixedName(), StandardCharsets.UTF_8);
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =
                     getAsJSONPath(

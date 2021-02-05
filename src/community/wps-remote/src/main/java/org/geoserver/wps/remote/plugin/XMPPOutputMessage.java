@@ -5,8 +5,8 @@
 package org.geoserver.wps.remote.plugin;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,8 +42,9 @@ public abstract class XMPPOutputMessage implements XMPPMessage {
 
     /** */
     protected Object getOutPuts(XMPPClient xmppClient, Entry<String, String> result)
-            throws UnsupportedEncodingException, PickleException, IOException {
-        final String serviceResultString = URLDecoder.decode(result.getValue(), "UTF-8");
+            throws PickleException, IOException {
+        final String serviceResultString =
+                URLDecoder.decode(result.getValue(), StandardCharsets.UTF_8);
         final JSONObject serviceResultJSON =
                 (JSONObject) JSONSerializer.toJSON(serviceResultString);
 

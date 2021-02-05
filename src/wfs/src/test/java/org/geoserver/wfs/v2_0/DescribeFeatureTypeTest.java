@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
@@ -289,7 +290,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
                         + "typeName=myPrefix:"
                         + typeName.getLocalPart()
                         + "&namespaces=xmlns(myPrefix,"
-                        + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(typeName.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")";
 
         Document doc = getAsDOM(path);
@@ -305,7 +306,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
                         + "typeName="
                         + typeName.getLocalPart()
                         + "&namespace=xmlns("
-                        + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8")
+                        + URLEncoder.encode(typeName.getNamespaceURI(), StandardCharsets.UTF_8)
                         + ")";
 
         Document doc = getAsDOM(path);

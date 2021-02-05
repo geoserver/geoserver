@@ -10,6 +10,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +19,6 @@ import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpMap;
-import org.geoserver.ows.util.ResponseUtils;
 import org.junit.Test;
 
 public class WMSRequestsTest extends WMSTestSupport {
@@ -167,7 +168,7 @@ public class WMSRequestsTest extends WMSTestSupport {
     /** Gets the GetMap URL for the full list of requested layers. */
     private static String getGetMapUrl(GetMapRequest request) {
         String url = WMSRequests.getGetMapUrl(request, null, 0, null, null);
-        return ResponseUtils.urlDecode(url);
+        return URLDecoder.decode(url, StandardCharsets.UTF_8);
     }
 
     /** Gets the GetMap URL for each layer in the requested layers list. */
@@ -176,7 +177,7 @@ public class WMSRequestsTest extends WMSTestSupport {
         for (int i = 0; i < request.getLayers().size(); i++) {
             String name = request.getLayers().get(i).getName();
             String url = WMSRequests.getGetMapUrl(request, name, i, null, null, null);
-            urls.add(ResponseUtils.urlDecode(url));
+            urls.add(URLDecoder.decode(url, StandardCharsets.UTF_8));
         }
         return urls;
     }

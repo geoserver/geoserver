@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.styling.Fill;
@@ -143,7 +144,7 @@ public class IconPropertiesTest extends IconTestSupport {
         final PointSymbolizer symbolizer =
                 externalGraphic("http://127.0.0.1/foo${field}.png", "image/png");
         final Style style = styleFromRules(catchAllRule(symbolizer, symbolizer));
-        final String url = URLEncoder.encode("http://127.0.0.1/", "UTF-8");
+        final String url = URLEncoder.encode("http://127.0.0.1/", StandardCharsets.UTF_8);
         assertEquals(
                 "0.0.0=&0.0.0.url=" + url + "foo1.png&0.0.1=&0.0.1.url=" + url + "foo1.png",
                 encode(style, fieldIs1));

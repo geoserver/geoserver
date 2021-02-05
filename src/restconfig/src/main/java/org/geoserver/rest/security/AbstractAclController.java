@@ -5,8 +5,8 @@
 package org.geoserver.rest.security;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -104,12 +104,12 @@ public abstract class AbstractAclController<
     }
 
     @DeleteMapping(path = "/**")
-    public void rulesDelete(HttpServletRequest request) throws UnsupportedEncodingException {
+    public void rulesDelete(HttpServletRequest request) {
         checkUserIsAdmin();
 
         String thePath = request.getPathInfo();
         String ruleString = thePath.substring(getBasePath().length() + 1);
-        ruleString = URLDecoder.decode(ruleString, "utf-8");
+        ruleString = URLDecoder.decode(ruleString, StandardCharsets.UTF_8);
 
         String msg = validateRuleKey(ruleString);
         if (msg != null) throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);

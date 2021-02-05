@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.protocol.http.WebSession;
@@ -40,7 +41,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
                 (SavedRequest)
                         tester.getHttpSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
-        String redirectUrl = new URLDecoder().decode(sr.getRedirectUrl(), "UTF8");
+        String redirectUrl = URLDecoder.decode(sr.getRedirectUrl(), StandardCharsets.UTF_8);
         assertTrue(
                 redirectUrl.contains("wicket/bookmarkable/org.geoserver.web.data.layer.LayerPage"));
     }

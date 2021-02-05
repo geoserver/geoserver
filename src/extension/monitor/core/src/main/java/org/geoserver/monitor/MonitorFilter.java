@@ -7,6 +7,7 @@ package org.geoserver.monitor;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -97,7 +98,7 @@ public class MonitorFilter implements GeoServerFilter {
         data.setPath(req.getServletPath() + req.getPathInfo());
 
         if (req.getQueryString() != null) {
-            data.setQueryString(URLDecoder.decode(req.getQueryString(), "UTF-8"));
+            data.setQueryString(URLDecoder.decode(req.getQueryString(), StandardCharsets.UTF_8));
         }
 
         data.setHttpMethod(req.getMethod());

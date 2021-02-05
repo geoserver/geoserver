@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
@@ -220,7 +221,8 @@ public class TestWfsPost extends HttpServlet {
                     responseContent.append("\n");
                     if (acon.getResponseMessage() != null) {
                         responseContent.append(
-                                URLDecoder.decode(acon.getResponseMessage(), "UTF-8"));
+                                URLDecoder.decode(
+                                        acon.getResponseMessage(), StandardCharsets.UTF_8));
                     }
                     responseContent.append("</servlet-exception>\n");
 

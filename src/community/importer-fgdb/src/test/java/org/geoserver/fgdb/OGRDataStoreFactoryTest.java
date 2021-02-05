@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -113,7 +112,7 @@ public class OGRDataStoreFactoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateDataStoreURL() throws MalformedURLException, IOException {
+    public void testCreateDataStoreURL() throws MalformedURLException {
         if (skip) return;
 
         Map<String, Serializable> params = (Map) new KVP(OGRDataStoreFactory.OGR_NAME.key, gdbURL);
@@ -124,12 +123,12 @@ public class OGRDataStoreFactoryTest {
         assertEquals(1, names.size());
     }
 
-    private static File data(String path) throws IOException {
+    private static File data(String path) {
         URL url = OGRDataStoreFactory.class.getResource("test-data/" + path);
         if (url == null) {
             throw new FileNotFoundException("Could not find locations.zip");
         }
-        File file = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
+        File file = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
         if (!file.exists()) {
             throw new FileNotFoundException("Can not locate test-data for \"" + path + '"');
         }
@@ -139,7 +138,7 @@ public class OGRDataStoreFactoryTest {
     //
     // Utility Methods
     //
-    private static void unpackFile(ZipInputStream in, File outdir, String name) throws IOException {
+    private static void unpackFile(ZipInputStream in, File outdir, String name) {
         File file = new File(outdir, name);
         FileOutputStream out = new FileOutputStream(file);
         try {
@@ -164,7 +163,7 @@ public class OGRDataStoreFactoryTest {
     }
 
     /** * Unpack archive to directory (maintaining directory structure). */
-    public static void unpack(File archive, File directory) throws IOException {
+    public static void unpack(File archive, File directory) {
         // see http://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder
         ZipInputStream zip = new ZipInputStream(new FileInputStream(archive));
         try {

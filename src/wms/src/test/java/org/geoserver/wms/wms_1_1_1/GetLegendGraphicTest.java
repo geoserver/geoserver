@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -325,7 +326,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                         + "&SLD_BODY=";
         String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
         MockHttpServletResponse response =
-                getAsServletResponse(base + URLEncoder.encode(sld, "UTF-8"));
+                getAsServletResponse(base + URLEncoder.encode(sld, StandardCharsets.UTF_8));
         // should fail with an error message poiting at entity resolution
         assertEquals("application/vnd.ogc.se_xml", response.getContentType());
         final String content = response.getContentAsString();

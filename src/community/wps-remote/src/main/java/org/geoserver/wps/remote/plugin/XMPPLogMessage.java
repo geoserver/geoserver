@@ -5,6 +5,7 @@
 package org.geoserver.wps.remote.plugin;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -49,7 +50,10 @@ public class XMPPLogMessage implements XMPPMessage {
                         "Could not correctly parse the Log level; using the default one 'INFO'.");
             }
             String logMessage =
-                    "[" + pID + "]" + URLDecoder.decode(signalArgs.get("message"), "UTF-8");
+                    "["
+                            + pID
+                            + "]"
+                            + URLDecoder.decode(signalArgs.get("message"), StandardCharsets.UTF_8);
             LOGGER.log(logLevel, logMessage);
 
             // NOTIFY LISTENERS

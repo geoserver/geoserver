@@ -9,9 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -297,12 +297,7 @@ public class RESTUtils {
         if (value == null) {
             return null;
         }
-
-        try {
-            return URLDecoder.decode(value.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return URLDecoder.decode(value.toString(), StandardCharsets.UTF_8);
     }
 
     /** Method for searching an item inside the MetadataMap. */

@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public abstract class CasAuthenticationHelper {
                 if (buff.length() > 0) buff.append("&");
                 buff.append(entry.getKey())
                         .append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "utf-8"));
+                        .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
             }
 
             out.writeBytes(buff.toString());

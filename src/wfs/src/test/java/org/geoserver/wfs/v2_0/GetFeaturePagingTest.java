@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -606,10 +607,11 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         assertEquals(String.valueOf(startIndex), kvp.get("STARTINDEX"));
         assertEquals(String.valueOf(count), kvp.get("COUNT"));
         assertEquals(
-                "(" + typeName + ")", URLDecoder.decode((String) kvp.get("TYPENAMES"), "UTF-8"));
+                "(" + typeName + ")",
+                URLDecoder.decode((String) kvp.get("TYPENAMES"), StandardCharsets.UTF_8));
         assertNotNull(kvp.get("FILTER"));
 
-        assertFilter(filter, URLDecoder.decode((String) kvp.get("FILTER"), "UTF-8"));
+        assertFilter(filter, URLDecoder.decode((String) kvp.get("FILTER"), StandardCharsets.UTF_8));
     }
 
     void assertFilter(Filter expected, String filter) throws Exception {

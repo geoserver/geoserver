@@ -8,6 +8,7 @@ package org.geoserver.ows;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -42,7 +43,7 @@ public class StylePublisher extends AbstractURLPublisher {
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
-        reqPath = URLDecoder.decode(reqPath, "UTF-8");
+        reqPath = URLDecoder.decode(reqPath, StandardCharsets.UTF_8);
         reqPath = reqPath.substring(ctxPath.length());
 
         if ((reqPath.length() > 1) && reqPath.startsWith("/")) {

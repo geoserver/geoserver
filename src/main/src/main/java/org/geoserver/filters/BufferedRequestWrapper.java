@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,20 +159,15 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
     protected void parsePair(String pair) {
         String[] split = pair.split("=", 2);
-        try {
-            String key = URLDecoder.decode(split[0], "UTF-8");
-            String value = (split.length > 1 ? URLDecoder.decode(split[1], "UTF-8") : "");
+        String key = URLDecoder.decode(split[0], StandardCharsets.UTF_8);
+        String value =
+                (split.length > 1 ? URLDecoder.decode(split[1], StandardCharsets.UTF_8) : "");
 
-            if (!myParameterMap.containsKey(key)) {
-                myParameterMap.put(key, new ArrayList<>());
-            }
-
-            myParameterMap.get(key).add(value);
-
-        } catch (UnsupportedEncodingException e) {
-            logger.severe("Failed to decode form values in LoggingFilter");
-            // we have the encoding hard-coded for now so no exceptions should be thrown...
+        if (!myParameterMap.containsKey(key)) {
+            myParameterMap.put(key, new ArrayList<>());
         }
+
+        myParameterMap.get(key).add(value);
     }
 
     private static class IteratorAsEnumeration<T> implements Enumeration<T> {

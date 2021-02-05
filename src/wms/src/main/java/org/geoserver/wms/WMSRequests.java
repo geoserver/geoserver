@@ -8,6 +8,8 @@ package org.geoserver.wms;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -413,7 +415,8 @@ public class WMSRequests {
             params.put("remote_ows_type", req.getRemoteOwsType());
         }
         if (req.getRemoteOwsURL() != null) {
-            String url = ResponseUtils.urlDecode(req.getRemoteOwsURL().toString());
+            String url =
+                    URLDecoder.decode(req.getRemoteOwsURL().toString(), StandardCharsets.UTF_8);
             params.put("remote_ows_url", url);
         }
         if (req.getScaleMethod() != null) {
@@ -435,7 +438,7 @@ public class WMSRequests {
         if (req.getSld() != null) {
             // the request encoder will url-encode the url, if it has already url encoded
             // chars, the will be encoded twice
-            params.put("sld", ResponseUtils.urlDecode(req.getSld().toString()));
+            params.put("sld", URLDecoder.decode(req.getSld().toString(), StandardCharsets.UTF_8));
         }
 
         if (req.getSldBody() != null) {

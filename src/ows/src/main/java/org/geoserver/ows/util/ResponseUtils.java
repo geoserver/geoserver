@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -473,12 +474,15 @@ public class ResponseUtils {
         return resultStr.toString();
     }
 
-    /** URL decods the value using ISO-8859-1 as the reference charset */
+    /**
+     * URL decodes the value using UTF-8 as the reference charset.
+     *
+     * @param value the string value to decode.
+     * @return decoded version of the string.
+     * @deprecated Use URLDecoder.decode(value, StandardCharsets.UTF_8) instead.
+     */
+    @Deprecated
     public static String urlDecode(String value) {
-        try {
-            return URLDecoder.decode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("This is unexpected", e);
-        }
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }

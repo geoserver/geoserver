@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.CatalogBuilder;
@@ -82,7 +83,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
     public void testSldDisabled() throws Exception {
         Map<String, Object> kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
-        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        String decoded = URLDecoder.decode(url.toExternalForm(), StandardCharsets.UTF_8);
         kvp.put("sld", decoded);
         kvp.put(
                 "layers",

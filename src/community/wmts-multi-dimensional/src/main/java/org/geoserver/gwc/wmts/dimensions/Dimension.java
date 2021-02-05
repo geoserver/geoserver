@@ -74,7 +74,7 @@ public abstract class Dimension {
      * Returns this dimension domain values filtered with the provided filter. The provided filter
      * can be NULL. Duplicate values may be included if noDuplicates parameter is set to FALSE.
      */
-    public abstract List<Object> getDomainValues(Filter filter, boolean noDuplicates);
+    public abstract List<Comparable> getDomainValues(Filter filter, boolean noDuplicates);
 
     /**
      * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
@@ -84,13 +84,13 @@ public abstract class Dimension {
             FeatureCollection features, String attribute, int expandLimit) {
         // grab domain, but at most expandLimit + 1, to know if there are too many
         if (expandLimit != 0) {
-            Set uniqueValues =
+            Set<Comparable> uniqueValues =
                     DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
             if (uniqueValues.size() <= expandLimit || expandLimit < 0) {
-                return new DomainSummary(new TreeSet(uniqueValues));
+                return new DomainSummary(new TreeSet<>(uniqueValues));
             }
         }
-        Map<Aggregate, Object> minMax =
+        Map<Aggregate, Comparable> minMax =
                 DimensionsUtils.getAggregates(attribute, features, Aggregate.MIN, Aggregate.MAX);
         // we return only the number of non null mix/max elements, as computing the whole count
         // might take just too much time on large datasets
@@ -106,12 +106,13 @@ public abstract class Dimension {
      */
     protected DomainSummary getPagedDomainValues(
             FeatureCollection features, String attribute, int maxValues) {
-        Set uniqueValues = DimensionsUtils.getUniqueValues(features, attribute, maxValues);
+        Set<Comparable> uniqueValues =
+                DimensionsUtils.getUniqueValues(features, attribute, maxValues);
         return new DomainSummary(uniqueValues);
     }
 
     /** Returns the data type of the dimension */
-    public abstract Class getDimensionType();
+    public abstract Class<?> getDimensionType();
 
     /**
      * Computes an histogram of this dimension domain values. The provided resolutionSpec value can
@@ -148,6 +149,7 @@ public abstract class Dimension {
             Tuple<String, List<Range>> specAndBuckets =
                     HistogramUtils.getNumericBuckets(min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
+            @SuppressWarnings("unchecked")
             Range<Double> referenceBucket = buckets.get(0);
             double resolution = referenceBucket.getMaxValue() - referenceBucket.getMinValue();
 
@@ -181,6 +183,7 @@ public abstract class Dimension {
             Tuple<String, List<Range>> specAndBuckets =
                     HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
+            @SuppressWarnings("unchecked")
             Range<Date> referenceBucket = buckets.get(0);
             double resolution =
                     referenceBucket.getMaxValue().getTime()
@@ -243,7 +246,10 @@ public abstract class Dimension {
     }
 
     public TreeMap<Object, Object> groupByDomainOnExpression(
-            Filter filter, Expression classifier, String dimensionAttribute, Class classifierType) {
+            Filter filter,
+            Expression classifier,
+            String dimensionAttribute,
+            Class<?> classifierType) {
         Query query = new Query();
         query.setFilter(filter);
         query.setPropertyNames(new String[] {dimensionAttribute});
@@ -265,6 +271,7 @@ public abstract class Dimension {
         }
 
         // turn the group result into the expected histogram result
+        @SuppressWarnings("unchecked")
         Map<List<Object>, Object> groupResult = visitor.getResult().toMap();
         TreeMap<Object, Object> sortedResults = new TreeMap<>();
         groupResult.forEach(

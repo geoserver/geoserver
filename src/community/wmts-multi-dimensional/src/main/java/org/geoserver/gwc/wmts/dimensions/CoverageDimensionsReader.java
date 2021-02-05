@@ -62,7 +62,7 @@ abstract class CoverageDimensionsReader {
     public abstract Tuple<String, FeatureCollection> getValues(
             String dimensionName, Query query, DataType dataType, SortOrder sortOrder);
 
-    List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType) {
+    List<Comparable> readWithDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
         Tuple<String, FeatureCollection> values =
@@ -74,7 +74,7 @@ abstract class CoverageDimensionsReader {
         return DimensionsUtils.getValuesWithDuplicates(values.first, values.second);
     }
 
-    Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType) {
+    Set<Comparable> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
         Tuple<String, FeatureCollection> values =
@@ -337,6 +337,7 @@ abstract class CoverageDimensionsReader {
             return ReferencedEnvelope.reference(reader.getOriginalEnvelope());
         }
 
+        @SuppressWarnings("ReturnValueIgnored")
         private DataType normalizeDataType(String rawValue, DataType dataType) {
             if (dataType.equals(DataType.CUSTOM)) {
                 try {

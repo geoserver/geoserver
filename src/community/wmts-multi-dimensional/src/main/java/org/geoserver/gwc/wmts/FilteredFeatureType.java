@@ -27,7 +27,7 @@ public class FilteredFeatureType extends DecoratingFeatureTypeInfo {
     }
 
     @Override
-    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints)
+    public SimpleFeatureSource getFeatureSource(ProgressListener listener, Hints hints)
             throws IOException {
         FeatureSource featureSource = super.getFeatureSource(listener, hints);
         if (!(featureSource instanceof SimpleFeatureSource)) {

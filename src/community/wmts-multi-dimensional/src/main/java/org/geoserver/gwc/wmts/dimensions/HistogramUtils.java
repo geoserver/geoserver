@@ -6,6 +6,7 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
-import org.geotools.gce.imagemosaic.properties.time.TimeParser;
 import org.geotools.util.DateRange;
+import org.geotools.util.DateTimeParser;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
@@ -65,7 +66,7 @@ final class HistogramUtils {
      * type.
      */
     static Tuple<String, List<Integer>> buildHistogram(
-            List<Object> domainValues, String resolution) {
+            List<Comparable> domainValues, String resolution) {
         if (domainValues.isEmpty()) {
             // FIXME: How to represent a domain with no values ?
             return Tuple.tuple("", Collections.emptyList());
@@ -89,7 +90,7 @@ final class HistogramUtils {
 
     /** Compute the buckets for the given domain values and resolution. */
     private static Tuple<String, List<Range>> computeBuckets(
-            List<Object> domainValues, String resolution) {
+            List<Comparable> domainValues, String resolution) {
         switch (findHistogramType(domainValues)) {
             case NUMERIC:
                 return getNumericBuckets(domainValues, resolution);
@@ -101,7 +102,7 @@ final class HistogramUtils {
     }
 
     /** Helper method that just founds the histogram type based on domains values. */
-    private static HistogramType findHistogramType(List<Object> domainValues) {
+    private static HistogramType findHistogramType(List<Comparable> domainValues) {
         Object value = domainValues.get(domainValues.size() - 1);
         if (value instanceof Range) {
             // this is a range so lets use the min value
@@ -123,7 +124,7 @@ final class HistogramUtils {
      * returned tuple will contain the domain representation and the domain buckets.
      */
     private static Tuple<String, List<Range>> getNumericBuckets(
-            List<Object> domainValues, String resolution) {
+            List<Comparable> domainValues, String resolution) {
         Tuple<Double, Double> minMax = DimensionsUtils.getMinMax(domainValues, Double.class);
         return getNumericBuckets(minMax.first, minMax.second, resolution);
     }
@@ -173,7 +174,7 @@ final class HistogramUtils {
      * returned tuple will contain the domain representation and the domain buckets.
      */
     private static Tuple<String, List<Range>> getTimeBuckets(
-            List<Object> domainValues, String resolution) {
+            List<Comparable> domainValues, String resolution) {
         Tuple<Date, Date> minMax = DimensionsUtils.getMinMax(domainValues, Date.class);
         return getTimeBuckets(minMax.first, minMax.second, resolution);
     }
@@ -232,9 +233,18 @@ final class HistogramUtils {
         ISO8601Formatter dateFormatter = new ISO8601Formatter();
         String domainString = dateFormatter.format(minMax.first);
         domainString += "/" + dateFormatter.format(minMax.second) + "/" + resolution;
-        TimeParser timeParser = new TimeParser();
+        DateTimeParser timeParser = new DateTimeParser();
         try {
-            List<Date> intervals = timeParser.parse(domainString);
+            List<Date> intervals = new ArrayList<>();
+            @SuppressWarnings("unchecked")
+            Collection<Object> parsed = timeParser.parse(domainString);
+            parsed.forEach(
+                    o -> {
+                        if (o instanceof Date) intervals.add((Date) o);
+                        else
+                            throw new RuntimeException(
+                                    "Unexpected DateRange specification found, this service can only handle points in time");
+                    });
             Date last = intervals.get(intervals.size() - 1);
             long resolutionInMs = org.geoserver.ows.kvp.TimeParser.parsePeriod(resolution);
             if (last.getTime() < minMax.second.getTime()) {
@@ -252,7 +262,7 @@ final class HistogramUtils {
      * the domain representation and the domain buckets. Note that in this case the resolution will
      * be ignored.
      */
-    private static Tuple<String, List<Range>> getEnumeratedBuckets(List<Object> domainValues) {
+    private static Tuple<String, List<Range>> getEnumeratedBuckets(List<Comparable> domainValues) {
         StringBuilder domain = new StringBuilder();
         List<Range> buckets = new ArrayList<>();
         for (Object value : domainValues) {

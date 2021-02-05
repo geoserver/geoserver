@@ -13,7 +13,6 @@ import org.geowebcache.storage.StorageBroker;
 
 final class SimpleConveyor extends Conveyor {
 
-    private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final Operation operation;
     private final KvpMap parameters;
@@ -25,7 +24,6 @@ final class SimpleConveyor extends Conveyor {
             StorageBroker storageBroker,
             KvpMap parameters) {
         super((String) parameters.get("layer"), storageBroker, request, response);
-        this.request = request;
         this.response = response;
         this.operation = operation;
         this.parameters = parameters;

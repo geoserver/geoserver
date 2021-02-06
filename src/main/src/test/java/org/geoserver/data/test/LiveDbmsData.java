@@ -41,6 +41,10 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - TOPP
  */
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class LiveDbmsData extends LiveSystemTestData {
     private static final Logger LOGGER = Logging.getLogger(LiveDbmsData.class);
 
@@ -123,6 +127,7 @@ public class LiveDbmsData extends LiveSystemTestData {
     }
 
     @Override
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     public void setUp() throws Exception {
         // if the test was disabled we don't need to run the setup
         if (fixture == null) return;
@@ -137,7 +142,7 @@ public class LiveDbmsData extends LiveSystemTestData {
         p.forEach((k, v) -> filters.put((String) k, (String) v));
 
         // replace the keys contained in catalog.xml with the actual values
-        if (filteredPaths != null && filteredPaths.size() > 0) {
+        if (filteredPaths != null && !filteredPaths.isEmpty()) {
             for (String path : filteredPaths) {
                 File from = new File(source, path);
                 File to = new File(data, path);

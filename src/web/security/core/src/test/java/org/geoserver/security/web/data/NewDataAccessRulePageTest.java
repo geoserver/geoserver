@@ -297,7 +297,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
             if (s.equals(searchValue)) return index;
             index++;
         }
-        assertTrue(index != -1);
+        assertNotEquals(index, -1);
         return -1;
     }
 }

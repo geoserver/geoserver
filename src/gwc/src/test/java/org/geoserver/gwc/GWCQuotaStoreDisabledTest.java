@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -43,8 +42,6 @@ public class GWCQuotaStoreDisabledTest extends GeoServerSystemTestSupport {
         assertNull(provider.getQuotaStore());
 
         // check there is no quota database
-        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        File gwc = dd.findOrCreateDir("gwc");
         File h2QuotaStore = new File("diskquota_page_store_h2");
         assertFalse(h2QuotaStore.exists());
     }

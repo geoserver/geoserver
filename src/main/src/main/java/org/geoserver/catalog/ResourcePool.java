@@ -1920,7 +1920,7 @@ public class ResourcePool {
 
         // check for mock bindings. Since we are going to run this code in production as well,
         // guard it so that it only triggers if the MockHttpClientProvider has any active binding
-        if (TestHttpClientProvider.testModeEnabled()
+        if (TestHttpClientProvider.isTestModeEnabled()
                 && capabilitiesURL.startsWith(TestHttpClientProvider.MOCKSERVER)) {
             HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
             return client;

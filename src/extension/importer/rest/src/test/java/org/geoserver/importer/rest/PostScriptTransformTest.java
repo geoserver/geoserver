@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.importer.transform.PostScriptTransform;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.junit.After;
+import org.junit.Test;
 
 public class PostScriptTransformTest extends TransformTestSupport {
 
@@ -31,12 +33,14 @@ public class PostScriptTransformTest extends TransformTestSupport {
         script.setExecutable(true, true);
     }
 
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         File dir = dd.getRoot().dir();
         FileUtils.deleteQuietly(dir);
     }
 
+    @Test
     public void testJSON() throws Exception {
         doJSONTest(new PostScriptTransform("test.sh", null));
         doJSONTest(new PostScriptTransform("test.sh", Arrays.asList("abcd")));

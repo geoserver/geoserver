@@ -34,7 +34,6 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
@@ -77,24 +76,18 @@ public class VectorTileMapOutputFormatTest {
 
     private static CoordinateReferenceSystem WGS84;
 
-    private static Style defaultPointStyle,
-            defaultLineStyle,
-            defaultPolygonStyle,
-            scaleDependentPolygonStyle;
-
-    private WMS wmsMock;
+    private static Style defaultPointStyle, defaultPolygonStyle, scaleDependentPolygonStyle;
 
     private VectorTileMapOutputFormat outputFormat;
 
     private VectorTileBuilder tileBuilderMock;
 
-    private FeatureLayer pointLayer, lineLayer, polygonLayer, scaleDependentPolygonLayer;
+    private FeatureLayer pointLayer, scaleDependentPolygonLayer;
     private List<MapContent> mapContents = new ArrayList<>();
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         defaultPointStyle = parseStyle("default_point.sld");
-        defaultLineStyle = parseStyle("default_line.sld");
         defaultPolygonStyle = parseStyle("default_polygon.sld");
         scaleDependentPolygonStyle = parseStyle("scaleDependentPolygonStyle.sld");
 
@@ -107,8 +100,6 @@ public class VectorTileMapOutputFormatTest {
 
     @Before
     public void before() throws Exception {
-        wmsMock = mock(WMS.class);
-
         tileBuilderMock = mock(VectorTileBuilder.class);
 
         VectorTileBuilderFactory tileBuilderFactory = mock(VectorTileBuilderFactory.class);
@@ -178,8 +169,6 @@ public class VectorTileMapOutputFormatTest {
                         "POLYGON ((11 11, 12 12, 13 13, 14 14, 11 11))"));
 
         pointLayer = new FeatureLayer(ds.getFeatureSource("points"), defaultPointStyle);
-        lineLayer = new FeatureLayer(ds.getFeatureSource("lines"), defaultLineStyle);
-        polygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), defaultPolygonStyle);
         scaleDependentPolygonLayer =
                 new FeatureLayer(ds.getFeatureSource("polygons"), scaleDependentPolygonStyle);
     }

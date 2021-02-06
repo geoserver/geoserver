@@ -32,6 +32,7 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
     GeometryFactory gf = new GeometryFactory();
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -74,14 +75,15 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         InclusionFeatureCollection process = new InclusionFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, secondFeatures);
         assertEquals(1, output.size());
-        SimpleFeatureIterator iterator = output.features();
-
-        Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
-        SimpleFeature sf = iterator.next();
-        assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        try (SimpleFeatureIterator iterator = output.features()) {
+            Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
+            SimpleFeature sf = iterator.next();
+            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        }
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecute1() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -122,10 +124,10 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         InclusionFeatureCollection process = new InclusionFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, secondFeatures);
         assertEquals(1, output.size());
-        SimpleFeatureIterator iterator = output.features();
-
-        Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
-        SimpleFeature sf = iterator.next();
-        assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        try (SimpleFeatureIterator iterator = output.features()) {
+            Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
+            SimpleFeature sf = iterator.next();
+            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        }
     }
 }

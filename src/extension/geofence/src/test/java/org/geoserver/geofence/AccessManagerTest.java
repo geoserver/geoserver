@@ -263,12 +263,10 @@ public class AccessManagerTest extends GeofenceBaseTest {
         // Check we have the geometry filter set
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, resource);
 
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
         Geometry expectedLimit =
                 new WKTReader()
                         .read(
                                 " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
-        Filter filter = ff.intersects(ff.property(""), ff.literal(expectedLimit));
 
         IntersectExtractor ier = new IntersectExtractor();
         vl.getReadFilter().accept(ier, null);

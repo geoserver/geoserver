@@ -56,8 +56,6 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSave() {
-        JAIInfo info = geoServer.getGlobal().getJAI();
-
         login();
 
         tester.startPage(JAIPage.class);
@@ -72,8 +70,6 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testApply() {
-        JAIInfo info = geoServer.getGlobal().getJAI();
-
         login();
 
         tester.startPage(JAIPage.class);

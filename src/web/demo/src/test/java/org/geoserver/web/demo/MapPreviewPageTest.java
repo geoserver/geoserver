@@ -29,7 +29,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -64,9 +63,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         // move to next page
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
-        // System.out.println(table.getDataProvider().size());
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         @SuppressWarnings("unchecked")

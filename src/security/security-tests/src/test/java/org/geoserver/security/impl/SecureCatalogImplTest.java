@@ -548,8 +548,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         buildManager("publicRead.properties");
 
         // get the CloseableIterator from SecureCatalogImpl and close it
-        CloseableIterator<LayerInfo> iterator;
-        iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
+        @SuppressWarnings("PMD.CloseResource")
+        CloseableIterator<LayerInfo> iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
         iterator.close();
 
         // verify that the mock CloseableIterator was closed

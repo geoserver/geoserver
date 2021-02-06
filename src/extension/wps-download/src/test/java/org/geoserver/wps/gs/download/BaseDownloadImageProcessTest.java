@@ -1,6 +1,6 @@
 package org.geoserver.wps.gs.download;
 
-import java.awt.*;
+import java.awt.Font;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;

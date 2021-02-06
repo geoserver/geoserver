@@ -5,7 +5,10 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -93,18 +96,18 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
         // let's check the iterator, should allow read but not remove
         FeatureCollection rofc = ro.getFeatures();
-        FeatureIterator roit = rofc.features();
-        roit.hasNext();
-        roit.next();
+        try (FeatureIterator roit = rofc.features()) {
+            roit.hasNext();
+            roit.next();
 
-        // check derived collections are still read only and share the same
-        // challenge policy
-        SecuredFeatureCollection sorted =
-                (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
-        assertEquals(ro.policy, sorted.policy);
-        SecuredFeatureCollection sub =
-                (SecuredFeatureCollection) rofc.subCollection(Filter.INCLUDE);
-        assertEquals(ro.policy, sorted.policy);
+            // check derived collections are still read only and share the same
+            // challenge policy
+            SecuredFeatureCollection sorted =
+                    (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
+            assertEquals(ro.policy, sorted.policy);
+            rofc.subCollection(Filter.INCLUDE);
+            assertEquals(ro.policy, sorted.policy);
+        }
     }
 
     @Test
@@ -150,17 +153,17 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
         // let's check the iterator, should allow read but not remove
         FeatureCollection rofc = ro.getFeatures();
-        FeatureIterator roit = rofc.features();
-        roit.hasNext();
-        roit.next();
+        try (FeatureIterator roit = rofc.features()) {
+            roit.hasNext();
+            roit.next();
 
-        // check derived collections are still read only and share the same
-        // challenge policy
-        SecuredFeatureCollection sorted =
-                (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
-        assertEquals(ro.policy, sorted.policy);
-        SecuredFeatureCollection sub =
-                (SecuredFeatureCollection) rofc.subCollection(Filter.INCLUDE);
-        assertEquals(ro.policy, sorted.policy);
+            // check derived collections are still read only and share the same
+            // challenge policy
+            SecuredFeatureCollection sorted =
+                    (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
+            assertEquals(ro.policy, sorted.policy);
+            rofc.subCollection(Filter.INCLUDE);
+            assertEquals(ro.policy, sorted.policy);
+        }
     }
 }

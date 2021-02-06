@@ -16,7 +16,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
@@ -104,13 +103,13 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetStatusAsJSON() throws Exception {
         // make the request, parsing the result into a Dom object
-        JSON dom = getAsJSON(BASEPATH + "/about/status.json");
+        getAsJSON(BASEPATH + "/about/status.json");
     }
 
     @Test
     public void testGetStatusAsXML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status.xml");
+        getAsDOM(BASEPATH + "/about/status.xml");
     }
 
     private void checkHTMLModel(Document dom) {

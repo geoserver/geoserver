@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.util.List;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -118,7 +117,6 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         assertEquals(0, catalog.count(LayerInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
-        List<LayerGroupInfo> groups = catalog.getLayerGroups();
         assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
     }
 

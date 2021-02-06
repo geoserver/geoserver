@@ -36,7 +36,7 @@ public class ImporterConfigPageTest extends GeoServerWicketTestSupport {
 
         // make sure it's populated correctly
         login();
-        ImporterConfigPage page = tester.startPage(ImporterConfigPage.class);
+        tester.startPage(ImporterConfigPage.class);
         tester.assertModelValue("form:uploadRoot:border:border_body:paramValue", temp);
         tester.assertModelValue("form:maxSync", 4);
         tester.assertModelValue("form:maxAsync", 2);

@@ -24,8 +24,6 @@ import org.w3c.dom.Document;
 
 public class CapabilitiesRootLayerTest extends WMSTestSupport {
 
-    private static final String BASE_URL = "http://localhost/geoserver";
-
     public CapabilitiesRootLayerTest() {
         super();
     }

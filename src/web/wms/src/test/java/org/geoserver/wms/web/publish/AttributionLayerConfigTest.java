@@ -22,7 +22,7 @@ import org.junit.Test;
 
 public class AttributionLayerConfigTest extends GeoServerWicketTestSupport {
 
-    public <T extends PublishedInfo> void testPublished(final IModel<T> publishedInfoModel) {
+    protected <T extends PublishedInfo> void testPublished(final IModel<T> publishedInfoModel) {
         FormTestPage page =
                 new FormTestPage(
                         new ComponentBuilder() {

@@ -5,7 +5,11 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.data.test.CiteTestData.BRIDGES;
+import static org.geoserver.data.test.CiteTestData.BUILDINGS;
+import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
+import static org.geoserver.data.test.CiteTestData.FORESTS;
+import static org.geoserver.data.test.CiteTestData.LAKES;
 
 import java.io.IOException;
 import org.geoserver.catalog.Catalog;

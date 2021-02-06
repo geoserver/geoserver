@@ -46,8 +46,7 @@ public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
         MetadataMap metadata = waterTemp.getResource().getMetadata();
         metadata.put(MultiDimensionalExtension.EXPAND_LIMIT_KEY, "50");
         metadata.put(MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY, "100");
-        MultiDimLayerPanel panel =
-                tester.startComponentInPage(new MultiDimLayerPanel("foo", new Model<>(waterTemp)));
+        tester.startComponentInPage(new MultiDimLayerPanel("foo", new Model<>(waterTemp)));
         // print(tester.getLastRenderedPage(), true, true, true);
         tester.assertNoErrorMessage();
         tester.assertModelValue("foo:defaultExpandLimit", "50");

@@ -52,7 +52,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     @Rule public TestName testName = new TestName();
 
     @DataPoints
-    public static String[] testPaths() {
+    public static String[] getTestPaths() {
         return new String[] {
             "FileA",
             "FileB",
@@ -192,9 +192,6 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     public void directoryEvents() throws Exception {
         File fileA = Paths.toFile(store.baseDirectory, "FileA");
         File fileB = Paths.toFile(store.baseDirectory, "FileB");
-        File dirC = Paths.toFile(store.baseDirectory, "DirC");
-        File fileD = Paths.toFile(store.baseDirectory, "DirC/FileD");
-        File dirE = Paths.toFile(store.baseDirectory, "DirE");
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);

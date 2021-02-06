@@ -223,9 +223,9 @@ public class GeoServerWicketOnlineTestSupport {
     protected HttpURLConnection doPost(HttpURLConnection huc, String body) throws IOException {
         huc.connect();
 
-        PrintWriter out = new java.io.PrintWriter(huc.getOutputStream());
-        out.print(body);
-        out.close();
+        try (PrintWriter out = new java.io.PrintWriter(huc.getOutputStream())) {
+            out.print(body);
+        }
 
         return huc;
     }

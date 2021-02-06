@@ -25,8 +25,7 @@ public class MultiDimAdminPanelTest extends GeoServerWicketTestSupport {
         MetadataMap metadata = info.getMetadata();
         metadata.put(MultiDimensionalExtension.EXPAND_LIMIT_KEY, "50");
         metadata.put(MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY, "100");
-        MultiDimAdminPanel panel =
-                tester.startComponentInPage(new MultiDimAdminPanel("foo", new Model<>(info)));
+        tester.startComponentInPage(new MultiDimAdminPanel("foo", new Model<>(info)));
         print(tester.getLastRenderedPage(), true, true, true);
         tester.assertNoErrorMessage();
         tester.assertModelValue("foo:defaultExpandLimit", "50");

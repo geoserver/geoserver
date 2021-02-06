@@ -239,7 +239,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     }
 
     @Test
-    public void testLayerGroupAllPage() throws Exception {
+    public void testLayerGroupAllPage() {
         loginAsCite();
 
         tester.startPage(LayerGroupPage.class);
@@ -254,7 +254,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) {
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) { // NOPMD
             String name =
                     it.next()
                             .get("itemProperties:0:component:link:label")

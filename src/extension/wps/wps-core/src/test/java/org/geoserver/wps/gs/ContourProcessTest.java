@@ -49,13 +49,13 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         assertNotNull(fc);
         assertTrue(fc.size() > 0);
 
-        SimpleFeatureIterator fi = fc.features();
-        while (fi.hasNext()) {
-            SimpleFeature sf = fi.next();
-            Double value = (Double) sf.getAttribute("value");
-            assertTrue(value == 1500.0 || value == 1700.0);
+        try (SimpleFeatureIterator fi = fc.features()) {
+            while (fi.hasNext()) {
+                SimpleFeature sf = fi.next();
+                Double value = (Double) sf.getAttribute("value");
+                assertTrue(value == 1500.0 || value == 1700.0);
+            }
         }
-        fi.close();
     }
 
     private GridCoverage2D extractCoverageSubset() throws IOException {
@@ -102,12 +102,12 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         assertNotNull(fc);
         assertTrue(fc.size() > 0);
 
-        SimpleFeatureIterator fi = fc.features();
-        while (fi.hasNext()) {
-            SimpleFeature sf = fi.next();
-            Double value = (Double) sf.getAttribute("value");
-            assertTrue(value > 0);
+        try (SimpleFeatureIterator fi = fc.features()) {
+            while (fi.hasNext()) {
+                SimpleFeature sf = fi.next();
+                Double value = (Double) sf.getAttribute("value");
+                assertTrue(value > 0);
+            }
         }
-        fi.close();
     }
 }

@@ -51,9 +51,9 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         // the resolution is 1s instead of 1ms)
         Thread.sleep(1001);
 
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)));
-        out.println("\nformat.value='img/jpeg'");
-        out.close();
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)))) {
+            out.println("\nformat.value='img/jpeg'");
+        }
 
         // wait one second, that is exactly what it takes FileWatcher to update
         Thread.sleep(1001);

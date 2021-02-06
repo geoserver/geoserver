@@ -151,10 +151,6 @@ public abstract class AbstractSecurityNamedServicePanelTest
             setFormComponentValue(selectAllPathComponent, "true");
             tester.executeAjaxEvent(selectAllPath, "click");
         } else {
-            @SuppressWarnings("unchecked")
-            DataView<SecurityNamedServiceConfig> dataview =
-                    (DataView<SecurityNamedServiceConfig>)
-                            testPage.get(basePanelId + ":table:listContainer:items");
             List<String> nameList = Arrays.asList(serviceNames);
 
             Iterator<Item<SecurityNamedServiceConfig>> it = getDataView().getItems();

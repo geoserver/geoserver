@@ -68,11 +68,13 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
         StyleHandler sldHandler = Styles.handler(SLDHandler.FORMAT);
         File sldFile = Files.createTempFile("citeGroup", "sld").toFile();
-        OutputStream fout = new FileOutputStream(sldFile);
-        sldHandler.encode(sld, SLDHandler.VERSION_10, true, fout);
+        try (OutputStream fout = new FileOutputStream(sldFile)) {
+            sldHandler.encode(sld, SLDHandler.VERSION_10, true, fout);
 
-        StyledLayerDescriptor sld2 =
-                sldHandler.parse(new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
-        assertEquals(3, sld2.getStyledLayers().length);
+            StyledLayerDescriptor sld2 =
+                    sldHandler.parse(
+                            new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
+            assertEquals(3, sld2.getStyledLayers().length);
+        }
     }
 }

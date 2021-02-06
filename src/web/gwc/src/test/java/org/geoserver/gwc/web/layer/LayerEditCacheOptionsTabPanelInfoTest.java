@@ -57,7 +57,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         when(layer.getResource()).thenReturn(resource);
         MetadataMap mdm = new MetadataMap();
         when(layer.getMetadata()).thenReturn(mdm);
-        resourceModel = new Model<ResourceInfo>(resource);
+        resourceModel = new Model<>(resource);
         layerModel = new Model<>(layer);
     }
 

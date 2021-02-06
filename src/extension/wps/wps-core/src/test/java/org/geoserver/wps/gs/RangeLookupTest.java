@@ -136,21 +136,24 @@ public class RangeLookupTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         // System.out.println(response.getOutputStreamContent());
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(144.9, 146.1, -40.9, -43.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(144.9, 146.1, -40.9, -43.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        double[] valueOnRangeA = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
-        double[] valueOnRangeB = (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-        double[] valueOutsideRange = (double[]) gc.evaluate(new DirectPosition2D(145.22, -42.66));
+            double[] valueOnRangeA = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
+            double[] valueOnRangeB =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+            double[] valueOutsideRange =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.22, -42.66));
 
-        assertEquals(50.0, valueOnRangeA[0], DELTA);
-        assertEquals(110.0, valueOnRangeB[0], DELTA);
-        assertEquals(0.0, valueOutsideRange[0], DELTA);
+            assertEquals(50.0, valueOnRangeA[0], DELTA);
+            assertEquals(110.0, valueOnRangeB[0], DELTA);
+            assertEquals(0.0, valueOutsideRange[0], DELTA);
+        }
     }
 }

@@ -8,7 +8,13 @@ package org.geoserver.security.xml;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.geoserver.security.xml.XMLSecurityConfigException.*;
+import static org.geoserver.security.xml.XMLSecurityConfigException.CHECK_INTERVAL_INVALID;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_CHANGE_INVALID_$2;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_REQUIRED;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILE_CREATE_FAILED_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.ROLE_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_REQUIRED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -25,7 +31,6 @@ import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
-import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
@@ -297,8 +302,6 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                                 getPlainTextPasswordEncoder().getName(),
                                 PasswordValidator.DEFAULT_NAME,
                                 "test1.xml");
-
-        GeoServerUserGroup group = new GeoServerUserGroup("testgroup");
 
         try {
             validator.validateAddUserGroupService(xmlConfig);

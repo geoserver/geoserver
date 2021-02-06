@@ -54,7 +54,8 @@ public class ElevationKvpParserTest {
         Assert.assertEquals(8.9, elements.get(5));
     }
 
-    public ElevationKvpParser testOrderedSequence() throws ParseException {
+    @Test
+    public void testOrderedSequence() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
         @SuppressWarnings("unchecked")
         List<Object> elements = new ArrayList((Collection) parser.parse("1,2,3,4,5,8.9"));
@@ -64,6 +65,5 @@ public class ElevationKvpParserTest {
         Assert.assertEquals(4.0, elements.get(3));
         Assert.assertEquals(5.0, elements.get(4));
         Assert.assertEquals(8.9, elements.get(5));
-        return parser;
     }
 }

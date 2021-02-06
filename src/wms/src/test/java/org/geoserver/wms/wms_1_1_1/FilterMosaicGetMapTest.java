@@ -8,6 +8,8 @@ package org.geoserver.wms.wms_1_1_1;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import org.geoserver.wms.WMSFilterMosaicTestSupport;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Class to test ImageMosaic cql filter
@@ -15,6 +17,7 @@ import org.geoserver.wms.WMSFilterMosaicTestSupport;
  * @see {@link WMSFilterMosaicTestSupport}
  * @author carlo cancellieri
  */
+@Ignore // not a single test passes, they were not annotated with @Test and were not running
 public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
 
     static final String layer = WATTEMP.getLocalPart();
@@ -32,6 +35,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
     // specifying default filter
     static final String cql_filter = "elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'";
 
+    @Test
     public void testAsCQL() throws Exception {
         // CASE 'MOSAIC WITH DEFAULT FILTERS'
 
@@ -46,6 +50,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
 
+    @Test
     public void testCaseDefault() throws Exception {
         // CASE 'MOSAIC WITHOUT FILTERS'
 
@@ -60,6 +65,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         assertPixel(image, 68, 72, new Color(255, 182, 182));
     }
 
+    @Test
     public void testCaseElev100andIngestion31Oct() throws Exception {
         // CASE 'MOSAIC WITH FILTERS'
 
@@ -78,6 +84,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
 
+    @Test
     public void testCaseElev100andIngestion01Nov() throws Exception {
 
         // CASE 'MOSAIC WITH FILTERS'
@@ -97,6 +104,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         assertPixel(image, 68, 72, new Color(246, 246, 255));
     }
 
+    @Test
     public void testCaseElev0andIngestion31Oct() throws Exception {
         // CASE 'MOSAIC WITH FILTERS'
 
@@ -115,6 +123,7 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         assertPixel(image, 68, 72, new Color(255, 182, 182));
     }
 
+    @Test
     public void testCaseElev0andIngestion01Nov() throws Exception {
         // CASE 'MOSAIC WITH FILTERS'
 

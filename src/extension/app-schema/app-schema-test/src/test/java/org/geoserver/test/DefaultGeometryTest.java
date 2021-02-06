@@ -303,7 +303,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                 XPATH_STATION_WITH_MEASUREMENTS_GEOM);
     }
 
-    public void testWfsGetFeature(
+    protected void testWfsGetFeature(
             String wfsVersion,
             String featureType,
             String xpathFeature,
@@ -405,7 +405,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                 XPATH_STATION_WITH_MEASUREMENTS_GEOM);
     }
 
-    public void testWmsGetFeatureInfo(
+    protected void testWmsGetFeatureInfo(
             String layer,
             String style,
             int x,

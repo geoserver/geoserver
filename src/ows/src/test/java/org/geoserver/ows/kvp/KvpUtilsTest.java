@@ -140,19 +140,19 @@ public class KvpUtilsTest {
         try {
             KvpUtils.escapedTokens(null, ',');
             Assert.fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.escapedTokens("", '\\');
             Assert.fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.escapedTokens("\\", '\\');
             Assert.fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+        } catch (IllegalArgumentException e) {
         }
     }
 
@@ -173,13 +173,13 @@ public class KvpUtilsTest {
         try {
             KvpUtils.unescape(null);
             Assert.fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.unescape("\\");
             Assert.fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+        } catch (IllegalArgumentException e) {
         }
     }
 

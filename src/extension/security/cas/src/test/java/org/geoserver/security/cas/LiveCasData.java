@@ -165,6 +165,7 @@ public class LiveCasData extends LiveSystemTestData {
     }
 
     @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         // if the test was disabled we don't need to run the setup
         if (fixture == null) return;
@@ -198,8 +199,9 @@ public class LiveCasData extends LiveSystemTestData {
         KeyStore ks = KeyStore.getInstance("JKS");
         File base = new File(System.getProperty("user.home"), ".geoserver");
         File keystore = new File(base, "keystore.jks");
-        FileInputStream fis = new FileInputStream(keystore);
-        ks.load(fis, password);
+        try (FileInputStream fis = new FileInputStream(keystore)) {
+            ks.load(fis, password);
+        }
 
         // setup the key manager factory
 

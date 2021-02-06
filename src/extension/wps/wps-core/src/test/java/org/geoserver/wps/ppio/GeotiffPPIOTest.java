@@ -83,7 +83,7 @@ public class GeotiffPPIOTest {
 
     @Test
     public void testCropped() throws Exception {
-        GridCoverage2D cov = getCoverage();
+        getCoverage(); // populates this.coverage
         ReferencedEnvelope re = ReferencedEnvelope.reference(coverage.getEnvelope2D());
         re.expandBy(-0.1);
         this.coverage = new CropCoverage().execute(coverage, JTS.toGeometry(re), null);

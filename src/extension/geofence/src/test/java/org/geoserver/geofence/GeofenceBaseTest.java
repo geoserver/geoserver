@@ -119,7 +119,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             IS_GEOFENCE_AVAILABLE = true;
             System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
         } else {
-            System.out.println(
+            LOGGER.warning(
                     "Skipping test in "
                             + getClass().getSimpleName()
                             + " as GeoFence service is down: "
@@ -172,7 +172,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             final RuleFilter ruleFilter = new RuleFilter();
             ruleFilter.setService("WMS");
             final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
-            if (geofenceService != null && matchingRules != null && matchingRules.size() > 0) {
+            if (geofenceService != null && matchingRules != null && !matchingRules.isEmpty()) {
                 LOGGER.log(Level.WARNING, "GeoFence is active");
                 return true;
             }

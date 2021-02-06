@@ -58,7 +58,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private static final String RGB_IR_VIEW = "RgbIrView";
-    private static final String S2_REDUCED_VIEW = "s2reduced_view";
     private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);

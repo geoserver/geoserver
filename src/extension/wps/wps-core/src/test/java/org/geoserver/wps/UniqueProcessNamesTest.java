@@ -43,9 +43,6 @@ public class UniqueProcessNamesTest extends WPSTestSupport {
 
         // remove duplicate names
         removeSingle(procs, uniqueProcs);
-        if (procs.size() > 0) {
-            System.out.println("Duplicate process names: " + procs);
-        }
         assertEquals(0, procs.size());
     }
 

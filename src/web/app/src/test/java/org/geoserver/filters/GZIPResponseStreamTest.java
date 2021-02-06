@@ -26,10 +26,10 @@ public class GZIPResponseStreamTest {
     public void testStream() throws Exception {
         ByteStreamCapturingHttpServletResponse response =
                 new ByteStreamCapturingHttpServletResponse(new MockHttpServletResponse());
-        GZIPResponseStream stream = new GZIPResponseStream(response);
-        stream.write("Hello world!".getBytes());
-        stream.flush();
-        stream.close();
+        try (GZIPResponseStream stream = new GZIPResponseStream(response)) {
+            stream.write("Hello world!".getBytes());
+            stream.flush();
+        }
         assertEquals("Hello world!", new String(unzip(response.toByteArray())));
     }
 

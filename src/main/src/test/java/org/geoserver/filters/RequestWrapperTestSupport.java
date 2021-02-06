@@ -24,6 +24,7 @@ public class RequestWrapperTestSupport {
                 "test\ncontaining\nnewlines"
             };
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected MockHttpServletRequest makeRequest(String body, String queryString)
             throws UnsupportedEncodingException {
         MockHttpServletRequest request = new MockHttpServletRequest();

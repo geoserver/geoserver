@@ -406,22 +406,23 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         File info = dd.config(lakes).file();
         // File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
 
-        FileReader in = new FileReader(info);
-        Element dom = ReaderUtils.parse(in);
-        Element title = ReaderUtils.getChildElement(dom, "title");
-        title.getFirstChild().setNodeValue("foo");
+        try (FileReader in = new FileReader(info)) {
+            Element dom = ReaderUtils.parse(in);
+            Element title = ReaderUtils.getChildElement(dom, "title");
+            title.getFirstChild().setNodeValue("foo");
 
-        try (OutputStream output = new FileOutputStream(info)) {
-            TransformerFactory.newInstance()
-                    .newTransformer()
-                    .transform(new DOMSource(dom), new StreamResult(output));
+            try (OutputStream output = new FileOutputStream(info)) {
+                TransformerFactory.newInstance()
+                        .newTransformer()
+                        .transform(new DOMSource(dom), new StreamResult(output));
+            }
+
+            getGeoServer().reload();
+            lakes =
+                    cat.getFeatureTypeByName(
+                            MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+            assertEquals("foo", lakes.getTitle());
         }
-
-        getGeoServer().reload();
-        lakes =
-                cat.getFeatureTypeByName(
-                        MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        assertEquals("foo", lakes.getTitle());
     }
 
     @Test
@@ -853,14 +854,16 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         GeometryDescriptor schemaDefaultGeometry =
                 featureType.getFeatureType().getGeometryDescriptor();
 
-        FeatureIterator i = featureType.getFeatureSource(null, null).getFeatures().features();
-        GeometryDescriptor featureDefaultGeometry =
-                i.next().getDefaultGeometryProperty().getDescriptor();
+        try (FeatureIterator i =
+                featureType.getFeatureSource(null, null).getFeatures().features()) {
+            GeometryDescriptor featureDefaultGeometry =
+                    i.next().getDefaultGeometryProperty().getDescriptor();
 
-        assertNotNull(schemaDefaultGeometry);
-        assertNotNull(featureDefaultGeometry);
-        assertEquals("pointProperty", schemaDefaultGeometry.getLocalName());
-        assertEquals(schemaDefaultGeometry, featureDefaultGeometry);
+            assertNotNull(schemaDefaultGeometry);
+            assertNotNull(featureDefaultGeometry);
+            assertEquals("pointProperty", schemaDefaultGeometry.getLocalName());
+            assertEquals(schemaDefaultGeometry, featureDefaultGeometry);
+        }
     }
 
     /**

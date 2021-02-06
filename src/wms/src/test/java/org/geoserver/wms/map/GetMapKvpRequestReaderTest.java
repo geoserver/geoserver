@@ -66,6 +66,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
@@ -385,7 +386,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNotNull(request.getCQLFilter());
         assertEquals(1, request.getCQLFilter().size());
 
-        PropertyIsEqualTo filter = (PropertyIsEqualTo) request.getCQLFilter().get(0);
+        assertThat(request.getCQLFilter().get(0), CoreMatchers.instanceOf(PropertyIsEqualTo.class));
     }
 
     @Test
@@ -1278,10 +1279,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                         try {
                             t.sendResponseHeaders(200, 5000000000l);
                             TimeUnit.SECONDS.sleep(4);
-                            OutputStream outputStream = t.getResponseBody();
-                            outputStream.write("This is a bad style".getBytes());
-                            outputStream.flush();
-                            outputStream.close();
+                            try (OutputStream outputStream = t.getResponseBody()) {
+                                outputStream.write("This is a bad style".getBytes());
+                                outputStream.flush();
+                            }
                         } catch (InterruptedException e) {
                             LOG.log(Level.INFO, e.getMessage(), e);
                         }

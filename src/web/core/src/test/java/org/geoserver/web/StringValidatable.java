@@ -29,7 +29,7 @@ public class StringValidatable implements IValidatable<String> {
     }
 
     public boolean isValid() {
-        return errors.size() == 0;
+        return errors.isEmpty();
     }
 
     public List<IValidationError> getErrors() {

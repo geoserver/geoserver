@@ -161,14 +161,14 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         @Override
         public void handle(HttpExchange ex) throws IOException {
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(ex.getRequestBody()));
-            String line = "";
             StringBuffer buff = new StringBuffer();
-            while ((line = in.readLine()) != null) {
-                buff.append(line);
+            try (BufferedReader in =
+                    new BufferedReader(new InputStreamReader(ex.getRequestBody()))) {
+                String line = "";
+                while ((line = in.readLine()) != null) {
+                    buff.append(line);
+                }
             }
-            in.close();
 
             MockHttpServletRequest request = createRequest(service);
             request.setMethod("POST");

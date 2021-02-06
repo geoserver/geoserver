@@ -140,14 +140,15 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         p.put("ElevationAttribute", "elevation");
         p.put("Schema", "*the_geom:Polygon,location:String,elevation:Integer");
         p.put("PropertyCollectors", "IntegerFileNameExtractorSPI[elevationregex](elevation)");
-        FileOutputStream fos = new FileOutputStream(new File(mosaic, "indexer.properties"));
-        p.store(fos, null);
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(new File(mosaic, "indexer.properties"))) {
+            p.store(fos, null);
+        }
         // and the regex itself
         p.clear();
         p.put("regex", "(?<=_)(\\d{4})");
-        fos = new FileOutputStream(new File(mosaic, "elevationregex.properties"));
-        p.store(fos, null);
-        fos.close();
+        try (FileOutputStream fos =
+                new FileOutputStream(new File(mosaic, "elevationregex.properties"))) {
+            p.store(fos, null);
+        }
     }
 }

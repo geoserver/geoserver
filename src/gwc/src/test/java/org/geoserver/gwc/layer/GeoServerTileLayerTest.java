@@ -522,7 +522,7 @@ public class GeoServerTileLayerTest {
         BoundingBox expected = gridSetBroker.getWorldEpsg3857().getOriginalExtent();
         // don't use equals(), it uses an equality threshold we want to avoid here
         double threshold = 1E-16;
-        assertTrue(
+        assertTrue( // NOPMD
                 "Expected " + expected + ", got " + gridSubsetExtent,
                 expected.equals(gridSubsetExtent, threshold));
     }

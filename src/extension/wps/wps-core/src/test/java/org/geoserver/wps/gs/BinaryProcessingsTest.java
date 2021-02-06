@@ -89,19 +89,21 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                         + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), addXml);
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage2D gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage2D gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(144.9, 146.1, -40.9, -43.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(144.9, 146.1, -40.9, -43.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        addToSameCoverageValue = (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-        assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
+            addToSameCoverageValue =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+            assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
 
-        gc.dispose(true);
+            gc.dispose(true);
+        }
     }
 
     @Test
@@ -161,20 +163,21 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                         + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), multiplyXml);
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage2D gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage2D gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(144.9, 146.1, -40.9, -43.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(144.9, 146.1, -40.9, -43.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        multiplyForSameCoverageValue =
-                (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-        assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
+            multiplyForSameCoverageValue =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+            assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
 
-        gc.dispose(true);
+            gc.dispose(true);
+        }
     }
 
     @Test

@@ -65,6 +65,7 @@ public class GetFeatureBoundedTest extends WFSTestSupport {
 
         FeatureBoundsFeatureCollection fbc =
                 new FeatureBoundsFeatureCollection(decorated, decorated.getSchema());
+        @SuppressWarnings("PMD.CloseResource")
         FeatureIterator<?> i = fbc.features();
         i.close();
 

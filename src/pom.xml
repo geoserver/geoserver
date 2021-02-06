@@ -2287,11 +2287,13 @@
             <configuration>
               <rulesets>
                 <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
+                <ruleset>${geoserverBaseDir}/../build/qa/pmd-junit-ruleset.xml</ruleset>
               </rulesets>
               <failurePriority>3</failurePriority>
               <minimumPriority>3</minimumPriority>
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
+              <includeTests>true</includeTests>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>

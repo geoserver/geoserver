@@ -2037,7 +2037,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
             assumeTrue(rootMapping.getSource().getDataStore() instanceof JDBCDataStore);
 
             JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
-            NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
 
             FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
             ff.setNamepaceContext(rootMapping.getNamespaces());
@@ -2168,13 +2167,14 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     /** Helper method that just reads a JSON object from a resource file. */
     private JSONObject readJsonObject(String resourcePath) throws Exception {
         // read the JSON file content
-        InputStream input = this.getClass().getResourceAsStream(resourcePath);
-        assertThat(input, notNullValue());
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        IOUtils.copy(input, output);
-        // parse the JSON file
-        String jsonText = new String(output.toByteArray());
-        return JSONObject.fromObject(jsonText);
+        try (InputStream input = this.getClass().getResourceAsStream(resourcePath)) {
+            assertThat(input, notNullValue());
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            IOUtils.copy(input, output);
+            // parse the JSON file
+            String jsonText = new String(output.toByteArray());
+            return JSONObject.fromObject(jsonText);
+        }
     }
 
     private void assertImportExists(Document doc, String ns) {

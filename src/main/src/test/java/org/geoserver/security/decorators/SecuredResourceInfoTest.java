@@ -85,6 +85,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
      *     retrieved from the source.
      * @return A Thread instance that will repeated call target.setStore(source.getStore());
      */
+    @SuppressWarnings("PMD.AvoidThreadGroup")
     private Thread getRoundTripThread(final S source, final S target) {
         // This is just a simple thread that will loop a bunch of times copying the info onto
         // itself.

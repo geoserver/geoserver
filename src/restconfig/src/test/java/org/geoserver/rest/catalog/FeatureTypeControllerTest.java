@@ -324,17 +324,14 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
+        getAsDOM(BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
     }
 
     @Test
     public void testGetAllAsHTML() throws Exception {
         addPropertyDataStore(true);
 
-        String dom = getAsString(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml");
+        getAsString(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml");
 
         // System.out.println(dom);
     }

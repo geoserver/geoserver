@@ -5,7 +5,8 @@
 
 package org.geoserver.geofence.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Level;
 import org.apache.wicket.markup.html.form.DropDownChoice;

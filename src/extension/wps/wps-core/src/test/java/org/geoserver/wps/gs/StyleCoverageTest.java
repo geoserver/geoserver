@@ -6,12 +6,20 @@
 package org.geoserver.wps.gs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.awt.image.IndexColorModel;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StyleCoverageTest extends WPSTestSupport {
@@ -90,34 +98,34 @@ public class StyleCoverageTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         assertEquals("attachment; filename=result.tiff", response.getHeader("Content-Disposition"));
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
+            try (FileOutputStream fos = new FileOutputStream("target/testfile.tiff")) {
+                IOUtils.copy(is, fos);
+            }
 
-        // very odd, the tiff reader is not able to read the tiff file, yet desktop apps
-        // can read that file just fine...
+            GeoTiffFormat format = new GeoTiffFormat();
+            try (InputStream fis = new FileInputStream("target/testfile.tiff")) {
+                GridCoverage2D gc = format.getReader(fis).read(null);
 
-        //        IOUtils.copy(is, new FileOutputStream("/tmp/testfile.tiff"));
-        //
-        //        GeoTiffFormat format = new GeoTiffFormat();
-        //        GridCoverage2D gc = format.getReader(new
-        // FileInputStream("/tmp/testfile.tiff")).read(null);
-        //
-        //        GridCoverage original =
-        // getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
-        //                .getGridCoverage(null, null);
-        //
-        //        // check the envelope did not change
-        //        assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0),
-        // EPS);
-        //        assertEquals(original.getEnvelope().getMinimum(1), gc.getEnvelope().getMinimum(1),
-        // EPS);
-        //        assertEquals(original.getEnvelope().getMaximum(0), gc.getEnvelope().getMaximum(0),
-        // EPS);
-        //        assertEquals(original.getEnvelope().getMaximum(1), gc.getEnvelope().getMaximum(1),
-        // EPS);
-        //
-        //        // check the color model is the expected one
-        //        assertTrue(gc.getRenderedImage().getColorModel() instanceof ComponentColorModel);
-        //        assertEquals(3, gc.getRenderedImage().getSampleModel().getNumBands());
+                GridCoverage original =
+                        getCatalog()
+                                .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
+                                .getGridCoverage(null, null);
 
+                // check the envelope did not change
+                assertEquals(
+                        original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);
+                assertEquals(
+                        original.getEnvelope().getMinimum(1), gc.getEnvelope().getMinimum(1), EPS);
+                assertEquals(
+                        original.getEnvelope().getMaximum(0), gc.getEnvelope().getMaximum(0), EPS);
+                assertEquals(
+                        original.getEnvelope().getMaximum(1), gc.getEnvelope().getMaximum(1), EPS);
+
+                // check the color model is the expected one
+                assertTrue(gc.getRenderedImage().getColorModel() instanceof IndexColorModel);
+                assertEquals(1, gc.getRenderedImage().getSampleModel().getNumBands());
+            }
+        }
     }
 }

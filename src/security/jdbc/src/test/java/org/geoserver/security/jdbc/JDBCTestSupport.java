@@ -36,7 +36,6 @@ public class JDBCTestSupport {
             dropExistingTables(service, con);
         } catch (SQLException ex) {
             throw new IOException(ex);
-        } finally {;;
         }
     }
 
@@ -61,7 +60,6 @@ public class JDBCTestSupport {
                 if (ps != null) ps.close();
             } catch (SQLException ex) {
             }
-            ;
         }
     }
 

@@ -464,6 +464,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      *
      * @param path The path for the request and optional the query string.
      */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected MockHttpServletRequest createRequest(String path) {
         MockHttpServletRequest request = new GeoServerMockHttpServletRequest();
 
@@ -891,7 +892,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 new ErrorHandler() {
 
                     public void warning(SAXParseException exception) throws SAXException {
-                        System.out.println(exception.getMessage());
+                        LOGGER.warning(exception.getMessage());
                     }
 
                     public void fatalError(SAXParseException exception) throws SAXException {
@@ -903,7 +904,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                     }
                 });
         validator.validate(new DOMSource(dom));
-        if (validationErrors != null && validationErrors.size() > 0) {
+        if (validationErrors != null && !validationErrors.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Exception ve : validationErrors) {
                 sb.append(ve.getMessage()).append("\n");
@@ -1004,6 +1005,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     /** Utility method to print out the contents of an input stream. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(InputStream in) throws Exception {
         BufferedReader r = new BufferedReader(new InputStreamReader(in));
         String line = null;
@@ -1013,6 +1015,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     /** Utility method to print out the contents of a json object. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(JSON json) {
         System.out.println(json.toString(2));
     }
@@ -1313,7 +1316,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         }
 
         public int readLine(byte[] b, int offset, int length) {
-            int realOffset = offset + myOffset;
             int i;
 
             for (i = 0; (i < length) && (i + myOffset < myBody.length); i++) {

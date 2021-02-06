@@ -48,8 +48,6 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSave() {
-        GeoServerInfo info = gs.getGlobal();
-
         login();
         tester.startPage(GlobalSettingsPage.class);
         FormTester ft = tester.newFormTester("form");
@@ -62,8 +60,6 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testApply() {
-        GeoServerInfo info = gs.getGlobal();
-
         login();
         tester.startPage(GlobalSettingsPage.class);
         FormTester ft = tester.newFormTester("form");

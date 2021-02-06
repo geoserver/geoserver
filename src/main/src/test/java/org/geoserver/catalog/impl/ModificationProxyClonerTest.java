@@ -26,7 +26,7 @@ public class ModificationProxyClonerTest {
 
     @Test
     public void testCloneString() throws Exception {
-        String source = new String("abc");
+        String source = "abc";
         String copy = ModificationProxyCloner.clone(source);
         assertSame(source, copy);
     }

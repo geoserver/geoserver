@@ -6,6 +6,7 @@
 package org.geoserver.wms.legendgraphic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -54,7 +55,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
@@ -277,7 +277,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
                 cat.getFeatureTypeByName(
                         MockData.ROAD_SEGMENTS.getNamespaceURI(),
                         MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers = new ArrayList<>();
         req.setLayer(ftInfo.getFeatureType());
 
         req.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
@@ -538,8 +537,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         builder.setCRS(crs);
 
-        GeometryFactory geometryFactory = new GeometryFactory();
-
         AttributeType at =
                 new AttributeTypeImpl(
                         new NameImpl("ID"),
@@ -645,7 +642,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testProportionalSymbolSize() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -687,7 +683,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testProportionalSymbolThickBorder() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -718,7 +713,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testProportionalSymbolsLine() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -748,7 +742,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testProportionalSymbolSizeUOM() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -793,7 +786,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testProportionalSymbolSizePartialUOM() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.emptyMap()));
 
@@ -825,7 +817,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testMinSymbolSize() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -859,7 +850,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testInternationalizedLabels() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         Map<String, String> options = new HashMap<>();
         options.put("forceLabels", "on");
@@ -881,14 +871,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
         image = this.legendProducer.buildLegendGraphic(req);
         // test that using localized labels we get a different label than when not using it
         int itWidth = image.getWidth();
-        assertTrue(itWidth != noLocalizedWidth);
+        assertNotEquals(itWidth, noLocalizedWidth);
         // ImageIO.write(image, "PNG", new File("/tmp/it.png"));
         req.setLocale(Locale.ENGLISH);
         image = this.legendProducer.buildLegendGraphic(req);
         // test that using localized labels we get a different label than when not using it
         int enWidth = image.getWidth();
-        assertTrue(enWidth != noLocalizedWidth);
-        assertTrue(enWidth != itWidth);
+        assertNotEquals(enWidth, noLocalizedWidth);
+        assertNotEquals(enWidth, itWidth);
         // ImageIO.write(image, "PNG", new File("/tmp/en.png"));
     }
 
@@ -902,7 +892,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         Style transformStyle = readSLD("RenderingTransformRasterVector.sld");
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         CoverageInfo cInfo =
                 getCatalog()
                         .getCoverageByName(
@@ -980,7 +969,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertEquals(0.5, opacity, 0.0);
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -1039,7 +1027,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         Style transformStyle = readSLD("RenderingTransformVectorRaster.sld");
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -1073,7 +1060,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertNotNull(externalGraphicStyle);
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -1110,7 +1096,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testLabelMargin() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -1165,7 +1150,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -1206,7 +1190,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testThickPolygonBorder() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         req.setWidth(20);
         req.setHeight(20);
 
@@ -1238,7 +1221,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testThickPolygonAsymmetricSymbol() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         req.setWidth(40);
         req.setHeight(20);
 
@@ -1270,7 +1252,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testLargeCirclePlacement() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         req.setWidth(48);
         req.setHeight(25);
 
@@ -1306,7 +1287,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
     @org.junit.Test
     public void testSimpleLine() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         req.setWidth(20);
         req.setHeight(20);
 

@@ -521,11 +521,10 @@ public class KMLReflectorTest extends WMSTestSupport {
             File zip = new File(tempDir, "kmz.zip");
             zip.deleteOnExit();
 
-            FileOutputStream output = new FileOutputStream(zip);
-            FileUtils.writeByteArrayToFile(zip, getBinary(response));
-
-            output.flush();
-            output.close();
+            try (FileOutputStream output = new FileOutputStream(zip)) {
+                FileUtils.writeByteArrayToFile(zip, getBinary(response));
+                output.flush();
+            }
 
             assertTrue(zip.exists());
 
@@ -540,14 +539,14 @@ public class KMLReflectorTest extends WMSTestSupport {
             byte[] buffer = new byte[1024];
             int len;
 
-            InputStream inStream = zipFile.getInputStream(entry);
             File temp = File.createTempFile("test_out", "kmz", tempDir);
             temp.deleteOnExit();
-            BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(temp));
+            try (InputStream inStream = zipFile.getInputStream(entry);
+                    BufferedOutputStream outStream =
+                            new BufferedOutputStream(new FileOutputStream(temp))) {
 
-            while ((len = inStream.read(buffer)) >= 0) outStream.write(buffer, 0, len);
-            inStream.close();
-            outStream.close();
+                while ((len = inStream.read(buffer)) >= 0) outStream.write(buffer, 0, len);
+            }
 
             // read in the wms.kml and check its contents
             Document document = dom(new BufferedInputStream(new FileInputStream(temp)));
@@ -1046,32 +1045,30 @@ public class KMLReflectorTest extends WMSTestSupport {
         KMZMapOutputFormat mapProducer = new KMZMapOutputFormat(getWMS());
         KMLMap map = mapProducer.produceMap(mapContent);
 
-        FileOutputStream output = new FileOutputStream(zip);
-        new KMLMapResponse(new KMLEncoder(), getWMS()).write(map, output, null);
-
-        output.flush();
-        output.close();
+        try (FileOutputStream output = new FileOutputStream(zip)) {
+            new KMLMapResponse(new KMLEncoder(), getWMS()).write(map, output, null);
+            output.flush();
+        }
 
         assertTrue(zip.exists());
 
         // unzip and test it
-        ZipFile zipFile = new ZipFile(zip);
+        try (ZipFile zipFile = new ZipFile(zip)) {
+            ZipEntry kmlEntry = zipFile.getEntry("wms.kml");
+            try (InputStream kmlStream = zipFile.getInputStream(kmlEntry)) {
+                Document kmlResult = XMLUnit.buildTestDocument(new InputSource(kmlStream));
 
-        ZipEntry kmlEntry = zipFile.getEntry("wms.kml");
-        InputStream kmlStream = zipFile.getInputStream(kmlEntry);
-
-        Document kmlResult = XMLUnit.buildTestDocument(new InputSource(kmlStream));
-
-        Double scale =
-                Double.parseDouble(
-                        XMLUnit.newXpathEngine()
-                                .getMatchingNodes(
-                                        "(//kml:Style)[1]/kml:IconStyle/kml:scale", kmlResult)
-                                .item(0)
-                                .getTextContent());
-        assertEquals(49d / 16d, scale, 0.01);
-
-        zipFile.close();
+                Double scale =
+                        Double.parseDouble(
+                                XMLUnit.newXpathEngine()
+                                        .getMatchingNodes(
+                                                "(//kml:Style)[1]/kml:IconStyle/kml:scale",
+                                                kmlResult)
+                                        .item(0)
+                                        .getTextContent());
+                assertEquals(49d / 16d, scale, 0.01);
+            }
+        }
     }
 
     WMSMapContent createMapContext(QName layer, String style) throws Exception {

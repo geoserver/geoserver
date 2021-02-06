@@ -26,8 +26,6 @@ import org.w3c.dom.Document;
 
 public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
 
-    private static final double DELTA = 1E-6;
-
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpDefaultRasterLayers();

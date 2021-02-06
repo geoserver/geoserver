@@ -66,7 +66,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testApply() throws Exception {
-        String testValue1 = "100", testValue2 = "0";
+        String testValue1 = "100";
         WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         login();
         tester.startPage(WFSAdminPage.class);

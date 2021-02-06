@@ -424,8 +424,6 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
 
     @Test
     public void testInsertRestrictedChallengeAnonymous() throws Exception {
-        TestResourceAccessManager tam =
-                (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         setRequestAuth(null, null);
         MockHttpServletResponse response = postAsServletResponse("wfs", INSERT_RESTRICTED_STREET);
         // this should prompt to authenticat since the user was the anonymous one

@@ -778,8 +778,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         assertEquals(1, catalog.getDataStores().size());
 
-        DataStoreInfo retrieved = catalog.getDataStore(ds.getId());
-
         DataStoreInfo ds2 = catalog.getFactory().createDataStore();
         try {
             catalog.add(ds2);
@@ -2036,8 +2034,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         addWMSStore();
         assertEquals(1, catalog.getStores(WMSStoreInfo.class).size());
 
-        WMSStoreInfo retrieved = catalog.getStore(wms.getId(), WMSStoreInfo.class);
-
         WMSStoreInfo wms2 = catalog.getFactory().createWebMapServer();
         wms2.setName("wms2Name");
         wms2.setWorkspace(ws);
@@ -2768,9 +2764,9 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         catalog.add(s5 = newStyle("s5", "s5Filename"));
         catalog.add(s6 = newStyle("s6", "s6Filename"));
 
-        LayerInfo l1, l2, l3;
+        LayerInfo l1, l3;
         catalog.add(l1 = newLayer(ft1, s1));
-        catalog.add(l2 = newLayer(ft2, s2, s3, s4));
+        catalog.add(newLayer(ft2, s2, s3, s4));
         catalog.add(l3 = newLayer(ft3, s3, s5, s6));
 
         filter = contains("styles.name", "s6");
@@ -3265,14 +3261,13 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(newHashSet(lproxy), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
+    @SuppressWarnings("PMD.UseTryWithResources")
     private <T> Set<T> asSet(CloseableIterator<T> list) {
-        ImmutableSet<T> set;
         try {
-            set = ImmutableSet.copyOf(list);
+            return ImmutableSet.copyOf(list);
         } finally {
             list.close();
         }
-        return set;
     }
 
     protected LayerInfo newLayer(
@@ -3356,6 +3351,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testChangeLayerGroupOrder() {
         addLayerGroup();
 

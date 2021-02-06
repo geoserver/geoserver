@@ -29,7 +29,6 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -717,7 +716,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         formatOptions.put("timeout", 1);
         request.setFormatOptions(formatOptions);
         try {
-            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            this.rasterMapProducer.produceMap(map);
             fail("Timeout was not reached");
         } catch (ServiceException e) {
             assertTrue(e.getMessage().startsWith("This request used more time than allowed"));
@@ -729,7 +728,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         request.setRawKvp(rawKvp);
 
         try {
-            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            this.rasterMapProducer.produceMap(map);
             fail("Timeout was not reached");
         } catch (ServiceException e) {
             assertTrue(e instanceof WMSPartialMapException);
@@ -1478,8 +1477,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
 
-        final Envelope env = ci.boundingBox();
-
         final int[] bandIndices = new int[] {1, 2, 0, 2, 1};
         // Inject bandIndices read param
         Parameter<int[]> bandIndicesParam =
@@ -1653,7 +1650,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         }
 
         // create the first reader
-        URL harvestSingleURL = URLs.fileToUrl(directory1);
         ImageMosaicReader reader = new ImageMosaicReader(directory1, null);
 
         // now create a second reader that won't be informed of the harvesting changes
@@ -1672,7 +1668,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             ReferencedEnvelope renderEnvelope =
                     new ReferencedEnvelope(
                             991000, 992000, 216000, 217000, reader2.getCoordinateReferenceSystem());
-            Rectangle rasterArea = new Rectangle(0, 0, 10, 10);
             GetMapRequest request = new GetMapRequest();
             request.setBbox(renderEnvelope);
             request.setSRS("EPSG:6539");

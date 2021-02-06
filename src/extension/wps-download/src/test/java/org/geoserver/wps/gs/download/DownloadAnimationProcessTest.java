@@ -65,31 +65,32 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
         // check frames and duration
         Format f = JCodecUtil.detectFormat(testFile);
-        Demuxer d = JCodecUtil.createDemuxer(f, testFile);
-        DemuxerTrack vt = d.getVideoTracks().get(0);
-        DemuxerTrackMeta dtm = vt.getMeta();
-        assertEquals(4, dtm.getTotalFrames());
-        assertEquals(8, dtm.getTotalDuration(), 0d);
+        try (Demuxer d = JCodecUtil.createDemuxer(f, testFile)) {
+            DemuxerTrack vt = d.getVideoTracks().get(0);
+            DemuxerTrackMeta dtm = vt.getMeta();
+            assertEquals(4, dtm.getTotalFrames());
+            assertEquals(8, dtm.getTotalDuration(), 0d);
 
-        // grab frames for checking
-        File source = new File("src/test/resources/org/geoserver/wps/gs/download/bm_time.zip");
-        FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
-        // first
-        BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        BufferedImage expected1 = grabImageFromZip(source, "world.200402.3x5400x2700.tiff");
-        ImageAssert.assertEquals(expected1, frame1, 100);
-        // second
-        BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        BufferedImage expected2 = grabImageFromZip(source, "world.200403.3x5400x2700.tiff");
-        ImageAssert.assertEquals(expected2, frame2, 100);
-        // third
-        BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        BufferedImage expected3 = grabImageFromZip(source, "world.200404.3x5400x2700.tiff");
-        ImageAssert.assertEquals(expected3, frame3, 100);
-        // fourth
-        BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        BufferedImage expected4 = grabImageFromZip(source, "world.200405.3x5400x2700.tiff");
-        ImageAssert.assertEquals(expected4, frame4, 100);
+            // grab frames for checking
+            File source = new File("src/test/resources/org/geoserver/wps/gs/download/bm_time.zip");
+            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
+            // first
+            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected1 = grabImageFromZip(source, "world.200402.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected1, frame1, 100);
+            // second
+            BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected2 = grabImageFromZip(source, "world.200403.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected2, frame2, 100);
+            // third
+            BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected3 = grabImageFromZip(source, "world.200404.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected3, frame3, 100);
+            // fourth
+            BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected4 = grabImageFromZip(source, "world.200405.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected4, frame4, 100);
+        }
     }
 
     @Test
@@ -135,16 +136,18 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
         // check frames and duration
         Format f = JCodecUtil.detectFormat(testFile);
-        Demuxer d = JCodecUtil.createDemuxer(f, testFile);
-        DemuxerTrack vt = d.getVideoTracks().get(0);
-        DemuxerTrackMeta dtm = vt.getMeta();
-        assertEquals(2, dtm.getTotalFrames());
-        assertEquals(2, dtm.getTotalDuration(), 0d);
+        try (Demuxer d = JCodecUtil.createDemuxer(f, testFile)) {
+            DemuxerTrack vt = d.getVideoTracks().get(0);
+            DemuxerTrackMeta dtm = vt.getMeta();
+            assertEquals(2, dtm.getTotalFrames());
+            assertEquals(2, dtm.getTotalDuration(), 0d);
 
-        // grab first frame for test
-        FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
-        BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        ImageAssert.assertEquals(new File(SAMPLES + "animateDecorateFirstFrame.png"), frame1, 100);
+            // grab first frame for test
+            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
+            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            ImageAssert.assertEquals(
+                    new File(SAMPLES + "animateDecorateFirstFrame.png"), frame1, 100);
+        }
     }
 
     @Test
@@ -162,33 +165,35 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
         // check frames and duration
         Format f = JCodecUtil.detectFormat(testFile);
-        Demuxer d = JCodecUtil.createDemuxer(f, testFile);
-        DemuxerTrack vt = d.getVideoTracks().get(0);
-        DemuxerTrackMeta dtm = vt.getMeta();
-        assertEquals(4, dtm.getTotalFrames());
-        assertEquals(8, dtm.getTotalDuration(), 0d);
+        try (Demuxer d = JCodecUtil.createDemuxer(f, testFile)) {
+            DemuxerTrack vt = d.getVideoTracks().get(0);
+            DemuxerTrackMeta dtm = vt.getMeta();
+            assertEquals(4, dtm.getTotalFrames());
+            assertEquals(8, dtm.getTotalDuration(), 0d);
 
-        // grab first frame for test
-        FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
-        BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-        ImageAssert.assertEquals(
-                new File(SAMPLES + "animateBlueMarbleTimestampedFrame1.png"), frame1, 100);
+            // grab first frame for test
+            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
+            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            ImageAssert.assertEquals(
+                    new File(SAMPLES + "animateBlueMarbleTimestampedFrame1.png"), frame1, 100);
+        }
     }
 
     BufferedImage grabImageFromZip(File file, String entryName) throws IOException {
-        ZipFile zipFile = new ZipFile(file);
+        try (ZipFile zipFile = new ZipFile(file)) {
 
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            if (entry.getName().equalsIgnoreCase(entryName)) {
-                try (InputStream stream = zipFile.getInputStream(entry)) {
-                    return ImageIO.read(stream);
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.getName().equalsIgnoreCase(entryName)) {
+                    try (InputStream stream = zipFile.getInputStream(entry)) {
+                        return ImageIO.read(stream);
+                    }
                 }
             }
-        }
 
-        return null;
+            return null;
+        }
     }
 }

@@ -46,9 +46,7 @@ public abstract class RunnerBase implements Runnable {
 
     protected abstract void runInternal() throws Exception;
 
-    protected void doBeforeReady() {
-        ;
-    }
+    protected void doBeforeReady() {}
 
     private synchronized void setProblem(Exception problem) {
         this.problem = problem;

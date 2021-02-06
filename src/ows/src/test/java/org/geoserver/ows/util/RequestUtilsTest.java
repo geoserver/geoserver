@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class RequestUtilsTest {
 
     @Test

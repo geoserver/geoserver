@@ -101,7 +101,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     }
 
     protected void doRemove(String pathForLink) throws Exception {
-        Page testPage = tester.startPage(listPage(null));
+        tester.startPage(listPage(null));
 
         String selectAllPath = "table:listContainer:selectAllContainer:selectAll";
         tester.assertComponent(selectAllPath, CheckBox.class);

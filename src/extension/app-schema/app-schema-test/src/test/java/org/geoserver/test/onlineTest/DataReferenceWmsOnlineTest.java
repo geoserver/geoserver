@@ -27,30 +27,34 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
 
     @Test
     public void testGetMapSimpleLithology() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=simplelithology&BBOX=140,-38,145,-35&width=500&height=500&FORMAT=image/png");
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(
-                URLs.urlToFile(
-                        getClass().getResource("/test-data/img/datareference_simplelithology.png")),
-                imageBuffer,
-                250);
+                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=simplelithology&BBOX=140,-38,145,-35&width=500&height=500&FORMAT=image/png")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
+            ImageAssert.assertEquals(
+                    URLs.urlToFile(
+                            getClass()
+                                    .getResource(
+                                            "/test-data/img/datareference_simplelithology.png")),
+                    imageBuffer,
+                    250);
+        }
     }
 
     @Test
     public void testGetMapStratChart() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=stratchart&BBOX=140,-38,150,-35&width=500&height=500&FORMAT=image/png");
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(
-                URLs.urlToFile(
-                        getClass().getResource("/test-data/img/datareference_stratchart.png")),
-                imageBuffer,
-                250);
+                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=stratchart&BBOX=140,-38,150,-35&width=500&height=500&FORMAT=image/png")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
+            ImageAssert.assertEquals(
+                    URLs.urlToFile(
+                            getClass().getResource("/test-data/img/datareference_stratchart.png")),
+                    imageBuffer,
+                    250);
+        }
     }
 
     @Test
@@ -59,15 +63,16 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
                 getAsDOM(
                         "wfs?request=getFeature&version=1.1.0&typeName=gsml:MappedFeature&maxFeatures=1");
         LOGGER.info(prettyString(doc));
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=stratchart&BBOX=140,-38,150,-35&width=500&height=500&FORMAT=image/png");
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(
-                URLs.urlToFile(
-                        getClass().getResource("/test-data/img/datareference_stratchart.png")),
-                imageBuffer,
-                250);
+                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=stratchart&BBOX=140,-38,150,-35&width=500&height=500&FORMAT=image/png")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+            ImageAssert.assertEquals(
+                    URLs.urlToFile(
+                            getClass().getResource("/test-data/img/datareference_stratchart.png")),
+                    imageBuffer,
+                    250);
+        }
     }
 }

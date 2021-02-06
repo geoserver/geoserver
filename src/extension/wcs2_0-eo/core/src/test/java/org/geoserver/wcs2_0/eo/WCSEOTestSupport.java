@@ -159,7 +159,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         di.setEnabled(true);
         di.setPresentation(presentation);
         if (resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
+            di.setResolution(BigDecimal.valueOf(resolution));
         }
         info.getMetadata().put(metadataKey, di);
         getCatalog().save(info);

@@ -226,7 +226,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         removeFileOrFolder(samplesFolder);
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);
-        Document dom = WMSTestSupport.transform(req, tr);
+        WMSTestSupport.transform(req, tr);
 
         assertTrue(samplesFolder.exists());
     }

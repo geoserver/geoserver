@@ -280,6 +280,5 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
         } catch (IOException e) {
             ugStore.load();
         }
-        ;
     }
 }

@@ -49,11 +49,11 @@ public class GeoServerPropertyConfigurerTest {
         p.put("prop1", "foobar");
         p.put("prop2", "barfoo");
 
-        FileOutputStream out = new FileOutputStream("target/foo.properties");
-        p.store(out, "");
+        try (FileOutputStream out = new FileOutputStream("target/foo.properties")) {
+            p.store(out, "");
 
-        out.flush();
-        out.close();
+            out.flush();
+        }
 
         ctx.refresh();
         Foo f = (Foo) ctx.getBean("myBean");

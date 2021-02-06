@@ -35,6 +35,7 @@ import org.geoserver.security.PropertyFileWatcher;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class DefaultControlFlowConfigurationTest {
 
     @Test

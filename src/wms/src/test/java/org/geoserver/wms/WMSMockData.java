@@ -78,16 +78,12 @@ public class WMSMockData {
 
     private StyleInfoImpl defaultStyle;
 
-    private GetMapOutputFormat mockMapProducer;
-
     private GeoServer mockGeoServer;
 
     private WMS mockWMS;
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "PMD.JUnit4TestShouldUseBeforeAnnotation"})
     public void setUp() throws Exception {
-        mockMapProducer = new DummyRasterMapProducer();
-
         catalog = new CatalogImpl();
 
         namespaceInfo = new NamespaceInfoImpl();

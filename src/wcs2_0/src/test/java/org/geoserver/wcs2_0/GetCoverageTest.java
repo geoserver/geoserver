@@ -93,7 +93,6 @@ public class GetCoverageTest extends WCSTestSupport {
     public void getNearestTime() throws Exception {
         // get the original transform
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMESERIES));
-        WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType gc =
                 parse(
                         "wcs?request=GetCoverage&service=WCS&version=2.0.1"

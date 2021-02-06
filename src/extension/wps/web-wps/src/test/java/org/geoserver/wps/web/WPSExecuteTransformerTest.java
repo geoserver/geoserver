@@ -320,8 +320,8 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                // System.out.println(
-                //       ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.warning(
+                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }

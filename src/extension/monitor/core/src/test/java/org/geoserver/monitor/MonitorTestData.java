@@ -75,7 +75,6 @@ public class MonitorTestData {
                             "bar",
                             "y",
                             "things"));
-            ;
             data.add(
                     data(
                             13,

@@ -397,19 +397,20 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
 
     @Test
     public void testCustomPasswordProvider() {
-        ClassPathXmlApplicationContext appContext =
-                new ClassPathXmlApplicationContext("classpath*:/passwordSecurityContext.xml");
-        appContext.refresh();
+        try (ClassPathXmlApplicationContext appContext =
+                new ClassPathXmlApplicationContext("classpath*:/passwordSecurityContext.xml")) {
+            appContext.refresh();
 
-        List<GeoServerPasswordEncoder> encoders =
-                GeoServerExtensions.extensions(GeoServerPasswordEncoder.class, appContext);
-        boolean found = false;
-        for (GeoServerPasswordEncoder enc : encoders) {
-            if (enc.getPrefix() != null && enc.getPrefix().equals("plain4711")) {
-                found = true;
-                break;
+            List<GeoServerPasswordEncoder> encoders =
+                    GeoServerExtensions.extensions(GeoServerPasswordEncoder.class, appContext);
+            boolean found = false;
+            for (GeoServerPasswordEncoder enc : encoders) {
+                if (enc.getPrefix() != null && enc.getPrefix().equals("plain4711")) {
+                    found = true;
+                    break;
+                }
             }
+            assertTrue(found);
         }
-        assertTrue(found);
     }
 }

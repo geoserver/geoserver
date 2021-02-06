@@ -302,15 +302,16 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
     @Test
     public void testValidCapabilitiesDocument() throws Exception {
         print(getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities"));
-        InputStream in = get("wfs?service=WFS&version=2.0.0&request=getCapabilities");
-        Parser p = new Parser(new WFSConfiguration());
-        p.setValidating(true);
-        p.validate(in);
+        try (InputStream in = get("wfs?service=WFS&version=2.0.0&request=getCapabilities")) {
+            Parser p = new Parser(new WFSConfiguration());
+            p.setValidating(true);
+            p.validate(in);
 
-        for (Exception e : p.getValidationErrors()) {
-            // System.out.println(e.getLocalizedMessage());
+            for (Exception e : p.getValidationErrors()) {
+                LOGGER.info(e.getLocalizedMessage());
+            }
+            assertTrue(p.getValidationErrors().isEmpty());
         }
-        assertTrue(p.getValidationErrors().isEmpty());
     }
 
     @Test
@@ -560,7 +561,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "sections");
     }
 
-    public void testSections(
+    protected void testSections(
             String sections,
             int serviceIdentification,
             int serviceProvider,

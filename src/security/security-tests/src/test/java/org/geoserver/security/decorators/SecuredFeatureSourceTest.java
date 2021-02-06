@@ -64,9 +64,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         SecuredFeatureSource<SimpleFeatureType, SimpleFeature> ro =
                 new SecuredFeatureSource<>(fs, WrapperPolicy.hide(null));
         assertTrue(ro.getDataStore() instanceof ReadOnlyDataStore);
-        @SuppressWarnings("unchecked")
-        SecuredFeatureCollection<SimpleFeatureType, SimpleFeature> collection =
-                (SecuredFeatureCollection) ro.getFeatures();
+        ro.getFeatures();
         assertTrue(ro.policy.isHide());
         assertTrue(ro.getFeatures(Filter.INCLUDE) instanceof SecuredFeatureCollection);
         assertTrue(ro.getFeatures(new Query()) instanceof SecuredFeatureCollection);

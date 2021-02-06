@@ -9,9 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.junit.Test;
 
 public class WMSInfoImplTest {
 
+    @Test
     public void testSerialize() {
         WMSInfoImpl info = new WMSInfoImpl();
         info.setAbstract("test");

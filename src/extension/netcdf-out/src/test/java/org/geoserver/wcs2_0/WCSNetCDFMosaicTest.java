@@ -320,12 +320,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
-        try {
-            FileUtils.writeByteArrayToFile(file, netcdfOut);
-
-            NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
+        FileUtils.writeByteArrayToFile(file, netcdfOut);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
-            dataset.close();
         } finally {
             FileUtils.deleteQuietly(file);
         }
@@ -354,9 +351,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
             FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-            NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-            assertNotNull(dataset);
-            dataset.close();
+            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+                assertNotNull(dataset);
+            }
         }
     }
 
@@ -376,35 +373,34 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outCF.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        Variable var = dataset.findVariable(STANDARD_NAME);
-        assertNotNull(var);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            Variable var = dataset.findVariable(STANDARD_NAME);
+            assertNotNull(var);
 
-        // Check the unit has been converted to meter
-        String unit = var.getUnitsString();
-        assertEquals(CANONICAL_UNIT, unit);
+            // Check the unit has been converted to meter
+            String unit = var.getUnitsString();
+            assertEquals(CANONICAL_UNIT, unit);
 
-        Array readData = var.read(NETCDF_SECTION);
-        assertEquals(DataType.FLOAT, readData.getDataType());
-        float data = readData.getFloat(0);
+            Array readData = var.read(NETCDF_SECTION);
+            assertEquals(DataType.FLOAT, readData.getDataType());
+            float data = readData.getFloat(0);
 
-        // Data have been converted to canonical unit (m) from km.
-        // Data value is bigger
-        assertEquals(data, (ORIGINAL_PIXEL_VALUE) * 1000, DELTA);
+            // Data have been converted to canonical unit (m) from km.
+            // Data value is bigger
+            assertEquals(data, (ORIGINAL_PIXEL_VALUE) * 1000, DELTA);
 
-        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
-        Attribute standardName = var.findAttribute(NetCDFUtilities.STANDARD_NAME);
-        assertNotNull(standardName);
-        assertEquals(STANDARD_NAME, standardName.getStringValue());
-        assertNotNull(fillValue);
-        assertEquals(ORIGINAL_FILL_VALUE, fillValue.getNumericValue().doubleValue(), DELTA);
+            Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
+            Attribute standardName = var.findAttribute(NetCDFUtilities.STANDARD_NAME);
+            assertNotNull(standardName);
+            assertEquals(STANDARD_NAME, standardName.getStringValue());
+            assertNotNull(fillValue);
+            assertEquals(ORIGINAL_FILL_VALUE, fillValue.getNumericValue().doubleValue(), DELTA);
 
-        // Check global attributes have been added
-        Attribute attribute = dataset.findGlobalAttribute("custom_attribute");
-        assertNotNull(attribute);
-        assertEquals("testing WCS", attribute.getStringValue());
-
-        dataset.close();
+            // Check global attributes have been added
+            Attribute attribute = dataset.findGlobalAttribute("custom_attribute");
+            assertNotNull(attribute);
+            assertEquals("testing WCS", attribute.getStringValue());
+        }
     }
 
     @Test
@@ -430,17 +426,17 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             File file = File.createTempFile("netcdf", "outCompressed.nc", new File("./target"));
             FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-            NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-            assertNotNull(dataset);
+            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+                assertNotNull(dataset);
 
-            Variable var = dataset.findVariable(STANDARD_NAME);
-            assertNotNull(var);
-            final long varByteSize = var.getSize() * var.getDataType().getSize();
+                Variable var = dataset.findVariable(STANDARD_NAME);
+                assertNotNull(var);
+                final long varByteSize = var.getSize() * var.getDataType().getSize();
 
-            // The output file is smaller than the size of the underlying variable.
-            // Compression successfully occurred
-            assertTrue(netcdfOut.length < varByteSize);
-            dataset.close();
+                // The output file is smaller than the size of the underlying variable.
+                // Compression successfully occurred
+                assertTrue(netcdfOut.length < varByteSize);
+            }
         }
     }
 
@@ -457,37 +453,36 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        Variable var = dataset.findVariable(STANDARD_NAME);
-        assertNotNull(var);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            Variable var = dataset.findVariable(STANDARD_NAME);
+            assertNotNull(var);
 
-        // Check the unit hasn't been converted
-        String unit = var.getUnitsString();
-        assertEquals(ORIGINAL_UNIT, unit);
+            // Check the unit hasn't been converted
+            String unit = var.getUnitsString();
+            assertEquals(ORIGINAL_UNIT, unit);
 
-        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
-        assertNotNull(fillValue);
+            Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
+            assertNotNull(fillValue);
 
-        // There is dataPacking, therefore, fillValue should have been changed
-        assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), 1E-6);
+            // There is dataPacking, therefore, fillValue should have been changed
+            assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), 1E-6);
 
-        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
-        assertNotNull(addOffsetAttr);
+            Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
+            assertNotNull(addOffsetAttr);
 
-        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
-        assertNotNull(scaleFactorAttr);
-        double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
-        double addOffset = addOffsetAttr.getNumericValue().doubleValue();
+            Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
+            assertNotNull(scaleFactorAttr);
+            double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
+            double addOffset = addOffsetAttr.getNumericValue().doubleValue();
 
-        Array readData = var.read(NETCDF_SECTION);
-        assertEquals(DataType.SHORT, readData.getDataType());
-        short data = readData.getShort(0);
-        // Data has been packed to short
+            Array readData = var.read(NETCDF_SECTION);
+            assertEquals(DataType.SHORT, readData.getDataType());
+            short data = readData.getShort(0);
+            // Data has been packed to short
 
-        double packedData = (ORIGINAL_PIXEL_VALUE - addOffset) / scaleFactor;
-        assertEquals((short) (packedData + 0.5), data, DELTA);
-
-        dataset.close();
+            double packedData = (ORIGINAL_PIXEL_VALUE - addOffset) / scaleFactor;
+            assertEquals((short) (packedData + 0.5), data, DELTA);
+        }
     }
 
     @Test
@@ -503,42 +498,41 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outCFPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        Variable var = dataset.findVariable(STANDARD_NAME);
-        assertNotNull(var);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            Variable var = dataset.findVariable(STANDARD_NAME);
+            assertNotNull(var);
 
-        // Check the unit has been converted to meter
-        String unit = var.getUnitsString();
-        assertEquals(CANONICAL_UNIT, unit);
+            // Check the unit has been converted to meter
+            String unit = var.getUnitsString();
+            assertEquals(CANONICAL_UNIT, unit);
 
-        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
-        assertNotNull(addOffsetAttr);
+            Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
+            assertNotNull(addOffsetAttr);
 
-        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
-        assertNotNull(scaleFactorAttr);
-        double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
-        double addOffset = addOffsetAttr.getNumericValue().doubleValue();
+            Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
+            assertNotNull(scaleFactorAttr);
+            double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
+            double addOffset = addOffsetAttr.getNumericValue().doubleValue();
 
-        Array readData = var.read(NETCDF_SECTION);
-        assertEquals(DataType.SHORT, readData.getDataType());
-        short data = readData.getShort(0);
-        // Data has been packed to short
+            Array readData = var.read(NETCDF_SECTION);
+            assertEquals(DataType.SHORT, readData.getDataType());
+            short data = readData.getShort(0);
+            // Data has been packed to short
 
-        // Going from original unit to canonical, then packing
-        double packedData = ((ORIGINAL_PIXEL_VALUE * 1000) - addOffset) / scaleFactor;
-        assertEquals((short) (packedData + 0.5), data, DELTA);
+            // Going from original unit to canonical, then packing
+            double packedData = ((ORIGINAL_PIXEL_VALUE * 1000) - addOffset) / scaleFactor;
+            assertEquals((short) (packedData + 0.5), data, DELTA);
 
-        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
-        assertNotNull(fillValue);
-        // There is dataPacking, therefore, fillValue should have been changed
-        assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), DELTA);
+            Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
+            assertNotNull(fillValue);
+            // There is dataPacking, therefore, fillValue should have been changed
+            assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), DELTA);
 
-        // Check global attributes have been added
-        Attribute attribute = dataset.findGlobalAttribute("custom_attribute");
-        assertNotNull(attribute);
-        assertEquals("testing WCS", attribute.getStringValue());
-
-        dataset.close();
+            // Check global attributes have been added
+            Attribute attribute = dataset.findGlobalAttribute("custom_attribute");
+            assertNotNull(attribute);
+            assertEquals("testing WCS", attribute.getStringValue());
+        }
     }
 
     @Test
@@ -554,16 +548,16 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outNaNPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        Variable var = dataset.findVariable(STANDARD_NAME);
-        assertNotNull(var);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            Variable var = dataset.findVariable(STANDARD_NAME);
+            assertNotNull(var);
 
-        Array readData = var.read(NETCDF_SECTION);
-        assertEquals(DataType.SHORT, readData.getDataType());
+            Array readData = var.read(NETCDF_SECTION);
+            assertEquals(DataType.SHORT, readData.getDataType());
 
-        // Check the fix on dataPacking NaN management
-        assertNotEquals(readData.getShort(0), -32768, 1E-6);
-        dataset.close();
+            // Check the fix on dataPacking NaN management
+            assertNotEquals(readData.getShort(0), -32768, 1E-6);
+        }
     }
 
     @Test
@@ -583,32 +577,33 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
         // Retrieve the GeoTransform attribute from the output NetCDF
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        String geoTransform = dataset.findGlobalAttribute("GeoTransform").getStringValue();
-        dataset.close();
-        assertNotNull(geoTransform);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            String geoTransform = dataset.findGlobalAttribute("GeoTransform").getStringValue();
+            dataset.close();
+            assertNotNull(geoTransform);
 
-        String[] coefficients = geoTransform.split(" ");
-        double m00 = Double.parseDouble(coefficients[1]);
-        double m01 = Double.parseDouble(coefficients[2]);
-        double m02 = Double.parseDouble(coefficients[0]);
-        double m10 = Double.parseDouble(coefficients[4]);
-        double m11 = Double.parseDouble(coefficients[5]);
-        double m12 = Double.parseDouble(coefficients[3]);
+            String[] coefficients = geoTransform.split(" ");
+            double m00 = Double.parseDouble(coefficients[1]);
+            double m01 = Double.parseDouble(coefficients[2]);
+            double m02 = Double.parseDouble(coefficients[0]);
+            double m10 = Double.parseDouble(coefficients[4]);
+            double m11 = Double.parseDouble(coefficients[5]);
+            double m12 = Double.parseDouble(coefficients[3]);
 
-        NetCDFReader reader = new NetCDFReader(file, null);
-        MathTransform transform = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
-        AffineTransform2D affineTransform = (AffineTransform2D) transform;
+            NetCDFReader reader = new NetCDFReader(file, null);
+            MathTransform transform = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+            AffineTransform2D affineTransform = (AffineTransform2D) transform;
 
-        reader.dispose();
+            reader.dispose();
 
-        // Check the GeoTransform coefficients are valid
-        assertEquals(m02, affineTransform.getTranslateX(), DELTA2);
-        assertEquals(m12, affineTransform.getTranslateY(), DELTA2);
-        assertEquals(m00, affineTransform.getScaleX(), DELTA2);
-        assertEquals(m11, affineTransform.getScaleY(), DELTA2);
-        assertEquals(m01, affineTransform.getShearX(), DELTA2);
-        assertEquals(m10, affineTransform.getShearY(), DELTA2);
+            // Check the GeoTransform coefficients are valid
+            assertEquals(m02, affineTransform.getTranslateX(), DELTA2);
+            assertEquals(m12, affineTransform.getTranslateY(), DELTA2);
+            assertEquals(m00, affineTransform.getScaleX(), DELTA2);
+            assertEquals(m11, affineTransform.getScaleY(), DELTA2);
+            assertEquals(m01, affineTransform.getShearX(), DELTA2);
+            assertEquals(m10, affineTransform.getShearY(), DELTA2);
+        }
     }
 
     private void addViewToCatalog() throws Exception {

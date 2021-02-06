@@ -13,27 +13,20 @@ import java.sql.Connection;
 import java.sql.Statement;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geotools.data.jdbc.JDBCUtils;
 import org.junit.Test;
 
 public abstract class ImporterDbTestBase extends ImporterDbTestSupport {
 
     @Override
     protected void doSetUpInternal() throws Exception {
-        Connection cx = getConnection();
-        try {
-            Statement st = cx.createStatement();
-            try {
-                dropTable("widgets", st);
-                dropTable("archsites", st);
-                dropTable("bugsites", st);
+        try (Connection cx = getConnection();
+                Statement st = cx.createStatement()) {
 
-                createWidgetsTable(st);
-            } finally {
-                JDBCUtils.close(st);
-            }
-        } finally {
-            JDBCUtils.close(cx, null, null);
+            dropTable("widgets", st);
+            dropTable("archsites", st);
+            dropTable("bugsites", st);
+
+            createWidgetsTable(st);
         }
     }
 

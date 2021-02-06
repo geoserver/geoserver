@@ -4,14 +4,19 @@
  */
 package org.geoserver.geofence.integration;
 
-import static org.geoserver.geofence.integration.GeofenceGetMapIntegrationTest.*;
+import static org.geoserver.geofence.integration.GeofenceGetMapIntegrationTest.addRule;
+import static org.geoserver.geofence.integration.GeofenceGetMapIntegrationTest.addRuleLimits;
+import static org.geoserver.geofence.integration.GeofenceGetMapIntegrationTest.deleteRules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.GeofenceAccessManager;

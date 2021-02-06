@@ -67,7 +67,6 @@ public class UniqueProcessTest extends WPSTestSupport {
         cb.setStore(ds);
 
         FeatureTypeInfo ft = cb.buildFeatureType(targetFeatureStore);
-        System.out.println(ft.prefixedName());
         cat.add(ft);
     }
 

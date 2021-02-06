@@ -250,7 +250,6 @@ public class MockCreator implements Callback {
                                         PasswordValidator.DEFAULT_NAME,
                                         PasswordValidator.MASTERPASSWORD_NAME)))
                 .anyTimes();
-        ;
 
         // default user group store
         GeoServerUserGroupStore ugStore =
@@ -466,7 +465,6 @@ public class MockCreator implements Callback {
         expect(keyStoreProvider.containsAlias(KeyStoreProviderImpl.CONFIGPASSWORDKEY))
                 .andReturn(true)
                 .anyTimes();
-        ;
         expect(keyStoreProvider.getSecretKey(KeyStoreProviderImpl.CONFIGPASSWORDKEY))
                 .andReturn(new SecretKeySpec(toBytes("geoserver".toCharArray()), "PBE"))
                 .anyTimes();
@@ -479,7 +477,6 @@ public class MockCreator implements Callback {
                 .andReturn(alias)
                 .anyTimes();
         expect(keyStoreProvider.containsAlias(alias)).andReturn(true).anyTimes();
-        ;
         expect(keyStoreProvider.getSecretKey(alias))
                 .andReturn(new SecretKeySpec(toBytes("geoserver".toCharArray()), "PBE"))
                 .anyTimes();

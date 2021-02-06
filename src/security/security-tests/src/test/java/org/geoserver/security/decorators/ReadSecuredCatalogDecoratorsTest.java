@@ -82,7 +82,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         SecuredDataStoreInfo ro =
                 new SecuredDataStoreInfo(statesStore, WrapperPolicy.metadata(null));
         try {
-            ReadOnlyDataStore dataStore = (ReadOnlyDataStore) ro.getDataStore(null);
+            ro.getDataStore(null);
             fail("This should have failed with a security exception");
         } catch (Exception e) {
             if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)

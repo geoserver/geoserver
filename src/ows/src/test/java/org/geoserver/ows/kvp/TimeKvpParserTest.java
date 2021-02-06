@@ -236,7 +236,6 @@ public class TimeKvpParserTest {
     public void testInvalidDualDuration() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
 
-        boolean exception = false;
         try {
             timeKvpParser.parse(CONTINUOUS_PERIOD_INVALID_DURATION);
             // Verify that an exception was encountered for the invalid duration

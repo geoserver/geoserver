@@ -57,10 +57,12 @@ public class ProcessParameterIOTest {
 
     @Test
     public void testFindAllWithDifferentContext() {
-        GenericApplicationContext myContext = new GenericApplicationContext();
-        myContext.refresh();
-        List<ProcessParameterIO> matches =
-                ProcessParameterIO.findAll(new Parameter<>("testPPIO", TestType.class), myContext);
-        assertEquals(0, matches.size());
+        try (GenericApplicationContext myContext = new GenericApplicationContext()) {
+            myContext.refresh();
+            List<ProcessParameterIO> matches =
+                    ProcessParameterIO.findAll(
+                            new Parameter<>("testPPIO", TestType.class), myContext);
+            assertEquals(0, matches.size());
+        }
     }
 }

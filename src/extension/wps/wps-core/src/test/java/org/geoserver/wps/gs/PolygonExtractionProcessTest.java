@@ -58,12 +58,12 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
         assertNotNull(fc);
         assertTrue(fc.size() > 0);
 
-        SimpleFeatureIterator fi = fc.features();
-        while (fi.hasNext()) {
-            SimpleFeature sf = fi.next();
-            Double value = (Double) sf.getAttribute("value");
-            assertTrue(value > 0 && value < 8);
+        try (SimpleFeatureIterator fi = fc.features()) {
+            while (fi.hasNext()) {
+                SimpleFeature sf = fi.next();
+                Double value = (Double) sf.getAttribute("value");
+                assertTrue(value > 0 && value < 8);
+            }
         }
-        fi.close();
     }
 }

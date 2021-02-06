@@ -4,7 +4,9 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -87,16 +89,17 @@ public class ClipIntersectsFeatureCollectionTest {
 
         assertEquals(2, collection.size());
 
-        SimpleFeatureIterator it = collection.features();
-        SimpleFeature f = it.next();
-        Geometry geom = (Geometry) f.getDefaultGeometry();
-        SimpleFeature f2 = it.next();
-        Geometry geom2 = (Geometry) f2.getDefaultGeometry();
-        geom2.normalize();
-        clip.normalize();
-        assertTrue(intersects.intersects(geom));
-        assertFalse(intersects.intersects(geom2));
-        assertTrue(clip.covers(geom2));
+        try (SimpleFeatureIterator it = collection.features()) {
+            SimpleFeature f = it.next();
+            Geometry geom = (Geometry) f.getDefaultGeometry();
+            SimpleFeature f2 = it.next();
+            Geometry geom2 = (Geometry) f2.getDefaultGeometry();
+            geom2.normalize();
+            clip.normalize();
+            assertTrue(intersects.intersects(geom));
+            assertFalse(intersects.intersects(geom2));
+            assertTrue(clip.covers(geom2));
+        }
     }
 
     @Test
@@ -117,14 +120,15 @@ public class ClipIntersectsFeatureCollectionTest {
 
         assertEquals(1, collection.size());
 
-        SimpleFeatureIterator it = collection.features();
-        SimpleFeature f = it.next();
-        Geometry geom = (Geometry) f.getDefaultGeometry();
-        assertFalse(intersects.intersects(clip));
-        assertTrue(geom.intersects(intersects));
-        assertTrue(clip.intersects(geom));
-        assertFalse(clip.covers(geom));
-        assertTrue(geom.covers(clip));
+        try (SimpleFeatureIterator it = collection.features()) {
+            SimpleFeature f = it.next();
+            Geometry geom = (Geometry) f.getDefaultGeometry();
+            assertFalse(intersects.intersects(clip));
+            assertTrue(geom.intersects(intersects));
+            assertTrue(clip.intersects(geom));
+            assertFalse(clip.covers(geom));
+            assertTrue(geom.covers(clip));
+        }
     }
 
     @Test
@@ -141,12 +145,13 @@ public class ClipIntersectsFeatureCollectionTest {
 
         assertEquals(1, collection.size());
 
-        SimpleFeatureIterator it = collection.features();
-        SimpleFeature f = it.next();
-        Geometry geom = (Geometry) f.getDefaultGeometry();
+        try (SimpleFeatureIterator it = collection.features()) {
+            SimpleFeature f = it.next();
+            Geometry geom = (Geometry) f.getDefaultGeometry();
 
-        assertFalse(geom.intersects(intersects));
-        assertTrue(clip.covers(geom));
+            assertFalse(geom.intersects(intersects));
+            assertTrue(clip.covers(geom));
+        }
     }
 
     @Test
@@ -162,11 +167,12 @@ public class ClipIntersectsFeatureCollectionTest {
 
         assertEquals(1, collection.size());
 
-        SimpleFeatureIterator it = collection.features();
-        SimpleFeature f = it.next();
-        Geometry geom = (Geometry) f.getDefaultGeometry();
+        try (SimpleFeatureIterator it = collection.features()) {
+            SimpleFeature f = it.next();
+            Geometry geom = (Geometry) f.getDefaultGeometry();
 
-        assertTrue(geom.intersects(intersects));
-        assertFalse(clip.intersects(geom));
+            assertTrue(geom.intersects(intersects));
+            assertFalse(clip.intersects(geom));
+        }
     }
 }

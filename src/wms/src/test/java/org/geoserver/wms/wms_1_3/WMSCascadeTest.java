@@ -38,7 +38,6 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
-import org.geotools.ows.wms.request.GetLegendGraphicRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -265,7 +264,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 .getRequest()
                 .getGetLegendGraphic()
                 .setGet(rasterLegendresource);
-        GetLegendGraphicRequest getLegend = webMapServer.createGetLegendGraphicRequest();
 
         BufferedImage image =
                 getAsImage(

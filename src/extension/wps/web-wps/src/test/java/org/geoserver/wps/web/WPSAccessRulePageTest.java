@@ -10,10 +10,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.config.GeoServer;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wps.ProcessGroupInfo;
-import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
 public class WPSAccessRulePageTest extends WPSPagesTestSupport {
@@ -53,8 +51,6 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
     @Test
     public void testCheckGroup() throws Exception {
         login();
-        GeoServer gs = getGeoServer();
-        WPSInfo wps = gs.getService(WPSInfo.class);
 
         // start the page
         tester.startPage(new WPSAccessRulePage());

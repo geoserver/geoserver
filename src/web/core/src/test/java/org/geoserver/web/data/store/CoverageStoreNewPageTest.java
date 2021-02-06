@@ -133,7 +133,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNewCoverageSave() {
-        CoverageStoreNewPage page = startPage();
+        startPage();
         FormTester ft = tester.newFormTester("rasterStoreForm");
         ft.setValue(
                 "parametersPanel:url:fileInput:border:border_body:paramValue",
@@ -150,7 +150,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNewCoverageApply() {
-        CoverageStoreNewPage page = startPage();
+        startPage();
         FormTester ft = tester.newFormTester("rasterStoreForm");
         ft.setValue(
                 "parametersPanel:url:fileInput:border:border_body:paramValue",

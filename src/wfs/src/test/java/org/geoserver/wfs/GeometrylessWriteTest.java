@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
 import org.geoserver.data.test.CiteTestData;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class GeometrylessWriteTest extends WFSTestSupport {
                         + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", update);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
 
         // do another get feature
         dom =
@@ -69,7 +69,7 @@ public class GeometrylessWriteTest extends WFSTestSupport {
                         + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", insert);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
 
         // do another get feature
         dom =
@@ -97,8 +97,8 @@ public class GeometrylessWriteTest extends WFSTestSupport {
 
         Document dom = postAsDOM("wfs", insert);
         print(dom);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
-        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+        assertNotEquals(0, dom.getElementsByTagName("wfs:InsertResult").getLength());
 
         // do another get feature
         dom =

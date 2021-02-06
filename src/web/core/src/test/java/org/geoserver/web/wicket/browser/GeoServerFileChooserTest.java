@@ -157,7 +157,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     @Test
     public void testAutocompleteDataDirectory() throws Exception {
         FileRootsFinder rootsFinder = new FileRootsFinder(true);
-        File dir = getDataDirectory().get("/").dir();
+        getDataDirectory().get("/").dir();
 
         // looking for a match on basic polygons
         List<String> values =

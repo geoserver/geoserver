@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -305,7 +306,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[0], "#8E0000", org.opengis.filter.And.class);
         checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
 
-        assertFalse(resultXml.indexOf("StyledLayerDescriptor") != -1);
+        assertEquals(resultXml.indexOf("StyledLayerDescriptor"), -1);
     }
 
     @Test
@@ -463,7 +464,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
-        assertTrue(resultXml.indexOf("StyledLayerDescriptor") != -1);
+        assertNotEquals(resultXml.indexOf("StyledLayerDescriptor"), -1);
     }
 
     @Test
@@ -943,7 +944,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
-        System.out.println(baos.toString());
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 1);
@@ -965,7 +965,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
-        System.out.println(baos.toString());
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 2);
@@ -988,7 +987,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
-        System.out.println(baos.toString());
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
@@ -2409,7 +2407,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + ".xml?"
                         + "method=equalInterval&intervals=5"
                         + "&ramp=jet&fullSLD=true&percentages=true";
-        ;
         Document domEqual = getAsDOM(restPathEqual, 200);
         RasterSymbolizer rsEqual = getRasterSymbolizer(domEqual);
         ColorMap cmEqual = rsEqual.getColorMap();

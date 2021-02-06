@@ -5,9 +5,12 @@
  */
 package org.geoserver.wps.gs.download;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
@@ -18,8 +21,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-public class ROIManagerTest extends TestCase {
+public class ROIManagerTest {
 
+    @Test
     public void testBase() throws Exception {
 
         // example in wgs84

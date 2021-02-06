@@ -53,6 +53,7 @@ public class IconServiceTest extends IconTestSupport {
         dispatch("/icon/foo-bar", "0.0.0=", cat);
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     void dispatch(String path, String q, Catalog cat) throws Exception {
         HttpServletRequest req = createNiceMock(HttpServletRequest.class);
         expect(req.getPathInfo()).andReturn(path);

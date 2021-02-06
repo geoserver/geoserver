@@ -174,14 +174,15 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         }
     }
 
+    @SuppressWarnings("PMD.SystemPrintln")
     void dumpPWInfoFile(File infoFile) throws Exception {
 
-        BufferedReader bf = new BufferedReader(new FileReader(infoFile));
-        String line;
-        while ((line = bf.readLine()) != null) {
-            System.out.println(line);
+        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                System.out.println(line);
+            }
         }
-        bf.close();
     }
 
     void dumpPWInfoFile() throws Exception {
@@ -193,15 +194,14 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
     boolean masterPWInfoFileContains(File infoFile, String searchString) throws Exception {
 
-        BufferedReader bf = new BufferedReader(new FileReader(infoFile));
-        String line;
-        while ((line = bf.readLine()) != null) {
-            if (line.indexOf(searchString) != -1) {
-                bf.close();
-                return true;
+        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                if (line.indexOf(searchString) != -1) {
+                    return true;
+                }
             }
         }
-        bf.close();
         return false;
     }
 

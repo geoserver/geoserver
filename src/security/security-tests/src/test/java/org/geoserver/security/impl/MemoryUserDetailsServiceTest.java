@@ -341,9 +341,10 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertThat(encrypted, equalTo(prefix + "secret"));
         XStreamPersister xs = new XStreamPersisterFactory().createXMLPersister();
 
-        FileInputStream fin = new FileInputStream(store);
-        DataStoreInfo load = xs.load(fin, DataStoreInfo.class);
-        fin.close();
+        DataStoreInfo load;
+        try (FileInputStream fin = new FileInputStream(store)) {
+            load = xs.load(fin, DataStoreInfo.class);
+        }
 
         assertEquals("secret", load.getConnectionParameters().get("passwd"));
 
@@ -372,10 +373,10 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
 
         xs = new XStreamPersisterFactory().createXMLPersister();
 
-        fin = new FileInputStream(store);
+        try (FileInputStream fin = new FileInputStream(store)) {
 
-        load = xs.load(fin, DataStoreInfo.class);
-        assertEquals("secret", load.getConnectionParameters().get("passwd"));
-        fin.close();
+            load = xs.load(fin, DataStoreInfo.class);
+            assertEquals("secret", load.getConnectionParameters().get("passwd"));
+        }
     }
 }

@@ -158,7 +158,7 @@ public class GetMapTest {
                 };
 
         getMapOp = new GetMap(wms);
-        WebMap map = getMapOp.run(request);
+        getMapOp.run(request);
         assertTrue(producer.produceMapCalled);
         // there used to be a test that the values are reset right after
         // GetMap, but this is wrong, the producer can be streaming and thus

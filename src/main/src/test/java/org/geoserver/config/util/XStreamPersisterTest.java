@@ -16,7 +16,6 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -173,6 +173,7 @@ public class XStreamPersisterTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testGobalContactDefault() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         ContactInfo contact = factory.createContact();
@@ -221,6 +222,11 @@ public class XStreamPersisterTest {
             }
 
             return super.equals(other);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), foo);
         }
     }
 
@@ -1138,10 +1144,6 @@ public class XStreamPersisterTest {
 
     @Test
     public void testMultimapConverter() throws Exception {
-        XStreamPersisterFactory factory = new XStreamPersisterFactory();
-        XStreamPersister xmlPersister = factory.createXMLPersister();
-        XStream xs = xmlPersister.getXStream();
-
         Multimap<String, Object> mmap = ArrayListMultimap.create();
         mmap.put("one", "abc");
         mmap.put("one", Integer.valueOf(2));
@@ -1312,6 +1314,7 @@ public class XStreamPersisterTest {
      * provided on an different order than the marshaling one
      */
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testGridGeometry2DConverterUnmarshalling() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();

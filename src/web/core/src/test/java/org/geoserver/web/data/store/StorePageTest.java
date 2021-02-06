@@ -59,21 +59,13 @@ public class StorePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StoreInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StoreInfo> list =
+        try (CloseableIterator<StoreInfo> list =
                 catalog.list(
-                        StoreInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
-        assertTrue(list.hasNext());
-        StoreInfo expected = list.next();
-
-        // Close the iterator
-        try {
-            if (list != null) {
-                list.close();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                        StoreInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true))) {
+            assertTrue(list.hasNext());
+            StoreInfo expected = list.next();
+            assertEquals(expected, actual);
         }
-        assertEquals(expected, actual);
     }
 
     @Test

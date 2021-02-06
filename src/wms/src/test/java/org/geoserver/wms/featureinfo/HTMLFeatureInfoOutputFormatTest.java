@@ -47,6 +47,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -224,10 +225,10 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                                 outputFormat.write(fcType, getFeatureInfoRequest, outStream);
                             }
                         });
-        System.out.println(e.getMessage());
         assertThat(
-                "Bad Message",
-                e.getMessage().contains("Error occurred processing content template content.ftl"));
+                e.getMessage(),
+                CoreMatchers.containsString(
+                        "Error occurred processing content template content.ftl"));
     }
 
     /**

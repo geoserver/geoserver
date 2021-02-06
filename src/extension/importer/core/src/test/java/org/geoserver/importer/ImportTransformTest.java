@@ -126,11 +126,10 @@ public class ImportTransformTest extends ImporterTestSupport {
         SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();
         assertEquals(Timestamp.class, schema.getDescriptor("CAT_ID").getType().getBinding());
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
         int year = 2;
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             // make sure we have something
             assertTrue(it.hasNext());
             // the first date will be bogus due to java date limitation
@@ -141,8 +140,6 @@ public class ImportTransformTest extends ImporterTestSupport {
                 cal.setTime((Date) f.getAttribute("CAT_ID"));
                 assertEquals(year++, cal.get(Calendar.YEAR));
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -186,8 +183,6 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     @Test
     public void testReprojectTransform() throws Exception {
-        Catalog cat = getCatalog();
-
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
         SpatialFile file = new SpatialFile(new File(dir, "archsites.shp"));
@@ -228,7 +223,6 @@ public class ImportTransformTest extends ImporterTestSupport {
                         l2.getResource().getNativeCRS(),
                         l2.getResource().getNativeBoundingBox().getCoordinateReferenceSystem()));
 
-        LayerInfo l = cat.getLayer(l2.getId());
         assertTrue(
                 CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), l2.getResource().getNativeCRS()));
         assertEquals("EPSG:4326", l2.getResource().getSRS());

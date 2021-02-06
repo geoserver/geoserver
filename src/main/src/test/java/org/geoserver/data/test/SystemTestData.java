@@ -76,6 +76,10 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class SystemTestData extends CiteTestData {
 
     /** Multiband tiff */
@@ -1068,6 +1072,7 @@ public class SystemTestData extends CiteTestData {
     }
 
     @Override
+    @SuppressWarnings("PMD.SystemPrintln")
     public void tearDown() throws Exception {
         int MAX_ATTEMPTS = 100;
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
@@ -1095,9 +1100,7 @@ public class SystemTestData extends CiteTestData {
         try {
             FileUtils.deleteDirectory(data);
         } catch (IOException e) {
-            if (!data.exists()) {
-                // gone some other way? good...
-            } else {
+            if (data.exists()) {
                 String tree = printFileTree(data);
                 throw new IOException("Failed to delete tree:\n" + tree, e);
             }

@@ -5,7 +5,7 @@
  */
 package org.geoserver.wcs2_0;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;

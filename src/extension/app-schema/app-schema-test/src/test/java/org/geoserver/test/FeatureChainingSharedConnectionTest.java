@@ -5,6 +5,7 @@
 package org.geoserver.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -125,13 +126,12 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
                         ff.property("gsml:specification/gsml:GeologicUnit/gml:description"),
                         "*sedimentary*");
 
-        try (FeatureIterator fIt = mfFs.getFeatures(like).features()) {
-            assertTrue(fIt instanceof DataAccessMappingFeatureIterator);
-            DataAccessMappingFeatureIterator mappingIt = (DataAccessMappingFeatureIterator) fIt;
-            assertTrue(fIt.hasNext());
+        try (DataAccessMappingFeatureIterator mappingIt =
+                (DataAccessMappingFeatureIterator) mfFs.getFeatures(like).features()) {
+            assertTrue(mappingIt.hasNext());
 
             // fetch one feature to trigger opening of nested iterators
-            Feature f = fIt.next();
+            Feature f = mappingIt.next();
             assertNotNull(f);
 
             FeatureSource mappedSource = mappingIt.getMappedSource();
@@ -167,6 +167,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         return mfFs;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // weird dance with transaction fields, leaving it alone
     private void testSharedConnectionRecursively(
             FeatureTypeMapping mapping,
             DataAccessMappingFeatureIterator mappingIt,
@@ -175,7 +176,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
             throws IOException {
         List<AttributeMapping> attrs = mapping.getAttributeMappings();
         assertNotNull(attrs);
-        assertTrue(attrs.size() > 0);
+        assertFalse(attrs.isEmpty());
 
         for (AttributeMapping attr : attrs) {
             if (attr instanceof JoiningNestedAttributeMapping) {
@@ -187,7 +188,7 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
                         joiningNestedAttr.getNestedFeatureIterators(mappingIt);
                 assertNotNull(nestedFeatureIterators);
 
-                if (nestedFeatureIterators.size() > 0) {
+                if (!nestedFeatureIterators.isEmpty()) {
                     assertEquals(1, nestedFeatureIterators.size());
 
                     FeatureTypeMapping nestedMapping =

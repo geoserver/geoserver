@@ -7,6 +7,7 @@
 package org.geoserver.security.auth;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -565,12 +566,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 request.addHeader("roles", derivedRole + ";" + rootRole);
             }
             if (rs == J2EERoleSource.J2EE) {
-                if (true) {
-                    request.addUserRole(derivedRole);
-                }
-                if (false) {
-                    request.addUserRole(rootRole);
-                }
+                request.addUserRole(derivedRole);
             }
 
             getProxy().doFilter(request, response, chain);
@@ -636,12 +632,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                         return testUserName;
                     }
                 });
-        if (true) {
-            request.addUserRole(derivedRole);
-        }
-        if (false) {
-            request.addUserRole(rootRole);
-        }
+        request.addUserRole(derivedRole);
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -685,7 +676,6 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setUserGroupServiceName("ug1");
         config.setPrincipalHeaderAttribute("principal");
         config.setRolesHeaderAttribute("roles");
-        ;
         getSecurityManager().saveFilter(config);
 
         prepareFilterChain(pattern, testFilterName4);
@@ -1594,12 +1584,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 request.addHeader("roles", derivedRole + ";" + rootRole);
             }
             if (rs == J2EERoleSource.J2EE) {
-                if (true) {
-                    request.addUserRole(derivedRole);
-                }
-                if (false) {
-                    request.addUserRole(rootRole);
-                }
+                request.addUserRole(derivedRole);
             }
 
             setCertifacteForUser(testUserName, request);
@@ -1631,14 +1616,6 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             request.setMethod("GET");
             response = new MockHttpServletResponse();
             chain = new MockFilterChain();
-            if (rs == J2EERoleSource.J2EE) {
-                if (false) {
-                    request.addUserRole(derivedRole);
-                }
-                if (false) {
-                    request.addUserRole(rootRole);
-                }
-            }
             // TODO
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);
@@ -1821,8 +1798,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         String urlString = response.getHeader("Location");
         assertNotNull(urlString);
         assertTrue(urlString.startsWith("https"));
-        assertTrue(urlString.indexOf("a=b") != -1);
-        assertTrue(urlString.indexOf("443") != -1);
+        assertNotEquals(urlString.indexOf("a=b"), -1);
+        assertNotEquals(urlString.indexOf("443"), -1);
 
         chain.setRequireSSL(false);
         getSecurityManager().saveSecurityConfig(secConfig);

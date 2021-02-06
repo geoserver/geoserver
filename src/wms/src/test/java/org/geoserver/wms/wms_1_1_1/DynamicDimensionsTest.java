@@ -224,7 +224,6 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
 
-        final Map customParameters = new HashMap();
         info.getParameters()
                 .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.FALSE);
         getCatalog().save(info);

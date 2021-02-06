@@ -8,7 +8,6 @@ package org.geoserver.test.web;
 import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.Gsml30MockData;
-import org.junit.Test;
 
 public class Gml32LinksTest extends AbstractMapPreviewPageTest {
 
@@ -21,10 +20,5 @@ public class Gml32LinksTest extends AbstractMapPreviewPageTest {
     @Override
     protected SystemTestData createTestData() throws Exception {
         return new Gsml30MockData();
-    }
-
-    @Test
-    public void testGml32Links() {
-        super.testAppSchemaGmlLinks();
     }
 }

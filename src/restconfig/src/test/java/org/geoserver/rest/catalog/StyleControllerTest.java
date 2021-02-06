@@ -1070,6 +1070,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSL() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1114,6 +1115,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSLRaw() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1152,6 +1154,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSL() throws Exception {
         testPostAsPSL();
 
@@ -1191,6 +1194,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSLRaw() throws Exception {
         testPostAsPSL();
 

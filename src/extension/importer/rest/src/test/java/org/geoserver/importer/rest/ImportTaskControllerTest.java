@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -93,44 +94,50 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     private Integer putZip(String path) throws Exception {
         File file = new File(path);
+        try (InputStream stream = getInputStream(path, file)) {
+            MockHttpServletResponse resp =
+                    postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
+            assertEquals(201, resp.getStatus());
+            assertNotNull(resp.getHeader("Location"));
+
+            String[] split = resp.getHeader("Location").split("/");
+            Integer id = Integer.parseInt(split[split.length - 1]);
+            ImportContext context = importer.getContext(id);
+
+            MockHttpServletRequest req =
+                    createRequest(
+                            RestBaseController.ROOT_PATH
+                                    + "/imports/"
+                                    + id
+                                    + "/tasks/"
+                                    + file.getName());
+            req.setContentType("application/zip");
+            req.addHeader("Content-Type", "application/zip");
+            req.setMethod("PUT");
+            req.setContent(org.apache.commons.io.IOUtils.toByteArray(stream));
+            resp = dispatch(req);
+
+            assertEquals(201, resp.getStatus());
+
+            context = importer.getContext(context.getId());
+            assertNull(context.getData());
+            assertEquals(1, context.getTasks().size());
+
+            ImportTask task = context.getTasks().get(0);
+            assertTrue(task.getData() instanceof SpatialFile);
+
+            return id;
+        }
+    }
+
+    private InputStream getInputStream(String path, File file) throws FileNotFoundException {
         InputStream stream;
         if (file.exists()) {
             stream = new FileInputStream(file);
         } else {
             stream = ImporterTestSupport.class.getResourceAsStream("../test-data/" + path);
         }
-        MockHttpServletResponse resp =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
-        assertEquals(201, resp.getStatus());
-        assertNotNull(resp.getHeader("Location"));
-
-        String[] split = resp.getHeader("Location").split("/");
-        Integer id = Integer.parseInt(split[split.length - 1]);
-        ImportContext context = importer.getContext(id);
-
-        MockHttpServletRequest req =
-                createRequest(
-                        RestBaseController.ROOT_PATH
-                                + "/imports/"
-                                + id
-                                + "/tasks/"
-                                + file.getName());
-        req.setContentType("application/zip");
-        req.addHeader("Content-Type", "application/zip");
-        req.setMethod("PUT");
-        req.setContent(org.apache.commons.io.IOUtils.toByteArray(stream));
-        resp = dispatch(req);
-
-        assertEquals(201, resp.getStatus());
-
-        context = importer.getContext(context.getId());
-        assertNull(context.getData());
-        assertEquals(1, context.getTasks().size());
-
-        ImportTask task = context.getTasks().get(0);
-        assertTrue(task.getData() instanceof SpatialFile);
-
-        return id;
+        return stream;
     }
 
     private Integer putZipAsURL(String zip) throws Exception {
@@ -188,12 +195,11 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         URL resource = ImporterTestSupport.class.getResource("../test-data/" + zip);
         File file = new File(resource.getFile());
         String[] nameext = file.getName().split("\\.");
-        Connection conn = jdbcStore.getConnection(Transaction.AUTO_COMMIT);
         String sql = "drop table if exists \"" + nameext[0] + "\"";
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql);
-        stmt.close();
-        conn.close();
+        try (Connection conn = jdbcStore.getConnection(Transaction.AUTO_COMMIT);
+                Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        }
         if (asURL) {
             // make a copy since, zip as url will archive and delete it
             File copyDir = tmpDir();
@@ -400,35 +406,39 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testPostGeotiffBz2() throws Exception {
         String path = "geotiff/EmissiveCampania.tif.bz2";
-        InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
+        try (InputStream stream =
+                ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
-        uploadGeotiffAndVerify(new File(path).getName(), stream, "application/x-bzip2");
+            uploadGeotiffAndVerify(new File(path).getName(), stream, "application/x-bzip2");
+        }
     }
 
     @Test
     public void testPostGeotiffBz2TargetWorkspaceJsonUTF8() throws Exception {
         String path = "geotiff/EmissiveCampania.tif.bz2";
-        InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
+        try (InputStream stream =
+                ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
-        String creationRequest =
-                "{\n"
-                        + "   \"import\": {\n"
-                        + "      \"targetWorkspace\": {\n"
-                        + "         \"workspace\": {\n"
-                        + "            \"name\": \"sf\"\n"
-                        + "         }\n"
-                        + "      }\n"
-                        + "   }\n"
-                        + "}";
-        ImportContext context =
-                uploadGeotiffAndVerify(
-                        new File(path).getName(),
-                        stream,
-                        "application/x-bzip2",
-                        creationRequest,
-                        "application/json;charset=UTF-8");
-        final ImportTask task = context.getTasks().get(0);
-        assertEquals("sf", task.getStore().getWorkspace().getName());
+            String creationRequest =
+                    "{\n"
+                            + "   \"import\": {\n"
+                            + "      \"targetWorkspace\": {\n"
+                            + "         \"workspace\": {\n"
+                            + "            \"name\": \"sf\"\n"
+                            + "         }\n"
+                            + "      }\n"
+                            + "   }\n"
+                            + "}";
+            ImportContext context =
+                    uploadGeotiffAndVerify(
+                            new File(path).getName(),
+                            stream,
+                            "application/x-bzip2",
+                            creationRequest,
+                            "application/json;charset=UTF-8");
+            final ImportTask task = context.getTasks().get(0);
+            assertEquals("sf", task.getStore().getWorkspace().getName());
+        }
     }
 
     @Test
@@ -442,21 +452,23 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         String tifname = "EmissiveCampania.tif";
         String bz2name = tifname + ".bz2";
         File destinationArchive = new File(tempDir, bz2name);
-        InputStream inputStream =
-                ImporterTestSupport.class.getResourceAsStream("test-data/geotiff/" + bz2name);
+        try (InputStream inputStream =
+                ImporterTestSupport.class.getResourceAsStream("test-data/geotiff/" + bz2name)) {
 
-        IOUtils.copy(inputStream, destinationArchive);
+            IOUtils.copy(inputStream, destinationArchive);
 
-        VFSWorker vfs = new VFSWorker();
-        vfs.extractTo(destinationArchive, tempDir);
+            VFSWorker vfs = new VFSWorker();
+            vfs.extractTo(destinationArchive, tempDir);
 
-        File tiff = new File(tempDir, tifname);
-        if (!tiff.exists()) {
-            throw new IllegalStateException("Did not extract tif correctly");
+            File tiff = new File(tempDir, tifname);
+            if (!tiff.exists()) {
+                throw new IllegalStateException("Did not extract tif correctly");
+            }
+
+            try (FileInputStream fis = new FileInputStream(tiff)) {
+                uploadGeotiffAndVerify(tifname, fis, "image/tiff");
+            }
         }
-
-        FileInputStream fis = new FileInputStream(tiff);
-        uploadGeotiffAndVerify(tifname, fis, "image/tiff");
     }
 
     @Test
@@ -718,9 +730,6 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testErrorHandling() throws Exception {
         int id = lastId();
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
 
         JSONObjectBuilder badDateFormatTransform = new JSONObjectBuilder();
         badDateFormatTransform

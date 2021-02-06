@@ -67,7 +67,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
@@ -85,9 +84,6 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.security.CoverageAccessLimits;
-import org.geoserver.security.WrapperPolicy;
-import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -135,15 +131,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 import org.springframework.context.ApplicationContext;
 
 /** Unit test suite for the {@link GWC} mediator. */
@@ -1540,42 +1531,5 @@ public class GWCTest {
         if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
             assertEquals("H2", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
-    }
-
-    private void mockCachedSecureLayer(
-            Envelope filterBox,
-            BoundingBox bounds,
-            final String layerName,
-            final String gridName,
-            final long zoom,
-            final long col,
-            final long row)
-            throws GeoWebCacheException, NoSuchAuthorityCodeException, FactoryException {
-        GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
-        GridSubset subset = mock(GridSubset.class);
-        SRS srs = mock(SRS.class);
-        SecuredLayerInfo layer = mock(SecuredLayerInfo.class);
-        FeatureTypeInfo featureType = mock(FeatureTypeInfo.class);
-        CoordinateReferenceSystem crs = mock(CoordinateReferenceSystem.class);
-        CoordinateSystem cs = mock(CoordinateSystem.class);
-        WrapperPolicy policy = mock(WrapperPolicy.class);
-        CoverageAccessLimits limits = mock(CoverageAccessLimits.class);
-        MultiPolygon filter = mock(MultiPolygon.class);
-
-        when(tld.getTileLayer(eq(layerName))).thenReturn(tileLayer);
-        when(tileLayer.getGridSubset(eq(gridName))).thenReturn(subset);
-        when(subset.boundsFromIndex(eq(new long[] {col, row, zoom}))).thenReturn(bounds);
-        when(subset.getSRS()).thenReturn(srs);
-        doReturn(crs).when(mediator).getCRSForGridset(eq(subset));
-        when(tileLayer.getPublishedInfo()).thenReturn(layer);
-        when(layer.getResource()).thenReturn(featureType);
-        when(featureType.getCRS()).thenReturn(crs);
-        when(crs.getCoordinateSystem()).thenReturn(cs);
-        when(cs.getDimension()).thenReturn(2);
-        when(catalog.getLayerByName(layerName)).thenReturn(layer);
-        when(layer.getWrapperPolicy()).thenReturn(policy);
-        when(policy.getLimits()).thenReturn(limits);
-        when(limits.getRasterFilter()).thenReturn(filter);
-        when(filter.getEnvelopeInternal()).thenReturn(filterBox);
     }
 }

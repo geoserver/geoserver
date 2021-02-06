@@ -192,7 +192,6 @@ public class TransactionTest extends WFS20TestSupport {
         Element numberInserted = (Element) numberInserteds.item(0);
         assertNotNull(numberInserted);
         assertEquals("1", numberInserted.getFirstChild().getNodeValue());
-        String fid = getFirstElementByTagName(dom, "fes:ResourceId").getAttribute("rid");
 
         // check insertion occurred
         dom = postAsDOM("wfs", getFeature);
@@ -1142,7 +1141,7 @@ public class TransactionTest extends WFS20TestSupport {
         testInsertUnkonwnFeatureType("cgf/wfs");
     }
 
-    public void testInsertUnkonwnFeatureType(String path) throws Exception {
+    protected void testInsertUnkonwnFeatureType(String path) throws Exception {
         String insert =
                 "<wfs:Transaction service='WFS' version='2.0.0' "
                         + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "

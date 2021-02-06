@@ -297,12 +297,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                         return testUserName;
                     }
                 });
-        if (true) {
-            request.addUserRole(derivedRole);
-        }
-        if (false) {
-            request.addUserRole(rootRole);
-        }
+        request.addUserRole(derivedRole);
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -349,12 +344,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                         return testUserName;
                     }
                 });
-        if (true) {
-            request.addUserRole(derivedRole);
-        }
-        if (false) {
-            request.addUserRole(rootRole);
-        }
+        request.addUserRole(derivedRole);
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -391,7 +381,6 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setUserGroupServiceName("ug1");
         config.setPrincipalHeaderAttribute("principal");
         config.setRolesHeaderAttribute("roles");
-        ;
         getSecurityManager().saveFilter(config);
 
         prepareFilterChain(pattern, testFilterName4);

@@ -413,6 +413,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
 
     @Override
+    @Test
     public void testAuthenticationProvider() throws IOException {
         super.testAuthenticationProvider();
         JDBCConnectAuthProviderConfig config =

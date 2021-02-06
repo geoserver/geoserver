@@ -9,9 +9,9 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class MonitorFilterTest {
 
     DummyMonitorDAO dao;
@@ -161,6 +162,7 @@ public class MonitorFilterTest {
                 new MockFilterChain(
                         new HttpServlet() {
                             @Override
+                            @SuppressWarnings("PMD.EmptyWhileStmt")
                             public void service(ServletRequest req, ServletResponse res)
                                     throws ServletException, IOException {
                                 while (req.getInputStream().read() != -1)
@@ -268,10 +270,10 @@ public class MonitorFilterTest {
         String layerNamesList = statistics.getLayerNames().toString();
         assertEquals(
                 data.getResourcesList(), layerNamesList.substring(1, layerNamesList.length() - 1));
-        assertTrue(
+        assertNotEquals(
                 data.getResourcesProcessingTimeList()
-                                .indexOf(statistics.getRenderingTime(0).toString())
-                        != -1);
+                        .indexOf(statistics.getRenderingTime(0).toString()),
+                -1);
         assertEquals(data.getLabellingProcessingTime().longValue(), statistics.getLabellingTime());
     }
 

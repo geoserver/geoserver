@@ -178,9 +178,9 @@ public class StoredQueryProviderTest {
 
     private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
         File storedQueryDefinition = new File(storedQueryDir, MY_STORED_QUERY + ".xml");
-        Writer writer = new FileWriter(storedQueryDefinition);
-        writer.write(MY_STORED_QUERY_DEFINITION);
-        writer.close();
+        try (Writer writer = new FileWriter(storedQueryDefinition)) {
+            writer.write(MY_STORED_QUERY_DEFINITION);
+        }
         return storedQueryDefinition;
     }
 
@@ -197,9 +197,9 @@ public class StoredQueryProviderTest {
     private File createMyBogusStoredQueryDefinition() throws IOException {
         File storedQueryDir = storedQueryProvider.storedQueryDir().dir();
         File storedQueryDefinition = new File(storedQueryDir, "MyBogusStoredQuery.xml");
-        Writer writer = new FileWriter(storedQueryDefinition);
-        writer.write("This is not a well-formed query");
-        writer.close();
+        try (Writer writer = new FileWriter(storedQueryDefinition)) {
+            writer.write("This is not a well-formed query");
+        }
         return storedQueryDefinition;
     }
 }

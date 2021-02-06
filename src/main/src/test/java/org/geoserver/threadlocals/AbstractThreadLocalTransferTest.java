@@ -37,7 +37,7 @@ public abstract class AbstractThreadLocalTransferTest {
         executor.shutdown();
     }
 
-    public void testThreadLocalTransfer(ThreadLocalTransferCallable callable)
+    protected void testThreadLocalTransfer(ThreadLocalTransferCallable callable)
             throws InterruptedException, ExecutionException {
         Future<Void> future = executor.submit(callable);
         future.get();

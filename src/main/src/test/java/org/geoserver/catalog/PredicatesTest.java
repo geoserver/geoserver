@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.geoserver.catalog.impl.AuthorityURL;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
-import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -37,11 +35,7 @@ public class PredicatesTest {
 
     private FeatureTypeInfoImpl featureType;
 
-    private CoverageStoreInfoImpl coverageStore;
-
-    private CoverageInfoImpl coverage;
-
-    private LayerInfoImpl vectorLayer, rasterLayer;
+    private LayerInfoImpl vectorLayer;
 
     private StyleInfoImpl defaultStyle;
 

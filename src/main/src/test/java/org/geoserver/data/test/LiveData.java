@@ -8,6 +8,10 @@ package org.geoserver.data.test;
 import java.io.File;
 import org.geoserver.util.IOUtils;
 
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class LiveData implements TestData {
     protected File source;
 

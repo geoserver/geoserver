@@ -152,7 +152,6 @@ public class LoggerRuleTest {
         log.setLevel(Level.FINE);
         expectLastCall().once();
         final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
-        final Exception ex = new IllegalArgumentException();
 
         final LogRecord record = createMock("record1", LogRecord.class);
 

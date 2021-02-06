@@ -528,7 +528,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                 "TheRule (0)");
     }
 
-    public void testScaleDependent(String bboxSpecification, String expectedLabel)
+    protected void testScaleDependent(String bboxSpecification, String expectedLabel)
             throws Exception {
         // around 4k
         String requestURL =

@@ -335,15 +335,16 @@ public class TransformRepositoryTest {
         repo.putTransformSheet(info, getClass().getResourceAsStream("test.xslt"));
 
         Transformer transformer = repo.getTransformer(info);
-        InputStream is = getClass().getResourceAsStream("sample.xml");
-        StreamSource source = new StreamSource(is);
-        DOMResult result = new DOMResult();
-        transformer.transform(source, result);
-        Document dom = (Document) result.getNode();
-        XMLAssert.assertXpathEvaluatesTo("12", "count(/html/body/table/tr/td)", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='museum'])", dom);
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr[td='-74.0104611,40.70758763'])", dom);
+        try (InputStream is = getClass().getResourceAsStream("sample.xml"); ) {
+            StreamSource source = new StreamSource(is);
+            DOMResult result = new DOMResult();
+            transformer.transform(source, result);
+            Document dom = (Document) result.getNode();
+            XMLAssert.assertXpathEvaluatesTo("12", "count(/html/body/table/tr/td)", dom);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='museum'])", dom);
+            XMLAssert.assertXpathEvaluatesTo(
+                    "1", "count(/html/body/table/tr[td='-74.0104611,40.70758763'])", dom);
+        }
     }
 
     private Set<String> getConfigurationNames(List<TransformInfo> configs) {

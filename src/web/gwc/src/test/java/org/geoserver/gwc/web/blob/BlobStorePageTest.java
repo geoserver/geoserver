@@ -4,7 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
-import static org.geowebcache.config.FileBlobStoreInfo.*;
+import static org.geowebcache.config.FileBlobStoreInfo.PathGeneratorType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

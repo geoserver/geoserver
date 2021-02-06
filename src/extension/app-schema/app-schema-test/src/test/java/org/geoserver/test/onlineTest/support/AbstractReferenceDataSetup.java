@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
@@ -43,6 +44,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
     public abstract JDBCDataStoreFactory createDataStoreFactory();
 
     // Setup the data.
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public abstract void setUp() throws Exception;
 
     protected abstract Properties createExampleFixture();
@@ -120,18 +122,16 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
             exFixtureFile.getParentFile().mkdirs();
             exFixtureFile.createNewFile();
 
-            FileOutputStream fout = new FileOutputStream(exFixtureFile);
-
-            exampleFixture.store(
-                    fout,
-                    "This is an example fixture. Update the "
-                            + "values and remove the .example suffix to enable the test");
-            fout.flush();
-            fout.close();
-            System.out.println("Wrote example fixture file to " + exFixtureFile);
+            try (FileOutputStream fout = new FileOutputStream(exFixtureFile)) {
+                exampleFixture.store(
+                        fout,
+                        "This is an example fixture. Update the "
+                                + "values and remove the .example suffix to enable the test");
+                fout.flush();
+            }
+            LOGGER.info("Wrote example fixture file to " + exFixtureFile);
         } catch (IOException ioe) {
-            System.out.println("Unable to write out example fixture " + exFixtureFile);
-            ioe.printStackTrace();
+            LOGGER.log(Level.WARN, "Unable to write out example fixture " + exFixtureFile, ioe);
         }
     }
 

@@ -54,70 +54,73 @@ public class GetStylesIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testSimple() throws Exception {
-        InputStream stream =
+        try (InputStream stream =
                 get(
                         "wms?service=WMS&version=1.1.1&&request=GetStyles&layers="
                                 + getLayerId(MockData.BASIC_POLYGONS)
-                                + "&sldver=1.0.0");
+                                + "&sldver=1.0.0")) {
 
-        SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
-        parser.setInput(stream);
+            SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
+            parser.setInput(stream);
 
-        StyledLayerDescriptor sld = parser.parseSLD();
-        assertEquals(1, sld.getStyledLayers().length);
+            StyledLayerDescriptor sld = parser.parseSLD();
+            assertEquals(1, sld.getStyledLayers().length);
 
-        NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
-        assertEquals(getLayerId(MockData.BASIC_POLYGONS), layer.getName());
-        assertEquals(1, layer.styles().size());
+            NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
+            assertEquals(getLayerId(MockData.BASIC_POLYGONS), layer.getName());
+            assertEquals(1, layer.styles().size());
 
-        Style style = layer.styles().get(0);
-        assertTrue(style.isDefault());
-        assertEquals("BasicPolygons", style.getName());
+            Style style = layer.styles().get(0);
+            assertTrue(style.isDefault());
+            assertEquals("BasicPolygons", style.getName());
+        }
     }
 
     @Test
     public void testGroup() throws Exception {
-        InputStream stream =
+        try (InputStream stream =
                 get(
-                        "wms?service=WMS&version=1.1.1&request=GetStyles&layers=lakesGroup&sldver=1.0.0");
+                        "wms?service=WMS&version=1.1.1&request=GetStyles&layers=lakesGroup&sldver=1.0.0")) {
 
-        SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
-        parser.setInput(stream);
+            SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
+            parser.setInput(stream);
 
-        StyledLayerDescriptor sld = parser.parseSLD();
-        assertEquals(1, sld.getStyledLayers().length);
+            StyledLayerDescriptor sld = parser.parseSLD();
+            assertEquals(1, sld.getStyledLayers().length);
 
-        NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
-        assertEquals("lakesGroup", layer.getName());
+            NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
+            assertEquals("lakesGroup", layer.getName());
 
-        // groups have no style
-        assertEquals(0, layer.styles().size());
+            // groups have no style
+            assertEquals(0, layer.styles().size());
+        }
     }
 
     @Test
     public void testMultiStyle() throws Exception {
-        InputStream stream =
+        try (InputStream stream =
                 get(
                         "wms?service=WMS&version=1.1.1&request=GetStyles&layers="
                                 + getLayerId(MockData.LAKES)
-                                + "&sldver=1.0.0");
+                                + "&sldver=1.0.0")) {
 
-        SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
-        parser.setInput(stream);
+            SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
+            parser.setInput(stream);
 
-        StyledLayerDescriptor sld = parser.parseSLD();
-        assertEquals(1, sld.getStyledLayers().length);
+            StyledLayerDescriptor sld = parser.parseSLD();
+            assertEquals(1, sld.getStyledLayers().length);
 
-        NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
-        assertEquals(getLayerId(MockData.LAKES), layer.getName());
-        assertEquals(2, layer.styles().size());
+            NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
+            assertEquals(getLayerId(MockData.LAKES), layer.getName());
+            assertEquals(2, layer.styles().size());
 
-        Style style = layer.styles().get(0);
-        assertTrue(style.isDefault());
-        assertEquals("Lakes", style.getName());
+            Style style = layer.styles().get(0);
+            assertTrue(style.isDefault());
+            assertEquals("Lakes", style.getName());
 
-        style = layer.styles().get(1);
-        assertFalse(style.isDefault());
-        assertEquals("Forests", style.getName());
+            style = layer.styles().get(1);
+            assertFalse(style.isDefault());
+            assertEquals("Forests", style.getName());
+        }
     }
 }

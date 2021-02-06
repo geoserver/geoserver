@@ -56,7 +56,7 @@ public class TestHttpClientProvider {
     }
 
     /** Used to check if any binding is associated into the mock server */
-    public static boolean testModeEnabled() {
+    public static boolean isTestModeEnabled() {
         return TEST_MODE;
     }
 

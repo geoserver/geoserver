@@ -698,7 +698,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         for (LayerInfo l : getCatalog().getLayerGroupByName(OPAQUE_GROUP).layers()) {
             assertXpathNotExists("//wms:Layer[wms:Name='" + l.prefixedName() + "']", dom);
         }
-        ;
     }
 
     @Test
@@ -721,7 +720,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             for (PublishedInfo p : getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
                 assertXpathNotExists("//wms:Layer[wms:Name='" + p.prefixedName() + "']", dom);
             }
-            ;
 
             // now check the layer count too, we just hid everything in the container layer
             List<LayerInfo> nestedLayers = new LayerGroupHelper(container).allLayers();

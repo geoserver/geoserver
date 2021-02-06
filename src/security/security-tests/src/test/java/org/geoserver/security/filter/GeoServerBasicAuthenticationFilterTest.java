@@ -76,6 +76,7 @@ public class GeoServerBasicAuthenticationFilterTest {
         return authenticationFilter;
     }
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     private MockHttpServletRequest createRequest() {
         MockHttpServletRequest request =
                 new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest();

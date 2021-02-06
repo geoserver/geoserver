@@ -27,48 +27,50 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetLegendGraphicAll() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetLegendGraphic&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png");
+                        "wms?request=GetLegendGraphic&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
 
-        BufferedImage imageBuffer = ImageIO.read(is);
-        // ImageIO.write(imageBuffer, "PNG", new File("/tmp/image.png"));
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
-        assertPixel(imageBuffer, 10, 10, new Color(0, 0, 255));
-        assertPixel(imageBuffer, 10, 30, new Color(255, 0, 0));
-        assertPixel(imageBuffer, 10, 50, new Color(0, 255, 0));
+            BufferedImage imageBuffer = ImageIO.read(is);
+            // ImageIO.write(imageBuffer, "PNG", new File("/tmp/image.png"));
+            assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+            assertPixel(imageBuffer, 10, 10, new Color(0, 0, 255));
+            assertPixel(imageBuffer, 10, 30, new Color(255, 0, 0));
+            assertPixel(imageBuffer, 10, 50, new Color(0, 255, 0));
+        }
     }
 
     @Test
     public void testGetLegendGraphicBlueRule() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetLegendGraphic&rule=xrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png");
+                        "wms?request=GetLegendGraphic&rule=xrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
 
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
-        assertPixel(imageBuffer, 10, 10, new Color(0, 0, 255));
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+            assertPixel(imageBuffer, 10, 10, new Color(0, 0, 255));
+        }
     }
 
     @Test
     public void testGetLegendGraphicRedRule() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetLegendGraphic&rule=yrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png");
-
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
-        assertPixel(imageBuffer, 10, 10, new Color(255, 0, 0));
+                        "wms?request=GetLegendGraphic&rule=yrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+            assertPixel(imageBuffer, 10, 10, new Color(255, 0, 0));
+        }
     }
 
     @Test
     public void testGetLegendGraphicGreenRule() throws Exception {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetLegendGraphic&rule=zrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png");
-
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
-        assertPixel(imageBuffer, 10, 10, new Color(0, 255, 0));
+                        "wms?request=GetLegendGraphic&rule=zrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+            assertPixel(imageBuffer, 10, 10, new Color(0, 255, 0));
+        }
     }
 }

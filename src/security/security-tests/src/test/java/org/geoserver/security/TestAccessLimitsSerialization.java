@@ -86,14 +86,16 @@ public class TestAccessLimitsSerialization {
     }
 
     private void testObjectSerialization(Serializable object) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(object);
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+            oos.writeObject(object);
 
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-        Object clone = ois.readObject();
-
-        Assert.assertNotSame(object, clone);
-        Assert.assertEquals(object, clone);
+            try (ObjectInputStream ois =
+                    new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+                Object clone = ois.readObject();
+                Assert.assertNotSame(object, clone);
+                Assert.assertEquals(object, clone);
+            }
+        }
     }
 }

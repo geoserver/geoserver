@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
 import javax.servlet.ServletResponse;
@@ -534,8 +535,10 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
-        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
-        RenderedImage image = reader.read(0);
+        try (ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream())) {
+            reader.setInput(iis);
+            reader.read(0);
+        }
     }
 
     @Test

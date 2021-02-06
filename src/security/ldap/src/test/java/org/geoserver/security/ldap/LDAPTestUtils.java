@@ -110,6 +110,7 @@ public class LDAPTestUtils {
      *
      * @param allowAnonymous anonymous access is allowed or not
      */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public static boolean initLdapServer(
             boolean allowAnonymous, String ldapServerUrl, String basePath, String ldifPath)
             throws Exception {
@@ -284,8 +285,7 @@ public class LDAPTestUtils {
     public static void loadLdif(DefaultDirectoryService directoryService, Resource ldifFile)
             throws IOException {
         File tempFile = File.createTempFile("spring_ldap_test", ".ldif");
-        try {
-            InputStream inputStream = ldifFile.getInputStream();
+        try (InputStream inputStream = ldifFile.getInputStream()) {
             IOUtils.copy(inputStream, new FileOutputStream(tempFile));
             LdifFileLoader fileLoader =
                     new LdifFileLoader(directoryService.getSession(), tempFile.getAbsolutePath());

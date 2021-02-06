@@ -223,9 +223,7 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
 
     private void activateLayer(String workspace, String layerName) {
         Catalog catalog = this.getCatalog();
-        WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspace);
         // setup layer rule
-        String wsName = workspaceInfo.getName();
         Name layerNameComplex = new NameImpl(workspace, layerName);
         LayerInfo layerInfo = catalog.getLayerByName(layerNameComplex);
         layerInfo.getResource().setSimpleConversionEnabled(true);

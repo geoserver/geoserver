@@ -369,8 +369,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmslayers/states.html");
+        getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmslayers/states.html");
         // print(dom);
     }
 
@@ -394,7 +393,6 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
                         + ".html";
         // Exception path
         String exception = "No such cascaded wms: " + ws + "," + wl;
-        String exception2 = "No such cascaded wms layer: " + ws + "," + wms + "," + wl;
 
         // CASE 1: No wmsstore set
 

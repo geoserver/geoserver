@@ -18,16 +18,6 @@ import org.junit.Test;
 
 public class PipeliningTaskQueueTest {
 
-    static {
-        //        java.util.logging.ConsoleHandler handler = new java.util.logging.ConsoleHandler();
-        //        handler.setLevel(java.util.logging.Level.ALL);
-        //
-        //
-        // org.geotools.util.logging.Logging.getLogger("org.geoserver.monitor").setLevel(java.util.logging.Level.ALL);
-        //
-        // org.geotools.util.logging.Logging.getLogger("org.geoserver.monitor").addHandler(handler);
-    }
-
     PipeliningTaskQueue<Integer> taskQueue;
 
     @Before

@@ -88,14 +88,15 @@ public class KMLFileFormatTest {
                 kmlFileFormat
                         .parseFeatureTypes("foo", IOUtils.toInputStream(kmlInput, "UTF-8"))
                         .get(0);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        Assert.assertTrue("No features found", reader.hasNext());
-        SimpleFeature feature = reader.next();
-        Assert.assertNotNull("Expecting feature", feature);
-        Assert.assertEquals("Invalid name attribute", "foo", feature.getAttribute("name"));
-        Assert.assertEquals(
-                "Invalid description attribute", "bar", feature.getAttribute("description"));
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            Assert.assertTrue("No features found", reader.hasNext());
+            SimpleFeature feature = reader.next();
+            Assert.assertNotNull("Expecting feature", feature);
+            Assert.assertEquals("Invalid name attribute", "foo", feature.getAttribute("name"));
+            Assert.assertEquals(
+                    "Invalid description attribute", "bar", feature.getAttribute("description"));
+        }
     }
 
     @Test
@@ -112,13 +113,14 @@ public class KMLFileFormatTest {
                 kmlFileFormat
                         .parseFeatureTypes("foo", IOUtils.toInputStream(kmlInput, "UTF-8"))
                         .get(0);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        Assert.assertTrue("No features found", reader.hasNext());
-        SimpleFeature feature = reader.next();
-        Assert.assertNotNull("Expecting feature", feature);
-        Assert.assertEquals("Invalid ext attr foo", "bar", feature.getAttribute("foo"));
-        Assert.assertEquals("Invalid ext attr quux", "morx", feature.getAttribute("quux"));
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            Assert.assertTrue("No features found", reader.hasNext());
+            SimpleFeature feature = reader.next();
+            Assert.assertNotNull("Expecting feature", feature);
+            Assert.assertEquals("Invalid ext attr foo", "bar", feature.getAttribute("foo"));
+            Assert.assertEquals("Invalid ext attr quux", "morx", feature.getAttribute("quux"));
+        }
     }
 
     @Test
@@ -139,12 +141,13 @@ public class KMLFileFormatTest {
                 kmlFileFormat
                         .parseFeatureTypes("foo", IOUtils.toInputStream(kmlInput, "UTF-8"))
                         .get(0);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        Assert.assertTrue("No features found", reader.hasNext());
-        SimpleFeature feature = reader.next();
-        Assert.assertNotNull("Expecting feature", feature);
-        Assert.assertEquals("Invalid ext attr foo", 42, feature.getAttribute("foo"));
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            Assert.assertTrue("No features found", reader.hasNext());
+            SimpleFeature feature = reader.next();
+            Assert.assertNotNull("Expecting feature", feature);
+            Assert.assertEquals("Invalid ext attr foo", 42, feature.getAttribute("foo"));
+        }
     }
 
     @Test
@@ -173,13 +176,14 @@ public class KMLFileFormatTest {
         Assert.assertEquals("Unexpected number of feature types", 1, featureTypes.size());
         SimpleFeatureType ft = featureTypes.get(0);
 
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(ft, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        SimpleFeature feature1 = reader.next();
-        Assert.assertNotNull("Expecting feature", feature1);
-        Assert.assertEquals("Invalid ext attr foo", 42, feature1.getAttribute("foo"));
-        Assert.assertEquals(
-                "Invalid ext attr bar", 4.2f, (Float) feature1.getAttribute("bar"), 0.01);
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(ft, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            SimpleFeature feature1 = reader.next();
+            Assert.assertNotNull("Expecting feature", feature1);
+            Assert.assertEquals("Invalid ext attr foo", 42, feature1.getAttribute("foo"));
+            Assert.assertEquals(
+                    "Invalid ext attr bar", 4.2f, (Float) feature1.getAttribute("bar"), 0.01);
+        }
     }
 
     @Test
@@ -203,13 +207,14 @@ public class KMLFileFormatTest {
                         "typed-and-untyped", IOUtils.toInputStream(kmlInput, "UTF-8"));
         Assert.assertEquals("Unexpected number of feature types", 1, featureTypes.size());
         SimpleFeatureType featureType = featureTypes.get(0);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        SimpleFeature feature = reader.next();
-        Assert.assertNotNull("Expecting feature", feature);
-        Assert.assertEquals("Invalid ext attr foo", 42, feature.getAttribute("foo"));
-        Assert.assertEquals("bar", feature.getAttribute("fleem"));
-        Assert.assertEquals("morx", feature.getAttribute("quux"));
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            SimpleFeature feature = reader.next();
+            Assert.assertNotNull("Expecting feature", feature);
+            Assert.assertEquals("Invalid ext attr foo", 42, feature.getAttribute("foo"));
+            Assert.assertEquals("bar", feature.getAttribute("fleem"));
+            Assert.assertEquals("morx", feature.getAttribute("quux"));
+        }
     }
 
     @Test
@@ -232,10 +237,11 @@ public class KMLFileFormatTest {
         Assert.assertEquals(1, schemaNames.size());
         Assert.assertEquals(
                 "Did not find expected schema name metadata", "myschema", schemaNames.get(0));
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"));
-        SimpleFeature feature = reader.next();
-        Assert.assertNotNull("Expecting feature", feature);
-        Assert.assertEquals("Invalid ext attr foo", 7, feature.getAttribute("foo"));
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                kmlFileFormat.read(featureType, IOUtils.toInputStream(kmlInput, "UTF-8"))) {
+            SimpleFeature feature = reader.next();
+            Assert.assertNotNull("Expecting feature", feature);
+            Assert.assertEquals("Invalid ext attr foo", 7, feature.getAttribute("foo"));
+        }
     }
 }

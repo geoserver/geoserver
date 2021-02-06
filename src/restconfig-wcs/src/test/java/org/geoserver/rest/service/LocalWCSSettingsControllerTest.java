@@ -198,7 +198,7 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
                         .getStatus());
         boolean thrown = false;
         try {
-            JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/sf/settings.json");
+            getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/sf/settings.json");
         } catch (JSONException e) {
             thrown = true;
         }

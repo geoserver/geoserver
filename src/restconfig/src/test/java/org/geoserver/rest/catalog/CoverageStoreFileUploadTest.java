@@ -398,7 +398,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             request.setContent(bytes);
             request.addHeader("Content-type", "application/zip");
             // Get The response
-            MockHttpServletResponse response = dispatch(request);
+            dispatch(request);
             // Get the Mosaic Reader
             reader2 =
                     (StructuredGridCoverage2DReader)
@@ -724,23 +724,6 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     private void setUpBBoxTest(String storeName, String fileName) throws Exception {
         // Upload of the Mosaic via REST
         URL zip = getClass().getResource(fileName);
-        byte[] bytes = getBytes(zip);
-
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/"
-                                + storeName
-                                + "/file.imagemosaic",
-                        bytes,
-                        "application/zip");
-        assertEquals(201, response.getStatus());
-        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
-    }
-
-    private void setUpBBoxCoverageViewTest(String storeName) throws Exception {
-        // Upload of the Mosaic via REST
-        URL zip = getClass().getResource("test_bbox_coverageview.zip");
         byte[] bytes = getBytes(zip);
 
         MockHttpServletResponse response =

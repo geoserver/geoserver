@@ -90,28 +90,29 @@ public class ScaleCoverageTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         // System.out.println(response.getOutputStreamContent());
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage gc = format.getReader(is).read(null);
 
-        GridCoverage2D original =
-                (GridCoverage2D)
-                        getCatalog()
-                                .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
-                                .getGridCoverage(null, null);
-        scheduleForDisposal(original);
+            GridCoverage2D original =
+                    (GridCoverage2D)
+                            getCatalog()
+                                    .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
+                                    .getGridCoverage(null, null);
+            scheduleForDisposal(original);
 
-        // check the envelope did not change
-        assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);
-        assertEquals(original.getEnvelope().getMinimum(1), gc.getEnvelope().getMinimum(1), EPS);
-        assertEquals(original.getEnvelope().getMaximum(0), gc.getEnvelope().getMaximum(0), EPS);
-        assertEquals(original.getEnvelope().getMaximum(1), gc.getEnvelope().getMaximum(1), EPS);
+            // check the envelope did not change
+            assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);
+            assertEquals(original.getEnvelope().getMinimum(1), gc.getEnvelope().getMinimum(1), EPS);
+            assertEquals(original.getEnvelope().getMaximum(0), gc.getEnvelope().getMaximum(0), EPS);
+            assertEquals(original.getEnvelope().getMaximum(1), gc.getEnvelope().getMaximum(1), EPS);
 
-        // check this has been resized properly
-        GridEnvelope originalRange = original.getGridGeometry().getGridRange();
-        GridEnvelope resultRange = gc.getGridGeometry().getGridRange();
-        assertEquals(originalRange.getSpan(0) * 2, resultRange.getSpan(0));
-        assertEquals(originalRange.getSpan(1) * 2, resultRange.getSpan(1));
+            // check this has been resized properly
+            GridEnvelope originalRange = original.getGridGeometry().getGridRange();
+            GridEnvelope resultRange = gc.getGridGeometry().getGridRange();
+            assertEquals(originalRange.getSpan(0) * 2, resultRange.getSpan(0));
+            assertEquals(originalRange.getSpan(1) * 2, resultRange.getSpan(1));
+        }
     }
 }

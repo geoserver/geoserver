@@ -479,6 +479,7 @@ public abstract class ResourceTheoryTest {
     }
 
     @Theory
+    @SuppressWarnings("PMD.CloseResource")
     public void theoryDoubleClose(String path) throws Exception {
         final Resource res = getResource(path);
         assumeThat(res, is(resource()));

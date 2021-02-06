@@ -23,6 +23,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class IpBlacklistFilterTest {
 
     @Test
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public void testFilterIp() throws IOException, ServletException {
         Properties props = new Properties();
         props.put("ip.blacklist", "192.168.1.8,192.168.1.10");

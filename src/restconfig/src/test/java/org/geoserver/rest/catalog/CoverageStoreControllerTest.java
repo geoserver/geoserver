@@ -220,25 +220,25 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         File f = new File(dir, "usa.prj");
         f.deleteOnExit();
-        FileOutputStream fout = new FileOutputStream(f);
-        IOUtils.copy(getClass().getResourceAsStream("test-data/usa.prj"), fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(getClass().getResourceAsStream("test-data/usa.prj"), fout);
+            fout.flush();
+        }
 
         f = new File(dir, "usa.meta");
         f.deleteOnExit();
-        fout = new FileOutputStream(f);
-        IOUtils.copy(getClass().getResourceAsStream("test-data/usa.meta"), fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(getClass().getResourceAsStream("test-data/usa.meta"), fout);
+            fout.flush();
+        }
 
         f = new File(dir, "usa.png");
         f.deleteOnExit();
 
-        fout = new FileOutputStream(f);
-        IOUtils.copy(getClass().getResourceAsStream("test-data/usa.png"), fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(getClass().getResourceAsStream("test-data/usa.png"), fout);
+            fout.flush();
+        }
 
         return f;
     }
@@ -451,10 +451,10 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
         // Creating the coverageStore
         File f = new File(dir, "empty.zip");
         f.deleteOnExit();
-        FileOutputStream fout = new FileOutputStream(f);
-        IOUtils.copy(getClass().getResourceAsStream("test-data/empty.zip"), fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(getClass().getResourceAsStream("test-data/empty.zip"), fout);
+            fout.flush();
+        }
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];
@@ -479,13 +479,14 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
         // Harvesting
         f = new File(dir, "NCOM_wattemp_020_20081031T0000000_12.tiff");
         f.deleteOnExit();
-        fout = new FileOutputStream(f);
-        IOUtils.copy(
-                getClass()
-                        .getResourceAsStream("test-data/NCOM_wattemp_020_20081031T0000000_12.tiff"),
-                fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(
+                    getClass()
+                            .getResourceAsStream(
+                                    "test-data/NCOM_wattemp_020_20081031T0000000_12.tiff"),
+                    fout);
+            fout.flush();
+        }
 
         final String path = "file://" + f.getCanonicalPath();
         response =
@@ -518,10 +519,10 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
         // Creating the coverageStore
         File f = new File(dir, "mosaic.zip");
         f.deleteOnExit();
-        FileOutputStream fout = new FileOutputStream(f);
-        IOUtils.copy(getClass().getResourceAsStream("test-data/mosaic.zip"), fout);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(getClass().getResourceAsStream("test-data/mosaic.zip"), fout);
+            fout.flush();
+        }
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];

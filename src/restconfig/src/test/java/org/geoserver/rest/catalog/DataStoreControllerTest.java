@@ -135,8 +135,6 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertEquals("sf", xp.evaluate("/dataStore/name", dom));
         assertEquals("sf", xp.evaluate("/dataStore/workspace/name", dom));
         assertXpathExists("/dataStore/connectionParameters", dom);
-
-        Document dom2 = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom);
 
         String xml =

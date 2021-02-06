@@ -30,6 +30,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecutePoint() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -50,15 +51,17 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureCollection output = process.execute(features, distance, null);
         assertEquals(2, output.size());
 
-        SimpleFeatureIterator iterator = output.features();
-        for (int i = 0; i < 2; i++) {
-            Geometry expected = gf.createPoint(new Coordinate(i, i)).buffer(distance);
-            SimpleFeature sf = iterator.next();
-            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        try (SimpleFeatureIterator iterator = output.features()) {
+            for (int i = 0; i < 2; i++) {
+                Geometry expected = gf.createPoint(new Coordinate(i, i)).buffer(distance);
+                SimpleFeature sf = iterator.next();
+                assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+            }
         }
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecuteLineString() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -84,21 +87,23 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         BufferFeatureCollection process = new BufferFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, distance, null);
         assertEquals(5, output.size());
-        SimpleFeatureIterator iterator = output.features();
-        for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate[] array = new Coordinate[4];
-            int j = 0;
-            for (int i = 0 + numFeatures; i < 4 + numFeatures; i++) {
-                array[j] = new Coordinate(i, i);
-                j++;
+        try (SimpleFeatureIterator iterator = output.features()) {
+            for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
+                Coordinate[] array = new Coordinate[4];
+                int j = 0;
+                for (int i = 0 + numFeatures; i < 4 + numFeatures; i++) {
+                    array[j] = new Coordinate(i, i);
+                    j++;
+                }
+                Geometry expected = gf.createLineString(array).buffer(distance);
+                SimpleFeature sf = iterator.next();
+                assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
             }
-            Geometry expected = gf.createLineString(array).buffer(distance);
-            SimpleFeature sf = iterator.next();
-            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
         }
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecutePolygon() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -127,25 +132,27 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         BufferFeatureCollection process = new BufferFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, distance, null);
         assertEquals(5, output.size());
-        SimpleFeatureIterator iterator = output.features();
-        for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate[] array = new Coordinate[4];
-            int j = 0;
-            for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
-                array[j] = new Coordinate(i, i);
-                j++;
-            }
-            array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
-            Geometry expected = gf.createPolygon(shell, null).buffer(distance);
+        try (SimpleFeatureIterator iterator = output.features()) {
+            for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
+                Coordinate[] array = new Coordinate[4];
+                int j = 0;
+                for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
+                    array[j] = new Coordinate(i, i);
+                    j++;
+                }
+                array[3] = new Coordinate(numFeatures, numFeatures);
+                LinearRing shell =
+                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                Geometry expected = gf.createPolygon(shell, null).buffer(distance);
 
-            SimpleFeature sf = iterator.next();
-            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+                SimpleFeature sf = iterator.next();
+                assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+            }
         }
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecuteBufferAttribute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -176,21 +183,22 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         BufferFeatureCollection process = new BufferFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, null, "buffer");
         assertEquals(5, output.size());
-        SimpleFeatureIterator iterator = output.features();
-        for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate[] array = new Coordinate[4];
-            int j = 0;
-            for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
-                array[j] = new Coordinate(i, i);
-                j++;
-            }
-            array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
-            Geometry expected = gf.createPolygon(shell, null).buffer(500);
+        try (SimpleFeatureIterator iterator = output.features()) {
+            for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
+                Coordinate[] array = new Coordinate[4];
+                int j = 0;
+                for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
+                    array[j] = new Coordinate(i, i);
+                    j++;
+                }
+                array[3] = new Coordinate(numFeatures, numFeatures);
+                LinearRing shell =
+                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                Geometry expected = gf.createPolygon(shell, null).buffer(500);
 
-            SimpleFeature sf = iterator.next();
-            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+                SimpleFeature sf = iterator.next();
+                assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+            }
         }
     }
 }

@@ -92,19 +92,20 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
                         + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(-145.4, 145.6, -41.8, -42.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(-145.4, 145.6, -41.8, -42.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        double[] valueInside = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
-        assertEquals(615.0, valueInside[0], 0d);
-        double[] valueOutside = (double[]) gc.evaluate(new DirectPosition2D(145.57, -41.9));
-        // this should really be NoData
-        assertEquals(-9999 & 0xFFFF, (int) valueOutside[0]);
+            double[] valueInside = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
+            assertEquals(615.0, valueInside[0], 0d);
+            double[] valueOutside = (double[]) gc.evaluate(new DirectPosition2D(145.57, -41.9));
+            // this should really be NoData
+            assertEquals(-9999 & 0xFFFF, (int) valueOutside[0]);
+        }
     }
 }

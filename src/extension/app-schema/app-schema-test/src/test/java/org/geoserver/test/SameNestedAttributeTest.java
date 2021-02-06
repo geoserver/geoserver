@@ -55,7 +55,7 @@ public class SameNestedAttributeTest extends AbstractAppSchemaTestSupport {
                                 "/test-data/stations/sameNameAttribute/requests/wfs_get_feature_1.xml"));
         // check that station 1 was returned
         String content = response.getContentAsString();
-        System.out.println(content);
+        LOGGER.fine(content);
         assertThat(content, containsString("gml:id=\"st.1\""));
         assertThat(content, containsString("gml:id=\"st.2\""));
         assertThat(StringUtils.countMatches(content, "<wfs:member>"), is(2));

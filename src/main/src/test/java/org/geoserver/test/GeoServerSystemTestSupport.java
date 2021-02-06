@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -176,6 +176,10 @@ import org.xml.sax.SAXParseException;
  * @author Justin Deoliveira, OpenGeo
  */
 @TestSetup(run = TestSetupFrequency.ONCE)
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
 
     private MockHttpServletResponse lastResponse;
@@ -900,6 +904,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @param path The path for the request and optional the query string.
      */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected MockHttpServletRequest createRequest(String path, boolean createSession) {
         MockHttpServletRequest request = new GeoServerMockHttpServletRequest();
 
@@ -1267,8 +1272,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, int statusCode) throws Exception {
-        InputStream responseContent = get(path, statusCode);
-        return dom(responseContent, true);
+        try (InputStream responseContent = get(path, statusCode)) {
+            return dom(responseContent, true);
+        }
     }
 
     /**
@@ -1367,8 +1373,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected BufferedImage getAsImage(String path, String mime) throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(path);
         assertEquals(mime, resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        return ImageIO.read(is);
+        try (InputStream is = getBinaryInputStream(resp)) {
+            return ImageIO.read(is);
+        }
     }
 
     /**
@@ -1402,8 +1409,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, final boolean skipDTD) throws Exception {
-        InputStream responseContent = get(path);
-        return dom(responseContent, skipDTD);
+        try (InputStream responseContent = get(path)) {
+            return dom(responseContent, skipDTD);
+        }
     }
 
     /**
@@ -1796,7 +1804,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         di.setAttribute(attribute);
         di.setPresentation(presentation);
         if (resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
+            di.setResolution(BigDecimal.valueOf(resolution));
         }
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
@@ -1851,7 +1859,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         di.setEnabled(true);
         di.setPresentation(presentation);
         if (resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
+            di.setResolution(BigDecimal.valueOf(resolution));
         }
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
@@ -1999,7 +2007,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 new ErrorHandler() {
 
                     public void warning(SAXParseException exception) throws SAXException {
-                        System.out.println(exception.getMessage());
+                        LOGGER.warning(exception.getMessage());
                     }
 
                     public void fatalError(SAXParseException exception) throws SAXException {
@@ -2011,7 +2019,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     }
                 });
         validator.validate(new DOMSource(dom));
-        if (validationErrors != null && validationErrors.size() > 0) {
+        if (validationErrors != null && !validationErrors.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Exception ve : validationErrors) {
                 sb.append(ve.getMessage()).append("\n");
@@ -2244,6 +2252,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /** Utility method to print out the contents of an input stream. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(InputStream in) throws Exception {
         if (isQuietTests()) {
             return;
@@ -2256,6 +2265,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /** Utility method to print out the contents of a json object. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(JSON json) {
         if (isQuietTests()) {
             return;
@@ -2302,7 +2312,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         // parse like the dispatcher but make sure we don't change the original map
         HashMap<String, Object> input = new HashMap<>(raw);
         List<Throwable> errors = KvpUtils.parse(input);
-        if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
+        if (errors != null && !errors.isEmpty()) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
@@ -2417,9 +2427,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
 
         public int readLine(byte[] b, int offset, int length) {
-            int realOffset = offset + myOffset;
-            int i;
-
+            int i = 0;
             for (i = 0; (i < length) && (i + myOffset < myBody.length); i++) {
                 b[offset + i] = myBody[myOffset + i];
                 if (myBody[myOffset + i] == '\n') break;

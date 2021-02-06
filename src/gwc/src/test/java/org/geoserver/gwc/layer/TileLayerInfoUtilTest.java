@@ -175,7 +175,7 @@ public class TileLayerInfoUtilTest {
     private static ParameterFilter findParameterFilter(
             final String paramName, Set<ParameterFilter> parameterFilters) {
 
-        if (parameterFilters == null || parameterFilters.size() == 0) {
+        if (parameterFilters == null || parameterFilters.isEmpty()) {
             return null;
         }
 

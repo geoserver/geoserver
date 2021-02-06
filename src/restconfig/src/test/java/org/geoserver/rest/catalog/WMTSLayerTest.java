@@ -432,7 +432,6 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
                         + ".html";
         // Exception path
         String exception = "No such cascaded wmts: " + ws + "," + wl;
-        String exception2 = "No such cascaded wmts layer: " + ws + "," + wmts + "," + wl;
 
         // CASE 1: No wmtsstore set
 

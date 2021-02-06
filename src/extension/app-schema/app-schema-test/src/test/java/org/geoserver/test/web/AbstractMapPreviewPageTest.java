@@ -16,8 +16,9 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.demo.MapPreviewPage;
+import org.junit.Test;
 
-public class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
+public abstract class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
 
     protected List<String> EXPECTED_GML_LINKS = new ArrayList<>();
 
@@ -25,6 +26,7 @@ public class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
         this.EXPECTED_GML_LINKS = expectedGmlLinks;
     }
 
+    @Test
     public void testAppSchemaGmlLinks() {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);

@@ -5,6 +5,7 @@
 package org.geoserver.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -191,8 +192,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
                                 "ex:nestedFeature/ex:ConnectionUsageFirstNested/ex:nestedFeature/ex:ConnectionUsageSecondNested/gml:name"),
                         ff.literal("A_nested_second"));
 
-        FeatureIterator fIt = mappingFs.getFeatures(equals).features();
-        try {
+        try (FeatureIterator fIt = mappingFs.getFeatures(equals).features()) {
             testNestedIterators(fIt);
             fail("Expected exception was not thrown!");
         } catch (Throwable e) {
@@ -275,7 +275,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
             throws IOException {
         List<AttributeMapping> attrs = mapping.getAttributeMappings();
         assertNotNull(attrs);
-        assertTrue(attrs.size() > 0);
+        assertFalse(attrs.isEmpty());
 
         for (AttributeMapping attr : attrs) {
             if (attr instanceof JoiningNestedAttributeMapping) {
@@ -287,20 +287,21 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
                         joiningNestedAttr.getNestedFeatureIterators(mappingIt);
                 assertNotNull(nestedFeatureIterators);
 
-                if (nestedFeatureIterators.size() > 0) {
+                if (!nestedFeatureIterators.isEmpty()) {
                     assertEquals(1, nestedFeatureIterators.size());
 
                     FeatureTypeMapping nestedMapping =
                             joiningNestedAttr.getFeatureTypeMapping(null);
 
-                    DataAccessMappingFeatureIterator nestedIt =
-                            nestedFeatureIterators.values().iterator().next();
+                    try (DataAccessMappingFeatureIterator nestedIt =
+                            nestedFeatureIterators.values().iterator().next()) {
 
-                    FeatureSource nestedMappedSource = nestedIt.getMappedSource();
-                    assertEquals(sourceDataStore, nestedMappedSource.getDataStore());
-                    assertEquals(transaction, nestedIt.getTransaction());
+                        FeatureSource nestedMappedSource = nestedIt.getMappedSource();
+                        assertEquals(sourceDataStore, nestedMappedSource.getDataStore());
+                        assertEquals(transaction, nestedIt.getTransaction());
 
-                    testNestedIteratorsRecursively(nestedMapping, nestedIt);
+                        testNestedIteratorsRecursively(nestedMapping, nestedIt);
+                    }
                 }
             }
         }

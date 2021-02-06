@@ -50,6 +50,7 @@ public class YsldStyleGeneratorTest {
                         new IAnswer<Void>() {
 
                             @Override
+                            @SuppressWarnings("PMD.CloseResource")
                             public Void answer() throws Throwable {
                                 Object[] args = getCurrentArguments();
                                 InputStream is = (InputStream) args[1];

@@ -58,7 +58,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
     }
 
     @BeforeClass
-    public static void setUp() throws Throwable {
+    public static void prepareDirectories() throws Throwable {
         // create root tests directory
         ROOT_DIRECTORY = IOUtils.createTempDirectory("h2-tests");
         // create the test database
@@ -67,7 +67,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
     }
 
     @AfterClass
-    public static void tearDown() throws Throwable {
+    public static void cleanupDirectories() throws Throwable {
         // check if the root directory was initiated (test may have been skipped)
         if (ROOT_DIRECTORY != null) {
             // remove root tests directory
@@ -138,32 +138,33 @@ public final class RestTest extends GeoServerSystemTestSupport {
      */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
-        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
+        try (InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
+                ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             // copy the input stream to the output stream
             IOUtils.copy(input, output);
+            return output.toByteArray();
         } catch (Exception exception) {
             throw new RuntimeException(
                     "Error reading SQLite database file to byte array.", exception);
         }
-        return output.toByteArray();
     }
 
     /** Helper method that zips the H2 data directory and returns it as an array of bytes. */
     private static byte[] readSqLiteDatabaseDir() throws Exception {
         // copy database file to database directory
         File outputFile = new File(DATABASE_DIR, "test-database.data.db");
-        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
-        IOUtils.copy(input, new FileOutputStream(outputFile));
+        try (InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db")) {
+            IOUtils.copy(input, new FileOutputStream(outputFile));
+        }
         // zip the database directory
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        ZipOutputStream zip = new ZipOutputStream(output);
-        // ignore the lock files
-        IOUtils.zipDirectory(
-                DATABASE_DIR, zip, (dir, name) -> !name.toLowerCase().contains("lock"));
-        zip.close();
-        // just return the output stream content
-        return output.toByteArray();
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                ZipOutputStream zip = new ZipOutputStream(output)) {
+            // ignore the lock files
+            IOUtils.zipDirectory(
+                    DATABASE_DIR, zip, (dir, name) -> !name.toLowerCase().contains("lock"));
+            zip.close();
+            // just return the output stream content
+            return output.toByteArray();
+        }
     }
 }

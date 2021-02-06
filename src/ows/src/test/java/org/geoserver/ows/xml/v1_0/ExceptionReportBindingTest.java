@@ -18,6 +18,7 @@ import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.test.XMLTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -35,6 +36,7 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
         return builder.parse(new ByteArrayInputStream(xml.getBytes()));
     }
 
+    @Test
     public void testParseServiceException() throws Exception {
         String xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

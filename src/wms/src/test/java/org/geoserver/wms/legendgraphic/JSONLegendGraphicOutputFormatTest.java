@@ -55,7 +55,6 @@ import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
@@ -373,8 +372,6 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         builder.setDefaultGeometry("GEOMETRY");
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         builder.setCRS(crs);
-
-        GeometryFactory geometryFactory = new GeometryFactory();
 
         AttributeType at =
                 new AttributeTypeImpl(
@@ -1681,7 +1678,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         Style style = readStyles[0];
         return style;
     }
-    /** */
+
+    @SuppressWarnings("PMD.SystemPrintln")
     private void printStyle(Style style) throws TransformerException {
         if (isQuietTests()) {
             return;

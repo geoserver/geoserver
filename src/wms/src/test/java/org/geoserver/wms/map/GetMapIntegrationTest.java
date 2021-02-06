@@ -418,20 +418,21 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         GetMapXmlReader reader = new GetMapXmlReader(wms);
 
         GetMapRequest request = reader.createRequest();
-        InputStream resourceStream =
-                getClass().getResource("WMSPostLayerGroupWithStyleGroup.xml").openStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream));
+        try (InputStream resourceStream =
+                        getClass().getResource("WMSPostLayerGroupWithStyleGroup.xml").openStream();
+                BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream))) {
 
-        request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
 
-        String layer = MockData.BASIC_POLYGONS.getLocalPart();
-        assertEquals(1, request.getLayers().size());
-        assertTrue(request.getLayers().get(0).getName().endsWith(layer));
+            String layer = MockData.BASIC_POLYGONS.getLocalPart();
+            assertEquals(1, request.getLayers().size());
+            assertTrue(request.getLayers().get(0).getName().endsWith(layer));
 
-        assertEquals(1, request.getStyles().size());
-        Style expected = getCatalog().getStyleByName("BasicStyleGroup").getStyle();
-        Style style = request.getStyles().get(0);
-        assertEquals(expected, style);
+            assertEquals(1, request.getStyles().size());
+            Style expected = getCatalog().getStyleByName("BasicStyleGroup").getStyle();
+            Style style = request.getStyles().get(0);
+            assertEquals(expected, style);
+        }
     }
 
     @Test

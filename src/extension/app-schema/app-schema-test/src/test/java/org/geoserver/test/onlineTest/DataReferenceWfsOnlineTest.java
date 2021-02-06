@@ -1974,29 +1974,32 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         FeatureCollection<FeatureType, Feature> filteredResults =
                 featureSource.getFeatures(andFilter);
-        FeatureIterator<Feature> iterator = filteredResults.features();
+        try (FeatureIterator<Feature> iterator = filteredResults.features()) {
 
-        assertTrue(filteredResults instanceof MappingFeatureCollection);
+            assertTrue(filteredResults instanceof MappingFeatureCollection);
 
-        MappingFeatureCollection mfc = ((MappingFeatureCollection) filteredResults);
-        Filter afterSplit = mfc.getQuery().getFilter();
-        // this tests that after the split, only he LikeFilterImpl exist on the query as a pre
-        // filter
-        assertTrue(afterSplit instanceof org.geotools.filter.LikeFilterImpl);
-        // Below ensures that the right filter exist on the query for pre processing on the
-        // database. The LikeFilter with the nested attribute should be post processed as at that
-        // current point in time the property has not been mapped and is unable to be filtered on
-        // the database whereas gsml:purpose is straight forward and can be pre processed on the
-        // database
-        assertEquals("*ypical*", ((LikeFilterImpl) afterSplit).getLiteral());
-        ArrayList<String> ids = new ArrayList<>();
-        while (iterator.hasNext()) {
-            ids.add(iterator.next().getIdentifier().toString());
+            MappingFeatureCollection mfc = ((MappingFeatureCollection) filteredResults);
+            Filter afterSplit = mfc.getQuery().getFilter();
+            // this tests that after the split, only he LikeFilterImpl exist on the query as a pre
+            // filter
+            assertTrue(afterSplit instanceof org.geotools.filter.LikeFilterImpl);
+            // Below ensures that the right filter exist on the query for pre processing on the
+            // database. The LikeFilter with the nested attribute should be post processed as at
+            // that
+            // current point in time the property has not been mapped and is unable to be filtered
+            // on
+            // the database whereas gsml:purpose is straight forward and can be pre processed on the
+            // database
+            assertEquals("*ypical*", ((LikeFilterImpl) afterSplit).getLiteral());
+            ArrayList<String> ids = new ArrayList<>();
+            while (iterator.hasNext()) {
+                ids.add(iterator.next().getIdentifier().toString());
+            }
+            assertEquals(3, ids.size());
+            assertTrue(ids.contains("gsml.geologicunit.1677754911513315832"));
+            assertTrue(ids.contains("gsml.geologicunit.16777549126941084"));
+            assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
         }
-        assertEquals(3, ids.size());
-        assertTrue(ids.contains("gsml.geologicunit.1677754911513315832"));
-        assertTrue(ids.contains("gsml.geologicunit.16777549126941084"));
-        assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
     }
 
     @SuppressWarnings("unchecked")

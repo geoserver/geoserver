@@ -386,9 +386,10 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         SimpleFeature f = DataUtilities.createFeature(type, content.toString());
         coll.add(f);
-        org.geotools.data.Transaction tx = fs.getTransaction();
-        fs.addFeatures(coll);
-        tx.commit();
+        try (org.geotools.data.Transaction tx = fs.getTransaction()) {
+            fs.addFeatures(coll);
+            tx.commit();
+        }
     }
 
     private java.sql.Date addFeatureWithTimeTodayMidnight(int fid) throws IOException {

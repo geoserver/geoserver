@@ -108,10 +108,10 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
-        ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream());
-        reader.setInput(iis);
-        reader.read(0);
-        iis.close();
+        try (ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream())) {
+            reader.setInput(iis);
+            reader.read(0);
+        }
     }
 
     @Test

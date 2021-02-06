@@ -140,9 +140,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to2.getBlobFormat());
 
         // Check if the resources are equals
-        InputStream is = to.getBlob().getInputStream();
-        InputStream is2 = to2.getBlob().getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is2 = to2.getBlob().getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Ensure Cache contains the result
         TileObject to3 = cache.getTileObj(to);
@@ -150,9 +151,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to3.getBlobFormat());
 
         // Check if the resources are equals
-        is = to.getBlob().getInputStream();
-        InputStream is3 = to3.getBlob().getInputStream();
-        checkInputStreams(is, is3);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is3 = to3.getBlob().getInputStream()) {
+            checkInputStreams(is, is3);
+        }
 
         // Ensure that NullBlobStore does not contain anything
         assertFalse(((MemoryBlobStore) delegate).getStore().get(to));
@@ -189,18 +191,20 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to2.getBlobFormat());
 
         // Check if the resources are equals
-        InputStream is = to.getBlob().getInputStream();
-        InputStream is2 = to2.getBlob().getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is2 = to2.getBlob().getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Ensure Cache contains the result
         TileObject to3 = cache.getTileObj(to);
         assertNotNull(to3);
         assertEquals(to.getBlobFormat(), to3.getBlobFormat());
 
-        is = to.getBlob().getInputStream();
-        InputStream is3 = to3.getBlob().getInputStream();
-        checkInputStreams(is, is3);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is3 = to3.getBlob().getInputStream()) {
+            checkInputStreams(is, is3);
+        }
 
         // check the layer is known
         assertThat(blobStore.layerExists(LAYER_NAME), equalTo(true));
@@ -243,9 +247,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         blobStore.get(to2);
 
         // Check if the resources are equals
-        InputStream is = to2.getBlob().getInputStream();
-        InputStream is2 = bytes.getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to2.getBlob().getInputStream();
+                InputStream is2 = bytes.getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Remove TileObject
         TileObject to3 =

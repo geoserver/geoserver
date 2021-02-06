@@ -35,7 +35,8 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
                                 + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
 
         assertEquals("application/gml+xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        // checks it's xml....
+        dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
     }
 
     @Test

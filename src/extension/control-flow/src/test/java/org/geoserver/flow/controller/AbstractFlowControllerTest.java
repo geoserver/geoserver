@@ -90,6 +90,7 @@ public abstract class AbstractFlowControllerTest {
         return request;
     }
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     Request buildIpRequest(String ipAddress, String proxyIp) {
         Request request = new Request();
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();

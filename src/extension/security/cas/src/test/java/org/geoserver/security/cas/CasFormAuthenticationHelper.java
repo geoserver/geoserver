@@ -44,10 +44,6 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         if (execution == null)
             throw new IOException(" No hidden execution field for: " + loginUrl.toString());
 
-        List<HttpCookie> cookies = getCookies(conn);
-        HttpCookie sessionCookie = getCookieNamed(cookies, "TGC");
-        String sessionCookieSend = sessionCookie.toString();
-
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("username", username);
         paramMap.put("password", password);
@@ -67,7 +63,7 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         writeParamsForPostAndSend(conn, paramMap);
         if (conn.getResponseCode() == 401) return false;
 
-        cookies = getCookies(conn);
+        List<HttpCookie> cookies = getCookies(conn);
         readResponse(conn);
 
         extractCASCookies(cookies, conn);

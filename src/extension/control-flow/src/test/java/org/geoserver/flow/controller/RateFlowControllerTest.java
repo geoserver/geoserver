@@ -14,6 +14,7 @@ import org.geoserver.ows.Request;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
     @Test

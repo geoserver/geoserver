@@ -83,22 +83,15 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StyleInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StyleInfo> list =
+        try (CloseableIterator<StyleInfo> list =
                 catalog.list(
-                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
-        assertTrue(list.hasNext());
-        StyleInfo expected = list.next();
+                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true))) {
+            assertTrue(list.hasNext());
+            StyleInfo expected = list.next();
 
-        // Close the iterator
-        try {
-            if (list != null) {
-                list.close();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            // Ensure equality
+            assertEquals(expected, actual);
         }
-        // Ensure equality
-        assertEquals(expected, actual);
     }
 
     @Test

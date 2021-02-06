@@ -24,7 +24,6 @@ public class GeometrylessTest extends WFSTestSupport {
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
         assertNotEquals(0, featureMembers.getLength());
-        NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, featureMembers.getLength());
     }
 
@@ -42,7 +41,6 @@ public class GeometrylessTest extends WFSTestSupport {
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
         assertNotEquals(0, featureMembers.getLength());
-        NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, featureMembers.getLength());
     }
 

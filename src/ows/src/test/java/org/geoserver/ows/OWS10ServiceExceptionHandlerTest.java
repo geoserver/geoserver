@@ -6,8 +6,8 @@
 package org.geoserver.ows;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -186,9 +186,9 @@ public class OWS10ServiceExceptionHandlerTest {
         assertNotNull(exceptionTextNode);
         // normalise whitespace
         String exceptionText = exceptionTextNode.getNodeValue().replaceAll("\\s+", " ");
-        assertTrue(exceptionText.indexOf(illegalArgument.getMessage()) != -1);
-        assertTrue(exceptionText.indexOf(ioException.getMessage()) != -1);
-        assertTrue(exceptionText.indexOf(serviceException.getMessage()) != -1);
+        assertNotEquals(exceptionText.indexOf(illegalArgument.getMessage()), -1);
+        assertNotEquals(exceptionText.indexOf(ioException.getMessage()), -1);
+        assertNotEquals(exceptionText.indexOf(serviceException.getMessage()), -1);
     }
 
     @Test

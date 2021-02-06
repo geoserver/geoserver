@@ -18,11 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
-import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerConfigPersister;
@@ -565,7 +563,6 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
         // rename workspace
         Catalog catalog = getCatalog();
-        List<CatalogEvent> events = new ArrayList<>();
         final WorkspaceInfo ws = catalog.getDefaultWorkspace();
         String name = ws.getName();
         try {

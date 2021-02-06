@@ -509,16 +509,15 @@ public class ImporterDataTest extends ImporterTestSupport {
         FeatureSource<? extends FeatureType, ? extends Feature> fs =
                 info.getFeatureSource(null, null);
         FeatureCollection<? extends FeatureType, ? extends Feature> features = fs.getFeatures();
-        FeatureIterator<? extends Feature> it = features.features();
-        assertTrue(it.hasNext());
-        SimpleFeature next = (SimpleFeature) it.next();
-        // let's test some attributes to see if they were digested properly
-        String type_ch = (String) next.getAttribute("type_ch");
-        assertEquals("卫", type_ch);
-        String name_ch = (String) next.getAttribute("name_ch");
-        assertEquals("杭州前卫", name_ch);
-
-        it.close();
+        try (FeatureIterator<? extends Feature> it = features.features()) {
+            assertTrue(it.hasNext());
+            SimpleFeature next = (SimpleFeature) it.next();
+            // let's test some attributes to see if they were digested properly
+            String type_ch = (String) next.getAttribute("type_ch");
+            assertEquals("卫", type_ch);
+            String name_ch = (String) next.getAttribute("name_ch");
+            assertEquals("杭州前卫", name_ch);
+        }
     }
 
     @Test
@@ -866,19 +865,19 @@ public class ImporterDataTest extends ImporterTestSupport {
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 featureSource.getFeatures();
         assertEquals(9, features.size());
-        FeatureIterator<? extends Feature> featureIterator = features.features();
-        assertTrue("Expected features", featureIterator.hasNext());
-        SimpleFeature feature = (SimpleFeature) featureIterator.next();
-        assertNotNull(feature);
-        assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
-        assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
-        Object geomAttribute = feature.getAttribute("location");
-        assertNotNull("Expected geometry", geomAttribute);
-        Point point = (Point) geomAttribute;
-        Coordinate coordinate = point.getCoordinate();
-        assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
-        assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
-        featureIterator.close();
+        try (FeatureIterator<? extends Feature> featureIterator = features.features()) {
+            assertTrue("Expected features", featureIterator.hasNext());
+            SimpleFeature feature = (SimpleFeature) featureIterator.next();
+            assertNotNull(feature);
+            assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
+            assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
+            Object geomAttribute = feature.getAttribute("location");
+            assertNotNull("Expected geometry", geomAttribute);
+            Point point = (Point) geomAttribute;
+            Coordinate coordinate = point.getCoordinate();
+            assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
+            assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
+        }
     }
 
     @Test
@@ -1076,7 +1075,6 @@ public class ImporterDataTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         for (File f : dir.listFiles()) {
             String ext = FilenameUtils.getExtension(f.getName());
-            String base = FilenameUtils.getBaseName(f.getName());
 
             f.renameTo(new File(dir, "1-." + ext));
         }

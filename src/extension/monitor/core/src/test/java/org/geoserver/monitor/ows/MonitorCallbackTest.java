@@ -62,7 +62,6 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMS;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
@@ -349,7 +348,6 @@ public class MonitorCallbackTest {
 
     @Test
     public void testWMSGetLegendGraphic() throws Exception {
-        WMS wms = new WMS(createMock(GeoServer.class));
         GetLegendGraphicRequest glg = new GetLegendGraphicRequest();
 
         FeatureType type = createMock(FeatureType.class);

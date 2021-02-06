@@ -268,7 +268,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                System.out.println(
+                LOGGER.warning(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
@@ -448,7 +448,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         di.setEnabled(true);
         di.setPresentation(presentation);
         if (resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
+            di.setResolution(BigDecimal.valueOf(resolution));
         }
         info.getMetadata().put(metadataKey, di);
         getCatalog().save(info);
@@ -466,7 +466,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         di.setEnabled(true);
         di.setPresentation(presentation);
         if (resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
+            di.setResolution(BigDecimal.valueOf(resolution));
         }
         if (unitSymbol != null) {
             di.setUnitSymbol(unitSymbol);

@@ -52,6 +52,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
+import org.geoserver.wps.ProcessListener;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
@@ -123,11 +124,11 @@ public class DownloadProcessTest extends WPSTestSupport {
     private static QName SHORT = new QName(WCS_URI, "short", WCS_PREFIX);
     private static QName FLOAT = new QName(WCS_URI, "float", WCS_PREFIX);
 
-    private static Set<String> GTIFF_EXTENSIONS = new HashSet<String>();
-    private static Set<String> PNG_EXTENSIONS = new HashSet<String>();
-    private static Set<String> JPEG_EXTENSIONS = new HashSet<String>();
-    private static Set<String> XML_EXTENSIONS = new HashSet<String>();
-    private static Set<String> JSON_EXTENSIONS = new HashSet<String>();
+    private static Set<String> GTIFF_EXTENSIONS = new HashSet<>();
+    private static Set<String> PNG_EXTENSIONS = new HashSet<>();
+    private static Set<String> JPEG_EXTENSIONS = new HashSet<>();
+    private static Set<String> XML_EXTENSIONS = new HashSet<>();
+    private static Set<String> JSON_EXTENSIONS = new HashSet<>();
     private static Map<String, Set<String>> FORMAT_TO_EXTENSIONS = new HashMap<>();
 
     private static final CoordinateReferenceSystem WGS84;
@@ -337,7 +338,6 @@ public class DownloadProcessTest extends WPSTestSupport {
         FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
         // Download
         File shpeZip = null;
-        FileInputStream shapeFis = null;
         ShapefileDataStore store = null;
         try {
             SimpleFeatureCollection rawSource =
@@ -366,27 +366,27 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // Final checks on the result
             Assert.assertNotNull(shpeZip);
-            shapeFis = new FileInputStream(shpeZip);
-            store = decodeShape(shapeFis);
-            SimpleFeatureCollection rawTarget =
-                    (SimpleFeatureCollection) store.getFeatureSource().getFeatures();
-            Assert.assertNotNull(rawTarget);
+            try (FileInputStream shapeFis = new FileInputStream(shpeZip)) {
+                store = decodeShape(shapeFis);
+                SimpleFeatureCollection rawTarget = store.getFeatureSource().getFeatures();
+                Assert.assertNotNull(rawTarget);
 
-            Assert.assertEquals(1, rawTarget.size());
+                Assert.assertEquals(1, rawTarget.size());
 
-            SimpleFeature srcFeature = rawSource.features().next();
-            SimpleFeature trgFeature = rawTarget.features().next();
+                SimpleFeature srcFeature = rawSource.features().next();
+                SimpleFeature trgFeature = rawTarget.features().next();
 
-            Assert.assertEquals(
-                    srcFeature.getAttribute("ADDRESS"), trgFeature.getAttribute("ADDRESS"));
+                Assert.assertEquals(
+                        srcFeature.getAttribute("ADDRESS"), trgFeature.getAttribute("ADDRESS"));
 
-            // Final checks on the ROI
-            Geometry srcGeometry = (Geometry) srcFeature.getDefaultGeometry();
-            Geometry trgGeometry = (Geometry) trgFeature.getDefaultGeometry();
+                // Final checks on the ROI
+                Geometry srcGeometry = (Geometry) srcFeature.getDefaultGeometry();
+                Geometry trgGeometry = (Geometry) trgFeature.getDefaultGeometry();
 
-            Assert.assertTrue(
-                    "Target geometry clipped and included into the source one",
-                    srcGeometry.contains(trgGeometry));
+                Assert.assertTrue(
+                        "Target geometry clipped and included into the source one",
+                        srcGeometry.contains(trgGeometry));
+            }
         } finally {
             if (store != null) {
                 store.dispose();
@@ -872,7 +872,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         Assert.assertNotNull(rasterZip);
         GeoTiffReader reader = null;
 
-        final Map<String, String> expectedTiffTagValues = new HashMap<String, String>();
+        final Map<String, String> expectedTiffTagValues = new HashMap<>();
         expectedTiffTagValues.put(
                 Integer.toString(BaselineTIFFTagSet.TAG_TILE_WIDTH), tileWidthValue);
         expectedTiffTagValues.put(
@@ -1635,7 +1635,6 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D referenceGc = null;
         GridCoverage2D gc = null;
-        RenderedImage referenceImage = null;
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32631", true);
         try {
             // tests go out of the stricly sane area for one of the UTMs, could cause 0.006 meters
@@ -1644,7 +1643,6 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             referenceReader = new GeoTiffReader(file);
             referenceGc = referenceReader.read(null);
-            referenceImage = referenceGc.getRenderedImage();
 
             String roiWkt =
                     "POLYGON((150000 550000, 2300000 550000, 2300000 1300000, 160000 1300000, 150000 550000))";
@@ -2430,26 +2428,25 @@ public class DownloadProcessTest extends WPSTestSupport {
             int targetSizeX = 100;
             int targetSizeY = 100;
             int[] bandIndices = new int[] {0, 2, 2, 2};
-            File scaled =
-                    downloadProcess.execute(
-                            getLayerId(MockData.USA_WORLDIMG), // layerName
-                            null, // filter
-                            "image/tiff", // outputFormat
-                            null, // targetCRS
-                            WGS84, // roiCRS
-                            null, // roi
-                            false, // cropToGeometry
-                            null, // interpolation
-                            targetSizeX, // targetSizeX
-                            targetSizeY, // targetSizeY
-                            bandIndices, // bandSelectIndices
-                            null, // Writing params
-                            false,
-                            false,
-                            0d,
-                            null,
-                            new NullProgressListener() // progressListener
-                            );
+            downloadProcess.execute(
+                    getLayerId(MockData.USA_WORLDIMG), // layerName
+                    null, // filter
+                    "image/tiff", // outputFormat
+                    null, // targetCRS
+                    WGS84, // roiCRS
+                    null, // roi
+                    false, // cropToGeometry
+                    null, // interpolation
+                    targetSizeX, // targetSizeX
+                    targetSizeY, // targetSizeY
+                    bandIndices, // bandSelectIndices
+                    null, // Writing params
+                    false,
+                    false,
+                    0d,
+                    null,
+                    new NullProgressListener() // progressListener
+                    );
 
             // exception should have been thrown at this stage
             Assert.assertFalse(true);
@@ -2763,10 +2760,6 @@ public class DownloadProcessTest extends WPSTestSupport {
     public void testWrongOutputFormat() throws Exception {
         // Creates the new process for the download
         DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
-
-        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(MockData.POLYGONS));
-        SimpleFeatureCollection rawSource =
-                (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
 
         final DefaultProgressListener progressListener = new DefaultProgressListener();
         try {
@@ -3220,7 +3213,6 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // Cycle on all the entries and copies the input shape in the target directory
             while ((entry = zis.getNextEntry()) != null) {
-                String name = entry.getName();
                 File file = new File(tempDir, entry.getName());
                 if (entry.isDirectory()) {
                     file.mkdir();

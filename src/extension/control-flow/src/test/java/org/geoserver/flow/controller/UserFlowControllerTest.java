@@ -10,9 +10,12 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
+
+    @Test
     public void testConcurrentRequestsSingleUser() {
         // a cookie based flow controller that will allow just one request at a time
         UserConcurrentFlowController controller = new UserConcurrentFlowController(1);

@@ -71,60 +71,67 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testResolveStylesForLayerGroup() throws Exception {
         GetMapRequest request = reader.createRequest();
-        BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml");
+        try (BufferedReader input =
+                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
-        request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
 
-        String layer = MockData.BASIC_POLYGONS.getLocalPart();
-        assertEquals(1, request.getLayers().size());
-        assertTrue(request.getLayers().get(0).getName().endsWith(layer));
+            String layer = MockData.BASIC_POLYGONS.getLocalPart();
+            assertEquals(1, request.getLayers().size());
+            assertTrue(request.getLayers().get(0).getName().endsWith(layer));
 
-        assertEquals(1, request.getStyles().size());
-        Style expected = getCatalog().getStyleByName("polygon").getStyle();
-        Style style = request.getStyles().get(0);
-        assertEquals(expected, style);
+            assertEquals(1, request.getStyles().size());
+            Style expected = getCatalog().getStyleByName("polygon").getStyle();
+            Style style = request.getStyles().get(0);
+            assertEquals(expected, style);
+        }
     }
 
     @Test
     public void testLayerFeatureConstraintFilterParsing() throws Exception {
         GetMapRequest request = reader.createRequest();
-        BufferedReader input = getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml");
+        try (BufferedReader input =
+                getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
 
-        request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
 
-        // Named layer
-        String linesLayer = MockData.LINES.getLocalPart();
-        assertEquals(1, request.getLayers().size());
-        assertTrue(request.getLayers().get(0).getName().endsWith(linesLayer));
+            // Named layer
+            String linesLayer = MockData.LINES.getLocalPart();
+            assertEquals(1, request.getLayers().size());
+            assertTrue(request.getLayers().get(0).getName().endsWith(linesLayer));
 
-        assertEquals(1, request.getFilter().size());
-        PropertyIsEqualTo parsed = (PropertyIsEqualTo) request.getFilter().get(0);
-        assertEquals("[ NAME = VALUE ]", parsed.toString());
+            assertEquals(1, request.getFilter().size());
+            PropertyIsEqualTo parsed = (PropertyIsEqualTo) request.getFilter().get(0);
+            assertEquals("[ NAME = VALUE ]", parsed.toString());
+        }
     }
 
     @Test
     public void testAllowDynamicStyles() throws Exception {
         GetMapRequest request = reader.createRequest();
-        BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml");
+        try (BufferedReader input =
+                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
-        WMS wms = new WMS(getGeoServer());
-        WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
-        WMSInfo info = new WMSInfoImpl();
-        info.setDynamicStylingDisabled(Boolean.TRUE);
-        getGeoServer().remove(oldInfo);
-        getGeoServer().add(info);
-        GetMapXmlReader reader = new GetMapXmlReader(wms);
-        boolean error = false;
-        try {
-            request = (GetMapRequest) reader.read(request, input, new HashMap());
-        } catch (ServiceException e) {
-            error = true;
+            WMS wms = new WMS(getGeoServer());
+            WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+            WMSInfo info = new WMSInfoImpl();
+            info.setDynamicStylingDisabled(Boolean.TRUE);
+            getGeoServer().remove(oldInfo);
+            getGeoServer().add(info);
+            GetMapXmlReader reader = new GetMapXmlReader(wms);
+            boolean error = false;
+            try {
+                reader.read(request, input, new HashMap());
+            } catch (ServiceException e) {
+                error = true;
+            }
+            getGeoServer().remove(info);
+            getGeoServer().add(oldInfo);
+            assertTrue(error);
         }
-        getGeoServer().remove(info);
-        getGeoServer().add(oldInfo);
-        assertTrue(error);
     }
 
+    @SuppressWarnings("PMD.CloseResource") // wrapped and returned
     private BufferedReader getResourceInputStream(String classRelativePath) throws IOException {
         InputStream resourceStream = getClass().getResource(classRelativePath).openStream();
         BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream));

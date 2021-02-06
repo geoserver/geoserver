@@ -187,6 +187,7 @@ public class AnimatorTest extends WMSTestSupport {
     }
 
     /** Utility method to print a metadata node */
+    @SuppressWarnings({"PMD.SystemPrintln", "PMD.UnusedPrivateMethod"})
     private void print(String prefix, IIOMetadataNode node) {
         Object user = node.getUserObject();
         System.out.println(
@@ -209,9 +210,6 @@ public class AnimatorTest extends WMSTestSupport {
     /** Animate layers */
     @org.junit.Test
     public void testAnimatorLayers() throws Exception {
-        final String layerName =
-                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart();
-
         String requestURL = "cite/wms/animate?&aparam=layers&avalues=MapNeatline,Buildings,Lakes";
 
         // check we got a gif
@@ -220,10 +218,11 @@ public class AnimatorTest extends WMSTestSupport {
 
         // check it has three frames
         ByteArrayInputStream bis = getBinaryInputStream(resp);
-        ImageInputStream iis = ImageIO.createImageInputStream(bis);
-        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-        reader.setInput(iis);
-        assertEquals(3, reader.getNumImages(true));
+        try (ImageInputStream iis = ImageIO.createImageInputStream(bis)) {
+            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+            reader.setInput(iis);
+            assertEquals(3, reader.getNumImages(true));
+        }
     }
 
     /** Animate layer groups */
@@ -260,38 +259,39 @@ public class AnimatorTest extends WMSTestSupport {
 
                     // check it has three frames
                     ByteArrayInputStream bis = getBinaryInputStream(resp);
-                    ImageInputStream iis = ImageIO.createImageInputStream(bis);
-                    ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-                    reader.setInput(iis);
+                    try (ImageInputStream iis = ImageIO.createImageInputStream(bis)) {
+                        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+                        reader.setInput(iis);
 
-                    // BufferedImage gif = getAsImage(requestURL, "image/gif");
-                    // ImageIO.write(gif, "gif", new File("anim.gif"));
+                        // BufferedImage gif = getAsImage(requestURL, "image/gif");
+                        // ImageIO.write(gif, "gif", new File("anim.gif"));
 
-                    assertEquals(3, reader.getNumImages(true));
+                        assertEquals(3, reader.getNumImages(true));
 
-                    // single group:
-                    BufferedImage image = reader.read(0);
-                    assertPixel(image, 300, 270, Color.WHITE);
-                    // places
-                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
-                    // lakes
-                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
+                        // single group:
+                        BufferedImage image = reader.read(0);
+                        assertPixel(image, 300, 270, Color.WHITE);
+                        // places
+                        assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                        // lakes
+                        assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
 
-                    // named group:
-                    image = reader.read(1);
-                    assertPixel(image, 300, 270, Color.WHITE);
-                    // places
-                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
-                    // lakes
-                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
+                        // named group:
+                        image = reader.read(1);
+                        assertPixel(image, 300, 270, Color.WHITE);
+                        // places
+                        assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                        // lakes
+                        assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
 
-                    // EO group:
-                    image = reader.read(2);
-                    assertPixel(image, 300, 270, Color.WHITE);
-                    // no places
-                    assertPixel(image, 380, 30, Color.WHITE);
-                    // lakes
-                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
+                        // EO group:
+                        image = reader.read(2);
+                        assertPixel(image, 300, 270, Color.WHITE);
+                        // no places
+                        assertPixel(image, 380, 30, Color.WHITE);
+                        // lakes
+                        assertPixel(image, 180, 350, COLOR_LAKES_BLUE);
+                    }
                 } finally {
                     catalog.remove(eoGroup);
                 }

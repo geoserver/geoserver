@@ -327,9 +327,6 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                     "52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                     "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape//gml:posList",
                     doc);
-        } else {
-            // I can't get exact transformation figures to compare with.. not important to test
-            // anyway
         }
 
         assertXpathEvaluatesTo(
@@ -903,14 +900,15 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMap() throws IOException {
-        InputStream is =
+        try (InputStream is =
                 getBinary(
-                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=namefilter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png&startIndex=1");
-        BufferedImage imageBuffer = ImageIO.read(is);
-        assertNotBlank("app-schema test getmap", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("/test-data/img/mappedfeature.png")),
-                imageBuffer,
-                10);
+                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=namefilter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png&startIndex=1")) {
+            BufferedImage imageBuffer = ImageIO.read(is);
+            assertNotBlank("app-schema test getmap", imageBuffer, Color.WHITE);
+            ImageAssert.assertEquals(
+                    URLs.urlToFile(getClass().getResource("/test-data/img/mappedfeature.png")),
+                    imageBuffer,
+                    10);
+        }
     }
 }

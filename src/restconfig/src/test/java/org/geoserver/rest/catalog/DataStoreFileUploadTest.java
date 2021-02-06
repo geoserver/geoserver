@@ -357,6 +357,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                 "data/gsml/commonSchemas_new/GeoSciML/vocabulary.xsd");
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     private byte[] appSchemaMappingAsBytes() throws IOException {
         InputStream in = getClass().getResourceAsStream("/test-data/mappedPolygons.xml");
         if (in != null) {

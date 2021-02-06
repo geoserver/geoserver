@@ -73,7 +73,6 @@ public class CatalogLayerEventListenerTest {
     private CatalogLayerEventListener listener;
 
     private StyleInfo mockDefaultStyle;
-    private Set<StyleInfo> mockStyles;
 
     @Before
     public void setUp() throws Exception {

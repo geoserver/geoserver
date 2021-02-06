@@ -16,7 +16,6 @@ import org.geoserver.test.SystemTest;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
-import org.geotools.feature.FeatureCollection;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opengis.filter.Filter;
@@ -44,7 +43,7 @@ public class SecureCatalogIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testFullAccess() throws Exception {
         FeatureSource source = getFeatureSource(MockData.LINES);
-        FeatureCollection fc = source.getFeatures();
+        source.getFeatures();
         FeatureStore store = (FeatureStore) source;
         store.removeFeatures(Filter.INCLUDE);
     }

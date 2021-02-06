@@ -22,12 +22,11 @@ import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.layer.TileLayer;
-import org.junit.After;
 import org.junit.Test;
 
 public class CachedLayerProviderTest extends GeoServerTestSupport {
 
-    @After
+    @Test
     public void testQuotaDisabledWithSystemVariable() throws IllegalAccessException {
         DiskQuotaMonitor monitor = GeoServerExtensions.bean(DiskQuotaMonitor.class);
         // the field is initialized once based on system variable, we use reflection

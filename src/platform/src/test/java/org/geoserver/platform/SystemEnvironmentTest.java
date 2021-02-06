@@ -67,7 +67,8 @@ public class SystemEnvironmentTest {
         // By default ALLOW_ENV_PARAMETRIZATION flag is set to FALSE
         // LOGGER.info("ALLOW_ENV_PARAMETRIZATION = " + sysProperty);
         if (sysProperty == null || !Boolean.valueOf(sysProperty)) {
-            GeoServerEnvironment genv = new GeoServerEnvironment();
+            // instantiation has side effects
+            new GeoServerEnvironment();
             // LOGGER.info("GeoServerEnvironment = " +
             // GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
             assertFalse(GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);

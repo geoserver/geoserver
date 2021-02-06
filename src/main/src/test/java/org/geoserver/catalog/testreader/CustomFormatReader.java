@@ -160,7 +160,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                 elements.add(getDimensionValue(filename));
             }
         }
-        if (elements.size() <= 0) {
+        if (elements.isEmpty()) {
             return null;
         }
 
@@ -213,6 +213,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         final ParameterBlock readParams = new ParameterBlock();
         ImageInputStreamSpi lSpi = ImageIOExt.getImageInputStreamSPI(inFile);
         PlanarImage lImage = null;
+        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with JAI op
         ImageInputStream lImgIn = lSpi.createInputStreamInstance(inFile, false, null);
         readParams.add(lImgIn);
         readParams.add(0);

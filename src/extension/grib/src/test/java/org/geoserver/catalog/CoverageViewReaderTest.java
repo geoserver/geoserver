@@ -230,7 +230,6 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         final Catalog cat = getCatalog();
         final CoverageInfo coverageInfo = cat.getCoverageByName("multiband_select");
-        final MetadataMap metadata = coverageInfo.getMetadata();
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
@@ -304,13 +303,11 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         final Catalog cat = getCatalog();
         final CoverageInfo coverageInfo = cat.getCoverageByName("multiband_select");
-        final MetadataMap metadata = coverageInfo.getMetadata();
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
         final GridCoverage coverage =
                 resPool.getGridCoverage(coverageInfo, "multiband_select", bbox, null);
-        RenderedImage srcImage = coverage.getRenderedImage();
 
         assertEquals(coverage.getNumSampleDimensions(), 5);
         ((GridCoverage2D) coverage).dispose(true);

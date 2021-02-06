@@ -7,7 +7,12 @@ package org.geoserver.security;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.security.core.Authentication;
 
 /**

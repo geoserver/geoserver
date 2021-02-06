@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Iterator;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -65,7 +64,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
     }
 
     @Test
-    @SuppressWarnings("TryFailThrowable")
+    @SuppressWarnings({"TryFailThrowable", "PMD.ForLoopCanBeForEach"})
     public void testRemove() {
         foo.getProps().put("foo", "bar");
         foo.getProps().put("bar", "baz");
@@ -81,15 +80,17 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         } catch (AssertionError e) {
         }
 
-        ListView list =
+        @SuppressWarnings("unchecked")
+        ListView<String> list =
                 (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
         assertNotNull(list);
 
         int i = 0;
-        for (Iterator<Component> it = list.iterator(); it.hasNext(); i++) {
-            if ("baz".equals(it.next().get("key").getDefaultModelObjectAsString())) {
+        for (Component c : list) {
+            if ("baz".equals(c.get("key").getDefaultModelObjectAsString())) {
                 break;
             }
+            i++;
         }
         assertNotEquals(3, i);
 

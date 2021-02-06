@@ -69,9 +69,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                 @Override
                 public InputStream getResponseStream() throws IOException {
                     if (url.getPath().substring(1).equals(authkey)) {
-                        return new ByteArrayInputStream(new String(response).getBytes());
+                        return new ByteArrayInputStream(response.getBytes());
                     }
-                    return new ByteArrayInputStream(new String("").getBytes());
+                    return new ByteArrayInputStream("".getBytes());
                 }
 
                 @Override
@@ -182,8 +182,6 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName(authKeyUrlParam);
         config.setAuthKeyMapperName("fakeMapper");
 
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
         System.setProperty("authkey_param1", "value1");
         System.setProperty("authkey_param2", "value2");
         try {

@@ -118,7 +118,7 @@ public class PDFGetMapTest extends WMSTestSupport {
                                 + "CRS=EPSG:4326&WIDTH=1273&HEIGHT=300&BBOX=24.873046875,-151.7431640625,51.240234375,-39.8583984375");
 
         if (!"application/pdf".equalsIgnoreCase(response.getContentType())) {
-            System.err.println(response.getContentAsString());
+            LOGGER.info(response.getContentAsString());
         }
 
         assertEquals("application/pdf", response.getContentType());
@@ -191,18 +191,20 @@ public class PDFGetMapTest extends WMSTestSupport {
     }
 
     String getText(byte[] pdfDocument) throws InvalidPasswordException, IOException {
-        PDDocument doc = PDDocument.load(pdfDocument);
-        StringWriter writer = new StringWriter();
-        PDFTextStripper stripper = new PDFTextStripper();
-        stripper.writeText(doc, writer);
-        String contents = writer.getBuffer().toString();
-        return contents;
+        try (PDDocument doc = PDDocument.load(pdfDocument)) {
+            StringWriter writer = new StringWriter();
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.writeText(doc, writer);
+            String contents = writer.getBuffer().toString();
+            return contents;
+        }
     }
     /**
      * Returns the last tiling pattern found during a render of the PDF document. Can be used to
      * extract one tiling pattern that gets actually used to render shapes (meant to be used against
      * a document that only has a single tiling pattern)
      */
+    @SuppressWarnings("PMD.CloseResource")
     PDTilingPattern getTilingPattern(byte[] pdfDocument)
             throws InvalidPasswordException, IOException {
         // load the document using PDFBOX (iText is no good for parsing tiling patterns, mostly

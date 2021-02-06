@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -132,8 +131,6 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
      */
     @Test
     public void testInitCreateNewDataStoreSetsNamespaceParam() {
-        final Catalog catalog = getGeoServerApplication().getCatalog();
-
         final AbstractDataAccessPage page = startPage();
 
         page.get(null);
@@ -162,7 +159,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNewDataStoreSave() {
-        DataAccessNewPage page = (DataAccessNewPage) startPage();
+        startPage();
         FormTester ft = tester.newFormTester("dataStoreForm");
 
         ft.setValue(
@@ -180,7 +177,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNewDataStoreApply() {
-        DataAccessNewPage page = (DataAccessNewPage) startPage();
+        startPage();
         FormTester ft = tester.newFormTester("dataStoreForm");
 
         ft.setValue(

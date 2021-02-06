@@ -80,13 +80,12 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void testStyleAllPage() throws Exception {
         loginAsCite();
 
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-
-        Catalog cat = getCatalog();
 
         @SuppressWarnings("unchecked")
         DataView<Object> view =

@@ -61,8 +61,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
 
     private StyleInfo pointStyle;
 
-    private StyleInfo pondsStyle;
-
     @Override
     protected MockTestData createTestData() throws Exception {
         MockTestData testData = new MockTestData();
@@ -103,7 +101,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         lineStyle = getCatalog().getStyleByName("Streams");
         polygonStyle = getCatalog().getStyleByName("Buildings");
         pointStyle = getCatalog().getStyleByName("Bridges");
-        pondsStyle = getCatalog().getStyleByName("Ponds");
 
         lakesLayer = buildLayer(MockData.LAKES);
         neatlineLayer = buildLayer(MockData.MAP_NEATLINE);

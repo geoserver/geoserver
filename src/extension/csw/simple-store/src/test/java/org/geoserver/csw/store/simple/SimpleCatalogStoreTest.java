@@ -57,7 +57,7 @@ public class SimpleCatalogStoreTest {
     SimpleCatalogStore store = new SimpleCatalogStore(Files.asResource(root));
 
     @BeforeClass
-    public static void setUp() {
+    public static void forceAxisOrder() {
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
     }
 
@@ -353,15 +353,15 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testGetDomain() throws IOException {
         Name name = new NameImpl(DC.NAMESPACE, "type");
-        CloseableIterator<String> domain =
-                store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name);
-        assertTrue(domain.hasNext());
-        assertEquals("http://purl.org/dc/dcmitype/Dataset", domain.next());
-        assertEquals("http://purl.org/dc/dcmitype/Image", domain.next());
-        assertEquals("http://purl.org/dc/dcmitype/Service", domain.next());
-        assertEquals("http://purl.org/dc/dcmitype/Text", domain.next());
-        assertFalse(domain.hasNext());
-        domain.close();
+        try (CloseableIterator<String> domain =
+                store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name)) {
+            assertTrue(domain.hasNext());
+            assertEquals("http://purl.org/dc/dcmitype/Dataset", domain.next());
+            assertEquals("http://purl.org/dc/dcmitype/Image", domain.next());
+            assertEquals("http://purl.org/dc/dcmitype/Service", domain.next());
+            assertEquals("http://purl.org/dc/dcmitype/Text", domain.next());
+            assertFalse(domain.hasNext());
+        }
     }
 
     @Test

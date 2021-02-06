@@ -35,6 +35,7 @@ public class GenericUnWrapperTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testUnwrapConnection()
             throws SQLException, NoSuchMethodException, SecurityException {
         Connection connection = new TestConnection();
@@ -61,6 +62,7 @@ public class GenericUnWrapperTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testSPIRegistration() throws Exception {
         Connection connection = new TestConnection();
         Connection wrapper = new WrapperConnection(connection);

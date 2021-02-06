@@ -14,7 +14,6 @@ import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
@@ -42,8 +41,6 @@ public class ImportTransformTest extends ImporterTestSupport {
      */
     @Before
     public void setupTransformContext() throws Exception {
-        Catalog cat = getCatalog();
-
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
         SpatialFile file = new SpatialFile(new File(dir, "archsites.shp"));
@@ -97,7 +94,6 @@ public class ImportTransformTest extends ImporterTestSupport {
                         json,
                         "application/json");
 
-        String location = resp.getHeader("Location");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // Make sure it was created

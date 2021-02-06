@@ -110,7 +110,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
             // required or the store won't fetch caps from a file
             storeInfo.getConnectionParameters().put("TESTING", Boolean.TRUE);
             final ResourcePool rp = getCatalog().getResourcePool();
-            DataStore store = (DataStore) rp.getDataStore(storeInfo);
+            rp.getDataStore(storeInfo);
 
             NewLayerPage page = new NewLayerPage(storeInfo.getId());
             tester.startPage(page);

@@ -9,7 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -125,7 +125,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         assertEquals("attachment; filename=result.tif", response.getHeader("Content-disposition"));
     }
 
-    public void testExecutMultiLayerKmz(String mime) throws Exception {
+    protected void testExecutMultiLayerKmz(String mime) throws Exception {
         String request =
                 IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), "UTF-8");
         request = request.replaceAll("image/png", mime);

@@ -6,6 +6,7 @@ package org.geoserver.wcs2_0.xml;
 
 import static org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode.InvalidSubsetting;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -515,6 +516,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlap() throws Exception {
         final File xml =
                 new File(
@@ -534,6 +536,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
         final File xml =
                 new File(
@@ -553,6 +556,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml =
                 new File(
@@ -574,11 +578,11 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @FunctionalInterface
-    public interface GridTester {
+    public interface GridChecker {
         void test(GridCoverage2D coverage) throws Exception;
     }
 
-    void testCoverageResult(File xml, GridTester tester) throws Exception {
+    void testCoverageResult(File xml, GridChecker tester) throws Exception {
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -975,7 +979,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         if (expectedValue == null) {
             // we expect a WCS Exception
-            assertTrue(response.getStatus() != 200);
+            assertNotEquals(response.getStatus(), 200);
             assertEquals("application/xml", response.getContentType());
             return;
         }

@@ -39,8 +39,9 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
 
         Topology topology = new Topology(identity, arcs, layers);
-        Writer writer = new OutputStreamWriter(new NullOutputStream());
-        encoder.encode(topology, writer);
+        try (Writer writer = new OutputStreamWriter(new NullOutputStream())) {
+            encoder.encode(topology, writer);
+        }
     }
 
     @Test
@@ -68,8 +69,9 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
         Topology topology = new Topology(tx, arcs, layers);
 
-        Writer writer = new OutputStreamWriter(new NullOutputStream());
-        encoder.encode(topology, writer);
+        try (Writer writer = new OutputStreamWriter(new NullOutputStream())) {
+            encoder.encode(topology, writer);
+        }
     }
 
     private List<LineString> arcs(String... WKT) throws ParseException {

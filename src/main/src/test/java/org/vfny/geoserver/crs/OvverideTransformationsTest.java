@@ -10,8 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
@@ -47,9 +45,6 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         System.setProperty(JAVA_IO_TMPDIR, new File("./target").getCanonicalPath());
 
         super.onSetUp(testData);
-
-        GeoServerResourceLoader loader1 = getResourceLoader();
-        GeoServerResourceLoader loader2 = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
         // setup the grid file, the definitions and the tx overrides
         new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();

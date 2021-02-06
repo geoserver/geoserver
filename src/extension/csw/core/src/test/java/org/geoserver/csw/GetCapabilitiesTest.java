@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.opengis.ows10.GetCapabilitiesType;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -26,7 +25,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.ows.xml.v1_0.OWS;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
@@ -119,7 +117,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
             // it is a validation exception right?
             assertTrue(e.getCause() instanceof SAXParseException);
             SAXParseException cause = (SAXParseException) e.getCause();
-            System.out.println(cause.getMessage());
+            LOGGER.info(cause.getMessage());
             // JDK8 and JDK11 return slightly different message
             assertTrue(cause.getMessage().matches(".*ows.?:foo.*"));
         }
@@ -191,8 +189,6 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testVirtualService() throws Exception {
-        List<CSWInfo> infos = GeoServerExtensions.extensions(CSWInfo.class);
-
         Catalog catalog = getCatalog();
         GeoServer geoServer = getGeoServer();
 

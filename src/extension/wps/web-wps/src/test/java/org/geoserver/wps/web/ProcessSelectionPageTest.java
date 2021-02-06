@@ -7,7 +7,6 @@ package org.geoserver.wps.web;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.repeater.OddEvenItem;
@@ -63,18 +62,18 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
 
         // start the page
         WPSAccessRulePage accessRulePage = tester.startPage(new WPSAccessRulePage());
-        ProcessSelectionPage selectionPage =
-                tester.startPage(new ProcessSelectionPage(accessRulePage, pgi));
+        tester.startPage(new ProcessSelectionPage(accessRulePage, pgi));
 
         // print(selectionPage, true, true);
 
         // grab the table and check its contents
-        DataView datas =
+        @SuppressWarnings("unchecked")
+        DataView<OddEvenItem> datas =
                 (DataView)
                         tester.getComponentFromLastRenderedPage(
                                 "form:selectionTable:listContainer:items");
-        for (Iterator it = datas.getItems(); it.hasNext(); ) {
-            OddEvenItem item = (OddEvenItem) it.next();
+        for (Component c : datas) {
+            OddEvenItem item = (OddEvenItem) c;
             FilteredProcess fp = (FilteredProcess) item.getDefaultModelObject();
 
             Component validatedLabel = item.get("itemProperties:5:component");

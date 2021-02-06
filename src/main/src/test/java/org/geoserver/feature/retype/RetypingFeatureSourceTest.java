@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureLocking;
@@ -75,9 +76,7 @@ public class RetypingFeatureSourceTest {
         assertEquals(target, ((DataStore) retyped.getDataStore()).getSchema("houses"));
         assertEquals(target, retyped.getFeatures().getSchema());
 
-        SimpleFeatureIterator it = retyped.getFeatures().features();
-        SimpleFeature f = it.next();
-        it.close();
+        SimpleFeature f = DataUtilities.first(retyped.getFeatures());
         assertEquals(target, f.getType());
     }
 
@@ -103,18 +102,19 @@ public class RetypingFeatureSourceTest {
         String fid = BRIDGES.getLocalPart() + ".1107531701011";
         Filter fidFilter = ff.id(Collections.singleton(ff.featureId(fid)));
 
-        SimpleFeatureIterator it = retyped.getFeatures(fidFilter).features();
-        assertTrue(it.hasNext());
-        SimpleFeature f = it.next();
-        assertFalse(it.hasNext());
-        it.close();
+        try (SimpleFeatureIterator it = retyped.getFeatures(fidFilter).features()) {
+            assertTrue(it.hasNext());
+            SimpleFeature f = it.next();
+            assertFalse(it.hasNext());
 
-        // _=the_geom:MultiPolygon,FID:String,ADDRESS:String
-        // Buildings.1107531701010=MULTIPOLYGON (((0.0008 0.0005, 0.0008 0.0007, 0.0012 0.0007,
-        // 0.0012 0.0005, 0.0008 0.0005)))|113|123 Main Street
-        // Buildings.1107531701011=MULTIPOLYGON (((0.002 0.0008, 0.002 0.001, 0.0024 0.001, 0.0024
-        // 0.0008, 0.002 0.0008)))|114|215 Main Street
-        assertEquals("114", f.getAttribute("FID"));
-        assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
+            // _=the_geom:MultiPolygon,FID:String,ADDRESS:String
+            // Buildings.1107531701010=MULTIPOLYGON (((0.0008 0.0005, 0.0008 0.0007, 0.0012 0.0007,
+            // 0.0012 0.0005, 0.0008 0.0005)))|113|123 Main Street
+            // Buildings.1107531701011=MULTIPOLYGON (((0.002 0.0008, 0.002 0.001, 0.0024 0.001,
+            // 0.0024
+            // 0.0008, 0.002 0.0008)))|114|215 Main Street
+            assertEquals("114", f.getAttribute("FID"));
+            assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
+        }
     }
 }

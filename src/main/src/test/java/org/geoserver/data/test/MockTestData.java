@@ -21,10 +21,14 @@ import org.geoserver.util.IOUtils;
  * class creates a catalog whose contents contain all the layers defined by {@link CiteTestData}
  *
  * <p>Customizing the setup, adding layers, etc... is done from {@link
- * GeoServerSystemTestSupport#setUpTestData}.
+ * GeoServerSystemTestSupport#setUpTestData(SystemTestData)}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class MockTestData extends CiteTestData {
 
     File data;

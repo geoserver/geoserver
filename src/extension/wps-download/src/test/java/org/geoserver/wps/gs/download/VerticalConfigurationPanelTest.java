@@ -27,12 +27,6 @@ public class VerticalConfigurationPanelTest extends GeoServerWicketTestSupport {
 
     private static QName FLOAT = new QName(WPSTestSupport.WCS_URI, "float", WCS_PREFIX);
 
-    /** LayerInfo model */
-    private Model<LayerInfo> layerModel;
-
-    /** CoverageInfo model */
-    private Model<CoverageInfo> resourceModel;
-
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
@@ -49,9 +43,7 @@ public class VerticalConfigurationPanelTest extends GeoServerWicketTestSupport {
     public void setUpInternal() throws Exception {
         // Creating models
         LayerInfo layerInfo = getCatalog().getLayerByName("float");
-        layerModel = new Model<>(layerInfo);
         ResourceInfo resource = layerInfo.getResource();
-        resourceModel = new Model<>((CoverageInfo) resource);
         // Add Element to MetadataMap
         MetadataMap metadata = resource.getMetadata();
         if (!metadata.containsKey(VERTICAL_CRS_KEY)) {

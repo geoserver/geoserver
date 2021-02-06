@@ -84,15 +84,15 @@ public class PercentagesRoundHandlerTest {
         testSumTo100(rounded);
     }
 
-    public void testRounded(int scale, double percentage) {
+    protected void testRounded(int scale, double percentage) {
         assertTrue(String.valueOf(percentage).split("\\.")[1].length() <= scale);
     }
 
-    public void testSumTo100(double[] rounded) {
+    protected void testSumTo100(double[] rounded) {
         assertEquals(100.0, DoubleStream.of(rounded).sum(), 0.0);
     }
 
-    public void testSumTo100(List<Double> rounded) {
+    protected void testSumTo100(List<Double> rounded) {
         assertEquals(100.0, rounded.stream().mapToDouble(d -> d).sum(), 0.0);
     }
 }

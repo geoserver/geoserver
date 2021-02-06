@@ -36,16 +36,13 @@ import org.junit.experimental.categories.Category;
 @Category(SystemTest.class)
 public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
-    // singleton
-    private static ManifestLoader loader;
-
     // jar resource name to use for tests
     private static String resourceName = "freemarker-.*";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         try {
-            loader = new ManifestLoader(getResourceLoader());
+            new ManifestLoader(getResourceLoader());
         } catch (Exception e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
             org.junit.Assert.fail(e.getLocalizedMessage());
@@ -249,7 +246,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
             // rebuild loader with new configuration
             try {
-                loader = new ManifestLoader(getResourceLoader());
+                new ManifestLoader(getResourceLoader());
             } catch (Exception e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
                 org.junit.Assert.fail(e.getLocalizedMessage());

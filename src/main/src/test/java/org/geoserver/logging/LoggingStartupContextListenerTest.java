@@ -54,7 +54,6 @@ public class LoggingStartupContextListenerTest {
                         + logger.getAppender("geoserverlogfile"),
                 logger.getAppender("geoserverlogfile"));
 
-        String rel = System.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
         try {
             new LoggingStartupContextListener()

@@ -77,12 +77,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
                         new CSWConfiguration(),
                         GeoServerExtensions.bean(EntityResolverProvider.class));
         try {
-            GetRecordByIdType dr =
-                    (GetRecordByIdType)
-                            reader.read(
-                                    null,
-                                    getResourceAsReader("GetRecordByIdEntityExpansion.xml"),
-                                    null);
+            reader.read(null, getResourceAsReader("GetRecordByIdEntityExpansion.xml"), null);
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();

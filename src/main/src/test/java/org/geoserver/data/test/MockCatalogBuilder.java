@@ -5,9 +5,13 @@
  */
 package org.geoserver.data.test;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.or;
 import static org.easymock.EasyMock.replay;
 import static org.geoserver.data.test.CiteTestData.DEFAULT_LATLON_ENVELOPE;
 
@@ -231,7 +235,6 @@ public class MockCatalogBuilder {
     public MockCatalogBuilder coverageStore(String name, String filename, String format) {
         String csId = newId();
         WorkspaceInfo ws = workspaces.peekLast();
-        NamespaceInfo ns = namespaces.peekLast();
 
         final CoverageStoreInfo cs = createNiceMock(CoverageStoreInfo.class);
         coverageStores.add(cs);
@@ -552,7 +555,6 @@ public class MockCatalogBuilder {
         expect(r.isAdvertised()).andReturn(true).anyTimes();
         expect(r.getProjectionPolicy()).andReturn(projPolicy).anyTimes();
         expect(r.getLatLonBoundingBox()).andReturn(latLonEnvelope).anyTimes();
-        ;
         expect(r.getNativeBoundingBox()).andReturn(envelope).anyTimes();
 
         expect(catalog.getResource(rId, clazz)).andReturn(r).anyTimes();
@@ -641,7 +643,6 @@ public class MockCatalogBuilder {
         }
 
         String sId = newId();
-        String format = SLDHandler.FORMAT;
         Version version = SLDHandler.VERSION_10;
 
         final StyleInfo s = createNiceMock(StyleInfo.class);

@@ -582,11 +582,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png; mode=8bit", response.getContentType());
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.OPAQUE, cm.getTransparency());
-        assertEquals(-1, cm.getTransparentPixel());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.OPAQUE, cm.getTransparency());
+            assertEquals(-1, cm.getTransparentPixel());
+        }
     }
 
     @Test
@@ -605,11 +606,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png; mode=8bit", response.getContentType());
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.BITMASK, cm.getTransparency());
-        assertTrue(cm.getTransparentPixel() >= 0);
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.BITMASK, cm.getTransparency());
+            assertTrue(cm.getTransparentPixel() >= 0);
+        }
     }
 
     @Test
@@ -628,10 +630,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png; mode=8bit", response.getContentType());
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        }
     }
 
     @Test
@@ -1549,9 +1552,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(
                 "inline; filename=cite-BasicPolygons.jpg",
                 resp.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-        InputStream is = getBinaryInputStream(resp);
-        BufferedImage image = ImageIO.read(is);
-        assertNotBlank("testJpegPngOpaque", image);
+        try (InputStream is = getBinaryInputStream(resp)) {
+            BufferedImage image = ImageIO.read(is);
+            assertNotBlank("testJpegPngOpaque", image);
+        }
     }
 
     @Test

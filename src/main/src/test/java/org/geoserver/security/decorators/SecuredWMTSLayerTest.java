@@ -59,6 +59,7 @@ public class SecuredWMTSLayerTest {
                 new SecuredWMTSLayer(
                         wmts.getCapabilities().getLayerList().iterator().next(), policy);
 
-        WMTSCoverageReader coverageReader = new WMTSCoverageReader(wmts, layer);
+        // the test is to create this
+        new WMTSCoverageReader(wmts, layer);
     }
 }

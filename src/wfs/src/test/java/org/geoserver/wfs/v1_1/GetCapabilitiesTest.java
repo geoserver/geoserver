@@ -504,7 +504,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         checkOws10Exception(dom, "InvalidParameterValue", "sections");
     }
 
-    public void testSections(
+    protected void testSections(
             String sections,
             int serviceIdentification,
             int serviceProvider,

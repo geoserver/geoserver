@@ -565,9 +565,10 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         SimpleFeature f = DataUtilities.createFeature(type, content.toString());
         coll.add(f);
-        org.geotools.data.Transaction tx = fs.getTransaction();
-        fs.addFeatures(coll);
-        tx.commit();
+        try (org.geotools.data.Transaction tx = fs.getTransaction()) {
+            fs.addFeatures(coll);
+            tx.commit();
+        }
     }
 
     private void addFeatureWithReferenceTime(int fid, Date time) throws IOException {

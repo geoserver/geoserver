@@ -6,7 +6,6 @@
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -84,14 +83,5 @@ public class PreviewLayerProviderMixedModeTest extends GeoServerWicketTestSuppor
             }
         }
         return false;
-    }
-
-    private PreviewLayer getPreviewLayer(PreviewLayerProvider provider, String prefixedName) {
-        for (PreviewLayer pl : Lists.newArrayList(provider.iterator(0, Integer.MAX_VALUE))) {
-            if (pl.getName().equals(prefixedName)) {
-                return pl;
-            }
-        }
-        return null;
     }
 }

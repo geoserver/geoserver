@@ -132,8 +132,8 @@ public class TestWfsPostTest {
         assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
     }
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected static MockHttpServletRequest buildMockRequest() {
-
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("http");
         request.setServerName("localhost");

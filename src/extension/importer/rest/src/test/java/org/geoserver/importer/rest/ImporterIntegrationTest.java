@@ -346,25 +346,24 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(3, featureType.getAttributeCount());
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
                 fti.getFeatureSource(null, null);
-        org.geotools.data.ResourceInfo info = featureSource.getInfo();
 
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 featureSource.getFeatures();
 
         assertEquals(9, features.size());
-        FeatureIterator<? extends Feature> featureIterator = features.features();
-        assertTrue("Expected features", featureIterator.hasNext());
-        SimpleFeature feature = (SimpleFeature) featureIterator.next();
-        assertNotNull(feature);
-        assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
-        assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
-        Object geomAttribute = feature.getAttribute("location");
-        assertNotNull("Expected geometry", geomAttribute);
-        Point point = (Point) geomAttribute;
-        Coordinate coordinate = point.getCoordinate();
-        assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
-        assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
-        featureIterator.close();
+        try (FeatureIterator<? extends Feature> featureIterator = features.features()) {
+            assertTrue("Expected features", featureIterator.hasNext());
+            SimpleFeature feature = (SimpleFeature) featureIterator.next();
+            assertNotNull(feature);
+            assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
+            assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
+            Object geomAttribute = feature.getAttribute("location");
+            assertNotNull("Expected geometry", geomAttribute);
+            Point point = (Point) geomAttribute;
+            Coordinate coordinate = point.getCoordinate();
+            assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
+            assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
+        }
     }
 
     @Test

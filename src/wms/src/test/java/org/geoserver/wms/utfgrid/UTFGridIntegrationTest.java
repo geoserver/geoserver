@@ -114,7 +114,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
             throws Exception {
         MockHttpServletResponse response = getAsServletResponse(request);
         if (!response.getContentType().startsWith("application/json")) {
-            System.out.println(response.getContentAsString());
+            LOGGER.info(response.getContentAsString());
             fail("Expected json but got " + response.getContentType());
         }
         JSON json = json(response);
@@ -229,10 +229,9 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     @Test
     public void testSolidFillAndRuleWithTextSymbolizerOnly() throws Exception {
         // used to blow up due to the text symbolizer alone
-        UTFGridTester tester =
-                getAsGridTester(
-                        "wms?LAYERS=sf%3Astates&STYLES=population&FORMAT=utfgrid"
-                                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-95.8506355,24.955967,-66.969849,53.8367535&WIDTH=256&HEIGHT=256");
+        getAsGridTester(
+                "wms?LAYERS=sf%3Astates&STYLES=population&FORMAT=utfgrid"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-95.8506355,24.955967,-66.969849,53.8367535&WIDTH=256&HEIGHT=256");
     }
 
     @Test

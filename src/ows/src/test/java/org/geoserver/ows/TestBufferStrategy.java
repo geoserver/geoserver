@@ -43,8 +43,9 @@ public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactor
             return; // should we throw an Exception here
         }
 
-        OutputStream out = response.getOutputStream();
-        buffer.writeTo(out);
+        try (OutputStream out = response.getOutputStream()) {
+            buffer.writeTo(out);
+        }
 
         buffer = null;
     }

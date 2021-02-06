@@ -79,6 +79,6 @@ public class WFSReprojectionUtilTest {
         ReferencedEnvelope expected =
                 new ReferencedEnvelope(
                         1669792.36, 2782987.269831839, 1118889.97, 2273030.92, webMercator);
-        assertTrue(JTS.equals(expected, clonedBbox.getBounds(), 0.1));
+        assertTrue(JTS.equals(expected, clonedBbox.getBounds(), 0.1)); // NOPMD
     }
 }

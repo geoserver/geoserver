@@ -603,7 +603,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetSeedHtml() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName;
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         MockHttpServletResponse sr = getAsServletResponse(url);
         assertEquals(200, sr.getStatus());
@@ -614,7 +613,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedHtmlForm() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName;
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String formData =
                 "threadCount=01&type=seed&gridSetId=EPSG%3A4326&tileFormat=image%2Fpng&zoomStart=00&zoomStop=12&minX=&minY=&maxX=&maxY=";
@@ -639,7 +637,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetSeedJson() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".json";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         MockHttpServletResponse sr = getAsServletResponse(url);
         assertEquals(200, sr.getStatus());
@@ -652,7 +649,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedXml() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".xml";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -677,7 +673,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedJson() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".json";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String json =
                 "{ \"seedRequest\": {\n"

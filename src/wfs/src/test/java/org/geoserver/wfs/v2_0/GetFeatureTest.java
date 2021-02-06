@@ -1378,16 +1378,6 @@ public class GetFeatureTest extends WFS20TestSupport {
                 "count(wfs:FeatureCollection/wfs:member[position() = 2]/wfs:FeatureCollection//cdf:Seven)",
                 dom);
 
-        String xml =
-                "<wfs:GetFeature "
-                        + "service='WFS' "
-                        + "version='2.0.0' "
-                        + "xmlns:cdf='http://www.opengis.net/cite/data' "
-                        + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
-                        + "> "
-                        + "<wfs:Query typeNames='cdf:Fifteen'/> "
-                        + "<wfs:Query typeNames='cdf:Seven'/> "
-                        + "</wfs:GetFeature>";
         dom =
                 getAsDOM(
                         "wfs?version=2.0.0&service=wfs&request=GetFeature&typename=cdf:Fifteen,cdf:Seven");

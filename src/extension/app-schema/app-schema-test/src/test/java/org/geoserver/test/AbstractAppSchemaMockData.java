@@ -300,6 +300,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#setUp()
      */
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws IOException {
         setUpCatalog();
         setUpSecurity();
@@ -316,6 +317,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#tearDown()
      */
+    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         try {
             IOUtils.delete(data);
@@ -406,51 +408,53 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             File info = new File(featureTypeDir, "info.xml");
             info.delete();
             info.createNewFile();
-            FileWriter writer = new FileWriter(info);
-            writer.write("<featureType datastore=\"" + dataStoreName + "\">");
-            writer.write("<name>" + typeName + "</name>");
-            writer.write("<nativeName>" + typeName + "</nativeName>");
-            if (params.get(KEY_ALIAS) != null)
-                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
-            writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
-            // this mock type may have wrong SRS compared to the actual one in the property files...
-            // let's configure SRS handling not to alter the original one, and have 4326 used only
-            // for capabilities
-            writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
-            writer.write("<title>" + typeName + "</title>");
-            writer.write("<abstract>abstract about " + typeName + "</abstract>");
-            writer.write("<numDecimals value=\"8\"/>");
-            writer.write("<keywords>" + typeName + "</keywords>");
-            Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
-            if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-            writer.write(
-                    "<latLonBoundingBox dynamic=\"false\" minx=\""
-                            + llEnvelope.getMinX()
-                            + "\" miny=\""
-                            + llEnvelope.getMinY()
-                            + "\" maxx=\""
-                            + llEnvelope.getMaxX()
-                            + "\" maxy=\""
-                            + llEnvelope.getMaxY()
-                            + "\"/>");
-            Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
-            if (nativeEnvelope != null)
+            try (FileWriter writer = new FileWriter(info)) {
+                writer.write("<featureType datastore=\"" + dataStoreName + "\">");
+                writer.write("<name>" + typeName + "</name>");
+                writer.write("<nativeName>" + typeName + "</nativeName>");
+                if (params.get(KEY_ALIAS) != null)
+                    writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+                writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
+                // this mock type may have wrong SRS compared to the actual one in the property
+                // files...
+                // let's configure SRS handling not to alter the original one, and have 4326 used
+                // only
+                // for capabilities
+                writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
+                writer.write("<title>" + typeName + "</title>");
+                writer.write("<abstract>abstract about " + typeName + "</abstract>");
+                writer.write("<numDecimals value=\"8\"/>");
+                writer.write("<keywords>" + typeName + "</keywords>");
+                Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
+                if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
                 writer.write(
-                        "<nativeBBox dynamic=\"false\" minx=\""
-                                + nativeEnvelope.getMinX()
+                        "<latLonBoundingBox dynamic=\"false\" minx=\""
+                                + llEnvelope.getMinX()
                                 + "\" miny=\""
-                                + nativeEnvelope.getMinY()
+                                + llEnvelope.getMinY()
                                 + "\" maxx=\""
-                                + nativeEnvelope.getMaxX()
+                                + llEnvelope.getMaxX()
                                 + "\" maxy=\""
-                                + nativeEnvelope.getMaxY()
+                                + llEnvelope.getMaxY()
                                 + "\"/>");
-            String style = (String) params.get(KEY_STYLE);
-            if (style == null) style = "Default";
-            writer.write("<styles default=\"" + style + "\"/>");
-            writer.write("</featureType>");
-            writer.flush();
-            writer.close();
+                Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
+                if (nativeEnvelope != null)
+                    writer.write(
+                            "<nativeBBox dynamic=\"false\" minx=\""
+                                    + nativeEnvelope.getMinX()
+                                    + "\" miny=\""
+                                    + nativeEnvelope.getMinY()
+                                    + "\" maxx=\""
+                                    + nativeEnvelope.getMaxX()
+                                    + "\" maxy=\""
+                                    + nativeEnvelope.getMaxY()
+                                    + "\"/>");
+                String style = (String) params.get(KEY_STYLE);
+                if (style == null) style = "Default";
+                writer.write("<styles default=\"" + style + "\"/>");
+                writer.write("</featureType>");
+                writer.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -570,9 +574,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      */
     public void addStyle(String styleId, String fileName) {
         layerStyles.put(styleId, styleId + ".sld");
-        InputStream styleContents = getClass().getResourceAsStream(TEST_DATA + fileName);
-        File to = new File(styles, styleId + ".sld");
-        try {
+        try (InputStream styleContents = getClass().getResourceAsStream(TEST_DATA + fileName)) {
+            File to = new File(styles, styleId + ".sld");
             IOUtils.copy(styleContents, to);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -724,53 +727,55 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @return Modified content string
      */
     private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
-        InputStream is = openResource(mappingFileName);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        StringBuffer content = new StringBuffer();
-        boolean parametersStartFound = false;
-        boolean parametersEndFound = false;
-        boolean isOracle = onlineTestId.equals("oracle");
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
-            if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
-                // before <parameters> or after </parameters>
-                if (!parametersStartFound) {
-                    // look for start tag
-                    if (line.trim().equals("<parameters>")) {
-                        parametersStartFound = true;
-                        // copy <parameters> with new db params
-                        if (isOracle) {
-                            content.append(AppSchemaTestOracleSetup.DB_PARAMS);
+        try (InputStream is = openResource(mappingFileName);
+                BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            StringBuffer content = new StringBuffer();
+            boolean parametersStartFound = false;
+            boolean parametersEndFound = false;
+            boolean isOracle = onlineTestId.equals("oracle");
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
+                    // before <parameters> or after </parameters>
+                    if (!parametersStartFound) {
+                        // look for start tag
+                        if (line.trim().equals("<parameters>")) {
+                            parametersStartFound = true;
+                            // copy <parameters> with new db params
+                            if (isOracle) {
+                                content.append(AppSchemaTestOracleSetup.DB_PARAMS);
+                            } else {
+                                content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            }
                         } else {
-                            content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            // copy content
+                            content.append(line);
                         }
+                    } else if (line.trim().startsWith("<sourceType>")) {
+                        // make everything upper case due to OracleDialect not wrapping them in
+                        // quotes
+                        line = line.trim();
+                        String sourceTypeTag = "<sourceType>";
+                        content.append(sourceTypeTag);
+                        String tableName =
+                                line.substring(
+                                        line.indexOf(sourceTypeTag) + sourceTypeTag.length(),
+                                        line.indexOf("</sourceType>"));
+                        content.append(tableName.toUpperCase());
+                        content.append("</sourceType>");
+                        content.append("\n");
                     } else {
-                        // copy content
                         content.append(line);
                     }
-                } else if (line.trim().startsWith("<sourceType>")) {
-                    // make everything upper case due to OracleDialect not wrapping them in quotes
-                    line = line.trim();
-                    String sourceTypeTag = "<sourceType>";
-                    content.append(sourceTypeTag);
-                    String tableName =
-                            line.substring(
-                                    line.indexOf(sourceTypeTag) + sourceTypeTag.length(),
-                                    line.indexOf("</sourceType>"));
-                    content.append(tableName.toUpperCase());
-                    content.append("</sourceType>");
                     content.append("\n");
                 } else {
-                    content.append(line);
-                }
-                content.append("\n");
-            } else {
-                // else skip <parameters> content and do nothing
-                // look for end tag
-                if (line.trim().equals("</parameters>")) {
-                    parametersEndFound = true;
+                    // else skip <parameters> content and do nothing
+                    // look for end tag
+                    if (line.trim().equals("</parameters>")) {
+                        parametersEndFound = true;
+                    }
                 }
             }
+            return content.toString();
         }
-        return content.toString();
     }
 }

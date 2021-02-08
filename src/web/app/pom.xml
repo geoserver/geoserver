@@ -1441,7 +1441,7 @@
       <id>wmts-multi-dimensional</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wmts-multi-dimensional</artifactId>
           <version>${project.version}</version>
         </dependency>

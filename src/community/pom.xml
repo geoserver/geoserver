@@ -73,7 +73,6 @@
           <descriptor>release/ext-oauth2-openid-connect.xml</descriptor>
           <descriptor>release/ext-keycloak.xml</descriptor>
           <descriptor>release/ext-backup-restore.xml</descriptor>
-          <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-saml.xml</descriptor>
           <descriptor>release/ext-notification.xml</descriptor>
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
@@ -255,7 +254,6 @@
         <module>security/oauth2-geonode</module>
         <module>security/oauth2-openid-connect</module>
         <module>security/keycloak</module>
-        <module>wmts-multi-dimensional</module>
         <module>wmts-styles</module>
         <module>saml</module>
         <module>notification</module>
@@ -568,12 +566,6 @@
         <module>security/keycloak</module>
       </modules>
     </profile>    
-    <profile>
-      <id>wmts-multi-dimensional</id>
-      <modules>
-        <module>wmts-multi-dimensional</module>
-      </modules>
-    </profile>
     <profile>
       <id>wmts-styles</id>
       <modules>

@@ -175,11 +175,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-wmts-multi-dimensional</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wmts-styles</artifactId>
      <version>${project.version}</version>
    </dependency>

@@ -1577,6 +1577,7 @@
       <descriptor>release/ext-web-resource.xml</descriptor>
       <descriptor>release/ext-params-extractor.xml</descriptor>
       <descriptor>release/ext-gwc-s3.xml</descriptor>
+      <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
      </descriptors>
      <finalName>geoserver-${project.version}</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

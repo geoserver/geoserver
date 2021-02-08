@@ -1,11 +1,7 @@
-.. _wmts_multidminensional:
+.. _wmts_multidminensional_usage:
 
-WMTS Multidimensional
-=====================
-
-This module implements the WMTS multidimensional domain discovery extensions as proposed in this `document <http://demo.geo-solutions.it/share/wmts-multidim/wmts_multidim_geosolutions.html>`_.
-
-This documentation will be very practical, is highly recommended to read the document linked above for a better understanding of the implemented multidimensional domain discovery extensions.
+WMTS Multidimensional usage
+===========================
 
 All described operations including is optional parameters and other extensions were implemented, only the the REST interfaces for the domain discovery operations were not implemented. 
 
@@ -13,50 +9,6 @@ The ``GetFeature`` operation only supports the profile GML 3.1 as feature info f
 
 
 This module support well defined dimensions like elevation and time and also custom dimensions.
-
-Installing
-----------
-
-This is a community module, which means that it will not be available in the GeoServer official releases and needs to be installed manually. 
-
-This module can be installed following these steps:
-
-1. Download this module package from the `nightly builds <https://build.geoserver.org/geoserver/>`_, the module version should match the desired GeoServer version.
-
-2. Extract the contents of the package into the ``WEB-INF/lib`` directory of the GeoServer installation.
-
-.. note::
-
-   The profile ``wmts-multidimensional`` can be used to build GeoServer with this module activated, e.g. ``mvn clean install -Pwmts-multidimensional -T4 -DskipTests``.
-
-A simple ``DescribeDomains`` request can be used to test if the module was correctly installed, the request can be made against any layer known by the WMTS service. For example, using the demo layer ``tiger:poly_landmarks`` shipped with GeoServer: 
-
-.. code-block:: guess
-
-  http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=tiger:poly_landmarks&TileMatrixSet=EPSG:4326
-
-
-The result should be similar to the following, this layer doesn't have any domains:
-
-.. code-block:: xml
-
-  <?xml version="1.0" encoding="UTF-8"?><Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
-    <SpaceDomain>
-      <BoundingBox CRS="EPSG:4326" minx="0.0" miny="0.0" maxx="-1.0" maxy="-1.0"/>
-    </SpaceDomain>
-  </Domains>
-
-If the module is not correctly installed the result will be an exception saying that this operation is not available:
-
-.. code-block:: xml
-
-  <ExceptionReport version="1.1.0" xmlns="http://www.opengis.net/ows/1.1"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://geowebcache.org/schema/ows/1.1.0/owsExceptionReport.xsd">
-    <Exception exceptionCode="OperationNotSupported" locator="request">
-      <ExceptionText>describedomains is not implemented</ExceptionText>
-    </Exception>
-  </ExceptionReport>
 
 GetCapabilities
 ---------------

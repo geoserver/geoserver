@@ -40,7 +40,6 @@ officially part of the GeoServer releases. They are however built along with the
    ncwms/index
    backuprestore/index
    saml/index
-   wmts-multidimensional/index
    notification/index
    opensearch-eo/index
    s3-geotiff/index

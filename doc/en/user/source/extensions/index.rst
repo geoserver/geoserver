@@ -36,4 +36,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    cas/index
    params-extractor/index
    gwc-s3/index
+   wmts-multidimensional/index
 

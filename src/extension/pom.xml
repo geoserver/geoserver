@@ -367,6 +367,12 @@
         <module>params-extractor</module>
       </modules>
     </profile>
+    <profile>
+      <id>wmts-multi-dimensional</id>
+      <modules>
+        <module>wmts-multi-dimensional</module>
+      </modules>
+    </profile>
 
     <profile>      
       <id>gwc-s3</id>
@@ -470,6 +476,7 @@
         <module>web-resource</module>
         <module>params-extractor</module>
         <module>gwc-s3</module>
+        <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
   </profiles>

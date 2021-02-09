@@ -118,7 +118,7 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
         for (Entry<Object, Object> propEntry : templateProperties.entrySet()) {
             String value = (String) propEntry.getValue();
 
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (GeoServerEnvironment.allowEnvParametrization()) {
                 value = (String) gsEnvironment.resolveValue(value);
             }
 

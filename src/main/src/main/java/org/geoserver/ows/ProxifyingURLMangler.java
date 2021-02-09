@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.vfny.geoserver.util.Requests;
 
@@ -87,6 +89,9 @@ public class ProxifyingURLMangler implements URLMangler {
                         ? GeoServerExtensions.getProperty(Requests.PROXY_PARAM)
                         : this.geoServer.getSettings().getProxyBaseUrl();
 
+        // resolve parameters values if parametrization is activated
+        proxyBase = resolveParametrization(proxyBase);
+
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
 
@@ -97,6 +102,18 @@ public class ProxifyingURLMangler implements URLMangler {
         } else {
             this.mangleURLFixedURL(baseURL, proxyBase);
         }
+    }
+
+    /**
+     * Resolve parameters values in the provided String if GeoServer parametrization is activated.
+     */
+    private String resolveParametrization(String proxyBase) {
+        if (GeoServerEnvironment.allowEnvParametrization() && StringUtils.isNotBlank(proxyBase)) {
+            GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            proxyBase = (String) gsEnvironment.resolveValue(proxyBase);
+        }
+        return proxyBase;
     }
 
     /**

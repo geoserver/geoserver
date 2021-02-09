@@ -2416,7 +2416,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     private boolean needsSynchronization() {
-        return GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
+        return GeoServerEnvironment.allowEnvParametrization()
                 && gsEnvironment != null
                 && gsEnvironment.isStale()
                 && gsEnvironment.getProps() != null

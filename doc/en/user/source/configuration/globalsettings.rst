@@ -67,6 +67,17 @@ Proxy Base URL
 
 GeoServer can have the capabilities documents report a proxy properly. "The Proxy Base URL" field is the base URL seen beyond a reverse proxy.
 
+Environment parametrization support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Proxy Base URL field support environment parametrization (see :ref:`Parameterize catalog settings <datadir_configtemplate>` ) by activating the JVM parameter::
+
+    -DALLOW_ENV_PARAMETRIZATION=true
+
+Once activated the environment parametrization Proxy Base URL can be parameters placeholders like::
+
+    ${proxy.base.url}
+
 Use headers for Proxy URL
 -------------------------
 
@@ -89,6 +100,10 @@ For instance, a Proxy Base URL of ``http://${X-Forwarded-Host}/geoserver http://
 
 Both header names and the appended path (e.g. ``/geoserver``) in templates are case-insensitive.
 
+When environment parametrization is activated with headers support for Proxy URL, the order of evaluation is:
+
+1. Environment parametrization placeholders replacement (if placeholder is not found on environment variables, it remains untouched).
+2. Headers placeholders replacements.
 
 Logging Profile
 ---------------

@@ -2406,7 +2406,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public void syncEnv() throws IllegalArgumentException {
         if (gsEnvironment != null && gsEnvironment.isStale() && gwcEnvironment != null) {
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION
+            if (GeoServerEnvironment.allowEnvParametrization()
                     && gsEnvironment.getProps() != null) {
                 Properties gwcProps = gwcEnvironment.getProps();
 

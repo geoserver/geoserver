@@ -139,7 +139,7 @@ public class GeoServerKeycloakFilterConfig extends SecurityFilterConfig
         if (target != null
                 && allowEnvParametrization
                 && gsEnvironment != null
-                && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                && GeoServerEnvironment.allowEnvParametrization()) {
             target.setName((String) gsEnvironment.resolveValue(name));
         }
 

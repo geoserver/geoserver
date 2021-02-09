@@ -1527,8 +1527,8 @@ public class GWCTest {
 
     @Test
     public void testGeoServerEnvParametrization() throws Exception {
-        if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-            assertTrue("H2".equals(jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect()));
+        if (GeoServerEnvironment.allowEnvParametrization()) {
+            assertEquals("H2", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
     }
 

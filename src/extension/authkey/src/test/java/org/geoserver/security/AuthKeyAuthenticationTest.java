@@ -16,8 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -106,35 +104,15 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @BeforeClass
-    public static void setupClass()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
-                    SecurityException {
-        // Playing with System.Properties and Static boolean fields can raises issues
-        // when running Junit tests via Maven, due to initialization orders.
-        // So let's change the fields via reflections for these tests
-        Field field = GeoServerEnvironment.class.getDeclaredField("ALLOW_ENV_PARAMETRIZATION");
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, true);
+    public static void setupClass() {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
+        GeoServerEnvironment.reloadAllowEnvParametrization();
     }
 
     @AfterClass
-    public static void tearDownClass()
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
-                    IllegalAccessException {
-        // Playing with System.Properties and Static boolean fields can raises issues
-        // when running Junit tests via Maven, due to initialization orders.
-        // So let's change the fields via reflections for these tests
-        Field field = GeoServerEnvironment.class.getDeclaredField("ALLOW_ENV_PARAMETRIZATION");
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, false);
+    public static void tearDownClass() {
         System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
+        GeoServerEnvironment.reloadAllowEnvParametrization();
     }
 
     @Override

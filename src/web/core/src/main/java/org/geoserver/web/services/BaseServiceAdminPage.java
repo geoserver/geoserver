@@ -117,7 +117,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
 
         // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-        if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+        if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
             onlineResource.add(new UrlValidator());
         }
 

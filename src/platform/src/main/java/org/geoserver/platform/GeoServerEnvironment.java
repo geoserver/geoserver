@@ -43,13 +43,31 @@ public class GeoServerEnvironment {
     private static final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
 
     /**
-     * Constant set via System Environment in order to instruct GeoServer to make use or not of the
+     * Variable set via System Environment in order to instruct GeoServer to make use or not of the
      * config placeholders translation.
      *
      * <p>Default to FALSE
      */
-    public static final boolean ALLOW_ENV_PARAMETRIZATION =
+    private static volatile boolean allowEnvParametrization =
             Boolean.valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
+
+    /**
+     * Returns the variable set via System Environment in order to instruct GeoServer to make use or
+     * not of the config placeholders translation.
+     */
+    public static boolean allowEnvParametrization() {
+        return allowEnvParametrization;
+    }
+
+    /**
+     * Reloads the variable set via System Environment in order to instruct GeoServer to make use or
+     * not of the config placeholders translation. Use this synchronized method only for testing
+     * purposes.
+     */
+    public static synchronized void reloadAllowEnvParametrization() {
+        allowEnvParametrization =
+                Boolean.valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
+    }
 
     private static final String PROPERTYFILENAME = "geoserver-environment.properties";
 

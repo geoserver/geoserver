@@ -138,7 +138,7 @@ public class SecurityManagerConfig implements SecurityConfig {
         if (target != null) {
             if (allowEnvParametrization
                     && gsEnvironment != null
-                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setConfigPasswordEncrypterName(
                         (String) gsEnvironment.resolveValue(configPasswordEncrypterName));
                 target.setRoleServiceName((String) gsEnvironment.resolveValue(roleServiceName));

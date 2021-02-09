@@ -698,7 +698,7 @@ public class ResourcePool {
             String key = (String) entry.getKey();
             Object value = entry.getValue();
 
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 value = gsEnvironment.resolveValue(value);
             }
 
@@ -2701,7 +2701,7 @@ public class ResourcePool {
                         Object value = param.getValue();
 
                         if (gsEnvironment != null
-                                && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                                && GeoServerEnvironment.allowEnvParametrization()) {
                             value = gsEnvironment.resolveValue(value);
                         }
 
@@ -2735,7 +2735,7 @@ public class ResourcePool {
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-        if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+        if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
             target.setURL((String) gsEnvironment.resolveValue(source.getURL()));
         } else {
             target.setURL(source.getURL());
@@ -2753,7 +2753,7 @@ public class ResourcePool {
                     String key = param.getKey();
                     Object value = param.getValue();
 
-                    if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                         value = gsEnvironment.resolveValue(value);
                     }
 
@@ -2788,7 +2788,7 @@ public class ResourcePool {
             final GeoServerEnvironment gsEnvironment =
                     GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setCapabilitiesURL(
                         (String) gsEnvironment.resolveValue(source.getCapabilitiesURL()));
                 target.setUsername((String) gsEnvironment.resolveValue(source.getUsername()));
@@ -2822,7 +2822,7 @@ public class ResourcePool {
             final GeoServerEnvironment gsEnvironment =
                     GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setCapabilitiesURL(
                         (String) gsEnvironment.resolveValue(source.getCapabilitiesURL()));
                 target.setUsername((String) gsEnvironment.resolveValue(source.getUsername()));

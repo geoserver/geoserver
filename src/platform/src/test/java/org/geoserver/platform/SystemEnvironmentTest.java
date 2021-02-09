@@ -71,7 +71,7 @@ public class SystemEnvironmentTest {
             new GeoServerEnvironment();
             // LOGGER.info("GeoServerEnvironment = " +
             // GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
-            assertFalse(GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
+            assertFalse(GeoServerEnvironment.allowEnvParametrization());
         }
     }
 }

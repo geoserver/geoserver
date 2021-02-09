@@ -49,7 +49,7 @@ public class MasterPasswordConfig implements SecurityConfig {
         if (target != null) {
             if (allowEnvParametrization
                     && gsEnvironment != null
-                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setProviderName((String) gsEnvironment.resolveValue(providerName));
             }
         }

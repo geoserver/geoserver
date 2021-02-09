@@ -87,7 +87,7 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         if (target != null) {
             if (allowEnvParametrization
                     && gsEnvironment != null
-                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setName((String) gsEnvironment.resolveValue(name));
             }
         }

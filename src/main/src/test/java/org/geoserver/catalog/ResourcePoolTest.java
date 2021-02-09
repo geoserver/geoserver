@@ -510,17 +510,13 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertTrue(ds.getConnectionParameters().get("host").equals("${jdbc.host}"));
             assertTrue(ds.getConnectionParameters().get("port").equals("${jdbc.port}"));
 
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("host")
-                                .equals(gsEnvironment.resolveValue("${jdbc.host}")));
-                assertTrue(
-                        expandedDs
-                                .getConnectionParameters()
-                                .get("port")
-                                .equals(gsEnvironment.resolveValue("${jdbc.port}")));
+            if (GeoServerEnvironment.allowEnvParametrization()) {
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("host"),
+                        gsEnvironment.resolveValue("${jdbc.host}"));
+                assertEquals(
+                        expandedDs.getConnectionParameters().get("port"),
+                        gsEnvironment.resolveValue("${jdbc.port}"));
             } else {
                 assertTrue(expandedDs.getConnectionParameters().get("host").equals("${jdbc.host}"));
                 assertTrue(expandedDs.getConnectionParameters().get("port").equals("${jdbc.port}"));

@@ -45,7 +45,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                     GeoServerExtensions.bean(GeoServerEnvironment.class);
 
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
                 capabilitiesURL.getFormComponent().add(new WMSCapabilitiesURLValidator());
             }
         } catch (IOException e) {

@@ -43,6 +43,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -121,12 +124,19 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         }));
 
         // login / logout stuff
-        List<String> securityFilters =
-                getGeoServerApplication()
-                        .getSecurityManager()
-                        .getSecurityConfig()
-                        .getFilterChain()
-                        .filtersFor("/web/**");
+        GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
+        SecurityManagerConfig securityConfig = securityManager.getSecurityConfig();
+
+        List<String> securityFiltersNames = securityConfig.getFilterChain().filtersFor("/web/**");
+        List<String> securityFilterClassNames = new ArrayList<>();
+        for (String name : securityFiltersNames) {
+            try {
+                SecurityFilterConfig config = securityManager.loadFilterConfig(name);
+                securityFilterClassNames.add(config.getClassName());
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Could not load security filter config for " + name, e);
+            }
+        }
 
         final Authentication user = GeoServerSession.get().getAuthentication();
         final boolean anonymous = user == null || user instanceof AnonymousAuthenticationToken;
@@ -195,8 +205,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         item.add(loginForm);
 
                         boolean filterInChain = false;
-                        for (String filterName : securityFilters) {
-                            if (filterName.toLowerCase().contains(info.getName())) {
+                        for (String filterClassName : securityFilterClassNames) {
+                            if (filterClassName.equals(info.getFilterClass().getName())) {
                                 filterInChain = true;
                                 break;
                             }
@@ -205,72 +215,31 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     }
                 });
 
-        // logout forms
+        // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
         loggedInAsForm.add(new Label("loggedInUsername", anonymous ? "Nobody" : user.getName()));
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
 
-        List<LogoutFormInfo> logoutforms =
-                filterByAuth(getGeoServerApplication().getBeansOfType(LogoutFormInfo.class));
-
-        add(
-                new ListView<LogoutFormInfo>("logoutforms", logoutforms) {
-                    public void populateItem(ListItem<LogoutFormInfo> item) {
-                        LogoutFormInfo info = item.getModelObject();
-
-                        WebMarkupContainer logoutForm =
-                                new WebMarkupContainer("logoutform") {
-                                    protected void onComponentTag(
-                                            org.apache.wicket.markup.ComponentTag tag) {
-                                        String logoutPath = getResourcePath(info.getLogoutPath());
-                                        tag.put("action", logoutPath);
-                                    }
-                                };
-
-                        Image image;
-                        if (info.getIcon() != null) {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    info.getComponentClass(), info.getIcon()));
-                        } else {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    GeoServerBasePage.class,
-                                                    "img/icons/silk/door-out.png"));
-                        }
-
-                        logoutForm.add(image);
-                        if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
-                            logoutForm.add(
-                                    new Label(
-                                            "link.label",
-                                            new StringResourceModel(
-                                                    info.getTitleKey(), null, null)));
-                            image.add(
-                                    AttributeModifier.replace(
-                                            "alt",
-                                            new ParamResourceModel(info.getTitleKey(), null)));
-                        } else {
-                            logoutForm.add(new Label("link.label", ""));
-                        }
-
-                        item.add(logoutForm);
-
-                        boolean filterInChain = false;
-                        for (String filterName : securityFilters) {
-                            if (filterName.toLowerCase().contains(info.getName())) {
-                                filterInChain = true;
-                                break;
-                            }
-                        }
-                        logoutForm.setVisible(!anonymous && filterInChain);
+        WebMarkupContainer logoutForm =
+                new WebMarkupContainer("logoutform") {
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        String logoutPath = getResourcePath("j_spring_security_logout");
+                        tag.put("action", logoutPath);
                     }
-                });
+                };
+        add(logoutForm);
+
+        Image image =
+                new Image(
+                        "link.icon",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/door-out.png"));
+
+        logoutForm.add(image);
+        logoutForm.add(new Label("link.label", new StringResourceModel("logout", null, null)));
+        image.add(AttributeModifier.replace("alt", new ParamResourceModel("logout", null)));
+        logoutForm.setVisible(!anonymous);
 
         // home page link
         add(

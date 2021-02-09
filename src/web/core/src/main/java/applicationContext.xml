@@ -457,17 +457,6 @@
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>
 	
-	<!-- logout button -->
-	<bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
-		<property name="id" value="geoserverFormLogoutButton" />
-		<property name="titleKey" value="logout" />
-		<property name="descriptionKey" value="GeoServerBasePage.description" />
-		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
-		<property name="name" value="form" />
-		<property name="icon" value="img/icons/silk/door-out.png" />
-		<property name="logoutPath" value="j_spring_security_logout" />
-	</bean>
- 
  	<bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
 		<property name="id" value="serviceLayerConfigurationPanel"/>
 		<property name="titleKey" value="publish.layer.config"/>

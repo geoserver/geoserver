@@ -45,13 +45,11 @@
 	      </span>
 	      
 	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
-	      <span wicket:id="logoutforms">
-	      	<form style="display: inline-block;" wicket:id="logoutform" method="post" action="j_spring_security_logout">
-	      		<button class="positive icon" type="submit">
-	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-	      		</button>
-	      	</form>		      
-	      </span>
+            <form style="display: inline-block;" wicket:id="logoutform" method="post" action="j_spring_security_logout">
+                <button class="positive icon" type="submit">
+                    <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
+                </button>
+            </form>		      
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->

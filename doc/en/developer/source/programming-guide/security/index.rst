@@ -366,7 +366,7 @@ and is responsible for creating the actual filter chain from the
 ``GeoServerSecurityFilterChain`` configuration object.
 
 
-Pluggable Login / Logout Endpoints
+Pluggable Login Endpoints
 ----------------------------------
 
 To enable a new Login button just add lines similar to the following configuration into the ``applicationContext.xml``::
@@ -412,51 +412,4 @@ Example of **include** HTML can be::
     <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
     <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
     
-Logout Pluggable Chains and Buttons
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using a similar approach is possible to define and plug custom Logout Endpoints and Buttons.
-
-The configuration to use must be like the following one::
-
-	<!-- logout button -->
-	<bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
-		<property name="id" value="geoserverFormLogoutButton" />
-		<property name="titleKey" value="logout" />
-		<property name="descriptionKey" value="GeoServerBasePage.description" />
-		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
-		<property name="name" value="form" />
-		<property name="icon" value="img/icons/silk/door-out.png" />
-		<property name="logoutPath" value="j_spring_security_logout" />
-	</bean>
-
-The properties are similar to the Login buttons. Less in number but with the same meaning.
-
-The activation of a Logout Handler is not automatic though. You will need to slightly modify the GeoServer Security configuration in order to activate the new Logout Filter Chain.
-
-Let's say that we want to enable a brand new Logout handler for Google ``j_spring_oauth2_google_logout``.
-
-First thing to do is to add the new paths to the ``webLogout`` Filter Chain
-
-.. figure:: images/web_logout.png
-   :align: center
-
-Add two new ANT patterns to the webLogout chain::
-
-    /j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/
-    
-Last step is to modify the configuration of the ``LogoutFilter`` by adding all the available ANT patterns to be caught by the Logout filter chain.
-
-#. Edit the file ``$GEOSERVER_DATA_DIR\security\filter\formLogout\config.xml``
-
-#. Update the ``formLogoutChain`` property accordingly::
-
-        <logoutFilter>
-          <id>52857278:13c7ffd66a8:-7ff3</id>
-          <name>formLogout</name>
-          <className>org.geoserver.security.filter.GeoServerLogoutFilter</className>
-          <redirectURL>/web/</redirectURL>
-          <formLogoutChain>/j_spring_security_logout,/j_spring_security_logout/,/j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/</formLogoutChain>
-        </logoutFilter>
-
-Save everything and reload GeoServer.

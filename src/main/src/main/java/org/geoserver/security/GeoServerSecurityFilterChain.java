@@ -345,7 +345,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return requestChain;
     }
 
-    RequestFilterChain requestChain(String pattern) {
+    public RequestFilterChain requestChain(String pattern) {
         for (RequestFilterChain requestChain : requestChains) {
             if (requestChain.getPatterns().contains(pattern)) {
                 return requestChain;

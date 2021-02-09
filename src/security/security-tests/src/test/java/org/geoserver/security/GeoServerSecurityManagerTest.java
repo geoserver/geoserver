@@ -232,7 +232,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         String oldRoleServiceName = config.getRoleServiceName();
 
         try {
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (GeoServerEnvironment.allowEnvParametrization()) {
                 System.setProperty("TEST_SYS_PROPERTY", oldRoleServiceName);
 
                 config.setRoleServiceName("${TEST_SYS_PROPERTY}");

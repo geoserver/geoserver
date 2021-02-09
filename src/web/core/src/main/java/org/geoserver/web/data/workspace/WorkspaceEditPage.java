@@ -44,7 +44,6 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -471,7 +470,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
             otherSettingsPanel.add(
                     new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
-            otherSettingsPanel.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
+            // Formerly provided a new UrlValidator(), but removed with placeholder compatibility
+            otherSettingsPanel.add(new TextField<String>("proxyBaseUrl"));
 
             // Addition of pluggable extension points
             ListView<SettingsPluginPanelInfo> extensions =

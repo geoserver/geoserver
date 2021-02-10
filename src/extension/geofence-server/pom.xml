@@ -52,7 +52,7 @@
         <dependency>
                 <groupId>org.hibernatespatial</groupId>
                 <artifactId>hibernate-spatial-h2-geodb</artifactId>
-                <version>${hibernate-spatial-h2-version}</version>
+                <version>${hibernate-spatial-version}</version>
         </dependency>
 
         <dependency>

@@ -91,8 +91,9 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                                                 "Content-Type", MediaType.APPLICATION_JSON_VALUE)
                                         .withBodyFile("token_response.json")));
         openIdService.stubFor(
-                WireMock.get(urlPathEqualTo("/userinfo"))
-                        .withQueryParam("access_token", equalTo("CPURR33RUz-gGhjwODTd9zXo5JkQx4wS"))
+                WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
+                        .withHeader(
+                                "Authorization", equalTo("Bearer CPURR33RUz-gGhjwODTd9zXo5JkQx4wS"))
                         .willReturn(
                                 aResponse()
                                         .withStatus(200)
@@ -214,10 +215,5 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterChainProxy.doFilter(request, response, chain);
 
         return response;
-    }
-
-    @Override
-    protected String getLogConfiguration() {
-        return "/VERBOSE_LOGGING.properties";
     }
 }

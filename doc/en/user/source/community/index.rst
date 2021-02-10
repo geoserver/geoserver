@@ -18,6 +18,7 @@ officially part of the GeoServer releases. They are however built along with the
    arcsde/index
    oauth2/index
    keycloak/index
+   keycloak/keycloak_role_service
    dds/index
    colormap/index
    jdbcconfig/index

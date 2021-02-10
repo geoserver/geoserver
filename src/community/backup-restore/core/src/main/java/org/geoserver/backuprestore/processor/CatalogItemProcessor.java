@@ -71,11 +71,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             }
 
             LOGGER.info(
-                    "Processing resource: "
-                            + resource
-                            + " - Progress: ["
-                            + getCurrentJobExecution().getProgress()
-                            + "]");
+                    () ->
+                            "Processing resource: "
+                                    + resource
+                                    + " - Progress: ["
+                                    + getCurrentJobExecution().getProgress()
+                                    + "]");
 
             if (resource instanceof WorkspaceInfo) {
                 WorkspaceInfo ws = ((WorkspaceInfo) resource);

@@ -344,6 +344,10 @@ public class KvpUtils {
      * @return
      */
     public static KvpMap<String, String> toStringKVP(Map<String, ?> kvp) {
+        if (kvp == null) {
+            return null;
+        }
+
         KvpMap<String, String> result = new KvpMap<>();
         for (Map.Entry<String, ?> entry : kvp.entrySet()) {
             if (entry.getValue() instanceof String || entry.getValue() == null) {

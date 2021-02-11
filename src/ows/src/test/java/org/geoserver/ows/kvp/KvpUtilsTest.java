@@ -10,6 +10,7 @@ import static org.junit.Assert.assertArrayEquals;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,6 +32,12 @@ public class KvpUtilsTest {
         List result = KvpUtils.readNested("");
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(0, ((List) result.get(0)).size());
+    }
+
+    @Test
+    public void testNullKvp() {
+        KvpMap<String, String> result = KvpUtils.toStringKVP(null);
+        Assert.assertNull(result);
     }
 
     @Test

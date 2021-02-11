@@ -13,6 +13,8 @@ Operations on resources are implemented with the standard primitives of HTTP:  G
 API
 ---
 
+.. warning:: The API is documented as Swagger 2.0 files. However, these files have been written by hand back in 2017, and have not always been kept up to date with the evolution of the GeoServer configuration object structure. Also, they have not been tested for proper client generation, and will likely not work for that purpose. Take them only as a form of documentation.
+
 The following links provide direct access to the GeoServer REST API documentation, including definitions and examples of each endpoint:
 
 * :api:`/about/manifests <manifests.yaml>`

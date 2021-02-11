@@ -223,6 +223,10 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             (ExternalLink)
                                     c.get("itemProperties:3:component:commonFormat:1")
                                             .getDefaultModelObject();
+                    ExternalLink kmlLink =
+                            (ExternalLink)
+                                    c.get("itemProperties:3:component:commonFormat:2")
+                                            .getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
@@ -237,6 +241,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                                     "http://localhost/context/cite/ows?service=WFS&amp;version=1"
                                             + ".0.0&amp;request=GetFeature&amp;"
                                             + "typeName=cite%3ALakes%20%2B%20a%20plus"));
+                    assertEquals(
+                            kmlLink.getDefaultModelObjectAsString(),
+                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus");
                 }
             }
             assertTrue("Could not find layer with expected name", exists);

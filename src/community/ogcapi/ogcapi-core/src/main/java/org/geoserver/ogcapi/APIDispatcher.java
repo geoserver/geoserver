@@ -342,7 +342,7 @@ public class APIDispatcher extends AbstractController {
      * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if
      *     not found
      */
-    static APIService getApiServiceAnnotation(Class clazz) {
+    static APIService getApiServiceAnnotation(Class<?> clazz) {
         APIService annotation = null;
         while (annotation == null && clazz != null) {
             annotation = (APIService) clazz.getAnnotation(APIService.class);
@@ -469,14 +469,14 @@ public class APIDispatcher extends AbstractController {
         // most likely...
 
         // unparsed kvp set
-        Map kvp = request.getHttpRequest().getParameterMap();
+        Map<String, String[]> kvp = request.getHttpRequest().getParameterMap();
 
         if (kvp == null || kvp.isEmpty()) {
-            request.setKvp(new HashMap());
-            request.setRawKvp(new HashMap());
+            request.setKvp(new HashMap<>());
+            request.setRawKvp(new HashMap<>());
         } else {
             // track parsed kvp and unparsd
-            Map parsedKvp = KvpUtils.normalize(kvp);
+            Map<String, Object> parsedKvp = KvpUtils.normalize(kvp);
             Map rawKvp = new KvpMap(parsedKvp);
 
             request.setKvp(parsedKvp);

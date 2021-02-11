@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
@@ -489,8 +490,10 @@ public class FeatureTest extends FeaturesTestSupport {
         genericEntity.setName("EntitéGénérique");
         getCatalog().save(genericEntity);
         try {
-            String encodedLocalName = URLEncoder.encode(genericEntity.getName(), "UTF-8");
-            String typeName = URLEncoder.encode(genericEntity.prefixedName());
+            String encodedLocalName =
+                    URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8.name());
+            String typeName =
+                    URLEncoder.encode(genericEntity.prefixedName(), StandardCharsets.UTF_8.name());
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =
                     getAsJSONPath(

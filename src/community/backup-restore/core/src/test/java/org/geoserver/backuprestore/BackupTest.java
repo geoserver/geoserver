@@ -25,6 +25,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
@@ -229,16 +231,37 @@ public class BackupTest extends BackupRestoreTestSupport {
             assertEquals(33, restoreCatalog.getLayers().size());
             assertEquals(3, restoreCatalog.getLayerGroups().size());
         }
+        // check Workspaces and Namespaces IDs are respected
+        checkWorkspacesAndNamespacesIds(restoreCatalog);
 
         checkExtraPropertiesExists();
         if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
             assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
             // check that generic listener was invoked for the backup job
-            assertThat(GenericListener.getBackupAfterInvocations(), is(2));
-            assertThat(GenericListener.getBackupBeforeInvocations(), is(2));
+            assertThat(GenericListener.getBackupAfterInvocations(), is(3));
+            assertThat(GenericListener.getBackupBeforeInvocations(), is(3));
             assertThat(GenericListener.getRestoreAfterInvocations(), is(3));
             assertThat(GenericListener.getRestoreBeforeInvocations(), is(3));
         }
+    }
+
+    private void checkWorkspacesAndNamespacesIds(final Catalog restoreCatalog) {
+        // Check workspaces former IDs are respected
+        catalog.getWorkspaces()
+                .forEach(
+                        wsInfo -> {
+                            WorkspaceInfo restoreInfo =
+                                    restoreCatalog.getWorkspaceByName(wsInfo.getName());
+                            assertEquals(wsInfo.getId(), restoreInfo.getId());
+                        });
+        // Check Namespaces former IDs are respected
+        catalog.getNamespaces()
+                .forEach(
+                        nsInfo -> {
+                            NamespaceInfo restpreNsInfo =
+                                    restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix());
+                            assertEquals(nsInfo.getId(), restpreNsInfo.getId());
+                        });
     }
 
     @Test
@@ -448,8 +471,8 @@ public class BackupTest extends BackupRestoreTestSupport {
     public void testBackupExcludedResources() throws Exception {
         GeoServerDataDirectory dd = backupFacade.getGeoServerDataDirectory();
 
-        BackupUtils.dir(dd.get(Paths.BASE), "/foo/folder");
-        assertTrue(Resources.exists(dd.get("/foo/folder")));
+        BackupUtils.dir(dd.get(Paths.BASE), "foo/folder");
+        assertTrue(Resources.exists(dd.get("foo/folder")));
 
         Hints hints = new Hints(new HashMap(2));
         hints.add(

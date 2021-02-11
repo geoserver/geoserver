@@ -18,6 +18,7 @@ officially part of the GeoServer releases. They are however built along with the
    arcsde/index
    oauth2/index
    keycloak/index
+   keycloak/keycloak_role_service
    dds/index
    colormap/index
    jdbcconfig/index
@@ -32,10 +33,8 @@ officially part of the GeoServer releases. They are however built along with the
    gwc-distributed/index
    flatgeobuf/index
    gdal/index
-   gwc-s3/index
    gwc-azure-blob/index
    gwc-sqlite/index
-   params-extractor/index
    remote-wps/index
    jdbcstore/index
    ncwms/index

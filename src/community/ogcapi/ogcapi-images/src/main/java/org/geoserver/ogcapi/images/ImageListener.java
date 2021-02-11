@@ -8,7 +8,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
- * Allows implementor to listen to the addition/removal of granules in a {@link
+ * Allows implementer to listen to the addition/removal of granules in a {@link
  * org.geotools.coverage.grid.io.StructuredGridCoverage2DReader}.
  *
  * <p>This is a temporary setup, if the checkpoint service survives experimentation it should be
@@ -17,7 +17,7 @@ import org.opengis.feature.simple.SimpleFeature;
 public interface ImageListener {
 
     /**
-     * An image has been added to the to <code>ci</code>
+     * An image has been added to the <code>ci</code>.
      *
      * @param ci The coverage backed by a StructuredGridCoverage2DReader
      * @param feature The feature representing the image in the {@link
@@ -26,7 +26,7 @@ public interface ImageListener {
     void imageAdded(CoverageInfo ci, SimpleFeature feature);
 
     /**
-     * An image has been removed from the to <code>ci</code>
+     * An image has been removed from the <code>ci</code>.
      *
      * @param ci The coverage backed by a StructuredGridCoverage2DReader
      * @param feature The feature representing the image in the {@link

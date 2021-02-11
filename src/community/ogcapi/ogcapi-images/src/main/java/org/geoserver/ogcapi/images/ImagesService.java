@@ -116,8 +116,8 @@ public class ImagesService implements ApplicationContextAware {
     // this could be done in an argument resolver returning a Filter, for example, however
     // each protocol would need a different thing, so kept the KVP parser as a way to have
     // private logic here
-    private ImagesBBoxKvpParser bboxParser = new ImagesBBoxKvpParser();
-    private TimeParser timeParser = new TimeParser();
+    private final ImagesBBoxKvpParser bboxParser = new ImagesBBoxKvpParser();
+    private final TimeParser timeParser = new TimeParser();
     private ImageListenerSupport imageListeners;
 
     public ImagesService(GeoServer geoServer, AssetHasher assetHasher) {

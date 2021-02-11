@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
@@ -35,7 +36,7 @@ public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<
      */
     public SimpleHTTPMessageConverter(
             Class binding,
-            Class serviceConfigurationClass,
+            Class<? extends ServiceInfo> serviceConfigurationClass,
             Class serviceClass,
             FreemarkerTemplateSupport support,
             GeoServer geoServer,

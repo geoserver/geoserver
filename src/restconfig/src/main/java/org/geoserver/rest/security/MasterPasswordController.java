@@ -47,7 +47,7 @@ public class MasterPasswordController extends RestBaseController {
     public NamedMap<String, String> masterPasswordGet() throws IOException {
 
         if (!getManager().checkAuthenticationForAdminRole()) {
-            throw new RestException("Amdinistrative privelges required", HttpStatus.FORBIDDEN);
+            throw new RestException("Administrative privileges required", HttpStatus.FORBIDDEN);
         }
 
         char[] masterpw = getManager().getMasterPasswordForREST();
@@ -71,7 +71,7 @@ public class MasterPasswordController extends RestBaseController {
         if (!getManager().checkAuthenticationForAdminRole()) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
             throw new RestException(
-                    "Amdinistrative privelges required", HttpStatus.METHOD_NOT_ALLOWED);
+                    "Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         String providerName;

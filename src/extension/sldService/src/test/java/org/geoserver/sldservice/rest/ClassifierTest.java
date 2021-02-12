@@ -1823,8 +1823,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
         assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
-        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
         ColorMapEntry cm1 = cm.getColorMapEntry(1);
         assertThat(
                 cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
@@ -1854,8 +1854,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
         assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
-        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
         ColorMapEntry cm1 = cm.getColorMapEntry(1);
         assertThat(
                 cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
@@ -1876,12 +1876,15 @@ public class ClassifierTest extends SLDServiceBaseTest {
         print(dom);
         RasterSymbolizer rs = getRasterSymbolizer(dom);
         ColorMap cm = rs.getColorMap();
-        assertEquals(ColorMap.TYPE_RAMP, cm.getType());
+        assertEquals(ColorMap.TYPE_INTERVALS, cm.getType());
         ColorMapEntry[] entries = cm.getColorMapEntries();
-        assertEquals(1, entries.length);
+        assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
-        assertEquals("#00FF00", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
+        ColorMapEntry cm1 = cm.getColorMapEntry(1);
+        assertEquals("#00FF00", cm1.getColor().evaluate(null, String.class));
+        assertEquals(1, cm1.getOpacity().evaluate(null, Double.class), 0);
     }
 
     @Test
@@ -2729,5 +2732,77 @@ public class ClassifierTest extends SLDServiceBaseTest {
             }
         }
         assertEquals(100.0, percentagesSum, 0.0);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteContinuous() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=true&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEntry(entries[0], 10d, "10", "#FF071C", 1);
+        assertEntry(entries[1], 10.000000953674316, "10.000001", "#FFA92E", 1);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteOpen() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&open=true&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEntry(entries[0], 10d, null, "#000000", 0);
+        assertEntry(entries[1], 10.000000000000002, ">= 10", "#FF071C", 1);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteUniqueInterval() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&open=true&fullSLD=true&method=uniqueInterval&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEntry(entries[0], 10d, "10", "#FF071C", 1);
+        assertEntry(entries[1], 10.000000953674316, "10.000001", "#FFA92E", 1);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteClosed() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=equalInterval&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEntry(entries[0], 10d, null, "#000000", 0);
+        assertEntry(entries[1], 10.000000000000002, ">= 10 AND <= 10.000001", "#FF071C", 1);
     }
 }

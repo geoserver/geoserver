@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 
 public class RasterSymbolizerBuilder {
 
@@ -117,7 +119,6 @@ public class RasterSymbolizerBuilder {
             low = (int) range.getMinimum();
             high = (int) range.getMaximum();
         }
-
         // The histogram can be very expensive memory wise as it's backed by a
         // AtomicDouble[], check how many are they going to be
         if (high - low > MAX_UNIQUE_VALUES) {
@@ -128,15 +129,23 @@ public class RasterSymbolizerBuilder {
                             + (high - low));
         }
 
+        // turn the histogram into a ColorMap (just values, no colors, those will be added later)
+        ColorMap colorMap = SF.createColorMap();
+        colorMap.setType(ColorMap.TYPE_VALUES);
+        double min=iw.getMinimums()[0];
+        double max =iw.getMaximums()[0];
+        if (min == max) {
+            addEntriesSingleValue(
+                    colorMap,
+                    new Number[] {min, max},
+                    new DecimalFormat("#.######", new DecimalFormatSymbols(ENGLISH)));
+            return colorMap;
+        }
         // compute the histogram
         Histogram histogram =
                 iw.getHistogram(
                         new int[] {high - low + 1}, new double[] {low}, new double[] {high});
         int[] bins = histogram.getBins(0);
-
-        // turn the histogram into a ColorMap (just values, no colors, those will be added later)
-        ColorMap colorMap = SF.createColorMap();
-        colorMap.setType(ColorMap.TYPE_VALUES);
         int entries = 0;
         PercentagesRoundHandler roundHandler = new PercentagesRoundHandler(percentagesScale);
         for (int i = 0; i < bins.length; i++) {
@@ -201,20 +210,28 @@ public class RasterSymbolizerBuilder {
     public ColorMap equalIntervalClassification(
             RenderedImage image, int intervals, boolean open, boolean continuous) {
         ImageWorker iw = getImageWorker(image);
-        final NumberRange range = getOperationRange(iw);
-        double low = (int) range.getMinimum();
-        double high = (int) range.getMaximum();
-        Number[] breaks = new Number[continuous ? intervals : intervals + 1];
-        double step = (high - low) / (continuous ? (intervals - 1) : intervals);
-        for (int i = 0; i < breaks.length; i++) {
-            double value = i * step + low;
-            breaks[i] = value;
-        }
+        double min =iw.getMinimums()[0];
+        double max = iw.getMaximums()[0];
+        boolean isSingleValue = min == max;
         double[] percentages = null;
-        if (outputPercentages) {
-            percentages = computePercentagesFromHistogram(iw, intervals, low, high);
-            percentages =
-                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+        Number[] breaks;
+        if (isSingleValue) breaks = new Number[] {min, max};
+        else {
+            final NumberRange range = getOperationRange(iw);
+            double low = (int) range.getMinimum();
+            double high = (int) range.getMaximum();
+            breaks = new Number[continuous ? intervals : intervals + 1];
+
+            double step = (high - low) / (continuous ? (intervals - 1) : intervals);
+            for (int i = 0; i < breaks.length; i++) {
+                double value = i * step + low;
+                breaks[i] = value;
+            }
+            if (outputPercentages && !isSingleValue) {
+                percentages = computePercentagesFromHistogram(iw, intervals, low, high);
+                percentages =
+                        new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+            }
         }
         return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
@@ -270,88 +287,19 @@ public class RasterSymbolizerBuilder {
         DecimalFormat format = new DecimalFormat("#.######", new DecimalFormatSymbols(ENGLISH));
 
         ColorMap colorMap = SF.createColorMap();
+        boolean isSingleValue = isSingleValueRaster(breaks);
         if (continuous) {
-            for (int i = 0; i < breaks.length; i++) {
-                Number b = breaks[i];
-                ColorMapEntry entry = SF.createColorMapEntry();
-                entry.setQuantity(FF.literal(b));
-                String label = format.format(b);
-                if (i > 0) label += getPercentagesLabelPortion(percentages, i - 1);
-                entry.setLabel(label);
-                colorMap.addColorMapEntry(entry);
-            }
+            if (isSingleValue) addEntriesSingleValue(colorMap, breaks, format);
+            else addContinuousEntries(colorMap, breaks, percentages, format);
         } else {
             colorMap.setType(ColorMap.TYPE_INTERVALS);
             if (open) {
-                double prev = breaks[0].doubleValue();
-                for (int i = 1; i < breaks.length; i++) {
-                    ColorMapEntry entry = SF.createColorMapEntry();
-                    double value = breaks[i].doubleValue();
-                    if (i == breaks.length - 1) {
-                        entry.setQuantity(FF.literal(Double.MAX_VALUE));
-                    } else {
-                        entry.setQuantity(FF.literal(value));
-                    }
-                    if (i == 1) {
-                        entry.setLabel(
-                                "< "
-                                        + format.format(value)
-                                        + getPercentagesLabelPortion(percentages, i - 1));
-                    } else if (i == breaks.length - 1) {
-                        entry.setLabel(
-                                ">= "
-                                        + format.format(prev)
-                                        + getPercentagesLabelPortion(percentages, i - 1));
-                    } else {
-                        entry.setLabel(
-                                ">= "
-                                        + format.format(prev)
-                                        + " AND < "
-                                        + format.format(value)
-                                        + getPercentagesLabelPortion(percentages, i - 1));
-                    }
-
-                    prev = value;
-                    colorMap.addColorMapEntry(entry);
-                }
+                if (isSingleValue) addOpenIntervalEntriesSingleValue(colorMap, breaks, format);
+                else addOpenIntervalEntries(colorMap, breaks, percentages, format);
             } else {
-                // build a transparenty entry as first
-                double prev = breaks[0].doubleValue();
-                ColorMapEntry transparentEntry = SF.createColorMapEntry();
-                transparentEntry.setColor(FF.literal(new Color(0, 0, 0)));
-                transparentEntry.setOpacity(FF.literal(0));
-                transparentEntry.setQuantity(FF.literal(prev));
-                colorMap.addColorMapEntry(transparentEntry);
-
-                for (int i = 1; i < breaks.length; i++) {
-                    ColorMapEntry entry = SF.createColorMapEntry();
-                    double value = breaks[i].doubleValue();
-                    if (i == breaks.length - 1) {
-                        long l = Double.doubleToLongBits(value);
-                        double incremented = Double.longBitsToDouble(l + 1);
-                        entry.setQuantity(FF.literal(incremented));
-                    } else {
-                        entry.setQuantity(FF.literal(value));
-                    }
-                    if (i == breaks.length - 1) {
-                        entry.setLabel(
-                                ">= "
-                                        + format.format(prev)
-                                        + " AND <= "
-                                        + format.format(value)
-                                        + getPercentagesLabelPortion(percentages, i - 1));
-                    } else {
-                        entry.setLabel(
-                                ">= "
-                                        + format.format(prev)
-                                        + " AND < "
-                                        + format.format(value)
-                                        + getPercentagesLabelPortion(percentages, i - 1));
-                    }
-
-                    prev = value;
-                    colorMap.addColorMapEntry(entry);
-                }
+                if (isSingleValue)
+                    addClosedIntervalEntriesSingleValueRaster(colorMap, breaks, format);
+                else addClosedIntervalEntries(colorMap, breaks, percentages, format);
             }
         }
         return colorMap;
@@ -401,6 +349,12 @@ public class RasterSymbolizerBuilder {
     public void applyColorRamp(
             ColorMap colorMap, ColorRamp colorRamp, boolean skipFirst, boolean reverse)
             throws Exception {
+
+        Expression opacity = colorMap.getColorMapEntry(0).getOpacity();
+
+        if (opacity != null && opacity.equals(FF.literal(0))) {
+            skipFirst = true;
+        }
         int offset = skipFirst ? 1 : 0; // skip the transparent first entry in the closed case
 
         ColorMapEntry[] entries = colorMap.getColorMapEntries();
@@ -480,7 +434,7 @@ public class RasterSymbolizerBuilder {
     }
 
     private String getPercentagesLabelPortion(double[] percentages, int i) {
-        if (percentages == null) return "";
+        if (percentages == null || percentages.length == 0) return "";
         else return " (" + percentages[i] + "%)";
     }
 
@@ -510,6 +464,7 @@ public class RasterSymbolizerBuilder {
 
     private double[] computePercentagesFromHistogram(
             ImageWorker iw, int intervals, double low, double high) {
+        if (low == high) return null;
         Histogram hist =
                 iw.getHistogram(new int[] {intervals}, new double[] {low}, new double[] {high});
         int[] bins = hist.getBins(0);
@@ -521,5 +476,175 @@ public class RasterSymbolizerBuilder {
             else percentages[i] = 0d;
         }
         return percentages;
+    }
+
+    // adds entries to a ColorMap to produce an open interval one
+    private void addOpenIntervalEntries(
+            ColorMap colorMap, Number[] breaks, double[] percentages, DecimalFormat format) {
+        double prev = breaks[0].doubleValue();
+        for (int i = 1; i < breaks.length; i++) {
+            ColorMapEntry entry = SF.createColorMapEntry();
+            double value = breaks[i].doubleValue();
+            if (i == breaks.length - 1) {
+                entry.setQuantity(FF.literal(Double.MAX_VALUE));
+            } else {
+                entry.setQuantity(FF.literal(value));
+            }
+            if (i == 1) {
+                entry.setLabel(
+                        "< "
+                                + format.format(value)
+                                + getPercentagesLabelPortion(percentages, i - 1));
+            } else if (i == breaks.length - 1) {
+                entry.setLabel(
+                        ">= "
+                                + format.format(prev)
+                                + getPercentagesLabelPortion(percentages, i - 1));
+            } else {
+                entry.setLabel(
+                        ">= "
+                                + format.format(prev)
+                                + " AND < "
+                                + format.format(value)
+                                + getPercentagesLabelPortion(percentages, i - 1));
+            }
+
+            prev = value;
+            colorMap.addColorMapEntry(entry);
+        }
+    }
+
+    private void addOpenIntervalEntriesSingleValue(
+            ColorMap colorMap, Number[] breaks, DecimalFormat format) {
+        // instead of returning a ColorMap with type=values tries to respect user asking for
+        // type=intervals.
+        // To preserve openess of the interval and colors order the first entry is transparent
+        double first = breaks[0].doubleValue();
+        addTransparentEntry(colorMap, first);
+        ColorMapEntry entry2 = SF.createColorMapEntry();
+        double second = Math.nextAfter(first, Double.POSITIVE_INFINITY);
+        entry2.setQuantity(FF.literal(second));
+        entry2.setOpacity(FF.literal("1"));
+        String label = ">= " + format.format(first);
+        if (outputPercentages) label += " (100.0%)";
+        entry2.setLabel(label);
+        colorMap.addColorMapEntry(entry2);
+    }
+
+    private void addContinuousEntries(
+            ColorMap colorMap, Number[] breaks, double[] percentages, DecimalFormat format) {
+        for (int i = 0; i < breaks.length; i++) {
+            Number b = breaks[i];
+            ColorMapEntry entry = SF.createColorMapEntry();
+            entry.setQuantity(FF.literal(b));
+            String label = format.format(b);
+            if (i > 0) label += getPercentagesLabelPortion(percentages, i - 1);
+            entry.setLabel(label);
+            colorMap.addColorMapEntry(entry);
+        }
+    }
+
+    private void addEntriesSingleValue(ColorMap colorMap, Number[] breaks, DecimalFormat format) {
+
+        Number first = breaks[0];
+        // use float to avoid jai-ext complaining when applying style
+        // about impossibility to map color on single value
+        // since with double would be too close.
+        float second = Math.nextAfter(first.floatValue(), Float.POSITIVE_INFINITY);
+        ColorMapEntry entry = SF.createColorMapEntry();
+        entry.setQuantity(FF.literal(first));
+        String label = format.format(first);
+        if (outputPercentages) label += " (100.0%)";
+        entry.setLabel(label);
+        colorMap.addColorMapEntry(entry);
+
+        ColorMapEntry entry2 = SF.createColorMapEntry();
+        entry2.setQuantity(FF.literal(second));
+        // avoid formatting the second value as the first one
+        setFormatRounding(second, format);
+        String label2 = format.format(second);
+        if (outputPercentages) label2 += " (0.0%)";
+        entry2.setLabel(label2);
+        colorMap.addColorMapEntry(entry2);
+    }
+
+    private void addClosedIntervalEntries(
+            ColorMap colorMap, Number[] breaks, double[] percentages, DecimalFormat format) {
+        // build a transparenty entry as first
+        double prev = breaks[0].doubleValue();
+        addTransparentEntry(colorMap, prev);
+
+        for (int i = 1; i < breaks.length; i++) {
+            ColorMapEntry entry = SF.createColorMapEntry();
+            double value = breaks[i].doubleValue();
+            if (i == breaks.length - 1) {
+                long l = Double.doubleToLongBits(value);
+                double incremented = Double.longBitsToDouble(l + 1);
+                entry.setQuantity(FF.literal(incremented));
+                value = incremented;
+            } else {
+                entry.setQuantity(FF.literal(value));
+            }
+            if (i == breaks.length - 1) {
+                String label =
+                        ">= "
+                                + format.format(prev)
+                                + " AND <= "
+                                + format.format(value)
+                                + getPercentagesLabelPortion(percentages, i - 1);
+                entry.setLabel(label);
+            } else {
+                entry.setLabel(
+                        ">= "
+                                + format.format(prev)
+                                + " AND < "
+                                + format.format(value)
+                                + getPercentagesLabelPortion(percentages, i - 1));
+            }
+
+            prev = value;
+            colorMap.addColorMapEntry(entry);
+        }
+    }
+
+    private void addClosedIntervalEntriesSingleValueRaster(
+            ColorMap colorMap, Number[] breaks, DecimalFormat format) {
+        // build a transparenty entry as first
+        double first = breaks[0].doubleValue();
+        addTransparentEntry(colorMap, first);
+
+        ColorMapEntry secondEntry = SF.createColorMapEntry();
+        double second = Math.nextAfter(first, Double.POSITIVE_INFINITY);
+        secondEntry.setQuantity(FF.literal(second));
+        secondEntry.setOpacity(FF.literal("1"));
+        String label = ">= " + format.format(first) + " AND <= ";
+        // avoid label of second value to be equal to first value
+        setFormatRounding(second, format);
+        label += format.format(second);
+        if (outputPercentages) label += " (100.0%)";
+        secondEntry.setLabel(label);
+        colorMap.addColorMapEntry(secondEntry);
+    }
+
+    private boolean isSingleValueRaster(Number[] breaks) {
+        boolean isSingleValue = false;
+        if (breaks.length == 1) isSingleValue = true;
+        else if (breaks.length == 2) isSingleValue = breaks[0].equals(breaks[1]);
+        return isSingleValue;
+    }
+
+    private void addTransparentEntry(ColorMap colorMap, double value) {
+        ColorMapEntry entry = SF.createColorMapEntry();
+        entry.setColor(FF.literal(new Color(0, 0, 0)));
+        entry.setOpacity(FF.literal(0));
+        entry.setQuantity(FF.literal(value));
+        colorMap.addColorMapEntry(entry);
+    }
+
+    private void setFormatRounding(double value, DecimalFormat format) {
+        boolean isNegative = value < 0.0;
+        // avoid formatting the second value as the first one
+        if (isNegative) format.setRoundingMode(RoundingMode.DOWN);
+        else format.setRoundingMode(RoundingMode.UP);
     }
 }

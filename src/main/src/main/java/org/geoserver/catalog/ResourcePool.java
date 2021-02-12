@@ -1861,7 +1861,6 @@ public class ResourcePool {
      * @param info The WMTS configuration
      */
     public WebMapTileServer getWebMapTileServer(WMTSStoreInfo info) throws IOException {
-        WMTSStoreInfo expandedStore = clone(info, true);
 
         try {
             EntityResolver entityResolver = getEntityResolver();
@@ -1880,14 +1879,21 @@ public class ResourcePool {
                 synchronized (wmtsCache) {
                     wmts = wmtsCache.get(id);
                     if (wmts == null) {
+                        WMTSStoreInfo expandedStore = clone(info, true);
+
                         HTTPClient client = getHTTPClient(expandedStore);
-                        String capabilitiesURL = expandedStore.getCapabilitiesURL();
-                        URL serverURL = new URL(capabilitiesURL);
-                        wmts = new WebMapTileServer(serverURL, client, null);
+                        URL serverURL = new URL(expandedStore.getCapabilitiesURL());
 
                         if (StringUtils.isNotEmpty(info.getHeaderName())
                                 && StringUtils.isNotEmpty(info.getHeaderValue())) {
-                            wmts.getHeaders().put(info.getHeaderName(), info.getHeaderValue());
+                            wmts =
+                                    new WebMapTileServer(
+                                            serverURL,
+                                            client,
+                                            Collections.singletonMap(
+                                                    info.getHeaderName(), info.getHeaderValue()));
+                        } else {
+                            wmts = new WebMapTileServer(serverURL, client);
                         }
 
                         wmtsCache.put(id, wmts);

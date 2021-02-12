@@ -54,7 +54,7 @@ public class SecuredWMTSLayerTest {
         HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
 
         WebMapTileServer wmts =
-                new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client, null));
+                new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client));
         WMTSLayer layer =
                 new SecuredWMTSLayer(
                         wmts.getCapabilities().getLayerList().iterator().next(), policy);

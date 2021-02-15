@@ -6,8 +6,6 @@ package org.geoserver.params.extractor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -20,8 +18,6 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.resource.Resource;
 
 public class UrlMangler implements URLMangler {
-
-    private static final Pattern URI_PATTERN = Pattern.compile("^((?:/)[^/]+/)(.*)$");
 
     private List<EchoParameter> echoParameters;
 
@@ -70,12 +66,10 @@ public class UrlMangler implements URLMangler {
         if (httpRequest instanceof RequestWrapper) {
             requestUri = ((RequestWrapper) httpRequest).getOriginalRequestURI();
         }
-        Matcher matcher = URI_PATTERN.matcher(requestUri);
-        if (!matcher.matches()) {
-            return;
-        }
+        int i = httpRequest.getContextPath().length() + 1;
+        String pathInfo = requestUri.substring(i);
         path.delete(0, path.length());
-        path.append(matcher.group(2));
+        path.append(pathInfo);
     }
 
     private void forwardParameters(Map requestRawKvp, Map<String, String> kvp) {

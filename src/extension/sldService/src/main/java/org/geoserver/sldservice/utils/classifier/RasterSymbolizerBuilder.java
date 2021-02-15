@@ -132,8 +132,8 @@ public class RasterSymbolizerBuilder {
         // turn the histogram into a ColorMap (just values, no colors, those will be added later)
         ColorMap colorMap = SF.createColorMap();
         colorMap.setType(ColorMap.TYPE_VALUES);
-        double min=iw.getMinimums()[0];
-        double max =iw.getMaximums()[0];
+        double min = iw.getMinimums()[0];
+        double max = iw.getMaximums()[0];
         if (min == max) {
             addEntriesSingleValue(
                     colorMap,
@@ -210,7 +210,7 @@ public class RasterSymbolizerBuilder {
     public ColorMap equalIntervalClassification(
             RenderedImage image, int intervals, boolean open, boolean continuous) {
         ImageWorker iw = getImageWorker(image);
-        double min =iw.getMinimums()[0];
+        double min = iw.getMinimums()[0];
         double max = iw.getMaximums()[0];
         boolean isSingleValue = min == max;
         double[] percentages = null;
@@ -578,8 +578,7 @@ public class RasterSymbolizerBuilder {
             ColorMapEntry entry = SF.createColorMapEntry();
             double value = breaks[i].doubleValue();
             if (i == breaks.length - 1) {
-                long l = Double.doubleToLongBits(value);
-                double incremented = Double.longBitsToDouble(l + 1);
+                double incremented = Math.nextAfter(value, Double.POSITIVE_INFINITY);
                 entry.setQuantity(FF.literal(incremented));
                 value = incremented;
             } else {

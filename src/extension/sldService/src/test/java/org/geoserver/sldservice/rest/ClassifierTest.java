@@ -141,6 +141,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
     static final QName SINGLE_BYTE =
             new QName(SystemTestData.CITE_URI, "singleByteNoData", SystemTestData.CITE_PREFIX);
 
+    static final QName NEGATIVE_VALUES_DEM =
+            new QName(SystemTestData.CITE_URI, "negativeValuesDem", SystemTestData.CITE_PREFIX);
+
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
     private static final String sldPostfix =
@@ -207,6 +210,14 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         testData.addRasterLayer(
                 SINGLE_BYTE, "singleByteNoData.tif", "tif", null, this.getClass(), catalog);
+
+        testData.addRasterLayer(
+                NEGATIVE_VALUES_DEM,
+                "negative-values-dem.tif",
+                "tif",
+                null,
+                this.getClass(),
+                catalog);
 
         // for coverage view band selection testing
         testData.addDefaultRasterLayer(SystemTestData.MULTIBAND, catalog);
@@ -2804,5 +2815,24 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         assertEntry(entries[0], 10d, null, "#000000", 0);
         assertEntry(entries[1], 10.000000000000002, ">= 10 AND <= 10.000001", "#FF071C", 1);
+    }
+
+    @Test
+    public void testClassifyRasterClosedIntervalsNegativeValues() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:negativeValuesDem/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        // the max value of the raster is -50. The last entry should have the next
+        // value after it since we are requesting closed intervals
+        ColorMapEntry entry = entries[7];
+        assertEquals(-49.99999999999999, entry.getQuantity().evaluate(null, Double.class), 0d);
     }
 }

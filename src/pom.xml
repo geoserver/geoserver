@@ -2228,7 +2228,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.1</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
               <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>

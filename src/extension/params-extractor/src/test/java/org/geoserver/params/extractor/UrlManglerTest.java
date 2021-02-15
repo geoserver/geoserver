@@ -36,6 +36,7 @@ public final class UrlManglerTest extends TestSupport {
         MockHttpServletRequest httpRequest =
                 new MockHttpServletRequest(
                         "GET", "http://127.0.0.1/geoserver/it.geosolutions/param/wms");
+        httpRequest.setContextPath("/geoserver");
         UrlTransform transform = new UrlTransform("/geoserver/workspace/param/wms", params);
         transform.removeMatch("/param");
         RequestWrapper wrapper = new RequestWrapper(transform, httpRequest);
@@ -59,6 +60,7 @@ public final class UrlManglerTest extends TestSupport {
         MockHttpServletRequest httpRequest =
                 new MockHttpServletRequest(
                         "GET", "http://127.0.0.1/geoserver/it.geosolutions/param/wms");
+        httpRequest.setContextPath("/geoserver");
         UrlTransform transform = new UrlTransform("/geoserver/workspace/param/wms", params);
         transform.removeMatch("/param");
         RequestWrapper wrapper = new RequestWrapper(transform, httpRequest);
@@ -70,6 +72,30 @@ public final class UrlManglerTest extends TestSupport {
         Dispatcher.REQUEST.set(request);
         UrlMangler mangler = new UrlMangler(getDataDirectory());
         StringBuilder path = new StringBuilder("/geoserver/workspace/param/wms");
+        Map<String, String> kvp = new HashMap<String, String>();
+        mangler.mangleURL(new StringBuilder(), path, kvp, null);
+        assertEquals("workspace/param/wms", path.toString());
+    }
+
+    @Test
+    public void testMultiSlashContextPath() {
+
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        MockHttpServletRequest httpRequest =
+                new MockHttpServletRequest(
+                        "GET", "http://127.0.0.1/my/ohmy/geoserver/it.geosolutions/param/wms");
+        httpRequest.setContextPath("/my/ohmy/geoserver");
+        UrlTransform transform = new UrlTransform("/my/ohmy/geoserver/workspace/param/wms", params);
+        transform.removeMatch("/param");
+        RequestWrapper wrapper = new RequestWrapper(transform, httpRequest);
+        Request request = new Request();
+        request.setHttpRequest(wrapper);
+        request.setRequest("GetCapabilities");
+
+        Dispatcher.REQUEST.set(request);
+        UrlMangler mangler = new UrlMangler(getDataDirectory());
+        StringBuilder path = new StringBuilder("/my/ohmy/geoserver/workspace/param/wms");
         Map<String, String> kvp = new HashMap<String, String>();
         mangler.mangleURL(new StringBuilder(), path, kvp, null);
         assertEquals("workspace/param/wms", path.toString());

@@ -25,7 +25,7 @@ To generate the REST API documentation:
     
 To generate a specific REST API endpoint:
 
-    mvn process-resoruces:system-status
+    mvn process-resources:system-status
     
 
 ### Manuals

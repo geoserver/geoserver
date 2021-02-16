@@ -113,3 +113,15 @@ border-bottom: 2px solid #c6e09b;
 select {
  margin: 0;
 }
+
+#crumbs {
+  background-color: #c6e09b;
+  margin-top: -5px;
+  padding: 10px;
+}
+
+#crumbs a:before, #crumbs b:before {
+  content: ">>";
+  font-size: x-small;
+  padding: 5px;
+}

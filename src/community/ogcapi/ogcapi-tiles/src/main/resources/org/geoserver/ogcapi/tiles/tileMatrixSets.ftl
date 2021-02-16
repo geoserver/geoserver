@@ -1,5 +1,8 @@
+<#global pagetitle="Tile matrix sets">
+<#global pagepath="/collections/"+pagetitle>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"'>Collections</a><b>"+pagetitle+"</b>">
 <#include "common-header.ftl">
-       <h2>Tile matrix sets</h2>
+       <h1>${pagetitle}</h1>
        <p>This document lists all the available tile matrix sets, linking to their definitions:<br/>
        <ul>
        <#list model.tileMatrixSets as tileMatrixSet>

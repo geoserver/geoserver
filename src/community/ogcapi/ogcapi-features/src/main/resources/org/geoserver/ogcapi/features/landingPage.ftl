@@ -1,3 +1,6 @@
+<#global pagetitle=service.title!"GeoServer Features 1.0 Service">
+<#global pagepath="/">
+<#global pagecrumbs="<b>Home</b>">
 <#include "common-header.ftl">
    <div id="content">
        <h2>${service.title!"GeoServer Features 1.0 Service"}</h2>

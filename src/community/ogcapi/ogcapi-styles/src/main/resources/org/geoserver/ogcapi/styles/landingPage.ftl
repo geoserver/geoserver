@@ -1,6 +1,13 @@
+<#if service.title??> 
+<#global pagetitle=model.id>
+<#else>
+<#global pagetitle="GeoServer Styles 1.0 Service"
+</#if>
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"'>Collections</a><b>"+${pagetitle}+"</b>">
 <#include "common-header.ftl">
    <div id="content">
-       <h2>${service.title!"GeoServer Styles 1.0 Service"}</h2>
+       <h1>${pagetitle}</h1>
        <p>${service.abstract!""}<br/>
        This is the landing page of the Styles 1.0 service, providing links to the service API and its contents.
        <br/> 

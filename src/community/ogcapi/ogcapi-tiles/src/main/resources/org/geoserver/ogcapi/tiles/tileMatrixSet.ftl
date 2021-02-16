@@ -1,3 +1,10 @@
+<#if model.title??> 
+<#global pagetitle=model.title>
+<#else>
+<#global pagetitle=model.id>
+</#if>
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("tileMatrixSets")+"'>Tile Matrix Sets</a><b>"+pagetitle+"</b>">
 <#include "common-header.ftl">
 <h2>${model.identifier}</h2>
 <ul>

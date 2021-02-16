@@ -1,3 +1,6 @@
+<#global pagetitle="Collections">
+<#global pagepath="/collections">
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><b>Collections<b>">
 <#include "common-header.ftl">
        <h2>GeoServer Feature Collections</h2>
        <p>This document lists all the collections available in the Features service.<br/>

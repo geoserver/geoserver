@@ -1,5 +1,8 @@
+<#global pagetitle=model.id>
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"/collections'>Collections</a><b>"+model.id+"</b>">
 <#include "common-header.ftl">
-       <h2>${model.id}</h2>
+       <h1>${model.id}</h1>
        <p><b>Title</b>: ${model.title!"N/A"}</p>
        <p><b>Description</b>: ${model.description!"N/A"}</p>
        <p><b>Keywords</b>:

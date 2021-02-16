@@ -78,7 +78,6 @@ public class Gsml30WfsTest extends AbstractAppSchemaTestSupport {
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
-        assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
         assertXpathCount(2, "//gsml:MappedFeature", doc);
         // test names
         assertXpathEvaluatesTo("First", "//gsml:MappedFeature[@gml:id='mf.1']/gml:name", doc);
@@ -103,7 +102,6 @@ public class Gsml30WfsTest extends AbstractAppSchemaTestSupport {
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
-        assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
         assertXpathCount(2, "/wfs:FeatureCollection/wfs:member", doc);
         // test that all namespaces are present on the root element
         for (String prefix : getRequiredNamespaces().keySet()) {

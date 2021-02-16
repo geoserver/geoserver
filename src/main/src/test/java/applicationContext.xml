@@ -12,4 +12,7 @@
   <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>
 
   <bean id="propStyleHandler" class="org.geoserver.catalog.PropertyStyleHandler"/>
+  
+  <bean id="rootStartupListener" class="org.geoserver.config.RootStartupListener"/>
+  
 </beans>

@@ -228,7 +228,7 @@
                                 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>**/PagingTest.java</exclude>
                                 <exclude>**/DefaultGeometryTest.java</exclude>
-                                <exclude>**/GetFeaturesHitsTest.java</exclude>
+                                <exclude>**/GetFeaturesNumberMatchedTest.java</exclude>
                                 <exclude>**/FeatureChainingWfsTest.java</exclude>
                                 <exclude>**/NoIdExpressionTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
@@ -286,7 +286,7 @@
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
                                 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
-                                <exclude>**/GetFeaturesHitsTest.java</exclude>
+                                <exclude>**/GetFeaturesNumberMatchedTest.java</exclude>
                                 <exclude>**/FeatureChainingWfsTest.java</exclude>
                                 <exclude>**/NoIdExpressionTest.java</exclude>
                             </excludes>

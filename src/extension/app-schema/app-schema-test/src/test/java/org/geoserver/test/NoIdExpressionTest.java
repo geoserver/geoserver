@@ -49,9 +49,6 @@ public class NoIdExpressionTest extends AbstractAppSchemaTestSupport {
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:name = 'station1' Response:\n"
                         + prettyString(doc));
 
-        // using custom IDs - this is being tested too
-
-        // check if requested property is present
         assertXpathCount(1, "//st:Station", doc);
         assertXpathEvaluatesTo("station1", "//st:Station/st:name", doc);
     }
@@ -60,15 +57,25 @@ public class NoIdExpressionTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureNestedFilter() {
         Document doc =
                 getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:meta.st:institutes.st:Institute.st:name = 'ins2'");
+                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
         LOGGER.info(
-                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:meta.st:institutes.st:Institute.st:name = 'ins2' Response:\n"
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=1 Response:\n"
                         + prettyString(doc));
 
-        // using custom IDs - this is being tested too
-
-        // check if requested property is present
         assertXpathCount(1, "//st:Station", doc);
-        assertXpathEvaluatesTo("station2", "//st:Station/st:name", doc);
+        assertXpathEvaluatesTo("station3", "//st:Station/st:name", doc);
+    }
+
+    @Test
+    public void testGetFeatureStartIndex() {
+        Document doc =
+                getAsDOM(
+                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
+        LOGGER.info(
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2 Response:\n"
+                        + prettyString(doc));
+
+        assertXpathCount(1, "//st:Station", doc);
+        assertXpathEvaluatesTo("station3", "//st:Station/st:name", doc);
     }
 }

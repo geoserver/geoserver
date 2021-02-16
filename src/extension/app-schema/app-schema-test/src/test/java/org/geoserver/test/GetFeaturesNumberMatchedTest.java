@@ -81,4 +81,29 @@ public class GetFeaturesNumberMatchedTest extends AbstractAppSchemaTestSupport {
 
         assertXpathEvaluatesTo("3", "/wfs:FeatureCollection/@numberMatched", doc);
     }
+
+    /** Test that count with a filter pointing to a nested property works */
+    @Test
+    public void testGetFeatureNumberMatchedWithFilterOnNestedAttribute() throws Exception {
+
+        Document doc =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'");
+        LOGGER.info(prettyString(doc));
+
+        assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberMatched", doc);
+    }
+
+    @Test
+    public void testGetFeatureNumberMatchedWithFilterOnNestedAttribute2() throws Exception {
+
+        Document doc =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&count=1");
+        LOGGER.info(prettyString(doc));
+
+        assertXpathEvaluatesTo("3", "/wfs:FeatureCollection/@numberMatched", doc);
+    }
 }

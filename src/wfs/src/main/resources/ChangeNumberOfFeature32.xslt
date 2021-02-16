@@ -13,9 +13,6 @@
     <xsl:template match="/wfs:FeatureCollection">
         <xsl:copy>
             <xsl:copy-of select="@*" />
-            <xsl:attribute name="numberMatched">
-                <xsl:text>unknown</xsl:text>
-            </xsl:attribute>
             <xsl:attribute name="numberReturned">
                 <xsl:value-of select="count(//wfs:FeatureCollection/wfs:member)" />
             </xsl:attribute>

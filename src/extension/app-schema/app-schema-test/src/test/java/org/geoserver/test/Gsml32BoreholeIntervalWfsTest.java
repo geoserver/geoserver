@@ -31,7 +31,6 @@ public class Gsml32BoreholeIntervalWfsTest extends AbstractAppSchemaTestSupport 
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
 
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
-        assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
         assertXpathCount(2, "//gsmlbh:Borehole", doc);
 
         // #First linestring

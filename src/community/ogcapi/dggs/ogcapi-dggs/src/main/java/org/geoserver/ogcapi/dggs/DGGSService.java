@@ -94,6 +94,8 @@ public class DGGSService {
 
     private final GeoServer gs;
 
+    private static final String DISPLAY_NAME = "DGGS";
+
     /**
      * This is used for time support, default time and time filtering.
      *
@@ -126,9 +128,10 @@ public class DGGSService {
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE);
-        return new ConformanceDocument(classes);
+        return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(

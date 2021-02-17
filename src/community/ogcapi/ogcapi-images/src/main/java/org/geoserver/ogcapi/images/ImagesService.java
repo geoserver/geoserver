@@ -110,6 +110,8 @@ public class ImagesService implements ApplicationContextAware {
     public static String IMAGE_ID = "OGCImages:ImageId";
     public static String COLLECTION_ID = "OGCImages:CollectionId";
 
+    private static final String DISPLAY_NAME = "OGC API Images";
+
     private final GeoServer geoServer;
     private final AssetHasher assetHasher;
 
@@ -141,6 +143,7 @@ public class ImagesService implements ApplicationContextAware {
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes =
                 Arrays.asList(
@@ -148,7 +151,7 @@ public class ImagesService implements ApplicationContextAware {
                         ConformanceClass.COLLECTIONS,
                         IMAGES_CORE,
                         IMAGES_TRANSACTIONAL);
-        return new ConformanceDocument(classes);
+        return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(

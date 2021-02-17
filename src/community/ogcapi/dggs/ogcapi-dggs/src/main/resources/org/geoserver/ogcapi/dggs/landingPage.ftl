@@ -21,7 +21,9 @@
        This collection page is also available as
        <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
-       
+
+       <#include "landingpage-conformance.ftl">
+
        <h2>Contact information</h2>
        <ul>
        <li>Server managed by ${contact.contactPerson!"-unspecified-"}</li>

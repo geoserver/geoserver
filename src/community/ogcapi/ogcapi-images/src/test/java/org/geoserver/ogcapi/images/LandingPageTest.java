@@ -93,6 +93,9 @@ public class LandingPageTest extends ImagesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/images/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/images/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     @Test

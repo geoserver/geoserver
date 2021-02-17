@@ -20,6 +20,8 @@ public class ConformanceTest extends FeaturesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
+        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(6, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(FeatureService.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(FeatureService.OAS30, json.read("$.conformsTo[1]", String.class));
         assertEquals(FeatureService.HTML, json.read("$.conformsTo[2]", String.class));
@@ -39,5 +41,17 @@ public class ConformanceTest extends FeaturesTestSupport {
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/features/conformance/?f=application/x-yaml");
         checkConformance(convertYamlToJsonPath(yaml));
+    }
+
+    @Test
+    public void testConformanceHTML() throws Exception {
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/features/conformance?f=text/html");
+        assertEquals("GeoServer OGC API Features Conformance", document.select("#title").text());
+        assertEquals(FeatureService.CORE, document.select("#content li:eq(0)").text());
+        assertEquals(FeatureService.OAS30, document.select("#content li:eq(1)").text());
+        assertEquals(FeatureService.HTML, document.select("#content li:eq(2)").text());
+        assertEquals(FeatureService.GEOJSON, document.select("#content li:eq(3)").text());
+        assertEquals(FeatureService.GMLSF0, document.select("#content li:eq(4)").text());
+        assertEquals(FeatureService.CQL_TEXT, document.select("#content li:eq(5)").text());
     }
 }

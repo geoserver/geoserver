@@ -113,6 +113,9 @@ public class LandingPageTest extends OGCApiTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/dggs/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/dggs/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     @Test
@@ -125,6 +128,9 @@ public class LandingPageTest extends OGCApiTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/dggs/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/sf/ogc/dggs/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     void checkJSONLandingPage(DocumentContext json) {

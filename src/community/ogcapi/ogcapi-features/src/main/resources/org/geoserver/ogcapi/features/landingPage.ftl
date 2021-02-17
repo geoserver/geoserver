@@ -25,6 +25,8 @@
        <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
        ${htmlExtensions('landing')}
        
+       <#include "landingpage-conformance.ftl">
+
        <h2>Contact information</h2>
        <ul>
        <li>Server managed by ${contact.contactPerson!"-unspecified-"}</li>

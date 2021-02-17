@@ -1256,7 +1256,7 @@
       <id>wps-jdbc</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wps-jdbc</artifactId>
           <version>${project.version}</version>
         </dependency>

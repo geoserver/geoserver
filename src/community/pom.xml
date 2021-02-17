@@ -61,7 +61,6 @@
           <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
-          <descriptor>release/ext-wps-jdbc.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
@@ -235,7 +234,6 @@
         <module>solr</module>
         <module>elasticsearch</module>
         <module>wps-remote</module>
-        <module>wps-jdbc</module>
         <module>release</module>
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
@@ -466,12 +464,6 @@
       <id>gwc-azure-blob</id>
       <modules>
         <module>gwc-azure-blob</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wps-jdbc</id>
-      <modules>
-        <module>wps-jdbc</module>
       </modules>
     </profile>
     <profile>

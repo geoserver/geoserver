@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -47,7 +48,10 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
 
     @Override
     protected boolean canWrite(MediaType mediaType) {
-        return super.canWrite(mediaType);
+        return Optional.of(APIRequestInfo.get())
+                        .filter(r -> r.getRequestPath().startsWith("/ogc/dggs"))
+                        .isPresent()
+                && super.canWrite(mediaType);
     }
 
     @Override

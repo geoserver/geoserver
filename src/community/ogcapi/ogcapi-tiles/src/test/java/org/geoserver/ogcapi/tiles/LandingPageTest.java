@@ -104,6 +104,9 @@ public class LandingPageTest extends TilesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     @Test
@@ -116,6 +119,9 @@ public class LandingPageTest extends TilesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/tiles/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/sf/ogc/tiles/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     void checkJSONLandingPage(DocumentContext json) {

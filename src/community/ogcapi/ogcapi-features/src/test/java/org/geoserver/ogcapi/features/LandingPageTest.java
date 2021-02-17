@@ -101,6 +101,9 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/conformance?f=text%2Fhtml",
+                document.select("#htmlConformanceLink").attr("href"));
     }
 
     @Test

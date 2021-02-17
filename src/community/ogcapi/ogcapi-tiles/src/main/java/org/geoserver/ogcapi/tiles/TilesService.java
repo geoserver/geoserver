@@ -84,6 +84,8 @@ public class TilesService {
             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/multitiles";
     public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info";
 
+    private static final String DISPLAY_NAME = "OGC API Tiles";
+
     private final GeoServer geoServer;
     private final GWC gwc;
     private final WMS wms;
@@ -134,6 +136,7 @@ public class TilesService {
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes =
                 Arrays.asList(
@@ -142,7 +145,7 @@ public class TilesService {
                         CC_TILESET,
                         CC_MULTITILES,
                         CC_INFO);
-        return new ConformanceDocument(classes);
+        return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(path = "tileMatrixSets", name = "getTileMatrixSets")

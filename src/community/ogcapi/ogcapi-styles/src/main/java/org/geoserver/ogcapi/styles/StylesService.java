@@ -102,6 +102,8 @@ public class StylesService {
     public static final String SLD11 = "http://www.opengis.net/t15/opf-styles-1/1.0/conf/sld-11";
     public static final String CSS = "http://www.geoserver.org/opf-styles-1/1.0/conf/geocss";
 
+    private static final String DISPLAY_NAME = "OGC API Styles";
+
     private final GeoServer geoServer;
     private final GeoServerDataDirectory dataDirectory;
     private final SampleDataSupport sampleDataSupport;
@@ -148,9 +150,10 @@ public class StylesService {
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
-        return new ConformanceDocument(classes);
+        return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(

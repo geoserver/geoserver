@@ -19,6 +19,8 @@ public class ConformanceTest extends ImagesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
+        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(4, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
         assertEquals(ImagesService.IMAGES_CORE, json.read("$.conformsTo[2]", String.class));
@@ -30,5 +32,16 @@ public class ConformanceTest extends ImagesTestSupport {
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/images/conformance/?f=application/x-yaml");
         checkConformance(convertYamlToJsonPath(yaml));
+    }
+
+    @Test
+    public void testConformanceHTML() throws Exception {
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/images/conformance?f=text/html");
+        assertEquals("GeoServer OGC API Images Conformance", document.select("#title").text());
+        assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
+        assertEquals(ConformanceClass.COLLECTIONS, document.select("#content li:eq(1)").text());
+        assertEquals(ImagesService.IMAGES_CORE, document.select("#content li:eq(2)").text());
+        assertEquals(
+                ImagesService.IMAGES_TRANSACTIONAL, document.select("#content li:eq(3)").text());
     }
 }

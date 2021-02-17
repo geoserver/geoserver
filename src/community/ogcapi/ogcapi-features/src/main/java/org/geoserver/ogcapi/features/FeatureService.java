@@ -74,9 +74,9 @@ public class FeatureService {
     public static final String GEOJSON =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String GMLSF0 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf0";
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0";
     public static final String GMLSF2 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf2";
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2";
     public static final String OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
     public static final String CQL_TEXT =
@@ -90,6 +90,8 @@ public class FeatureService {
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
+
+    private static final String DISPLAY_NAME = "OGC API Features";
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -222,9 +224,10 @@ public class FeatureService {
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, OAS30, HTML, GEOJSON, GMLSF0, CQL_TEXT);
-        return new ConformanceDocument(classes);
+        return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getFeature")

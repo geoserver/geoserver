@@ -20,6 +20,7 @@
       </includes>
       <excludes>
         <exclude>gs-wps-cluster-hazelcast*</exclude>
+        <exclude>gs-wps-download*</exclude>
       </excludes>
     </fileSet>
     <fileSet>

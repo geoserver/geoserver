@@ -1,22 +1,30 @@
-.. _community_wpsdownload:
+.. _wpsdownload:
 
-WPS download community module
-=============================
+WPS Download plugin
+===================
 
-WPS download module provides some useful features for easily downloading:
+WPS Download plugin provides some useful features for easily downloading:
 * Raster or Vector layer as zip files
 * Large maps as images
 * Time based animation
 The module also provides facilities to control the output file size.
 
-Installing the WPS download module
------------------------------------
+Installing the WPS Download extension
+-------------------------------------
 
-#. Download the WPS download module from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
+The WPS Download extension is listed among the other extension downloads on the GeoServer download page.
 
-   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance.
+The installation process is similar to other GeoServer extensions:
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Download the :download_extension:`wps-download`
+   
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+   Make sure you do not create any sub-directories during the extraction process.
+
+#. Restart GeoServer.
+
 
 Module description
 ------------------

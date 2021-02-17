@@ -52,7 +52,6 @@
           <descriptor>release/ext-flatgeobuf.xml</descriptor>
           <descriptor>release/ext-kmlppio.xml</descriptor>
           <descriptor>release/ext-gpx.xml</descriptor>
-          <descriptor>release/ext-wps-download.xml</descriptor>
           <descriptor>release/ext-jms-cluster.xml</descriptor>
           <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>
@@ -231,7 +230,6 @@
         <module>flatgeobuf</module>
         <module>gpxppio</module>
         <module>kmlppio</module>
-        <module>wps-download</module>
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
@@ -381,12 +379,6 @@
         <module>kmlppio</module>
       </modules>
     </profile>
-    <profile>      
-      <id>wps-download</id>
-      <modules>
-        <module>wps-download</module>
-      </modules>
-    </profile>	
     <profile>
       <id>solr</id>
       <modules>

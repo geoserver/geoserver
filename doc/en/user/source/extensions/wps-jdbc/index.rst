@@ -3,19 +3,25 @@
 WPS JDBC
 ========
 
-.. note:: GeoServer does not come built-in with support for WPS JDBC; it must be installed through an extension. Proceed to :ref:`wpsjdbc_install` for installation details.
+
+The WPS JDBC extension is a WPS status storage for asynchronous requests. Main advantages are:
+
+* Asynchronous request status sharing among multiple GeoServer nodes 
+* Ability to retain the status of completed requests even after the GeoServer(s) have been restarted.
 
 .. _wpsjdbc_install:
 
 Installing the WPS JDBC extension
 ---------------------------------
 
-#. Download the WPS JDBC extension from the `GeoServer download page 
-   <http://geoserver.org/download>`_.
+#. Download the :download_extension:`wps-jdbc`
+   
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
-   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+   Make sure you do not create any sub-directories during the extraction process.
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Restart GeoServer.
 
 Configuring the WPS JDBC properties
 -----------------------------------
@@ -37,8 +43,8 @@ Configuring the WPS JDBC properties
 
 #. Restart GeoServer
 
-Share the WPS Execution Dir among the cluster nodes
----------------------------------------------------
+Share the WPS Execution Directory among the cluster nodes
+---------------------------------------------------------
 
 Typically the WPS JDBC plugin is useful when setting up a GeoServer cluster.
 

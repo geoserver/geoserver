@@ -373,18 +373,22 @@
         <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
-
     <profile>      
       <id>gwc-s3</id>
       <modules>
         <module>gwc-s3</module>
       </modules>
     </profile>
-    
     <profile>      
       <id>wps-download</id>
       <modules>
         <module>wps-download</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-jdbc</id>
+      <modules>
+        <module>wps-jdbc</module>
       </modules>
     </profile>
     <!-- allExtensions profile, includes all modules -->
@@ -485,6 +489,7 @@
         <module>gwc-s3</module>
         <module>wmts-multi-dimensional</module>
         <module>wps-download</module>
+        <module>wps-jdbc</module>
       </modules>
     </profile>
   </profiles>

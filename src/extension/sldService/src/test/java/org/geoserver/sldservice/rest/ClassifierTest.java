@@ -141,6 +141,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
     static final QName SINGLE_BYTE =
             new QName(SystemTestData.CITE_URI, "singleByteNoData", SystemTestData.CITE_PREFIX);
 
+    static final QName NEGATIVE_VALUES_DEM =
+            new QName(SystemTestData.CITE_URI, "negativeValuesDem", SystemTestData.CITE_PREFIX);
+
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
     private static final String sldPostfix =
@@ -207,6 +210,14 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         testData.addRasterLayer(
                 SINGLE_BYTE, "singleByteNoData.tif", "tif", null, this.getClass(), catalog);
+
+        testData.addRasterLayer(
+                NEGATIVE_VALUES_DEM,
+                "negative-values-dem.tif",
+                "tif",
+                null,
+                this.getClass(),
+                catalog);
 
         // for coverage view band selection testing
         testData.addDefaultRasterLayer(SystemTestData.MULTIBAND, catalog);
@@ -1808,6 +1819,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     @Test
     public void testClassifyRasterSingleFloat() throws Exception {
+        // test a quantile classification closed over a single Float raster
         final String restPath =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/cite:singleFloatNoData/"
@@ -1823,8 +1835,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
         assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
-        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        // ColorMap closed intervals has always the first entry transparent
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
         ColorMapEntry cm1 = cm.getColorMapEntry(1);
         assertThat(
                 cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
@@ -1854,8 +1867,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
         assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
-        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
         ColorMapEntry cm1 = cm.getColorMapEntry(1);
         assertThat(
                 cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
@@ -1865,6 +1878,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     @Test
     public void testCustomRampSingleValue() throws Exception {
+        // test a jenks classification with open intervals over a
+        // single value raster with custom colors
         final String restPath =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/cite:singleByteNoData/"
@@ -1876,12 +1891,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         print(dom);
         RasterSymbolizer rs = getRasterSymbolizer(dom);
         ColorMap cm = rs.getColorMap();
-        assertEquals(ColorMap.TYPE_RAMP, cm.getType());
+        assertEquals(ColorMap.TYPE_INTERVALS, cm.getType());
         ColorMapEntry[] entries = cm.getColorMapEntries();
-        assertEquals(1, entries.length);
+        assertEquals(2, entries.length);
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
-        assertEquals("#00FF00", cm0.getColor().evaluate(null, String.class));
-        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        // first entry is transparent is not displayed the actual entry is the second one
+        assertEquals("#000000", cm0.getColor().evaluate(null, String.class));
+        assertEquals(0, cm0.getOpacity().evaluate(null, Double.class), 0);
+        ColorMapEntry cm1 = cm.getColorMapEntry(1);
+        // is the entry actually matching the single value
+        // should have the startColor
+        assertEquals("#00FF00", cm1.getColor().evaluate(null, String.class));
+        assertEquals(1, cm1.getOpacity().evaluate(null, Double.class), 0);
     }
 
     @Test
@@ -2729,5 +2750,124 @@ public class ClassifierTest extends SLDServiceBaseTest {
             }
         }
         assertEquals(100.0, percentagesSum, 0.0);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteContinuous() throws Exception {
+        // test that a colorMap of type ramp is correctly
+        // generated when asking for continuous on a singleValue raster
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=true&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        // first entry is the one actually used for apply color to raster (x <= 10)
+        assertEntry(entries[0], 10d, "10", "#FF071C", 1);
+        double value = entries[1].getQuantity().evaluate(null, Double.class);
+        String color = entries[1].getColor().evaluate(null, String.class);
+        assertTrue(value > 10d && value < 11d);
+        assertEquals("#FFA92E", color);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteOpen() throws Exception {
+        // test a single value raster with open intervals and jenks classification
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&open=true&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        // since the interval is open the first entry is transparent
+        // the one actually matching the values is the second
+        assertEntry(entries[0], 10d, null, "#000000", 0);
+        double value = entries[1].getQuantity().evaluate(null, Double.class);
+        String color = entries[1].getColor().evaluate(null, String.class);
+        assertTrue(value > 10d && value < 11d);
+        assertEquals("#FF071C", color);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteUniqueInterval() throws Exception {
+        // test a single value raster with unique interval classification
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=uniqueInterval&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        // for unique interval we get a Type values ColorMap
+        assertEquals(cm.getType(), ColorMap.TYPE_VALUES);
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        // the first entry will match the actual raster's value
+        assertEntry(entries[0], 10d, "10", "#FF071C", 1);
+        double value = entries[1].getQuantity().evaluate(null, Double.class);
+        String color = entries[1].getColor().evaluate(null, String.class);
+        assertTrue(value > 10d && value < 11d);
+        assertEquals("#FFA92E", color);
+    }
+
+    @Test
+    public void testClassifyRasterSingleByteClosed() throws Exception {
+        // test a single value raster closed interval with equal interval classification
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=equalInterval&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        // closed interval first entry should be transparent
+        assertEntry(entries[0], 10d, null, "#000000", 0);
+        double value = entries[1].getQuantity().evaluate(null, Double.class);
+        String color = entries[1].getColor().evaluate(null, String.class);
+        assertTrue(value > 10d && value < 11d);
+        assertEquals("#FF071C", color);
+    }
+
+    @Test
+    public void testClassifyRasterClosedIntervalsNegativeValues() throws Exception {
+        // test that when having a raster with the maximum value negative
+        // and a closed interval is asked, the last entry has a value bigger then
+        // the previous one
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:negativeValuesDem/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=jenks&intervals=7"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        // the max value of the raster is -50. The last entry should have the next
+        // value after it since we are requesting closed intervals
+        ColorMapEntry entry = entries[7];
+        double lastEntryVal = entry.getQuantity().evaluate(null, Double.class);
+        assertTrue(lastEntryVal > -50d && lastEntryVal < -49d);
     }
 }

@@ -39,7 +39,7 @@ public class FreemarkerTemplateSupport {
 
     private static final Map<Class, Configuration> configurationCache = new SoftValueHashMap<>(10);
 
-    private final GeoServerResourceLoader resoureLoader;
+    private final GeoServerResourceLoader resourceLoader;
 
     ClassTemplateLoader rootLoader = new ClassTemplateLoader(FreemarkerTemplateSupport.class, "");
 
@@ -47,7 +47,7 @@ public class FreemarkerTemplateSupport {
             new DirectTemplateFeatureCollectionFactory();
 
     public FreemarkerTemplateSupport(GeoServerResourceLoader loader) {
-        this.resoureLoader = loader;
+        this.resourceLoader = loader;
     }
 
     /**
@@ -57,7 +57,7 @@ public class FreemarkerTemplateSupport {
     public Template getTemplate(ResourceInfo resource, String templateName, Class<?> clazz)
             throws IOException {
     GeoServerTemplateLoader templateLoader =
-        new GeoServerTemplateLoader(clazz, resoureLoader) {
+        new GeoServerTemplateLoader(clazz, resourceLoader) {
           @Override
           public Object findTemplateSource(String path) throws IOException {
             Object source = null;

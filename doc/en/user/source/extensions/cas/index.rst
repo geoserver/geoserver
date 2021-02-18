@@ -84,7 +84,7 @@ from a given attribute repository, and then allow their release in the GeoServer
 For example, the following ``cas.properties`` file sets up a JDBC user source, as well as as JDBC
 attribute repository (this configuration file might useful for testing purposes, but not setup for production):
 
-.. code-block::
+.. code-block:: none
 
     cas.server.name=https://localhost:8443
     cas.server.prefix=${cas.server.name}/cas

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationBicubic2;
@@ -45,6 +46,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -629,7 +631,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                         new ServiceException(
                                 "More than "
                                         + maxErrors
-                                        + " rendering errors occurred, bailing out.",
+                                        + " rendering errors occurred, bailing out. Layers: "
+                                        + buildMapLayerNameList(mapContent),
                                 errorChecker.getLastException(),
                                 "internalError");
             }
@@ -640,14 +643,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                                 "This request used more time than allowed and has been forcefully stopped. "
                                         + "Max rendering time is "
                                         + (maxRenderingTime / 1000.0)
-                                        + "s");
+                                        + "s. Layers: "
+                                        + buildMapLayerNameList(mapContent));
             }
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
                 serviceException =
                         new ServiceException(
-                                "Rendering process failed", renderError, "internalError");
+                                "Rendering process failed. Layers: "
+                                        + buildMapLayerNameList(mapContent),
+                                renderError,
+                                "internalError");
             }
 
             // If there were no exceptions, return the map
@@ -673,6 +680,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         throw serviceException;
+    }
+
+    /** Helper method to build a comma separated list of layer names in the map. * */
+    private String buildMapLayerNameList(WMSMapContent mapContent) {
+        List<MapLayerInfo> layers = mapContent.getRequest().getLayers();
+        return layers == null
+                ? ""
+                : layers.stream().map(MapLayerInfo::getName).collect(Collectors.joining(", "));
     }
 
     /**

@@ -44,8 +44,7 @@ The service is self described using:
            "rel": "alternate",
            "type": "text/html",
            "title": "This document as text/html"
-         },
-         ...
+         }
 
 * ``application/x-yaml``: A collection of :file:`yaml` documents, with references between each document for programatic access.
  
@@ -115,7 +114,7 @@ Contact information
 
 Advertises contact information for the service.
 
-Defined by defined in by :ref:`contact-information`.
+Defined by defined in by :ref:`config_contact`.
 
 Service Configuration
 ---------------------

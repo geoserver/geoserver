@@ -20,10 +20,25 @@ public class Link {
     public static final String REL_ITEMS = "items";
     public static final String REL_DESCRIBEDBY = "describedBy";
     public static final String REL_DATA = "data";
+    /**
+     * Refers to the root resource of a dataset in an API.
+     *
+     * <p>This is an OGC definition, from OGC API Common Part 1: Core specification.
+     */
+    public static final String REL_DATA_URI = "http://www.opengis.net/def/rel/ogc/1.0/data";
+
     public static final String REL_COLLECTION = "collection";
     public static final String REL_SERVICE_DESC = "service-desc";
     public static final String REL_SERVICE_DOC = "service-doc";
     public static final String REL_CONFORMANCE = "conformance";
+    /**
+     * Refers to a resource that identifies the specifications that the link’s context conforms to.
+     *
+     * <p>This is an OGC definition, from OGC API Common Part 1: Core specification.
+     */
+    public static final String REL_CONFORMANCE_URI =
+            "http://www.opengis.net/def/rel/ogc/1.0/conformance";
+
     public static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 
     String href;

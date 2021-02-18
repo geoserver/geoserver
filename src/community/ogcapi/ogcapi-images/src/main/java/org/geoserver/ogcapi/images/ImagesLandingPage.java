@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.images;
 
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
+import org.geoserver.ogcapi.Link;
 
 /** Landing page for the images service */
 public class ImagesLandingPage extends AbstractLandingPageDocument {
@@ -21,6 +22,6 @@ public class ImagesLandingPage extends AbstractLandingPageDocument {
                 "Image collections metadata as ",
                 "collections",
                 null,
-                "data");
+                Link.REL_DATA_URI);
     }
 }

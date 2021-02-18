@@ -151,16 +151,16 @@ public class LandingPageTest extends TilesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/conformance.*/)].rel",
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE);
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI);
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/collections.*/)].rel",
-                "data",
-                "data",
-                "data");
+                Link.REL_DATA_URI,
+                Link.REL_DATA_URI,
+                Link.REL_DATA_URI);
         // check title
         assertEquals("Tiles server", json.read("title"));
         // check description

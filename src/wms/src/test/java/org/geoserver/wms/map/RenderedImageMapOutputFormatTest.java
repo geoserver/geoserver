@@ -6,6 +6,9 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -694,6 +697,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                                         MockData.BASIC_POLYGONS.getPrefix(),
                                         MockData.BASIC_POLYGONS.getLocalPart())
                                 .getFeatureSource(null, null);
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(fs);
+        request.setLayers(Collections.singletonList(mapLayerInfo));
         Envelope env = fs.getBounds();
         SimpleFeatureCollection features = fs.getFeatures();
         SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 50);
@@ -719,7 +724,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             this.rasterMapProducer.produceMap(map);
             fail("Timeout was not reached");
         } catch (ServiceException e) {
-            assertTrue(e.getMessage().startsWith("This request used more time than allowed"));
+            assertThat(e.getMessage(), startsWith("This request used more time than allowed"));
+            String expectedLayerNameMsg =
+                    "Layers: " + mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName();
+            assertThat(e.getMessage(), containsString(expectedLayerNameMsg));
         }
 
         // Test partial image exception format

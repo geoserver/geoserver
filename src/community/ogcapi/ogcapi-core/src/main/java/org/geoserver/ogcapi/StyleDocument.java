@@ -6,14 +6,12 @@ package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import org.geoserver.catalog.StyleInfo;
-import org.geotools.styling.Description;
-import org.geotools.util.logging.Logging;
-
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.StyleInfo;
+import org.geotools.styling.Description;
+import org.geotools.util.logging.Logging;
 
 /**
  * A document describing a style. Typically just id and title, if the style service is embedded a

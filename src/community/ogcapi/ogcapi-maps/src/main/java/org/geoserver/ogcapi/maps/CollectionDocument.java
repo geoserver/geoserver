@@ -13,6 +13,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -41,48 +42,18 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
         setExtent(new CollectionExtents(bbox));
         this.published = published;
 
-        //        // links
-        //        Collection<MediaType> formats =
-        //                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class,
-        // true);
-        //        String baseUrl = APIRequestInfo.get().getBaseURL();
-        //        for (MediaType format : formats) {
-        //            String apiUrl =
-        //                    ResponseUtils.buildURL(
-        //                            baseUrl,
-        //                            "ogc/features/collections/" + collectionId + "/items",
-        //                            Collections.singletonMap("f", format.toString()),
-        //                            URLMangler.URLType.SERVICE);
-        //            addLink(
-        //                    new Link(
-        //                            apiUrl,
-        //                            Link.REL_ITEMS,
-        //                            format.toString(),
-        //                            collectionId + " items as " + format.toString(),
-        //                            "items"));
-        //        }
-        addSelfLinks("ogc/features/collections/" + id);
+        addSelfLinks("ogc/maps/collections/" + id);
 
-        //        // queryables
-        //        addLinksFor(
-        //                "ogc/features/collections/"
-        //                        + ResponseUtils.urlEncode(featureType.prefixedName())
-        //                        + "/queryables",
-        //                QueryablesDocument.class,
-        //                "Queryable attributes as ",
-        //                "queryables",
-        //                null,
-        //                "queryables");
-        //
-        //        // map preview
-        //        if (isWMSAvailable(geoServer)) {
-        //            Map<String, String> kvp = new HashMap<>();
-        //            kvp.put("LAYERS", featureType.prefixedName());
-        //            kvp.put("FORMAT", "application/openlayers");
-        //            this.mapPreviewURL =
-        //                    ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp,
-        // URLMangler.URLType.SERVICE);
-        //        }
+        // queryables
+        addLinksFor(
+                "ogc/maps/collections/"
+                        + ResponseUtils.urlEncode(published.prefixedName())
+                        + "/styles",
+                StylesDocument.class,
+                "Styles as ",
+                "styles",
+                null,
+                "styles");
     }
 
     private ReferencedEnvelope getExtents(PublishedInfo published) {

@@ -13,7 +13,7 @@
       </#list>
       </ul>
       </li>
-      <li> <a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('map', 'text/html')!}">Map information</a>.
+      <li> <a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('styles', 'text/html')!}">Map styles</a>.
                  
       <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
       ${htmlExtensions(collection)}

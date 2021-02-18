@@ -129,7 +129,9 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                     } else {
                         // layer group? no named styles for the moment
                         this.styles.add(
-                                new StyleDocument(StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
+                                new StyleDocument(
+                                        StyleDocument.DEFAULT_STYLE_NAME,
+                                        "The layer default style"));
                     }
                 }
             } else {
@@ -138,7 +140,8 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                     this.styles.add(new StyleDocument(style, "The layer default style"));
                 } else {
                     this.styles.add(
-                            new StyleDocument(StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
+                            new StyleDocument(
+                                    StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
                 }
             }
 

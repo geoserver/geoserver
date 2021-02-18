@@ -103,7 +103,7 @@ public class Link {
 
     @JsonIgnore
     public String getClassification() {
-        return classification;
+        return classification == null ? rel : classification;
     }
 
     public void setClassification(String classification) {

@@ -244,16 +244,30 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 return null;
             }
 
-            MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
-
+            // if there is an exact match, go for it
             for (MediaType mediaType : mediaTypesToUse) {
-                if (mediaType.isConcrete()) {
-                    selectedMediaType = mediaType;
-                    break;
-                } else if (mediaType.equals(MediaType.ALL)
-                        || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
-                    selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
-                    break;
+                for (MediaType acceptableType : acceptableTypes) {
+                    if (mediaType.equals(acceptableType)) {
+                        selectedMediaType = mediaType;
+                        break;
+                    }
+                }
+                if (selectedMediaType != null) break;
+            }
+
+            // otherwise find something compatible
+            if (selectedMediaType == null) {
+                MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
+
+                for (MediaType mediaType : mediaTypesToUse) {
+                    if (mediaType.isConcrete()) {
+                        selectedMediaType = mediaType;
+                        break;
+                    } else if (mediaType.equals(MediaType.ALL)
+                            || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
+                        selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
+                        break;
+                    }
                 }
             }
 

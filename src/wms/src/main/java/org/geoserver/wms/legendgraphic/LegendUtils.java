@@ -5,10 +5,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -21,6 +18,9 @@ import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -388,6 +388,26 @@ public class LegendUtils {
 
         return false;
     }
+    /**
+     * Checks if the label should be word wrapped
+     *
+     * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing
+     *     information.
+     * @return true if the wrap is set to on
+     */
+    public static boolean isWrap(final GetLegendGraphicRequest req) {
+        if (req.getLegendOptions().get("wrap") instanceof String) {
+            String wrapVal = (String) req.getLegendOptions().get("wrap");
+            if (wrapVal.equalsIgnoreCase("on")
+                    || wrapVal.equalsIgnoreCase("true")
+                    || wrapVal.equalsIgnoreCase("yes")
+                    || wrapVal.equalsIgnoreCase("1")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Returns the image background color for the given {@link GetLegendGraphicRequest}.
@@ -595,7 +615,7 @@ public class LegendUtils {
 
     /**
      * Return a {@link BufferedImage} representing this label. The characters '\n' '\r' and '\f' are
-     * interpreted as linebreaks, as is the characater combination "\n" (as opposed to the actual
+     * interpreted as line breaks, as is the character combination "\n" (as opposed to the actual
      * '\n' character). This allows people to force line breaks in their labels by including the
      * character "\" followed by "n" in their label.
      *
@@ -605,6 +625,7 @@ public class LegendUtils {
      */
     public static BufferedImage renderLabel(
             final String label, final Graphics2D g, final GetLegendGraphicRequest req) {
+
         ensureNotNull(label);
         ensureNotNull(g);
         ensureNotNull(req);
@@ -612,6 +633,15 @@ public class LegendUtils {
         // to indicate a line break, as well as a traditional 'real' line-break in the XML.
         BufferedImage renderedLabel;
         Color labelColor = getLabelFontColor(req);
+        if(LegendUtils.isWrap(req)) {
+            // if label is longer than width, word wrap it.
+            Rectangle2D labelBounds = g.getFontMetrics().getStringBounds(label, g);
+            if(labelBounds.getWidth()> req.getWidth()){
+                FontMetrics fm = g.getFontMetrics();
+                int widthChars = req.getWidth()/fm.stringWidth("m");
+                WordUtils.wrap(label, widthChars, "\n", true);
+            }
+        }
         if ((label.indexOf("\n") != -1) || (label.indexOf("\\n") != -1)) {
             // this is a label WITH line-breaks...we need to figure out it's height *and*
             // width, and then adjust the legend size accordingly

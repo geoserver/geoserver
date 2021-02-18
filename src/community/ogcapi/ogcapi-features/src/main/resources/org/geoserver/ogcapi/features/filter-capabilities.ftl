@@ -1,3 +1,6 @@
+<#global pagetitle="Filter capabilities">
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><b>Filter capabilities</b>">
 <#include "common-header.ftl">
        <h2>Filter capabilities</h2>
        <#list model.capabilities as capability>

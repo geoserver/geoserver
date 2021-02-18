@@ -1,5 +1,12 @@
+<#if model.title??> 
+<#global pagetitle=model.title>
+<#else>
+<#global pagetitle=model.id>
+</#if>
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"'>Collections</a><b>"+${pagetitle}+"</b>">
 <#include "common-header.ftl">
-       <h2>GeoServer Tiled Collections</h2>
+       <h1>GeoServer Tiled Collections</h1>
        <p>This document lists all the tiles collections available in the Tiles service.<br/>
        This document is also available as <#list model.getLinksExcept(null, "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.</p>
        

@@ -1,6 +1,9 @@
+<#global pagetitle=service.title!"GeoServer Tiles 1.0 Service">
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><b>"+pagetitle+"</b>">
 <#include "common-header.ftl">
    <div id="content">
-       <h2>${service.title!"GeoServer Tiles 1.0 Service"}</h2>
+       <h1>${pagetitle}</h1>
        <p>${service.abstract!""}<br/>
        This is the landing page of the Tiles 1.0 service, providing links to the service API and its contents.
        <br/> 

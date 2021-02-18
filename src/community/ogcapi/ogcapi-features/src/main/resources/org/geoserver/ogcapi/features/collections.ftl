@@ -1,3 +1,6 @@
+<#global pagetitle="Collections">
+<#global pagepath="/collections">
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><b>Collections<b>">
 <#include "common-header.ftl">
   <div id="breadcrumb" class="py-2 mb-4">
     <nav aria-label="breadcrumb">

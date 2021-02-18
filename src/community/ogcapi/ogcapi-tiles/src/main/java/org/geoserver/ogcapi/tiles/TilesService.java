@@ -39,6 +39,7 @@ import org.geoserver.ogcapi.InvalidParameterValueException;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.QueryablesDocument;
 import org.geoserver.ogcapi.ResourceNotFoundException;
+import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.wms.WMS;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
@@ -481,7 +482,7 @@ public class TilesService {
         if (isStyleGroup(group)) {
             return group.getStyles().get(0).getName();
         } else {
-            return TiledCollectionDocument.DEFAULT_STYLE_NAME;
+            return StyleDocument.DEFAULT_STYLE_NAME;
         }
     }
 

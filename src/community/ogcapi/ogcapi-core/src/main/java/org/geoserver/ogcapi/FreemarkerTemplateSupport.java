@@ -27,12 +27,11 @@ import org.springframework.stereotype.Component;
  * Support class that locates the templates based on the current response and eventual {@link
  * LocalWorkspace}.
  *
- * <p>
- *     Located in workspace using service landingPage prefix, or obtained from jar:
- *     <ul>
- *         <li>ogc/features/landingPage.ftl</li>
- *     </ul>
- * </p>
+ * <p>Located in workspace using service landingPage prefix, or obtained from jar:
+ *
+ * <ul>
+ *   <li>ogc/features/landingPage.ftl
+ * </ul>
  */
 @Component
 public class FreemarkerTemplateSupport {
@@ -56,33 +55,33 @@ public class FreemarkerTemplateSupport {
      */
     public Template getTemplate(ResourceInfo resource, String templateName, Class<?> clazz)
             throws IOException {
-    GeoServerTemplateLoader templateLoader =
-        new GeoServerTemplateLoader(clazz, resourceLoader) {
-          @Override
-          public Object findTemplateSource(String path) throws IOException {
-            Object source = null;
+        GeoServerTemplateLoader templateLoader =
+                new GeoServerTemplateLoader(clazz, resourceLoader) {
+                    @Override
+                    public Object findTemplateSource(String path) throws IOException {
+                        Object source = null;
 
-            APIService service = clazz.getAnnotation(APIService.class);
-            if (service != null) {
-              source = super.findTemplateSource(service.landingPage() + "/" + path);
-            }
+                        APIService service = clazz.getAnnotation(APIService.class);
+                        if (service != null) {
+                            source = super.findTemplateSource(service.landingPage() + "/" + path);
+                        }
 
-            if (source == null) {
-              source = super.findTemplateSource(path);
-            }
+                        if (source == null) {
+                            source = super.findTemplateSource(path);
+                        }
 
-            if (source == null) {
-              source = rootLoader.findTemplateSource(path);
+                        if (source == null) {
+                            source = rootLoader.findTemplateSource(path);
 
-              // wrap the source in a source that maintains the original path
-              if (source != null) {
-                return new ClassTemplateSource(path, source);
-              }
-            }
+                            // wrap the source in a source that maintains the original path
+                            if (source != null) {
+                                return new ClassTemplateSource(path, source);
+                            }
+                        }
 
-            return source;
-          }
-        };
+                        return source;
+                    }
+                };
 
         if (resource != null) {
             templateLoader.setResource(resource);

@@ -135,9 +135,9 @@ public class LandingPageTest extends StylesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/styles\\/conformance.*/)].rel",
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE);
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI);
         // check collection links
         assertJSONList(
                 json,

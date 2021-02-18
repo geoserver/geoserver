@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.tiles;
 
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
+import org.geoserver.ogcapi.Link;
 
 /** Landing page for the tiles service */
 public class TilesLandingPage extends AbstractLandingPageDocument {
@@ -22,7 +23,7 @@ public class TilesLandingPage extends AbstractLandingPageDocument {
                 "Tiled collections metadata as ",
                 "collections",
                 null,
-                "data");
+                Link.REL_DATA_URI);
 
         // tile matrix sets
         addLinksFor(

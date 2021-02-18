@@ -103,7 +103,9 @@ public class LandingPageTest extends ImagesTestSupport {
         DocumentContext json = getAsJSONPath("gs/ogc/images?f=json", 200);
         // check the URLs are still workspace specific
         assertThat(
-                readSingle(json, "links[?(@.rel=='data' && @.type=='application/json')].href"),
+                readSingle(
+                        json,
+                        "links[?(@.rel=='http://www.opengis.net/def/rel/ogc/1.0/data' && @.type=='application/json')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/gs/ogc/images/collections?f=application%2Fjson"));
     }
@@ -135,16 +137,16 @@ public class LandingPageTest extends ImagesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/images\\/conformance.*/)].rel",
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE);
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI);
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/images\\/collections.*/)].rel",
-                "data",
-                "data",
-                "data");
+                Link.REL_DATA_URI,
+                Link.REL_DATA_URI,
+                Link.REL_DATA_URI);
         // check title
         assertEquals("Image mosaicks discovery and management interface", json.read("title"));
         // check description

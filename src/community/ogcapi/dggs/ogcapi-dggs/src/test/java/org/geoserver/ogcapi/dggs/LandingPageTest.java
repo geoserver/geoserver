@@ -168,9 +168,9 @@ public class LandingPageTest extends OGCApiTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/dggs\\/conformance.*/)].rel",
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE,
-                Link.REL_CONFORMANCE);
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI,
+                Link.REL_CONFORMANCE_URI);
         // check collection links
         assertJSONList(
                 json,

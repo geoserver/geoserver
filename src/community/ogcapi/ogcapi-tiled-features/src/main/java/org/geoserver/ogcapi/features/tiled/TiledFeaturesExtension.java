@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.ogcapi.AbstractDocument;
-import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DocumentCallback;
@@ -97,7 +96,7 @@ public class TiledFeaturesExtension
             } else if (document instanceof CollectionsDocument) {
                 extendCollectionsDocument((CollectionsDocument) document);
             } else if (document instanceof FeaturesLandingPage) {
-                extendLandingpage((AbstractLandingPageDocument) document);
+                extendLandingpage((AbstractDocument) document);
             }
         }
     }
@@ -137,7 +136,7 @@ public class TiledFeaturesExtension
         target.getPaths().addPathItem(pathItemKey, item);
     }
 
-    private void extendLandingpage(AbstractLandingPageDocument landingPage) {
+    private void extendLandingpage(AbstractDocument landingPage) {
         // tile matrix sets
         landingPage.addLinksFor(
                 "ogc/features/tileMatrixSets",

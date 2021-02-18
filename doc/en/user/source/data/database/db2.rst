@@ -39,7 +39,7 @@ Adding a Db2 data store
 
 When properly installed, :guilabel:`Db2` will be an option in the :guilabel:`Vector Data Sources` list when creating a new data store.
 
-.. figure:: images/Db2create.png
+.. figure:: images/db2create.png
    :align: center
 
    *Db2 in the list of raster data stores*
@@ -47,7 +47,7 @@ When properly installed, :guilabel:`Db2` will be an option in the :guilabel:`Vec
 Configuring a Db2 data store
 ----------------------------
 
-.. figure:: images/Db2configure.png
+.. figure:: images/db2configure.png
    :align: center
 
    *Configuring a Db2 data store*

@@ -153,4 +153,8 @@ public abstract class WebMap {
         }
         return filename;
     }
+
+    public WMSMapContent getMapContent() {
+        return mapContent;
+    }
 }

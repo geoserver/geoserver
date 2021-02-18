@@ -1,7 +1,32 @@
+.. _ogcapi-features:
+
 OGC API Features
 ================
 
-An `OGC Features API <https://github.com/opengeospatial/ogcapi-features>`_ up to date with the  released version of the Features API, along with implementation of the `draft CQL filtering extension <https://github.com/opengeospatial/ogcapi-features/tree/master/extensions/cql>`_ and the `draft multi-crs extension <https://github.com/opengeospatial/ogcapi-features/tree/master/extensions/crs>`__.
+An `OGC Features API <https://github.com/opengeospatial/ogcapi-features>`_ publishing feature data using an OpenAPI web service.
+
+.. list-table::
+   :widths: 30, 20, 50
+   :header-rows: 1
+
+   * - `OGC API - Features <https://github.com/opengeospatial/ogcapi-features>`__
+     - Version
+     - Implementation status
+   * - Part 1: Core
+     - `Editor's draft <http://docs.ogc.org/DRAFTS/17-069r4.html>`__
+     - Additional errata and clarifications not yet reviewed.
+   * - 
+     - `1.0.0 <http://docs.ogc.org/is/17-069r3/17-069r3.html>`__
+     - Up to date with 1.0.0 release version.
+   * - Part 2: CRS by Reference
+     - `1.0.0 <http://docs.ogc.org/DRAFTS/19-079r1.html>`__
+     - Not yet implemented
+   * - 
+     - Draft
+     - Draft implemented, update to final release required.
+   * - Part 3: Filtering and CQL
+     - `Draft <http://docs.ogc.org/DRAFTS/19-079r1.html>`__
+     - Draft implemented
 
 Service
 -------
@@ -19,7 +44,7 @@ The service is self described using:
  
      OGC API Features service
 
-* `application/json`: A collection :file:`json` documents, with reference between each document for programatic access by web developers.
+* `application/json`: A collection of :file:`json` documents, with reference between each document for programmatic access by web developers.
 
   .. code-block:: json
   
@@ -46,7 +71,7 @@ The service is self described using:
            "title": "This document as text/html"
          }
 
-* ``application/x-yaml``: A collection of :file:`yaml` documents, with references between each document for programatic access.
+* ``application/x-yaml``: A collection of :file:`yaml` documents, with references between each document for programmatic access.
  
   .. code-block:: yaml
   
@@ -83,23 +108,23 @@ Collections
 
 The collection of feature types being published by the service.
 
-Each collection entry is described using the layer details of title, description, geogrpahic extent.
+Each collection entry is described using the layer details of title, description, geographic extent.
 
-Data can be browsed as html pages, or downloaded in a range of formats such as :file:`GeoJSON` and :file:`GML`.
+Data can be browsed as web pages, or downloaded in a range of formats such as :file:`GeoJSON` and :file:`GML` documents.
 
 .. figure:: img/collection.png
    
    Collection sf:roads download formats
 
-Tile matrix sets
-''''''''''''''''
+Tile matrix sets (extension)
+''''''''''''''''''''''''''''
 
-Lists tile matrix sets, linking to their definition.
+Addition from :ref:`ogcapi-tiles` extension listing tile matrix sets, linking to their definition.
 
 .. figure:: img/tilematrix.png
    
    Tile matrix EPSG:4326 definition
-   
+
 Conformance
 '''''''''''
 
@@ -175,8 +200,7 @@ To override an OGC API Features template:
            </#list>
       <#include "common-footer.ftl">
 
-#. A restart is required, as tempaltes are cached.
-   
+#. A restart is required, as templates are cached.
    
    .. figure:: img/template_override.png
       

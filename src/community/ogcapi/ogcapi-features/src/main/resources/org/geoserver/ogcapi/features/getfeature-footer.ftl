@@ -5,17 +5,28 @@ If the WFS version built them, the default template will also add links in the o
 
   <#if response.previous?? || response.next??>
   <div>
-  <#if response.previous??>
-    <a id="prevPage" href="${response.previous}">Previous page</a>
-  <#else>
-     Previous page
-  </#if>
-  -
-  <#if response.next??>
-    <a id="nextPage" href="${response.next}">Next page</a>
-  <#else>
-    Next page   
-  </#if>
+  <nav>
+    <ul class="pagination">
+    <#if response.previous??>
+      <li class="page-item">
+        <a class="page-link" id="prevPage" href="${response.previous}">Previous page</a>
+      </li>
+    <#else>
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous page</a>
+      </li>
+    </#if>
+    <#if response.next??>
+      <li class="page-item">
+        <a class="page-link"id="nextPage" href="${response.next}">Next page</a>
+      </li>
+    <#else>
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next page</a>
+      </li>
+    </#if>
+    </ul>
+  </nav>
   </#if>
   
 <#include "common-footer.ftl">

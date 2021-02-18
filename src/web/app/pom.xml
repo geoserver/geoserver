@@ -1070,7 +1070,7 @@
       <id>wps-download</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wps-download</artifactId>
 		  <version>${project.version}</version>
         </dependency>
@@ -1225,7 +1225,7 @@
       <id>gwc-s3</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-gwc-s3</artifactId>
           <version>${project.version}</version>
         </dependency>

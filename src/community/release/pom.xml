@@ -30,11 +30,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-wps-download</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
      <version>${project.version}</version>
    </dependency>

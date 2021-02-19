@@ -9,6 +9,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.springframework.web.util.UrlPathHelper;
 
+/** Adapt paths to local workspace. */
 public class LocalWorkspaceURLPathHelper extends UrlPathHelper {
 
     public LocalWorkspaceURLPathHelper() {

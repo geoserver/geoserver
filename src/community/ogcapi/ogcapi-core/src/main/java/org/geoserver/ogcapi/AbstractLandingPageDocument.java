@@ -7,8 +7,10 @@ package org.geoserver.ogcapi;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * A class representing a generic API service landing page in a way that Jackson can easily
- * translate to JSON/YAML (and can be used as a Freemarker template model)
+ * Generic API service landing page with conformance details.
+ *
+ * <p>Document provided for Jackson translate to JSON/YAML (also used as a Freemarker template
+ * model).
  */
 @JsonPropertyOrder({"title", "description", "links"})
 public class AbstractLandingPageDocument extends AbstractLandingPageDocumentNoConformance {

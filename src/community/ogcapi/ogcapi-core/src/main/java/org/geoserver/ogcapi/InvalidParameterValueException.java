@@ -6,6 +6,7 @@ package org.geoserver.ogcapi;
 
 import org.springframework.http.HttpStatus;
 
+/** A OGC API specific exception class for invalid parameter values. */
 public class InvalidParameterValueException extends APIException {
 
     public static final String CODE = "InvalidParameterValue";

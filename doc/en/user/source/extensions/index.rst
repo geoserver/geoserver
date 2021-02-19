@@ -39,4 +39,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    wmts-multidimensional/index
    wps-download/index
    wps-jdbc/index
+   mapml/index
 

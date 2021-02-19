@@ -378,6 +378,11 @@
      <artifactId>gs-wps-jdbc</artifactId>
      <version>${project.version}</version>
    </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>gs-mapml</artifactId>
+   <version>${project.version}</version>
+  </dependency>
  </dependencies>
  <build>
   <plugins>

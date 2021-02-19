@@ -11,11 +11,11 @@
 
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.19-SNAPSHOT</version>
   </parent>
   
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-mapml</artifactId>
   <name>MapML Support for GeoServer</name>
   

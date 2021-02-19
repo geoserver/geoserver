@@ -5,11 +5,9 @@
 package org.geoserver.ogcapi.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 
 /** A Features server landing page */
@@ -30,7 +28,5 @@ public class MapsLandingPage extends AbstractLandingPageDocument {
                 "collections",
                 null,
                 Link.REL_DATA);
-
-     
     }
 }

@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -21,8 +21,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
-
-import java.util.logging.Logger;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})

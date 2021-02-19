@@ -4,6 +4,10 @@
  */
 package org.geoserver.ogcapi;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.factory.CommonFactoryFinder;
@@ -19,11 +23,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** A BBOX parser specialized for API bounding boxes (up to 6 coordinates, default CRS is CRS84) */
 public class APIBBoxParser {

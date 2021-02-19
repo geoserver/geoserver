@@ -4,6 +4,14 @@
  */
 package org.geoserver.ogcapi.maps;
 
+import java.awt.Color;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -13,18 +21,23 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.DefaultWebMapService;
+import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -34,17 +47,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @APIService(
-        service = "Maps",
-        version = "1.0",
-        landingPage = "ogc/maps",
-        serviceClass = WMSInfo.class)
+    service = "Maps",
+    version = "1.0",
+    landingPage = "ogc/maps",
+    serviceClass = WMSInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps")
 public class MapsService {
 
@@ -114,7 +122,14 @@ public class MapsService {
     private PublishedInfo getPublished(String collectionId) {
         // single collection
         PublishedInfo p = getCatalog().getLayerByName(collectionId);
-        if (p == null) getCatalog().getLayerGroupByName(collectionId);
+        if (p == null) {
+            if (collectionId.indexOf(":") != -1) {
+                String[] split = collectionId.split(":");
+                p = getCatalog().getLayerGroupByName(split[0], split[1]);
+            } else {
+                getCatalog().getLayerGroupByName(collectionId);
+            }
+        }
 
         if (p == null)
             throw new ServiceException(
@@ -132,7 +147,7 @@ public class MapsService {
             @PathVariable(name = "styleId") String styleId,
             @RequestParam(name = "f") String format,
             @RequestParam(name = "bbox", required = false) String bbox,
-            @RequestParam(name = "crs", required = false) String bboxCRS,
+            @RequestParam(name = "crs", required = false) String crs,
             @RequestParam(name = "width", required = false) Integer width,
             @RequestParam(name = "height", required = false) Integer height,
             @RequestParam(name = "transparent", required = false, defaultValue = "true")
@@ -140,35 +155,38 @@ public class MapsService {
             @RequestParam(name = "bgcolor", required = false) String bgcolor
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException {
-        PublishedInfo p = getPublished(collectionId);
-        checkStyle(p, styleId);
-        StyleInfo styleInfo = getCatalog().getStyleByName(styleId);
+        GetMapRequest request =
+                toGetMapRequest(
+                        collectionId,
+                        styleId,
+                        format,
+                        bbox,
+                        crs,
+                        width,
+                        height,
+                        transparent,
+                        bgcolor);
 
-        GetMapRequest request = new GetMapRequest();
-        request.setLayers(getMapLayers(p));
-        request.setStyles(Arrays.asList(styleInfo.getStyle()));
-        request.setFormat(format);
-        if (bbox != null) {
-            ReferencedEnvelope[] parsed = APIBBoxParser.parse(bbox, bboxCRS);
-            if (parsed.length > 1)
-                throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "Cannot handle dateline crossing requests",
-                        HttpStatus.BAD_REQUEST);
-            request.setBbox(parsed[0]);
+        if ("text/html".equals(format) || "html".equals(format)) {
+            DefaultWebMapService.autoSetBoundsAndSize(request);
+            if (request.getCrs() != null)
+                request.setSRS("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), true));
+            request.getRawKvp().put("width", String.valueOf(request.getWidth()));
+            request.getRawKvp().put("height", String.valueOf(request.getHeight()));
+            if (height != null) request.setHeight(height);
+            return new HTMLMap(new WMSMapContent(request));
+        } else {
+            return wms.reflect(request);
         }
-        if (width != null) request.setWidth(width);
-        if (height != null) request.setHeight(height);
-        if (bgcolor != null) request.setBgColor(Color.decode(bgcolor));
-        request.setTransparent(transparent);
-        // TODO: add other parameters
-        return wms.reflect(request);
     }
 
     private List<MapLayerInfo> getMapLayers(PublishedInfo p) {
         if (p instanceof LayerGroupInfo) {
             return ((LayerGroupInfo) p)
-                    .layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList());
+                    .layers()
+                    .stream()
+                    .map(l -> new MapLayerInfo(l))
+                    .collect(Collectors.toList());
         } else if (p instanceof LayerInfo) {
             return Arrays.asList(new MapLayerInfo((LayerInfo) p));
         } else {
@@ -192,5 +210,96 @@ public class MapsService {
                 ServiceException.INVALID_PARAMETER_VALUE,
                 "Invalid style identifier: " + styleId,
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(
+        path = "collections/{collectionId}/styles/{styleId}/map/info",
+        name = "getCollectionInfo"
+    )
+    @ResponseBody
+    public FeatureInfoResponse info(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "styleId") String styleId,
+            @RequestParam(name = "f") String format,
+            @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "crs", required = false) String crs,
+            @RequestParam(name = "width", required = false) Integer width,
+            @RequestParam(name = "height", required = false) Integer height,
+            @RequestParam(name = "transparent", required = false, defaultValue = "true")
+                    boolean transparent,
+            @RequestParam(name = "bgcolor", required = false) String bgcolor,
+            @RequestParam(name = "i") int i,
+            @RequestParam(name = "j") int j
+            // TODO: add all the vendor parameters we normally support in WMS
+            ) throws IOException, FactoryException {
+        GetMapRequest getMapRequest =
+                toGetMapRequest(
+                        collectionId,
+                        styleId,
+                        "image/png",
+                        bbox,
+                        crs,
+                        width,
+                        height,
+                        transparent,
+                        bgcolor);
+        DefaultWebMapService.autoSetBoundsAndSize(getMapRequest);
+
+        GetFeatureInfoRequest request = new GetFeatureInfoRequest();
+        request.setGetMapRequest(getMapRequest);
+        request.setXPixel(i);
+        request.setYPixel(j);
+        request.setInfoFormat(format);
+        request.setQueryLayers(getMapRequest.getLayers());
+
+        FeatureCollectionType collection = wms.getFeatureInfo(request);
+        return new FeatureInfoResponse(collection, request);
+    }
+
+    private GetMapRequest toGetMapRequest(
+            String collectionId,
+            String styleId,
+            String format,
+            String bbox,
+            String crs,
+            Integer width,
+            Integer height,
+            boolean transparent,
+            String bgcolor)
+            throws IOException, FactoryException {
+        PublishedInfo p = getPublished(collectionId);
+        checkStyle(p, styleId);
+        StyleInfo styleInfo = getCatalog().getStyleByName(styleId);
+
+        GetMapRequest request = new GetMapRequest();
+        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
+        request.setLayers(getMapLayers(p));
+        if (styleInfo != null) request.setStyles(Arrays.asList(styleInfo.getStyle()));
+        request.setFormat(format);
+        if (bbox != null) {
+            ReferencedEnvelope[] parsed = APIBBoxParser.parse(bbox, crs);
+            if (parsed.length > 1)
+                throw new APIException(
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "Cannot handle dateline crossing requests",
+                        HttpStatus.BAD_REQUEST);
+            ReferencedEnvelope envelope = parsed[0];
+            request.setBbox(envelope);
+            request.setCrs(envelope.getCoordinateReferenceSystem());
+        }
+        if (width != null) request.setWidth(width);
+        if (height != null) request.setHeight(height);
+        if (bgcolor != null) request.setBgColor(Color.decode(bgcolor));
+        request.setTransparent(transparent);
+        Map<String, String> rawParamers = new LinkedHashMap<>();
+        if (bbox != null) rawParamers.put("bbox", bbox);
+        if (crs != null) rawParamers.put("crs", crs);
+        rawParamers.put("width", String.valueOf(width));
+        rawParamers.put("height", String.valueOf(height));
+        rawParamers.put("layers", collectionId);
+        rawParamers.put("styles", styleId);
+        request.setRawKvp(rawParamers);
+        // TODO: add other parameters
+        return request;
     }
 }

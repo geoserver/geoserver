@@ -6,7 +6,11 @@ package org.geoserver.ogcapi.maps;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -19,12 +23,6 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WebMap;
 import org.springframework.http.MediaType;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Contains the list of styles for a given collection */
 @JsonPropertyOrder({"styles", "links"})
@@ -60,23 +58,29 @@ public class StylesDocument extends AbstractDocument {
                 APIRequestInfo.get().getProducibleMediaTypes(WebMap.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         String collectionId = ResponseUtils.urlEncode(published.prefixedName());
-        String styleId = ResponseUtils.urlEncode(s.prefixedName());
+        String styleId = s == null ? StyleDocument.DEFAULT_STYLE_NAME : s.prefixedName();
         for (MediaType format : formats) {
             String apiUrl =
                     ResponseUtils.buildURL(
                             baseUrl,
-                            "ogc/maps/collections/" + collectionId + "/styles/" + styleId + "/map",
+                            "ogc/maps/collections/"
+                                    + collectionId
+                                    + "/styles/"
+                                    + ResponseUtils.urlEncode(styleId)
+                                    + "/map",
                             Collections.singletonMap("f", format.toString()),
                             URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            REL_MAP,
-                            format.toString(),
-                            "Map for " + published.prefixedName() + " and style " + s.prefixedName() + " as " + format.toString(),
-                            "items"));
+            String title = getTitle(s, format);
+            result.addLink(new Link(apiUrl, REL_MAP, format.toString(), title, "items"));
         }
-        
+
+        return result;
+    }
+
+    private String getTitle(StyleInfo s, MediaType format) {
+        String result = "Map for " + published.prefixedName();
+        if (s != null) result += " and style " + s.prefixedName();
+        result += " as " + format;
         return result;
     }
 

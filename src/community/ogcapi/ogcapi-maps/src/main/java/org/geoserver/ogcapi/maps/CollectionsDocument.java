@@ -6,10 +6,10 @@ package org.geoserver.ogcapi.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -18,14 +18,8 @@ import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.opengis.filter.Filter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-
 /**
- * A class representing the Maps service  "collections" in a way that Jackson can easily translate to
+ * A class representing the Maps service "collections" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JsonPropertyOrder({"links", "collections"})
@@ -49,6 +43,7 @@ public class CollectionsDocument extends AbstractDocument {
 
     @JacksonXmlProperty(localName = "Collection")
     public Iterator<CollectionDocument> getCollections() {
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         CloseableIterator<PublishedInfo> publisheds =
                 geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
         return new Iterator<CollectionDocument>() {
@@ -93,7 +88,6 @@ public class CollectionsDocument extends AbstractDocument {
             }
         };
     }
-
 
     public void addCollectionDecorator(Consumer<CollectionDocument> decorator) {
         this.collectionDecorators.add(decorator);

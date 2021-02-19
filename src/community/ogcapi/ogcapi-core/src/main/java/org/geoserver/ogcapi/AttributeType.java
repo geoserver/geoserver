@@ -11,19 +11,17 @@ import org.locationtech.jts.geom.Geometry;
 
 /** Types of attributes, used in {@link Queryable} */
 public enum AttributeType {
-    string,
-    uri,
-    enumeration("enum"),
-    number,
-    integer,
-    date,
-    dateTime,
-    bool("boolean"),
-    geometry;
+    STRING("string"),
+    URI("uri"),
+    ENUMERATION("enum"),
+    NUMBER("number"),
+    INTEGER("integer"),
+    DATE("date"),
+    DATE_TIME("dateTime"),
+    BOOL("boolean"),
+    GEOMETRY("geometry");
 
     String type;
-
-    AttributeType() {}
 
     AttributeType(String type) {
         this.type = type;
@@ -48,21 +46,21 @@ public enum AttributeType {
             if (Float.class.isAssignableFrom(binding)
                     || Double.class.isAssignableFrom(binding)
                     || BigDecimal.class.isAssignableFrom(binding)) {
-                return AttributeType.number;
+                return AttributeType.NUMBER;
             } else {
-                return AttributeType.integer;
+                return AttributeType.INTEGER;
             }
         } else if (Date.class.isAssignableFrom(binding)) {
-            return AttributeType.date;
+            return AttributeType.DATE;
         } else if (java.util.Date.class.isAssignableFrom(binding)) {
-            return AttributeType.dateTime;
+            return AttributeType.DATE_TIME;
         } else if (Boolean.class.isAssignableFrom(binding)) {
-            return AttributeType.bool;
+            return AttributeType.BOOL;
         } else if (Geometry.class.isAssignableFrom(binding)) {
-            return AttributeType.geometry;
+            return AttributeType.GEOMETRY;
         } else {
             // fallback
-            return AttributeType.string;
+            return AttributeType.STRING;
         }
     }
 }

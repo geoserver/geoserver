@@ -9,7 +9,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.util.function.BiConsumer;
 import org.springframework.http.MediaType;
 
-/** @author bradh */
+/**
+ * Generic API service landing page for Jackson to easily translate to JSON/YAML (also used as a
+ * Freemarker template model).
+ *
+ * @author bradh
+ */
 public class AbstractLandingPageDocumentNoConformance extends AbstractDocument {
 
     final String title;

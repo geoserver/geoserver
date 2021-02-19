@@ -89,7 +89,7 @@ public class APIRequestInfo {
      * Returns the query map as a simple String to String map, removing eventual repeated parameters
      * and empty ones
      *
-     * @return
+     * @return query map
      */
     public Map<String, String> getSimpleQueryMap() {
         Map<String, String[]> queryMap = request.getParameterMap();

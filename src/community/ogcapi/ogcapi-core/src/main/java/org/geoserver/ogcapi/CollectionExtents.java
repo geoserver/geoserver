@@ -17,12 +17,14 @@ import java.util.stream.Collectors;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 
+/** Extent details (including spatial and temporal). */
 @JsonPropertyOrder({"spatial", "temporal"})
 public class CollectionExtents {
 
     List<ReferencedEnvelope> spatial;
     DateRange temporal;
 
+    /** Spatial extent bboxs, each bbox xmin,ymin,xmax,ymax crs CRS84. */
     public class SpatialExtents {
 
         public List<double[]> getBbox() {
@@ -44,6 +46,7 @@ public class CollectionExtents {
         }
     }
 
+    /** Temporal extent intervals, each interval between two UTC times. */
     public class TemporalExtents {
 
         public List<String[]> getInterval() {

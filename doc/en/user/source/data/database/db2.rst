@@ -7,7 +7,8 @@ Db2
 
 The Db2 spatial support implements the OGC specification "Simple Features for SQL using types and functions" and the ISO "SQL/MM Part 3 Spatial" standard. When installing Db2 on Linux, Unix and Windows platforms, the "custom" option must be selected and the server spatial support included.
 
-A no-charge copy of Db2 can be downloaded from https://www.ibm.com/analytics/db2/trials.
+A free of charge copy of Db2 can be downloaded from https://www.ibm.com/analytics/db2/trials.
+
 
 .. _Db2_install:
 
@@ -59,5 +60,4 @@ Notes on usage
 --------------
 
 Db2 schema, table, and column names are all case-sensitive when working with GeoTools/GeoServer. When working with Db2 scripts and the Db2 command window, the default is to treat these names as upper-case unless enclosed in double-quote characters but this is not the case in GeoServer.
-
 

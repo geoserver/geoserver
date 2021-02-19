@@ -1203,7 +1203,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
             }
         }
     }
-    /** Tests wrapLegend legend option  - GEOS-9919*/
+    /** Tests wrapLegend legend option - GEOS-9919 */
     @org.junit.Test
     public void testWrapLongNames() throws Exception {
         Style style = readSLD("ColorMapWithLongLabels.sld");
@@ -1248,7 +1248,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
             req.setLegendOptions(legendOptions);
             image = this.legendProducer.buildLegendGraphic(req);
             ImageIO.write(image, "png", new File("/tmp/image2.png"));
-            assertTrue("Title didn't wrap",image.getWidth() > absoluteWidth);
+            assertTrue("Title didn't wrap", image.getWidth() > absoluteWidth);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             if (coverage instanceof GridCoverage2D) {

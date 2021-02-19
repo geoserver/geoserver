@@ -5,7 +5,11 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -18,8 +22,6 @@ import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
@@ -633,12 +635,12 @@ public class LegendUtils {
         // to indicate a line break, as well as a traditional 'real' line-break in the XML.
         BufferedImage renderedLabel;
         Color labelColor = getLabelFontColor(req);
-        if(LegendUtils.isWrap(req)) {
+        if (LegendUtils.isWrap(req)) {
             // if label is longer than width, word wrap it.
             Rectangle2D labelBounds = g.getFontMetrics().getStringBounds(label, g);
-            if(labelBounds.getWidth()> req.getWidth()){
+            if (labelBounds.getWidth() > req.getWidth()) {
                 FontMetrics fm = g.getFontMetrics();
-                int widthChars = req.getWidth()/fm.stringWidth("m");
+                int widthChars = req.getWidth() / fm.stringWidth("m");
                 WordUtils.wrap(label, widthChars, "\n", true);
             }
         }

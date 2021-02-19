@@ -5,14 +5,20 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
 import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
@@ -47,7 +53,7 @@ public abstract class Cell {
     protected final Color borderColor;
 
     protected final boolean wrap;
-    //TODO: parameterize this width
+    // TODO: parameterize this width
     protected int WRAP_WIDTH = 150;
 
     protected Cell(
@@ -731,33 +737,34 @@ public abstract class Cell {
             // it
 
             final int labelHeight =
-                        (int)
-                                Math.ceil(
-                                        graphics.getFontMetrics()
-                                                .getStringBounds(text, graphics)
-                                                .getHeight());
-            final int width = (int)
-                    Math.ceil(
-                            graphics.getFontMetrics()
-                                    .getStringBounds(text, graphics)
-                                    .getWidth());
-            final int labelWidth = wrap? Math.min(WRAP_WIDTH, width):width ;
+                    (int)
+                            Math.ceil(
+                                    graphics.getFontMetrics()
+                                            .getStringBounds(text, graphics)
+                                            .getHeight());
+            final int width =
+                    (int)
+                            Math.ceil(
+                                    graphics.getFontMetrics()
+                                            .getStringBounds(text, graphics)
+                                            .getWidth());
+            final int labelWidth = wrap ? Math.min(WRAP_WIDTH, width) : width;
 
             Rectangle2D bounds = new Rectangle2D.Double(0, 0, labelWidth, labelHeight);
             // restore the old font
-                graphics.setFont(oldFont);
+            graphics.setFont(oldFont);
             String nText;
-            if(!wrap) {
+            if (!wrap) {
                 return new Dimension(labelWidth, labelHeight);
             } else {
-                if( width > labelWidth){
+                if (width > labelWidth) {
                     FontMetrics fm = graphics.getFontMetrics();
-                    int widthChars = WRAP_WIDTH /fm.stringWidth("m");
+                    int widthChars = WRAP_WIDTH / fm.stringWidth("m");
                     nText = WordUtils.wrap(text, widthChars, "\n", true);
                 } else {
                     nText = text;
                 }
-            } 
+            }
             if ((nText.indexOf("\n") != -1) || (nText.indexOf("\\n") != -1)) {
                 // this is a label WITH line-breaks...we need to figure out it's height *and*
                 // width, and then adjust the legend size accordingly
@@ -768,9 +775,11 @@ public abstract class Cell {
 
                 while (st.hasMoreElements()) {
                     final String token = st.nextToken();
-                    Rectangle2D thisLineBounds = graphics.getFontMetrics().getStringBounds(token, graphics);
+                    Rectangle2D thisLineBounds =
+                            graphics.getFontMetrics().getStringBounds(token, graphics);
 
-                    // if this is directly added as thisLineBounds.getHeight(), then there are rounding
+                    // if this is directly added as thisLineBounds.getHeight(), then there are
+                    // rounding
                     // errors
                     // because we can only DRAW fonts at discrete integer coords.
                     final int thisLineHeight = (int) Math.ceil(thisLineBounds.getHeight());
@@ -779,8 +788,8 @@ public abstract class Cell {
                     lineHeight.add((int) Math.ceil(thisLineBounds.getHeight()));
                 }
             }
-            return new Dimension((int) Math.ceil(bounds.getWidth()),
-                    (int) Math.ceil(bounds.getHeight()));
+            return new Dimension(
+                    (int) Math.ceil(bounds.getWidth()), (int) Math.ceil(bounds.getHeight()));
         }
 
         public void draw(
@@ -838,16 +847,18 @@ public abstract class Cell {
                     throw new IllegalStateException("Unsupported vertical alignment " + vAlign);
             }
 
-            if(wrap){
-                Rectangle2D labelBounds = labelFont.getStringBounds(text, graphics.getFontRenderContext());
-                String nText;
-                if(text.contains("\n") || text.contains("\\n")||labelBounds.getWidth()> dimension.getWidth()){
+            if (wrap) {
+                Rectangle2D labelBounds =
+                        labelFont.getStringBounds(text, graphics.getFontRenderContext());
+
+                if (text.contains("\n")
+                        || text.contains("\\n")
+                        || labelBounds.getWidth() > dimension.getWidth()) {
                     FontMetrics fm = graphics.getFontMetrics();
-                    int widthChars = (int) Math.floor(dimension.getWidth()/fm.stringWidth("m"));
+                    int widthChars = (int) Math.floor(dimension.getWidth() / fm.stringWidth("m"));
                     String realLabel;
-                    if(labelBounds.getWidth()> dimension.getWidth()) {
-                        realLabel = WordUtils.wrap(text, widthChars,
-                                "\n", true);
+                    if (labelBounds.getWidth() > dimension.getWidth()) {
+                        realLabel = WordUtils.wrap(text, widthChars, "\n", true);
                     } else {
                         realLabel = text;
                     }
@@ -859,12 +870,13 @@ public abstract class Cell {
                     // four backslashes... "\\" -> '\', so "\\\\n" -> '\' + '\' + 'n'
                     realLabel = realLabel.replaceAll("\\\\n", "\n");
 
-
                     while (st.hasMoreElements()) {
                         final String token = st.nextToken();
-                        Rectangle2D thisLineBounds = graphics.getFontMetrics().getStringBounds(token, graphics);
+                        Rectangle2D thisLineBounds =
+                                graphics.getFontMetrics().getStringBounds(token, graphics);
 
-                        // if this is directly added as thisLineBounds.getHeight(), then there are rounding
+                        // if this is directly added as thisLineBounds.getHeight(), then there are
+                        // rounding
                         // errors
                         // because we can only DRAW fonts at discrete integer coords.
                         final int thisLineHeight = (int) Math.ceil(thisLineBounds.getHeight());
@@ -931,7 +943,8 @@ public abstract class Cell {
                     final Color color,
                     final double opacity,
                     final Dimension requestedDimension,
-                    final Color borderColor, final boolean wrap) {
+                    final Color borderColor,
+                    final boolean wrap) {
                 super(color, opacity, requestedDimension, borderColor, wrap);
             }
 

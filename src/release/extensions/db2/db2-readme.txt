@@ -15,7 +15,8 @@ GeoServer library directory. In a binary install this is at
 [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
 In a war install this is [container]/webapps/geoserver/WEB-INF/lib/
 
-2. Copy db2jcc4.jar from the DB2 instance installation directory
+2. Copy db2jcc4.jar from the Db2 instance installation directory
+
 $DB2PATH/java to your GeoServer library directory.
 
 3. Restart GeoServer.

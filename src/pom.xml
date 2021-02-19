@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.17-SNAPSHOT</version>
+ <version>2.17.5</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1563,7 +1563,7 @@
       <descriptor>release/ext-authkey.xml</descriptor>
       <descriptor>release/ext-web-resource.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.17-SNAPSHOT</finalName>
+     <finalName>geoserver-2.17.5</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1942,9 +1942,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.17-SNAPSHOT</gs.version>
-  <gt.version>23-SNAPSHOT</gt.version>
-  <gwc.version>1.17-SNAPSHOT</gwc.version>
+  <gs.version>2.17.5</gs.version>
+  <gt.version>23.5</gt.version>
+  <gwc.version>1.17.4</gwc.version>
   <jts.version>1.17.0</jts.version>
   <spring.version>5.1.16.RELEASE</spring.version>
   <spring.security.version>5.1.11.RELEASE</spring.security.version>

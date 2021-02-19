@@ -222,7 +222,8 @@ public class ColorMapLegendCreator {
                                     borderColor,
                                     unit,
                                     digits,
-                                    alternativeColorMapEntryBuilder);
+                                    alternativeColorMapEntryBuilder,
+                                    wrap);
                     break;
                 case CLASSES:
                     element =

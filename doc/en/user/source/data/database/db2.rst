@@ -31,7 +31,8 @@ GeoServer files
 Required external files
 ```````````````````````
 
-The DB2 JDBC driver is not packaged with the GeoServer extension:  :file:`db2jcc4.jar`.  This file should be available in the :file:`java` subdirectory of your Db2 installation directory.  Copy this file to the ``WEB-INF/lib`` directory of the GeoServer installation.
+The Db2 JDBC driver is not packaged with the GeoServer extension:  :file:`db2jcc4.jar`.  This file should be available in the :file:`java` subdirectory of your Db2 installation directory.  Copy this file to the ``WEB-INF/lib`` directory of the GeoServer installation.
+
 
 After all GeoServer files and external files have been downloaded and copied, restart GeoServer.
 
@@ -60,4 +61,3 @@ Notes on usage
 --------------
 
 Db2 schema, table, and column names are all case-sensitive when working with GeoTools/GeoServer. When working with Db2 scripts and the Db2 command window, the default is to treat these names as upper-case unless enclosed in double-quote characters but this is not the case in GeoServer.
-

@@ -3,20 +3,22 @@
 MapML 
 =========
 
-Map Markup Language (MapML) is a text-based format which allows map authors to encode map information as hypertext documents exchanged over the Uniform Interface of the Web. The format definition is still a work-in-progress by the Maps for HTML W3C Community Group, but various tools to work with the format already exist, including a Leaflet-based map viewer. For more information on MapML refer to the `Maps for HTML Community Group <https://maps4html.github.io/>`_.
+Map Markup Language (MapML) is a text-based format which allows map authors to encode map information as hypertext documents exchanged over the Uniform Interface of the Web. The format definition is still a work-in-progress by the Maps for HTML W3C Community Group, but various tools to work with the format already exist, including a Leaflet-based map viewer. For more information on MapML refer to the `Maps for HTML Community Group <https://maps4html.org/>`.
 
 The MapML module for GeoServer adds new MapML resources to access WMS and WFS services configured in Geoserver. The MapML modules includes support for styles, tiling, querying, sharding, and dimensions options for WMS layers, and also provides a MapML outputFormat for WMS GetFeatureInfo and WFS GetFeatures requests. See below for information on installing and configuring the MapML module.
+
+    .. warning:: MapML is an experimental proposed extension of HTML for the Web. The objective of the format is to standardize map, layer and feature semantics in HTML.  As the format progresses towards a Web standard, it may change.  Always use the latest version of this extension, and follow the project's progress at https://maps4html.org.
 
 
 Installation
 --------------------
 
-#. Download the MapML extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
+#. The MapML module is a standard GeoServer extension, available on the  `GeoServer download page <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance.
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
-
+#. Restart GeoServer.
 
 Configuration
 -------------
@@ -28,7 +30,7 @@ Configuration can be done using the Geoserver administrator GUI. The MapML confi
 License Info
 ^^^^^^^^^^^^
 
-Together these two attributes all the administrator to define the contents of the ``<link rel=license>`` element in the MapML header. Here is an example of the resulting XML:
+Together these two attributes allow the administrator to define the contents of the ``<link rel=license>`` element in the MapML header. Here is an example of the resulting XML:
 
   <link href="https://creativecommons.org/licenses/by/4.0/" rel="license" title="Attribution 4.0 International (CC BY 4.0)"/>
 
@@ -122,7 +124,7 @@ With the MapML Community Module installed, the GeoServer Layer Preview page is m
 
 You can add layers to the map as you like, by dragging the link URL from the Layer Preview table and dropping it onto another layer's MapML preview.  If all goes well, you should see the layers stacked on the map and in the layer control.
 
-The only tool which is presently able to display MapML is a Leaflet-based MapML client. You can get your own copy of the client by using the npm "bower" package management tool.  Once you have bower installed, you can install the web-map client in a directory of your choice, by running the "bower install web-map" command in that directory. This will create a "bower_components" directory in the directory in which you execute the command. This client can be imported into an HTML page with the appropriate ``<map>`` and ``<layer>`` elements to reference the MapML resources defined above. Here is a simple, self-contained example of such an HTML page: 
+MapML visualization is supported by the Web-Map-Custom-Element project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about the Web-Map-Custom-Element at the project `web site <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <layer-> elements: 
 
 .. code-block:: html
 
@@ -130,29 +132,18 @@ The only tool which is presently able to display MapML is a Leaflet-based MapML 
         <head>
             <title>MapML Test Map</title>
             <meta charset="utf-8" />
-            <script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-            <link rel="import" href="./bower_components/web-map/web-map.html">
+            <script type="module" src="http://localhost:8080/geoserver/mapml/viewer/widget/mapml-viewer.js"></script>
             <style>
-                /* make the map fullscreen */
-                html, body {
-                    height: 100%;
-                    width: 100%;
-                    overflow: hidden;
-                }
-                body {
-                    padding: 0;
-                    margin: 0;
-                }
-                map {
-                    height: 100%;
-                    width: 100%;
-                }
+              html, body { height: 100%; }
+              * { margin: 0; padding: 0; }
+              mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }
+              mapml-viewer:not(:defined) > * { display: none; } layer- { display: none; }
             </style>
         </head>
         <body>
-            <map is="web-map" projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
+            <mapml-viewer projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
                 <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
-            </map>
+            </apml-viewer>
         </body>
     </html>
     

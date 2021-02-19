@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.mapml.MapMLConstants;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
@@ -147,22 +146,6 @@ public class TiledCRSTest {
         assertEquals("Expect 5 tiles for first page of extent: ", 5, tiles.size());
         tiles = osmtile.getTilesForExtent(query, 15, 5);
         assertEquals("Expect 3 tiles for second page extent: ", 3, tiles.size());
-    }
-
-    @Test
-    public void testOSMTILEScaleSet() {
-        TiledCRS osmtile = new TiledCRS("OSMTILE");
-        // assure that there are at least 18 zoom levels.  Uncertain how many
-        // would be standard.  Seems that most Web maps go up to 19 levels or so...
-        // probably would be wise to go a bit higher for OSMTILE
-    }
-
-    @Ignore
-    public void testOSMTILEBounds() {
-        // assure that the limits of the tiled projection are respected at different
-        // zoom levels.
-        // what does *respected* mean???  wrapped? exception?  empty result?
-
     }
 
     @Test

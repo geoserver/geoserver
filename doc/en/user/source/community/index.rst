@@ -49,7 +49,6 @@ officially part of the GeoServer releases. They are however built along with the
    metadata/index
    qose-module/index
    ogr-store/index
-   mapml/index
    geostyler/index
    csw-iso/index
    importer-jdbc/index

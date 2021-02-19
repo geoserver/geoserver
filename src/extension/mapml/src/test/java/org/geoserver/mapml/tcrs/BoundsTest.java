@@ -4,6 +4,7 @@
  */
 package org.geoserver.mapml.tcrs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -19,15 +20,15 @@ public class BoundsTest {
         Point p1 = new Point(0, 0);
         Point p2 = new Point(500, -7);
         Bounds b = new Bounds(p2, p1);
-        assertTrue(b.min.x == 0);
-        assertTrue(b.min.y == -7);
-        assertTrue(b.max.x == 500);
-        assertTrue(b.max.y == 0);
+        assertEquals(0.0, b.min.x, 0.0d);
+        assertEquals(-7.0, b.min.y, 0.0d);
+        assertEquals(500.0, b.max.x, 0.0d);
+        assertEquals(0.0, b.max.y, 0.0d);
         b = new Bounds(p1, p2);
-        assertTrue(b.min.x == 0);
-        assertTrue(b.min.y == -7);
-        assertTrue(b.max.x == 500);
-        assertTrue(b.max.y == 0);
+        assertEquals(0.0, b.min.x, 0.0d);
+        assertEquals(-7.0, b.min.y, 0.0d);
+        assertEquals(500.0, b.max.x, 0.0d);
+        assertEquals(0.0, b.max.y, 0.0d);
     }
 
     @Test

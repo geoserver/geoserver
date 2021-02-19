@@ -6,6 +6,8 @@ package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -174,18 +176,18 @@ public class MapMLControllerTest extends WMSTestSupport {
         MockHttpServletRequest request = createRequest("mapml/" + "foo" + "/osmtile/");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        String htmlResponse =
-                mc.Html(
-                        request,
-                        response,
-                        "foo",
-                        "osmtile",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty());
-        assertTrue(
+        mc.Html(
+                request,
+                response,
+                "foo",
+                "osmtile",
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty());
+        assertEquals(
                 "Response is 404 Not Found",
-                response.getStatus() == HttpServletResponse.SC_NOT_FOUND);
+                HttpServletResponse.SC_NOT_FOUND,
+                response.getStatus());
     }
 
     @Test
@@ -195,34 +197,34 @@ public class MapMLControllerTest extends WMSTestSupport {
         MockHttpServletRequest request = createRequest("mapml/" + li.getName() + "/foo/");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        String htmlResponse =
-                mc.Html(
-                        request,
-                        response,
-                        li.getName(),
-                        "foo",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty());
-        assertTrue(
+        mc.Html(
+                request,
+                response,
+                li.getName(),
+                "foo",
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty());
+        assertEquals(
                 "Response is 400 Bad Request",
-                response.getStatus() == HttpServletResponse.SC_BAD_REQUEST);
+                HttpServletResponse.SC_BAD_REQUEST,
+                response.getStatus());
 
         request = createRequest("mapml/" + li.getName() + "/foo/");
         response = new MockHttpServletResponse();
 
-        Mapml mapml =
-                mc.mapML(
-                        request,
-                        response,
-                        li.getName(),
-                        "foo",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty());
-        assertTrue(
+        mc.mapML(
+                request,
+                response,
+                li.getName(),
+                "foo",
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty());
+        assertEquals(
                 "Response is 400 Bad Request",
-                response.getStatus() == HttpServletResponse.SC_BAD_REQUEST);
+                HttpServletResponse.SC_BAD_REQUEST,
+                response.getStatus());
     }
 
     private void testLayersAndGroupsHTML(Object l) throws Exception {
@@ -286,7 +288,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         String action = e.getAction();
         assertNull(action);
         ProjType projType = e.getUnits();
-        assertTrue(ProjType.OSMTILE == projType);
+        assertSame(ProjType.OSMTILE, projType);
 
         List<Object> lo = e.getInputOrDatalistOrLink();
         for (Object o : lo) {
@@ -294,7 +296,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                 Link link = (Link) o;
                 assertNull("extent/link@href unexpected.", link.getHref());
                 assertNotNull("extent/link@href must not be null/empty", link.getTref());
-                assertTrue("extent/link@href must not be null/empty", !link.getTref().isEmpty());
+                assertFalse("extent/link@href must not be null/empty", link.getTref().isEmpty());
                 assertTrue(
                         "link rel for this layer group must bel image or query",
                         (link.getRel() == RelType.IMAGE || link.getRel() == RelType.QUERY));
@@ -312,19 +314,19 @@ public class MapMLControllerTest extends WMSTestSupport {
                         && input.getAxis() == AxisType.EASTING) {
                     assertTrue(
                             "input[type=location/@min must equal -2.0037508342789244E7",
-                            input.getMin().equalsIgnoreCase("-2.0037508342789244E7"));
+                            "-2.0037508342789244E7".equalsIgnoreCase(input.getMin()));
                     assertTrue(
                             "input[type=location/@max must equal 2.0037508342789244E7",
-                            input.getMax().equalsIgnoreCase("2.0037508342789244E7"));
+                            "2.0037508342789244E7".equalsIgnoreCase(input.getMax()));
                 } else if (input.getType() == InputType.LOCATION
                         && input.getUnits() == UnitType.PCRS
                         && input.getAxis() == AxisType.NORTHING) {
                     assertTrue(
                             "input[type=location/@min must equal -2.0037508342780735E7",
-                            input.getMin().equalsIgnoreCase("-2.0037508342780735E7"));
+                            "-2.0037508342780735E7".equalsIgnoreCase(input.getMin()));
                     assertTrue(
                             "input[type=location/@max must equal 2.003750834278071E7",
-                            input.getMax().equalsIgnoreCase("2.003750834278071E7"));
+                            "2.003750834278071E7".equalsIgnoreCase(input.getMax()));
                 }
             } else {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());
@@ -371,24 +373,6 @@ public class MapMLControllerTest extends WMSTestSupport {
         url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
         host = url.getHost();
         assertTrue(host.equalsIgnoreCase("{s}.example.com"));
-    }
-
-    @Test
-    public void testDimensionsMapMLLayerConfig() throws Exception {
-        String path =
-                "mapml/"
-                        + MockData.LAKES.getPrefix()
-                        + ":"
-                        + MockData.LAKES.getLocalPart()
-                        + "/osmtile/";
-
-        // set up mapml layer to useTiles
-        Catalog catalog = getCatalog();
-        ResourceInfo layerMeta =
-                catalog.getLayerByName(MockData.LAKES.getLocalPart()).getResource();
-        MetadataMap mm = layerMeta.getMetadata();
-        mm.put("mapml.dimension", null);
-        catalog.save(layerMeta);
     }
 
     @Test

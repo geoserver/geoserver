@@ -83,7 +83,6 @@
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
 		  <descriptor>release/ext-cog.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
-          <descriptor>release/ext-mapml.xml</descriptor>
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
           <descriptor>release/ext-wmts-styles.xml</descriptor>
@@ -264,7 +263,6 @@
         <module>taskmanager</module>
         <module>wfs3</module>
         <module>qos</module>
-        <module>mapml</module>
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>metadata</module>
@@ -652,12 +650,6 @@
          </plugin>
        </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>mapml</id>
-      <modules>
-        <module>mapml</module>
-      </modules>
     </profile>
     <profile>
       <id>web-ogr</id>

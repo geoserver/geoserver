@@ -12,6 +12,7 @@ This plugin includes implementation of a set of OGC API service implementations
    install
    features/index
    tiles/index
+   maps/index
    styles
    testbed
 

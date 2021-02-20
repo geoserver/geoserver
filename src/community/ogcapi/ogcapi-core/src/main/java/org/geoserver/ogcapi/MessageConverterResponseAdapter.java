@@ -104,17 +104,20 @@ public class MessageConverterResponseAdapter<T>
         Operation op = result != null ? getOperation(result, dr) : originalOperation;
         return responses
                 .stream()
-                .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
-                .filter(r -> r.canHandle(op))
+                .filter(
+                        r ->
+                                getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt))
+                                        || (r.canHandle(op) && r.getBinding().isInstance(result)))
                 .findFirst();
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        Predicate<Response> predicate = getResponseFilterPredicate();
         this.responses =
                 GeoServerExtensions.extensions(Response.class, applicationContext)
                         .stream()
-                        .filter(getResponseFilterPredicate())
+                        .filter(predicate)
                         .collect(Collectors.toList());
         this.supportedMediaTypes =
                 this.responses

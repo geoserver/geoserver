@@ -67,7 +67,12 @@ public class APIBBoxParser {
 
     /** Parses a BBOX assuming the default {@link DefaultGeographicCRS#WGS84} as the CRS */
     public static ReferencedEnvelope[] parse(String value) throws FactoryException {
-        return parse(value, null);
+        return parse(value, (CoordinateReferenceSystem) null);
+    }
+
+    /** Parses a BBOX with the given CRS, if null {@link DefaultGeographicCRS#WGS84} will be used */
+    public static ReferencedEnvelope[] parse(String value, String crs) throws FactoryException {
+        return parse(value, crs != null ? CRS.decode(crs, true) : null);
     }
 
     /** Parses a BBOX with the given CRS, if null {@link DefaultGeographicCRS#WGS84} will be used */

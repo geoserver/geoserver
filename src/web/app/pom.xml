@@ -1653,6 +1653,11 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-maps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-ogcapi-styles</artifactId>
           <version>${project.version}</version>
         </dependency>

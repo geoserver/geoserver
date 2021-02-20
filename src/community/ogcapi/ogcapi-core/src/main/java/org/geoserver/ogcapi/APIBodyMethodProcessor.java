@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
@@ -34,9 +35,11 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.JsonViewResponseBodyAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
@@ -199,7 +202,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             // if we got no indication, see if the method has a default content type, and
             // if not, default to JSON as per OGC API expectations
             List<MediaType> producibleTypes =
-                    getProducibleMediaTypes(request, valueType, targetType);
+                    getProducibleMediaTypes(request, valueType, targetType, value);
             if (ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(acceptableTypes)) {
                 MediaType defaultMediaType =
                         Optional.ofNullable(
@@ -244,16 +247,30 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 return null;
             }
 
-            MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
-
+            // if there is an exact match, go for it
             for (MediaType mediaType : mediaTypesToUse) {
-                if (mediaType.isConcrete()) {
-                    selectedMediaType = mediaType;
-                    break;
-                } else if (mediaType.equals(MediaType.ALL)
-                        || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
-                    selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
-                    break;
+                for (MediaType acceptableType : acceptableTypes) {
+                    if (mediaType.equals(acceptableType)) {
+                        selectedMediaType = mediaType;
+                        break;
+                    }
+                }
+                if (selectedMediaType != null) break;
+            }
+
+            // otherwise find something compatible
+            if (selectedMediaType == null) {
+                MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
+
+                for (MediaType mediaType : mediaTypesToUse) {
+                    if (mediaType.isConcrete()) {
+                        selectedMediaType = mediaType;
+                        break;
+                    } else if (mediaType.equals(MediaType.ALL)
+                            || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
+                        selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
+                        break;
+                    }
                 }
             }
 
@@ -268,6 +285,54 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             }
         }
         return selectedMediaType;
+    }
+
+    protected List<MediaType> getProducibleMediaTypes(
+            HttpServletRequest request, Class<?> valueClass) {
+        return getProducibleMediaTypes(request, valueClass, null);
+    }
+
+    /**
+     * Returns the media types that can be produced. The resulting media types are:
+     *
+     * <ul>
+     *   <li>The producible media types specified in the request mappings, or
+     *   <li>Media types of configured converters that can write the specific return value, or
+     *   <li>{@link MediaType#ALL}
+     *   <li>Specific GeoServer converters that can declare a mediatype only when given the actual
+     *       response value
+     * </ul>
+     */
+    @SuppressWarnings("unchecked")
+    protected List<MediaType> getProducibleMediaTypes(
+            HttpServletRequest request,
+            Class<?> valueClass,
+            @Nullable Type targetType,
+            Object value) {
+
+        Set<MediaType> mediaTypes =
+                (Set<MediaType>)
+                        request.getAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
+        if (!CollectionUtils.isEmpty(mediaTypes)) {
+            return new ArrayList<>(mediaTypes);
+        }
+        List<MediaType> result = new ArrayList<>();
+        for (HttpMessageConverter<?> converter : this.messageConverters) {
+            if (converter instanceof ResponseMessageConverter
+                    && converter.canWrite(valueClass, null)) {
+                result.addAll(
+                        ((ResponseMessageConverter) converter)
+                                .getSupportedMediaTypes(valueClass, value));
+            } else if (converter instanceof GenericHttpMessageConverter && targetType != null) {
+                if (((GenericHttpMessageConverter<?>) converter)
+                        .canWrite(targetType, valueClass, null)) {
+                    result.addAll(converter.getSupportedMediaTypes());
+                }
+            } else if (converter.canWrite(valueClass, null)) {
+                result.addAll(converter.getSupportedMediaTypes());
+            }
+        }
+        return (result.isEmpty() ? Collections.singletonList(MediaType.ALL) : result);
     }
 
     private MediaType getMostSpecificMediaType(MediaType acceptType, MediaType produceType) {
@@ -319,14 +384,16 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         if (selectedMediaType != null) {
             selectedMediaType = selectedMediaType.removeQualityValue();
             for (HttpMessageConverter<?> converter : this.messageConverters) {
-                GenericHttpMessageConverter genericConverter =
-                        (converter instanceof GenericHttpMessageConverter
-                                ? (GenericHttpMessageConverter<?>) converter
-                                : null);
-                if (genericConverter != null
-                        ? ((GenericHttpMessageConverter) converter)
-                                .canWrite(targetType, valueType, selectedMediaType)
-                        : converter.canWrite(valueType, selectedMediaType)) {
+                if (converter instanceof ResponseMessageConverter
+                        && ((ResponseMessageConverter) converter)
+                                .canWrite(value, selectedMediaType)) {
+                    return converter;
+                }
+                if (converter instanceof GenericHttpMessageConverter
+                        && ((GenericHttpMessageConverter) converter)
+                                .canWrite(targetType, valueType, selectedMediaType)) {
+                    return converter;
+                } else if (converter.canWrite(valueType, selectedMediaType)) {
                     return converter;
                 }
             }

@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps")
 public class MapsService {
 
-    public static final String CORE = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/req/core";
+    public static final String CORE = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
     public static final String GEODATA =
             "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata";
 

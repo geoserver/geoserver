@@ -22,6 +22,7 @@
     <modules>
         <module>ogcapi-core</module>
         <module>ogcapi-features</module>
+        <module>ogcapi-maps</module>
         <module>ogcapi-styles</module>
         <module>ogcapi-tiles</module>
         <module>ogcapi-images</module>

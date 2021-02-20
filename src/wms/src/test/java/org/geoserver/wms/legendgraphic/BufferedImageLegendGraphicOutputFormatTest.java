@@ -1242,12 +1242,11 @@ public class BufferedImageLegendGraphicOutputFormatTest
             this.legendProducer.buildLegendGraphic(req);
 
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-            ImageIO.write(image, "png", new File("/tmp/image1.png"));
             int absoluteWidth = image.getWidth();
             legendOptions.put("wrap", "false");
             req.setLegendOptions(legendOptions);
             image = this.legendProducer.buildLegendGraphic(req);
-            ImageIO.write(image, "png", new File("/tmp/image2.png"));
+
             assertTrue("Title didn't wrap", image.getWidth() > absoluteWidth);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();

@@ -10,7 +10,7 @@ import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.wms.WMSInfo;
 
-/** A Features server landing page */
+/** A Maps server landing page */
 @JsonPropertyOrder({"title", "description", "links"})
 public class MapsLandingPage extends AbstractLandingPageDocument {
 
@@ -27,6 +27,6 @@ public class MapsLandingPage extends AbstractLandingPageDocument {
                 "Collections Metadata as ",
                 "collections",
                 null,
-                Link.REL_DATA);
+                Link.REL_DATA_URI);
     }
 }

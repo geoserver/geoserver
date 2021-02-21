@@ -37,6 +37,7 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @JacksonXmlProperty(localName = "Links")
+    @Override
     public List<Link> getLinks() {
         return links;
     }
@@ -75,7 +76,7 @@ public class CollectionsDocument extends AbstractDocument {
                     } catch (Exception e) {
                         publisheds.close();
                         throw new ServiceException(
-                                "Failed to iterate over the feature types in the catalog", e);
+                                "Failed to iterate over the published info in the catalog", e);
                     }
                 }
             }

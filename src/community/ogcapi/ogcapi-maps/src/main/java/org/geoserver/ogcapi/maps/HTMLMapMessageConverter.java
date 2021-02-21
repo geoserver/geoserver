@@ -63,14 +63,37 @@ public class HTMLMapMessageConverter extends AbstractHTMLMessageConverter<HTMLMa
             // use the unicode escape sequence for the degree sign so its not
             // screwed up by different local encodings
             final String degreeSign = "\u00B0";
-            if (degreeSign.equals(unit) || "degrees".equals(unit) || "dd".equals(unit))
-                result = "degrees";
-            else if ("m".equals(unit) || "meters".equals(unit)) result = "m";
-            else if ("km".equals(unit) || "kilometers".equals(unit)) result = "mi";
-            else if ("in".equals(unit) || "inches".equals(unit)) result = "inches";
-            else if ("ft".equals(unit) || "feets".equals(unit)) result = "ft";
-            else if ("mi".equals(unit) || "miles".equals(unit)) result = "mi";
-        } catch (Exception e) {
+            if (null != unit)
+                switch (unit) {
+                    case degreeSign:
+                    case "degrees":
+                    case "dd":
+                        result = "degrees";
+                        break;
+                    case "m":
+                    case "meters":
+                        result = "m";
+                        break;
+                    case "km":
+                    case "kilometers":
+                        result = "mi";
+                        break;
+                    case "in":
+                    case "inches":
+                        result = "inches";
+                        break;
+                    case "ft":
+                    case "feets":
+                        result = "ft";
+                        break;
+                    case "mi":
+                    case "miles":
+                        result = "mi";
+                        break;
+                    default:
+                        break;
+                }
+        } catch (IndexOutOfBoundsException e) {
             LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
         }
         return result;

@@ -134,7 +134,7 @@ public class MapsService {
         // single collection
         PublishedInfo p = getCatalog().getLayerByName(collectionId);
         if (p == null) {
-            if (collectionId.indexOf(":") != -1) {
+            if (collectionId.contains(":")) {
                 String[] split = collectionId.split(":");
                 p = getCatalog().getLayerGroupByName(split[0], split[1]);
             } else {

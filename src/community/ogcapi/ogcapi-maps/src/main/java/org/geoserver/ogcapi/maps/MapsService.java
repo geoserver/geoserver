@@ -56,9 +56,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps")
 public class MapsService {
 
-    public static final String CORE = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
-    public static final String GEODATA =
+    public static final String CONF_CLASS_CORE =
+            "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
+    public static final String CONF_CLASS_GEODATA =
             "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata";
+    public static final String CONF_CLASS_BBOX =
+            "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/bbox";
+    public static final String CONF_CLASS_CRS =
+            "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs";
 
     private static final String DISPLAY_NAME = "OGC API Maps";
 
@@ -90,7 +95,13 @@ public class MapsService {
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes =
-                Arrays.asList(ConformanceClass.CORE, ConformanceClass.COLLECTIONS, CORE, GEODATA);
+                Arrays.asList(
+                        ConformanceClass.CORE,
+                        ConformanceClass.COLLECTIONS,
+                        CONF_CLASS_CORE,
+                        CONF_CLASS_GEODATA,
+                        CONF_CLASS_BBOX,
+                        CONF_CLASS_CRS);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 

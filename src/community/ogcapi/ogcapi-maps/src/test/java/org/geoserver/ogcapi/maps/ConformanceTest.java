@@ -20,11 +20,13 @@ public class ConformanceTest extends MapsTestSupport {
 
     private void checkConformance(DocumentContext json) {
         assertEquals(1, (int) json.read("$.length()", Integer.class));
-        assertEquals(4, (int) json.read("$.conformsTo.length()", Integer.class));
+        assertEquals(6, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
-        assertEquals(MapsService.CORE, json.read("$.conformsTo[2]", String.class));
-        assertEquals(MapsService.GEODATA, json.read("$.conformsTo[3]", String.class));
+        assertEquals(MapsService.CONF_CLASS_CORE, json.read("$.conformsTo[2]", String.class));
+        assertEquals(MapsService.CONF_CLASS_GEODATA, json.read("$.conformsTo[3]", String.class));
+        assertEquals(MapsService.CONF_CLASS_BBOX, json.read("$.conformsTo[4]", String.class));
+        assertEquals(MapsService.CONF_CLASS_CRS, json.read("$.conformsTo[5]", String.class));
         // check the others as they get implemented
     }
 
@@ -40,7 +42,9 @@ public class ConformanceTest extends MapsTestSupport {
         assertEquals("GeoServer OGC API Maps Conformance", document.select("#title").text());
         assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
         assertEquals(ConformanceClass.COLLECTIONS, document.select("#content li:eq(1)").text());
-        assertEquals(MapsService.CORE, document.select("#content li:eq(2)").text());
-        assertEquals(MapsService.GEODATA, document.select("#content li:eq(3)").text());
+        assertEquals(MapsService.CONF_CLASS_CORE, document.select("#content li:eq(2)").text());
+        assertEquals(MapsService.CONF_CLASS_GEODATA, document.select("#content li:eq(3)").text());
+        assertEquals(MapsService.CONF_CLASS_BBOX, document.select("#content li:eq(4)").text());
+        assertEquals(MapsService.CONF_CLASS_CRS, document.select("#content li:eq(5)").text());
     }
 }

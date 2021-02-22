@@ -523,6 +523,16 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         validateGet(path);
     }
 
+    @Test
+    public void testGetFeatureEncodeIfEmpty() {
+        String path =
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf5";
+        String newline = System.getProperty("line.separator");
+        Document doc = getAsDOM(path);
+        assertXpathCount(1, "//gsml:specification", doc);
+        LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
+    }
+
     /**
      * GeologicUnit mapping has mappingName specified, to override targetElementName when feature
      * chained to MappedFeature. This is to test that querying GeologicUnit as top level feature
@@ -598,7 +608,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf1,mf2,mf3,mf4");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(4, "//gsml:MappedFeature", doc);
@@ -1555,7 +1567,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testAnyTypeAndAnyElementGML() {
         final String OBSERVATION_ID_PREFIX = "observation:";
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=om:Observation");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=om:Observation&featureID=observation:mf1,observation:mf2,observation:mf3,observation:mf4");
         LOGGER.info("WFS GetFeature&typename=om:Observation response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -1819,10 +1833,10 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         checkSchemaLocation(doc);
 
-        assertXpathEvaluatesTo("7", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("8", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
 
-        assertEquals(7, doc.getElementsByTagName("gml:featureMember").getLength());
+        assertEquals(8, doc.getElementsByTagName("gml:featureMember").getLength());
         assertEquals(0, doc.getElementsByTagName("gml:featureMembers").getLength());
 
         // mf1
@@ -1883,8 +1897,8 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         checkSchemaLocation(doc);
 
-        assertXpathEvaluatesTo("7", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("8", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMembers").getLength());
         assertEquals(0, doc.getElementsByTagName("gml:featureMember").getLength());

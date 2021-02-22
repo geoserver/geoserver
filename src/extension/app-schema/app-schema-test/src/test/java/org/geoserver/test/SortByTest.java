@@ -27,7 +27,7 @@ public class SortByTest extends AbstractAppSchemaTestSupport {
     public void testGetMappedFeature() {
         Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=2.0&outputFormat=gml32&typename=gsml:MappedFeature&sortBy=gml:name");
+                        "wfs?request=GetFeature&version=2.0&outputFormat=gml32&typename=gsml:MappedFeature&sortBy=gml:name&featureID=mf1,mf2,mf3,mf4");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
 
         checkSortByNameResponse(doc);

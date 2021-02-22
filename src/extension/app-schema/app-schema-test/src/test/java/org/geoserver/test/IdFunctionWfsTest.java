@@ -72,7 +72,9 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
     /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf1,mf2,mf3,mf4");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(4, "//gsml:MappedFeature", doc);

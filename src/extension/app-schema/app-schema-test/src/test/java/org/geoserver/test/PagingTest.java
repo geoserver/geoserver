@@ -441,7 +441,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureDenormalised() {
         Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:GeologicUnit&count=1&startIndex=1");
+                        "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:GeologicUnit&featureID=gu.25682");
         LOGGER.info("WFS GetFeature&typeNames=gsml:GeologicUnit response:\n" + prettyString(doc));
         // expecting gu.25682
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
@@ -485,7 +485,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                     TransformException {
         Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2&sortBy=gsml:specification");
+                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2&featureID=mf1,mf2,mf3,mf4&sortBy=gsml:specification");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathCount(2, "//gsml:MappedFeature", doc);
 

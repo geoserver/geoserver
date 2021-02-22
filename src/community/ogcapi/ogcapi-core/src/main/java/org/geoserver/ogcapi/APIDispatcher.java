@@ -629,7 +629,7 @@ public class APIDispatcher extends AbstractController {
      *
      * @param api The document the {@link OpenAPICallback} will operate on
      */
-    private void applyOpenAPICallbacks(Request dr, OpenAPI api) {
+    private void applyOpenAPICallbacks(Request dr, OpenAPI api) throws IOException {
         for (OpenAPICallback callback : apiCallbacks) {
             callback.apply(dr, api);
         }

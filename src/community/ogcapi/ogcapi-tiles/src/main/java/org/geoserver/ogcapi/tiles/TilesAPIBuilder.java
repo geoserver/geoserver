@@ -8,6 +8,7 @@ import com.google.common.collect.Streams;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
     }
 
     @Override
-    public OpenAPI build(TilesServiceInfo service) {
+    public OpenAPI build(TilesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 
         // adjust path output formats

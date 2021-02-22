@@ -22,7 +22,8 @@
 
     <modules>
       <module>oseo-core</module>  
-      <module>oseo-service</module> 
+      <module>oseo-service</module>
+      <module>oseo-stac</module>
       <module>oseo-rest</module>
       <module>web-oseo</module>
     </modules>

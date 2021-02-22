@@ -102,7 +102,7 @@ public class TiledFeaturesExtension
     }
 
     @Override
-    public void apply(Request dr, OpenAPI target) {
+    public void apply(Request dr, OpenAPI target) throws IOException {
         if (dr.getService().equals(FEATURES)) {
             // get the tiles building blocks
             OpenAPI tilesAPI = tiledFeatures.tileServiceAPI();

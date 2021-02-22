@@ -145,7 +145,7 @@ public class DGGSService {
     )
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
-    public OpenAPI api() {
+    public OpenAPI api() throws IOException {
         return new DGGSAPIBuilder().build(getService());
     }
 

@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.styles;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
     }
 
     @Override
-    public OpenAPI build(StylesServiceInfo service) {
+    public OpenAPI build(StylesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 
         // adjust path output formats

@@ -4,32 +4,26 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.jdbc.JDBCDataStore;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -124,53 +118,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     @BeforeClass
     public static void checkOnLine() {
-        Assume.assumeNotNull(JDBCOpenSearchAccessTest.getFixture());
-    }
-
-    /**
-     * Sets up a H2 based OpenSearchAccess and configures OpenSearch for EO to use it
-     *
-     * @param populateGranulesTable TODO
-     */
-    public static void setupBasicOpenSearch(
-            SystemTestData testData, Catalog cat, GeoServer gs, boolean populateGranulesTable)
-            throws IOException, SQLException {
-        // create the plain database
-        DataStoreInfo jdbcDs = cat.getFactory().createDataStore();
-        jdbcDs.setName("oseo_jdbc");
-        WorkspaceInfo ws = cat.getDefaultWorkspace();
-        jdbcDs.setWorkspace(ws);
-        jdbcDs.setEnabled(true);
-
-        Map params = jdbcDs.getConnectionParameters();
-        params.putAll(JDBCOpenSearchAccessTest.getFixture());
-        cat.add(jdbcDs);
-
-        JDBCDataStore h2 = (JDBCDataStore) jdbcDs.getDataStore(null);
-        JDBCOpenSearchAccessTest.populateTestDatabase(h2, populateGranulesTable);
-
-        // create the OpenSeach wrapper store
-        DataStoreInfo osDs = cat.getFactory().createDataStore();
-        osDs.setName("oseo");
-        osDs.setWorkspace(ws);
-        osDs.setEnabled(true);
-
-        params = osDs.getConnectionParameters();
-        params.put("dbtype", "opensearch-eo-jdbc");
-        params.put("database", jdbcDs.getWorkspace().getName() + ":" + jdbcDs.getName());
-        params.put("store", jdbcDs.getWorkspace().getName() + ":" + jdbcDs.getName());
-        params.put("repository", null);
-        cat.add(osDs);
-
-        // configure opensearch for EO to use it
-        OSEOInfo service = gs.getService(OSEOInfo.class);
-        service.setOpenSearchAccessStoreId(osDs.getId());
-        gs.save(service);
-
-        // configure contact info
-        GeoServerInfo global = gs.getGlobal();
-        global.getSettings().getContact().setContactOrganization("GeoServer");
-        gs.save(global);
+        GeoServerOpenSearchTestSupport.checkOnLine();
     }
 
     @Before

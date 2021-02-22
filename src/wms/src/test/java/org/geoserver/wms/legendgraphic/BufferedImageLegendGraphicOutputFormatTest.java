@@ -1185,7 +1185,61 @@ public class BufferedImageLegendGraphicOutputFormatTest
             }
         }
     }
+    /** Tests wrapLegend legend option - GEOS-9919 */
+    @org.junit.Test
+    public void testWrapLongNames() throws Exception {
+        Style style = readSLD("ColorMapWithLongLabels.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer) rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
 
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        ;
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            Map<String, String> legendOptions = new HashMap<>();
+            legendOptions.put("wrap", "true");
+            req.setLegendOptions(legendOptions);
+
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            int absoluteWidth = image.getWidth();
+            legendOptions.put("wrap", "false");
+            req.setLegendOptions(legendOptions);
+            image = this.legendProducer.buildLegendGraphic(req);
+
+            assertTrue("Title didn't wrap", image.getWidth() > absoluteWidth);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
     /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testThickPolygonBorder() throws Exception {

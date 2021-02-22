@@ -101,6 +101,8 @@ public class ColorMapLegendCreator {
 
         private final Queue<ColorMapEntryLegendBuilder> bodyRows = new LinkedList<>();
 
+        private boolean wrap = false;
+
         private ColorMapType colorMapType;
 
         private ColorMapEntry previousCMapEntry;
@@ -201,7 +203,8 @@ public class ColorMapLegendCreator {
                                     borderColor,
                                     unit,
                                     digits,
-                                    alternativeColorMapEntryBuilder);
+                                    alternativeColorMapEntryBuilder,
+                                    wrap);
                     break;
                 case RAMP:
                     element =
@@ -219,7 +222,8 @@ public class ColorMapLegendCreator {
                                     borderColor,
                                     unit,
                                     digits,
-                                    alternativeColorMapEntryBuilder);
+                                    alternativeColorMapEntryBuilder,
+                                    wrap);
                     break;
                 case CLASSES:
                     element =
@@ -237,7 +241,8 @@ public class ColorMapLegendCreator {
                                     borderColor,
                                     unit,
                                     digits,
-                                    alternativeColorMapEntryBuilder);
+                                    alternativeColorMapEntryBuilder,
+                                    wrap);
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized colormap type");
@@ -443,6 +448,14 @@ public class ColorMapLegendCreator {
         public Queue<ColorMapEntryLegendBuilder> getBodyRows() {
             return bodyRows;
         }
+
+        public boolean isWrap() {
+            return wrap;
+        }
+
+        public void setWrap(boolean wrap) {
+            this.wrap = wrap;
+        }
     }
 
     /** @author Simone Giannecchini, GeoSolutions SAS */
@@ -552,6 +565,8 @@ public class ColorMapLegendCreator {
 
     private int rows;
 
+    private boolean wrap = false;
+
     public ColorMapLegendCreator(final Builder builder) {
         this.backgroundColor = builder.backgroundColor;
         this.bodyRows.addAll(builder.bodyRows);
@@ -582,11 +597,12 @@ public class ColorMapLegendCreator {
         this.rows = builder.rows;
         this.columnHeight = builder.columnHeight;
         this.columns = builder.columns;
+        this.wrap = builder.isWrap();
     }
 
     public synchronized BufferedImage getLegend() {
 
-        // do we laraedy have a legend
+        // do we already have a legend
         if (legend == null) {
 
             // init all the values
@@ -656,7 +672,8 @@ public class ColorMapLegendCreator {
                             labelFont,
                             labelFontColor,
                             fontAntiAliasing,
-                            borderColor));
+                            borderColor,
+                            wrap));
             // set footer strings
             final String colorMapTypeString = "ColorMap type is " + this.colorMapType.toString();
             footerRows.add(
@@ -669,7 +686,8 @@ public class ColorMapLegendCreator {
                             labelFont,
                             labelFontColor,
                             fontAntiAliasing,
-                            borderColor));
+                            borderColor,
+                            wrap));
             // extended colors or not
             final String extendedCMapString =
                     "ColorMap is " + (this.extended ? "" : "not") + " extended";
@@ -683,7 +701,8 @@ public class ColorMapLegendCreator {
                             labelFont,
                             labelFontColor,
                             fontAntiAliasing,
-                            borderColor));
+                            borderColor,
+                            wrap));
             cycleFooterRows(graphics);
         }
 

@@ -191,7 +191,7 @@ public class RasterLayerLegendHelper {
                 final ChannelSelection channelSelection = rasterSymbolizer.getChannelSelection();
                 cmapLegendBuilder.setBand(
                         channelSelection != null ? channelSelection.getGrayChannel() : null);
-
+                cmapLegendBuilder.setWrap(LegendUtils.isWrap(request));
                 // check the additional options before proceeding
                 cmapLegendBuilder.checkAdditionalOptions();
 

@@ -1203,7 +1203,6 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 

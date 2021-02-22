@@ -170,7 +170,7 @@ public class TiledFeatureService {
     }
 
     /** Exposes the TilesService API for the callbacks to use */
-    OpenAPI tileServiceAPI() {
+    OpenAPI tileServiceAPI() throws IOException {
         return delegate.api();
     }
 

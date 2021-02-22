@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.dggs;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public class DGGSAPIBuilder extends OpenAPIBuilder<DGGSInfo> {
     }
 
     @Override
-    public OpenAPI build(DGGSInfo service) {
+    public OpenAPI build(DGGSInfo service) throws IOException {
         OpenAPI api = super.build(service);
 
         // adjust path output formats

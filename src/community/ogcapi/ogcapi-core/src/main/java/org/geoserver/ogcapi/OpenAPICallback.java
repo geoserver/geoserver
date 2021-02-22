@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import java.io.IOException;
 import org.geoserver.ows.Request;
 
 /**
@@ -18,5 +19,5 @@ public interface OpenAPICallback {
      *
      * @param api The OpenAPI about to be returned to the client
      */
-    public void apply(Request dr, OpenAPI api);
+    public void apply(Request dr, OpenAPI api) throws IOException;
 }

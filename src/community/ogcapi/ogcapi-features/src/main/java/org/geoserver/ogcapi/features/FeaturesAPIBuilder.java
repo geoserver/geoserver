@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.features;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
      *
      * @param wfs The WFS configuration
      */
-    public OpenAPI build(WFSInfo wfs) {
+    public OpenAPI build(WFSInfo wfs) throws IOException {
         OpenAPI api = super.build(wfs);
 
         // the external documentation

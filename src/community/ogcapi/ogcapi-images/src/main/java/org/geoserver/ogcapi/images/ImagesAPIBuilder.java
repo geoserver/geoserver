@@ -35,7 +35,7 @@ public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
     }
 
     @Override
-    public OpenAPI build(ImagesServiceInfo service) {
+    public OpenAPI build(ImagesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 
         // adjust path output formats

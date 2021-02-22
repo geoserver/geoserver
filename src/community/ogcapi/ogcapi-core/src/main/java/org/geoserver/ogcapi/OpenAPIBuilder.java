@@ -62,7 +62,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      *
      * @param service The service configuration
      */
-    public OpenAPI build(T service) {
+    public OpenAPI build(T service) throws IOException {
         GeoServerOpenAPI api = readTemplate();
         api.setServiceBase(serviceBase);
         addAPIInfo(service, api);

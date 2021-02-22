@@ -326,8 +326,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         String item = availableItems.getChoices().get(0);
         // Ensure the item is not null
         assertNotNull(item);
-        // Ensure the item is GlobalCRS84Pixel
-        assertTrue(item.equalsIgnoreCase("GlobalCRS84Pixel"));
+        // Ensure the item is EPSG:4326x2
+        assertEquals("EPSG:4326x2", item);
 
         // Selection of the form tests
         FormTester form = tester.newFormTester("form", false);

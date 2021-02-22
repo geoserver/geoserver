@@ -560,6 +560,10 @@ The parameters usable to customize the ColorMap are:
      - append caching headers to the responses
      - expire time in seconds, use 0 to disable cache
      - 600 (10 minutes)
+   * - closed
+     - closed or open ColorMap; a closed color map generates transparent pixels for values out of given range
+     - false, true
+     - false
 
 Examples
 ~~~~~~~~~~

@@ -143,6 +143,32 @@ public class RasterizerTest extends SLDServiceBaseTest {
         assertEquals(defaultStyle1, defaultStyle2);
     }
 
+    @Test
+    public void testRasterizeClosed() throws Exception {
+        LayerInfo l = getCatalog().getLayerByName("wcs:World");
+        assertEquals("raster", l.getDefaultStyle().getName());
+        Style defaultStyle1 = l.getDefaultStyle().getStyle();
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:World/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "classes=5&min=10.0&max=50.0&digits=2&ramp=custom&startColor=0xFF0000&endColor=0x0000FF&closed=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        assertTrue(baos.toString().indexOf("<sld:ColorMap>") > 0);
+        ColorMap map = checkColorMap(baos.toString(), 6);
+        checkColorEntry(map.getColorMapEntries()[0], "#000000", "transparent", "0");
+        checkColorEntry(map.getColorMapEntries()[1], "#FF0000", "10.00", "1.0");
+        checkColorEntry(map.getColorMapEntries()[5], "#0000FF", "50.00", "1.0");
+        checkColorEntry(map.getColorMapEntries()[6], "#000000", "transparent", "0");
+        Style defaultStyle2 = l.getDefaultStyle().getStyle();
+        assertEquals(defaultStyle1, defaultStyle2);
+    }
+
     private ColorMap checkColorMap(String resultXml, int classes) {
         Rule[] rules = checkSLD(resultXml);
         assertEquals(1, rules.length);

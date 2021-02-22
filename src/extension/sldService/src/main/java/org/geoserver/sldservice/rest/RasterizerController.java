@@ -115,6 +115,8 @@ public class RasterizerController extends BaseSLDServiceController {
             @RequestParam(value = "midColor", required = false) String midColor,
             @RequestParam(value = "ramp", required = false) String ramp,
             @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
+            @RequestParam(value = "closed", required = false, defaultValue = "false")
+                    boolean closed,
             final HttpServletResponse response)
             throws IOException {
         if (cachingTime > 0) {
@@ -173,7 +175,8 @@ public class RasterizerController extends BaseSLDServiceController {
                                     colormapType,
                                     startColor,
                                     endColor,
-                                    midColor);
+                                    midColor,
+                                    closed);
 
                 } catch (Exception e) {
                     throw new InvalidSymbolizer();
@@ -220,15 +223,17 @@ public class RasterizerController extends BaseSLDServiceController {
             final int colorMapType,
             String startColor,
             String endColor,
-            String midColor)
+            String midColor,
+            boolean closed)
             throws Exception {
         StyleBuilder sb = new StyleBuilder();
 
         ColorMap resampledColorMap = null;
 
         if (classes > 0) {
-            final String[] labels = new String[classes + 1];
-            final double[] quantities = new double[classes + 1];
+            final int extraClasses = closed ? 2 : 1;
+            final String[] labels = new String[classes + extraClasses];
+            final double[] quantities = new double[classes + extraClasses];
 
             ColorRamp colorRamp;
             quantities[0] = min - DEFAULT_MIN_DECREMENT;
@@ -281,12 +286,22 @@ public class RasterizerController extends BaseSLDServiceController {
             List<Color> realColorRamp = new ArrayList<Color>();
             realColorRamp.add(Color.BLACK);
             realColorRamp.addAll(colorRamp.getRamp());
+            if (closed) {
+                realColorRamp.add(Color.BLACK);
+                quantities[quantities.length - 1] = max + DEFAULT_MIN_DECREMENT;
+                labels[labels.length - 1] = "transparent";
+            }
 
             resampledColorMap =
                     sb.createColorMap(
                             labels, quantities, realColorRamp.toArray(new Color[1]), colorMapType);
             FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(null);
             resampledColorMap.getColorMapEntry(0).setOpacity(filterFactory.literal(0));
+            if (closed) {
+                resampledColorMap
+                        .getColorMapEntry(resampledColorMap.getColorMapEntries().length - 1)
+                        .setOpacity(filterFactory.literal(0));
+            }
         } else {
             return defaultStyle.getStyle();
         }

@@ -1,16 +1,8 @@
 <#global pagetitle=model.id>
 <#global pagepath="/collections/"+model.id>
-<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"/collections'>Collections</a><b>"+model.id+"</b>">
+<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'><a href='"+serviceLink("collections")+"'>Collections</a></li><li class='breadcrumb-item active'>"+model.id+"</li>">
 <#include "common-header.ftl">
-  <div id="breadcrumb" class="py-2 mb-4">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-0">
-        <#--  <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="#">Library</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Data</li>  -->
-      </ol>
-    </nav>
-  </div>
+
   <div class="row">
     <div class="col-xs col-md-6 col-lg-8">
       <div class="card my-4">

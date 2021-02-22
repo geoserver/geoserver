@@ -15,9 +15,15 @@
     <a href="${serviceLink("")}"></a>
   </header>
   <#if pagecrumbs??>
-    <div id="crumbs">
-    ${pagecrumbs}
+  <div id="breadcrumb" class="py-2 mb-4">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          ${pagecrumbs}
+        </ol>
+      </nav>
     </div>
+  </div>
   </#if>
   <main>
     <div id="content" class="container">

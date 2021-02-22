@@ -1,16 +1,5 @@
-<#global pagetitle=service.title!"GeoServer Features 1.0 Service">
-<#global pagepath="/">
-<#global pagecrumbs="<b>Home</b>">
+<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
 <#include "common-header.ftl">
-  <div id="breadcrumb" class="py-2 mb-4">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-0">
-        <#--  <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="#">Library</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Data</li>  -->
-      </ol>
-    </nav>
-  </div>
 
   <h1>${service.title!"GeoServer Features 1.0 Service"}</h1>
   <p class="my-4">
@@ -64,6 +53,7 @@
     </div>
 
   </div>
+
   <h2>Contact information</h2>
   <address>
     <ul>

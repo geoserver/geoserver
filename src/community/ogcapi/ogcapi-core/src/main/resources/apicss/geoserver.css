@@ -28,6 +28,9 @@ h2 {
 a {
   color: var(--bs-blue);
 }
+p {
+  max-width: 1000px;
+}
 .btn-outline-primary {
   color: var(--bs-blue);
   border-color: var(--bs-blue);
@@ -48,13 +51,4 @@ header a {
   width: 220px;
   background: url(img/logo.png) no-repeat;
   display: block;
-#crumbs {
-  background-color: #c6e09b;
-  margin-top: -5px;
-  padding: 10px;
-}
-#crumbs a:before, #crumbs b:before {
-  content: ">>";
-  font-size: x-small;
-  padding: 5px;
 }

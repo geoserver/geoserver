@@ -70,7 +70,7 @@ import org.opengis.filter.PropertyIsEqualTo;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class JDBCOpenSearchAccess implements OpenSearchAccess {
+public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.OpenSearchAccess {
 
     protected static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -102,7 +102,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     private GeoServer geoServer;
 
-    private LowercasingDataStore delegateStoreCache;
+    private org.geoserver.opensearch.eo.store.LowercasingDataStore delegateStoreCache;
     private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache =
             new SoftValueHashMap<>();
 
@@ -132,7 +132,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder typeBuilder = new OrderedTypeBuilder();
+        TypeBuilder typeBuilder = new org.geoserver.opensearch.eo.store.OrderedTypeBuilder();
 
         // map the source attributes
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
@@ -174,7 +174,10 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         typeBuilder.add(metadataDescriptor);
 
         // adding the layer publishing property
-        Name layerPropertyName = new NameImpl(this.namespaceURI, OpenSearchAccess.LAYERS);
+        Name layerPropertyName =
+                new NameImpl(
+                        this.namespaceURI,
+                        org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS);
         AttributeDescriptor layerDescriptor =
                 buildFeatureListDescriptor(
                         LAYERS_PROPERTY_NAME, delegate.getSchema("collection_ogclink"));
@@ -216,7 +219,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
 
-        TypeBuilder typeBuilder = new OrderedTypeBuilder();
+        TypeBuilder typeBuilder = new org.geoserver.opensearch.eo.store.OrderedTypeBuilder();
 
         // map the source attributes
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
@@ -296,7 +299,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         if (delegateStoreCache != null && delegateStoreCache.wraps(store)) {
             return delegateStoreCache;
         }
-        LowercasingDataStore result = new LowercasingDataStore(store);
+        org.geoserver.opensearch.eo.store.LowercasingDataStore result =
+                new org.geoserver.opensearch.eo.store.LowercasingDataStore(store);
         this.delegateStoreCache = result;
         return result;
     }
@@ -339,7 +343,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 .forEach(
                         (name, layers) -> {
                             if (layers != null && !layers.isEmpty()) {
-                                for (CollectionLayer layer : layers) {
+                                for (org.geoserver.opensearch.eo.store.CollectionLayer layer :
+                                        layers) {
                                     setupLayerFeatureTypes(names, name, layer);
                                 }
                             } else {
@@ -351,7 +356,9 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     private void setupLayerFeatureTypes(
-            LinkedHashSet<Name> names, String name, CollectionLayer layer) {
+            LinkedHashSet<Name> names,
+            String name,
+            org.geoserver.opensearch.eo.store.CollectionLayer layer) {
         if (layer != null
                 && layer.isSeparateBands()
                 && layer.getBands() != null
@@ -360,27 +367,34 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             for (String band : layer.getBands()) {
                 names.add(
                         new NameImpl(
-                                namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
+                                namespaceURI,
+                                name
+                                        + org.geoserver.opensearch.eo.store.OpenSearchAccess
+                                                .BAND_LAYER_SEPARATOR
+                                        + band));
             }
         } else {
             names.add(new NameImpl(namespaceURI, name));
         }
     }
 
-    private Map<String, List<CollectionLayer>> getCollectionPublishingConfigurations()
-            throws IOException {
+    private Map<String, List<org.geoserver.opensearch.eo.store.CollectionLayer>>
+            getCollectionPublishingConfigurations() throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
         query.setPropertyNames(new String[] {COLLECTION_NAME, LAYERS});
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        Map<String, List<CollectionLayer>> result = new LinkedHashMap<>();
+        Map<String, List<org.geoserver.opensearch.eo.store.CollectionLayer>> result =
+                new LinkedHashMap<>();
         features.accepts(
                 f -> {
                     Property p = f.getProperty(COLLECTION_NAME);
                     String name = (String) p.getValue();
-                    List<CollectionLayer> configs = null;
+                    List<org.geoserver.opensearch.eo.store.CollectionLayer> configs = null;
                     try {
-                        configs = CollectionLayer.buildCollectionLayersFromFeature(f);
+                        configs =
+                                org.geoserver.opensearch.eo.store.CollectionLayer
+                                        .buildCollectionLayersFromFeature(f);
                         result.put(name, configs);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -426,12 +440,18 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public SimpleFeatureSource getCollectionGranulesSource(String typeName) throws IOException {
-        int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
+        int idx =
+                typeName.lastIndexOf(
+                        org.geoserver.opensearch.eo.store.OpenSearchAccess.BAND_LAYER_SEPARATOR);
         String collection, band;
         // the two parts must be non empty in order to have a valid combination
         if (idx > 1 && idx < (typeName.length() - 3)) {
             collection = typeName.substring(0, idx);
-            band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());
+            band =
+                    typeName.substring(
+                            idx
+                                    + org.geoserver.opensearch.eo.store.OpenSearchAccess
+                                            .BAND_LAYER_SEPARATOR.length());
         } else {
             collection = typeName;
             band = null;
@@ -635,11 +655,13 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
-        return new JDBCProductFeatureStore(this, productFeatureType);
+        return new org.geoserver.opensearch.eo.store.JDBCProductFeatureStore(
+                this, productFeatureType);
     }
 
     public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType);
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                this, collectionFeatureType);
     }
 
     @Override
@@ -708,7 +730,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         final SimpleFeatureStore granulesStore =
                 (SimpleFeatureStore) delegate.getFeatureSource(granuleTableName);
         try {
-            return new WritableDataView(granulesStore, granulesQuery) {
+            return new org.geoserver.opensearch.eo.store.WritableDataView(
+                    granulesStore, granulesQuery) {
                 public java.util.List<org.opengis.filter.identity.FeatureId> addFeatures(
                         org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature>
                                 featureCollection)
@@ -737,13 +760,16 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     @Override
     public SimpleFeatureType getCollectionLayerSchema() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType)
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                        this, collectionFeatureType)
                 .getCollectionLayerSchema();
     }
 
     @Override
     public SimpleFeatureType getOGCLinksSchema() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType).getOGCLinksSchema();
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                        this, collectionFeatureType)
+                .getOGCLinksSchema();
     }
 
     void clearFeatureSourceCaches() {

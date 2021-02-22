@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
@@ -17,6 +16,7 @@ import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
+import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;

@@ -4,7 +4,7 @@
  */
 package org.geoserver.opensearch.eo;
 
-import static org.geoserver.opensearch.eo.JDBCOpenSearchAccessTest.GS_PRODUCT;
+import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
@@ -23,6 +23,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCDataStore;

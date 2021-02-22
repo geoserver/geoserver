@@ -21,7 +21,8 @@
     <name>OpenSearch EO parent</name>
 
     <modules>
-      <module>oseo-core</module> 
+      <module>oseo-core</module>  
+      <module>oseo-service</module> 
       <module>oseo-rest</module>
       <module>web-oseo</module>
     </modules>

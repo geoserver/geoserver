@@ -109,7 +109,8 @@ public class CollectionLayer {
             throws IOException {
         // map to a single bean
         List<CollectionLayer> result = new ArrayList<>();
-        Collection<Property> layers = feature.getProperties(OpenSearchAccess.LAYERS);
+        Collection<Property> layers =
+                feature.getProperties(org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS);
         if (layers != null) {
             for (Property p : layers) {
                 SimpleFeature lf = (SimpleFeature) p;

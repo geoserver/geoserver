@@ -10,6 +10,8 @@ import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
@@ -90,6 +92,7 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
     @Override
     protected void postProcess(
             StoreType storeType,
+            ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
             TaskRunnable<GSResourceEncoder> update)
@@ -102,17 +105,29 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
                                         new BatchContext.Dependency() {
                                             @Override
                                             public void revert() throws TaskException {
-                                                DbTable table =
-                                                        (DbTable)
-                                                                ctx.getBatchContext()
-                                                                        .get(
-                                                                                ctx.getParameterValues()
-                                                                                        .get(
-                                                                                                PARAM_TABLE_NAME));
                                                 GSFeatureTypeEncoder re =
                                                         new GSFeatureTypeEncoder(false);
-                                                re.setNativeName(
-                                                        SqlUtil.notQualified(table.getTableName()));
+
+                                                if (resource.getMetadata()
+                                                        .containsKey(
+                                                                FeatureTypeInfo
+                                                                        .JDBC_VIRTUAL_TABLE)) {
+                                                    // virtual table, resource must be attached to
+                                                    // SQL query
+                                                    // in metadata, rather than just table name
+                                                    re.setNativeName(resource.getNativeName());
+                                                } else {
+                                                    DbTable table =
+                                                            (DbTable)
+                                                                    ctx.getBatchContext()
+                                                                            .get(
+                                                                                    ctx.getParameterValues()
+                                                                                            .get(
+                                                                                                    PARAM_TABLE_NAME));
+                                                    re.setNativeName(
+                                                            SqlUtil.notQualified(
+                                                                    table.getTableName()));
+                                                }
                                                 update.run(re);
                                             }
                                         });

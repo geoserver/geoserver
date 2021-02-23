@@ -109,31 +109,37 @@ public class MetadataTemplateSyncTaskTypeImpl implements TaskType {
         List<String> failedLayers = new ArrayList<>();
         for (String resourceId : template.getLinkedLayers()) {
             final ResourceInfo resource = catalog.getResource(resourceId, ResourceInfo.class);
-            final StoreInfo store = resource.getStore();
-            final StoreType storeType =
-                    store instanceof CoverageStoreInfo
-                            ? StoreType.COVERAGESTORES
-                            : StoreType.DATASTORES;
-            final String ws = store.getWorkspace().getName();
-            String storeName;
-            RESTLayer restLayer = restManager.getReader().getLayer(ws, resource.getName());
-            if (restLayer == null) {
-                failedLayers.add(resource.prefixedName());
-            } else {
-                Pattern pattern =
-                        Pattern.compile(
-                                "rest/workspaces/" + ws + "/" + storeType.toString() + "/([^/]*)/");
-                Matcher matcher = pattern.matcher(restLayer.getResourceUrl());
-                if (!matcher.find()) {
+            if (resource != null) {
+                final StoreInfo store = resource.getStore();
+                final StoreType storeType =
+                        store instanceof CoverageStoreInfo
+                                ? StoreType.COVERAGESTORES
+                                : StoreType.DATASTORES;
+                final String ws = store.getWorkspace().getName();
+                String storeName;
+                RESTLayer restLayer = restManager.getReader().getLayer(ws, resource.getName());
+                if (restLayer == null) {
                     failedLayers.add(resource.prefixedName());
                 } else {
-                    storeName = matcher.group(1);
-                    // sync resource
-                    GSResourceEncoder re = catalogUtil.syncMetadata(resource);
-                    if (!restManager
-                            .getPublisher()
-                            .configureResource(ws, storeType, storeName, re)) {
+                    Pattern pattern =
+                            Pattern.compile(
+                                    "rest/workspaces/"
+                                            + ws
+                                            + "/"
+                                            + storeType.toString()
+                                            + "/([^/]*)/");
+                    Matcher matcher = pattern.matcher(restLayer.getResourceUrl());
+                    if (!matcher.find()) {
                         failedLayers.add(resource.prefixedName());
+                    } else {
+                        storeName = matcher.group(1);
+                        // sync resource
+                        GSResourceEncoder re = catalogUtil.syncMetadata(resource);
+                        if (!restManager
+                                .getPublisher()
+                                .configureResource(ws, storeType, storeName, re)) {
+                            failedLayers.add(resource.prefixedName());
+                        }
                     }
                 }
             }

@@ -207,6 +207,9 @@ public class ExtTypes {
                                 geoServer
                                         .getCatalog()
                                         .getNamespaceByPrefix(dependsOnRawValues.get(0));
+                        if (ns == null) {
+                            return null;
+                        }
                         return geoServer
                                 .getCatalog()
                                 .getLayerByName(new NameImpl(ns.getURI(), value));

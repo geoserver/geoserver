@@ -193,12 +193,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
         SortedSet<String> workspaces = new TreeSet<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
-            if (wi.getName().equals(configurationModel.getObject().getWorkspace())
-                    || TaskManagerBeans.get()
-                            .getSecUtil()
-                            .isAdminable(getSession().getAuthentication(), wi)) {
+            if (TaskManagerBeans.get()
+                    .getSecUtil()
+                    .isAdminable(getSession().getAuthentication(), wi)) {
                 workspaces.add(wi.getName());
             }
+        }
+        if (configurationModel.getObject().getWorkspace() != null) {
+            workspaces.add(configurationModel.getObject().getWorkspace());
         }
         boolean canBeNull =
                 GeoServerApplication.get().getCatalog().getDefaultWorkspace() != null
@@ -590,7 +592,6 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 final GeoServerTablePanel<Task> thisPanel = this;
                 if (property.equals(TasksModel.NAME)) {
                     IModel<String> nameModel = (IModel<String>) property.getModel(itemModel);
-                    String oldName = nameModel.getObject();
                     return new SimpleAjaxSubmitLink(id, nameModel) {
 
                         private static final long serialVersionUID = 2023797271780630795L;
@@ -649,16 +650,21 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                         @Override
                                         protected boolean onSubmit(
                                                 AjaxRequestTarget target, Component contents) {
-                                            configurationModel
-                                                    .getObject()
-                                                    .getTasks()
-                                                    .remove(oldName);
-                                            configurationModel
-                                                    .getObject()
-                                                    .getTasks()
-                                                    .put(
-                                                            nameModel.getObject(),
-                                                            itemModel.getObject());
+                                            // rebuild map so that the key is changed by order
+                                            // remains the same
+                                            ArrayList<Task> tasks =
+                                                    new ArrayList<>(
+                                                            configurationModel
+                                                                    .getObject()
+                                                                    .getTasks()
+                                                                    .values());
+                                            configurationModel.getObject().getTasks().clear();
+                                            for (Task task : tasks) {
+                                                configurationModel
+                                                        .getObject()
+                                                        .getTasks()
+                                                        .put(task.getName(), task);
+                                            }
                                             target.add(thisPanel);
                                             return true;
                                         }

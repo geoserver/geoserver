@@ -45,13 +45,21 @@ public class DropDownPanel extends Panel {
         super(id, model);
 
         boolean custom = choiceModel.getObject().contains("");
-        boolean useDropDown = !custom || choiceModel.getObject().contains(model.getObject());
+        boolean inList = choiceModel.getObject().contains(model.getObject());
+        boolean useDropDown = !custom || inList;
+        IModel<? extends List<? extends String>> newChoiceModel = choiceModel;
+        if (!custom && !inList && model.getObject() != null) {
+            ArrayList<String> list = new ArrayList<>();
+            list.addAll(choiceModel.getObject());
+            list.add(model.getObject());
+            newChoiceModel = new Model<ArrayList<? extends String>>(list);
+        }
         add(new Label("message", labelModel));
         add(
                 new DropDownChoice<String>(
                                 "dropdown",
                                 useDropDown ? model : new Model<String>(""),
-                                choiceModel)
+                                newChoiceModel)
                         .setNullValid(nullValid && !custom));
         add(new TextField<String>("custom", model).setVisible(!useDropDown));
 
@@ -74,6 +82,17 @@ public class DropDownPanel extends Panel {
                                     }
                                     getTextField().setVisible(!useDropDown);
                                     target.add(DropDownPanel.this);
+                                }
+                            });
+        } else if (!inList) {
+            getDropDownChoice()
+                    .add(
+                            new OnChangeAjaxBehavior() {
+                                private static final long serialVersionUID = -7816987770470912413L;
+
+                                @Override
+                                protected void onUpdate(AjaxRequestTarget target) {
+                                    getDropDownChoice().setChoices(choiceModel);
                                 }
                             });
         }

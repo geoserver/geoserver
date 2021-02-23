@@ -9,7 +9,7 @@
     The tile matrix composing the set are reported in the following table.
   </p>
 
-  <div class="table-responsive">
+  <div class="table-responsive-xs">
     <table class="table table-striped table-hover table-bordered">
       <thead>
         <tr>

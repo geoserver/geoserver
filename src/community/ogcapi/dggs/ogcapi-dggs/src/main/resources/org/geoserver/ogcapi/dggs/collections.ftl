@@ -8,7 +8,7 @@
   
   <div class="row">
     <#list model.collections as collection>
-    <div class="col-4 pb-4">
+    <div class="col-xs-12 col-md-6 col-lg-4 pb-4">
       <div class="card h-100">
         <div class="card-header">
           <h2><a href="${serviceLink("collections/${collection.id}")}">${collection.id}</a></h2>

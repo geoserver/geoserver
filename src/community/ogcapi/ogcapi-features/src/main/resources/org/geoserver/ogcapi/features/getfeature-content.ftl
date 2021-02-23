@@ -12,7 +12,7 @@
 
   <div class="row">
     <div class="col-xs col-lg-8">
-      <div class="table-responsive">
+      <div class="table-responsive-xs">
         <table class="table table-striped table-hover table-bordered">
           <thead>
             <tr>

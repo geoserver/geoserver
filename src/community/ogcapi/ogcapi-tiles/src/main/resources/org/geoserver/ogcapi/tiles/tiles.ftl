@@ -39,7 +39,7 @@
     </div>
     <#list model.tileMatrixSetLinks as tms>
     <div class="card-body">
-      <div class="table-responsive">
+      <div class="table-responsive-xs">
         <table class="table table-striped table-hover table-bordered">
           <thead>
             <tr class="table-info">

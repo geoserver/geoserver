@@ -74,6 +74,9 @@ public class FeatureTemplate {
         // TODO: this may be somethign we want to configure/change
         templateConfig.setLocale(Locale.US);
         templateConfig.setNumberFormat("0.###########");
+
+        // encoding
+        templateConfig.setDefaultEncoding("UTF-8");
     }
 
     /** The pattern used by DATETIME_FORMAT */
@@ -314,7 +317,6 @@ public class FeatureTemplate {
         synchronized (templateConfig) {
             templateConfig.setTemplateLoader(templateLoader);
             t = templateConfig.getTemplate(template);
-            t.setEncoding("UTF-8");
         }
         templateCache.put(key, t);
         return t;

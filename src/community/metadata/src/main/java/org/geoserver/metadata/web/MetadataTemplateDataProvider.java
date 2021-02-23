@@ -15,7 +15,14 @@ public class MetadataTemplateDataProvider extends GeoServerDataProvider<Metadata
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static final Property<MetadataTemplate> PRIORITY =
-            new BeanProperty<MetadataTemplate>("priority", "");
+            new AbstractProperty<MetadataTemplate>("priority") {
+                private static final long serialVersionUID = -1889227419206718295L;
+
+                @Override
+                public Object getPropertyValue(MetadataTemplate item) {
+                    return null;
+                }
+            };
 
     public static final Property<MetadataTemplate> NAME =
             new BeanProperty<MetadataTemplate>("name", "name");

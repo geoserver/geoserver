@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.Template;
@@ -141,7 +143,7 @@ public class TextDecoration implements MapDecoration {
                         "name",
                         new StringReader(messageTemplate),
                         TemplateUtils.getSafeConfiguration());
-        final BeansWrapper bw = new BeansWrapper();
+        final BeansWrapper bw = new BeansWrapper(FM_VERSION);
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 t,
                 new TemplateHashModel() {

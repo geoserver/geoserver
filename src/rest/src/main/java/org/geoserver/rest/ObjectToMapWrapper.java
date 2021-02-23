@@ -4,9 +4,12 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.MapModel;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -41,6 +44,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * classesToExpand will be unwrapped to a map
      */
     public ObjectToMapWrapper(Class<T> clazz, Collection<Class> classesToExpand) {
+        super(FM_VERSION);
         this.clazz = clazz;
         this.classesToExpand = classesToExpand;
     }
@@ -77,7 +81,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object instanceof Collection) {
             Collection c = (Collection) object;
             if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
-                SimpleHash hash = new SimpleHash();
+                SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
                 hash.put("values", new CollectionModel(c, this));
                 setRequestInfo(hash);
                 wrapInternal(hash, (Collection<T>) object);
@@ -87,7 +91,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object != null && clazz.isAssignableFrom(object.getClass())) {
             Map<String, Object> map = objectToMap(object, clazz);
 
-            SimpleHash model = new SimpleHash();
+            SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
             model.put("properties", new MapModel(map, this));
             model.put("className", clazz.getSimpleName());
             setRequestInfo(model);

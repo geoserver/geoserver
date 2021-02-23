@@ -113,7 +113,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 htmlDoc.replace("\\n", "")
                         .replace("\\r", "")
                         .indexOf(
-                                "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
+                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
         assertTrue(index > -1);
         index =
                 htmlDoc.replace("\\n", "")
@@ -300,7 +300,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         request.setFormat("application/openlayers");
 
         String htmlDoc = getAsHTML(map);
-        // System.out.println(htmlDoc);
         int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}");
 
         assertTrue(index > -1);
@@ -453,7 +452,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 htmlDoc.replace("\\n", "")
                         .replace("\\r", "")
                         .indexOf(
-                                "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
+                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
         assertTrue(index > -1);
         index =
                 htmlDoc.replace("\\n", "")

@@ -5,9 +5,12 @@
  */
 package org.geoserver.template;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
@@ -106,11 +109,13 @@ public class FeatureWrapper extends BeansWrapper {
     protected TemplateFeatureCollectionFactory templateFeatureCollectionFactory;
 
     public FeatureWrapper() {
+        super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = copyTemplateFeatureCollectionFactory;
     }
 
     public FeatureWrapper(TemplateFeatureCollectionFactory templateFeatureCollectionFactory) {
+        super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = templateFeatureCollectionFactory;
     }
@@ -201,7 +206,7 @@ public class FeatureWrapper extends BeansWrapper {
         // check for feature collection
         if (object instanceof FeatureCollection) {
             // create a model with just one variable called 'features'
-            SimpleHash map = new SimpleHash();
+            SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
             map.put(
                     "features",
                     templateFeatureCollectionFactory.createTemplateFeatureCollection(
@@ -243,7 +248,7 @@ public class FeatureWrapper extends BeansWrapper {
 
         // build up the result, feature type is represented by its name an
         // attributes
-        SimpleHash map = new SimpleHash();
+        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
         map.put("attributes", new SequenceMapModel(attributeMap, this));
         map.put("name", ft.getName().getLocalPart());
         map.put("namespace", getNamespace(ft.getName()));
@@ -254,7 +259,7 @@ public class FeatureWrapper extends BeansWrapper {
 
     private SimpleHash buildComplex(ComplexAttribute att) {
         // create the model
-        SimpleHash map = new SimpleHash();
+        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
 
         // next create the Map representing the per attribute useful
         // properties for a template

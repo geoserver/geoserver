@@ -188,6 +188,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             re.setAdvertised(false);
             postProcess(
                     storeType,
+                    resource,
                     re,
                     ctx,
                     new TaskRunnable<GSResourceEncoder>() {
@@ -470,11 +471,12 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
         return restManager
                 .getPublisher()
                 .removeStore(
-                        store.getWorkspace().getName(), storeName, storeType, false, Purge.NONE);
+                        store.getWorkspace().getName(), storeName, storeType, true, Purge.NONE);
     }
 
     protected void postProcess(
             StoreType storeType,
+            ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
             TaskRunnable<GSResourceEncoder> update)

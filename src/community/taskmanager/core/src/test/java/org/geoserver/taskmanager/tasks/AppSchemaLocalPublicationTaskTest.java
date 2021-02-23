@@ -53,6 +53,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
     private static final String VECTOR_NAME = "MappedFeature";
     private static final String ZIP_NAME = "GeologicUnit";
     private static final String DB_NAME = "myjndidb";
+    private static final String TABLE_NAME = "MappedFeature";
 
     // attributes
     private static final String ATT_FILE_SERVICE = "fileService";
@@ -60,6 +61,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_WORKSPACE = "workspace";
     private static final String ATT_LAYER = "layer";
     private static final String ATT_DATABASE = "database";
+    private static final String ATT_TABLE_NAME = "table-name";
     private static final String ATT_FAIL = "fail";
 
     @Autowired private TaskManagerDao dao;
@@ -168,6 +170,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_WORKSPACE, VECTOR_WS);
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, VECTOR_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_DATABASE, DB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
         config = dao.save(config);
 
         Trigger trigger =
@@ -190,6 +193,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
             String pubStr = IOUtils.toString(is, "UTF-8");
             assertTrue(pubStr.indexOf("<value>myjndi</value>") > 0);
             assertTrue(pubStr.indexOf("<value>gw_beleid</value>") > 0);
+            assertTrue(pubStr.indexOf("<sourceType>MappedFeature</sourceType>") > 0);
         }
 
         taskUtil.cleanup(config);
@@ -228,12 +232,14 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
             String pubStr = IOUtils.toString(is, "UTF-8");
             assertTrue(pubStr.indexOf("<value>myjndi</value>") > 0);
             assertTrue(pubStr.indexOf("<value>gw_beleid</value>") > 0);
+            assertTrue(pubStr.indexOf("<sourceType>GeologicUnit</sourceType>") > 0);
         }
         assertTrue(fileService.checkFileExists(ZIP_LOCATION_PUB_2));
         try (InputStream is = fileService.read(ZIP_LOCATION_PUB_2)) {
             String pubStr = IOUtils.toString(is, "UTF-8");
             assertTrue(pubStr.indexOf("<value>myjndi</value>") > 0);
             assertTrue(pubStr.indexOf("<value>gw_beleid</value>") > 0);
+            assertTrue(pubStr.indexOf("<sourceType>MappedFeature</sourceType>") > 0);
         }
 
         taskUtil.cleanup(config);

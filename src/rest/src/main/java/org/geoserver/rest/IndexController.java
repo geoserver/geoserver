@@ -4,6 +4,9 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import java.util.*;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -41,7 +44,7 @@ public class IndexController extends RestBaseController {
     )
     public RestWrapper get() {
 
-        SimpleHash model = new SimpleHash();
+        SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
         model.put("links", getLinks());
         model.put("page", RequestInfo.get());
 

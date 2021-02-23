@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -37,7 +38,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
     public void test() throws Exception {
         Configuration cfg = TemplateUtils.getSafeConfiguration();
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
-        cfg.setObjectWrapper(new BeansWrapper());
+        cfg.setObjectWrapper(new BeansWrapper(FM_VERSION));
 
         Template template = cfg.getTemplate("OpenLayers2MapTemplate.ftl");
         assertNotNull(template);

@@ -4,9 +4,12 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import com.thoughtworks.xstream.XStream;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModel;
@@ -99,22 +102,25 @@ public class AboutStatusController extends RestBaseController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new BeansWrapper() {
+        return new BeansWrapper(FM_VERSION) {
             @Override
             public TemplateModel wrap(Object obj) throws TemplateModelException {
                 if (obj instanceof List) { // we expect List of ModuleStatus
                     List<?> list = (List<?>) obj;
-                    SimpleHash hash = new SimpleHash();
+                    SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
                     hash.put(
                             "values",
                             new CollectionModel(
                                     list,
-                                    new BeansWrapper() {
+                                    new BeansWrapper(FM_VERSION) {
                                         public TemplateModel wrap(Object object)
                                                 throws TemplateModelException {
                                             if (object instanceof ModuleStatus) {
                                                 ModuleStatus status = (ModuleStatus) object;
-                                                SimpleHash hash = new SimpleHash();
+                                                SimpleHash hash =
+                                                        new SimpleHash(
+                                                                new DefaultObjectWrapper(
+                                                                        FM_VERSION));
                                                 hash.put("module", status.getModule());
                                                 hash.put("name", status.getName());
                                                 hash.put(

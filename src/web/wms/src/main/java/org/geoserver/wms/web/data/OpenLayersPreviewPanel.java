@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -67,7 +69,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     static {
         templates = TemplateUtils.getSafeConfiguration();
         templates.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
-        templates.setObjectWrapper(new DefaultObjectWrapper());
+        templates.setObjectWrapper(new DefaultObjectWrapper(FM_VERSION));
     }
 
     final Random rand = new Random();

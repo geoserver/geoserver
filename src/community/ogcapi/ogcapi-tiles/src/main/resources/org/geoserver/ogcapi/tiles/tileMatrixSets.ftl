@@ -1,9 +1,15 @@
+<#global pagetitle="Tile matrix sets">
+<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item'><a href='"+serviceLink("collections")+"'>Collections</a></li><li class='breadcrumb-item active'>"+pagetitle+"</li>">
 <#include "common-header.ftl">
-       <h2>Tile matrix sets</h2>
-       <p>This document lists all the available tile matrix sets, linking to their definitions:<br/>
-       <ul>
-       <#list model.tileMatrixSets as tileMatrixSet>
-           <li><a href="${serviceLink("/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.identifier}</a></h2>
-       </#list>
-       </ul>
+
+  <h1>${pagetitle}</h1>
+  <p class="my-4">
+    This document lists all the available tile matrix sets, linking to their definitions:<br/>
+  </P>
+
+  <ul>
+  <#list model.tileMatrixSets as tileMatrixSet>
+      <li><a href="${serviceLink("/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.identifier}</a></LI>
+  </#list>
+  </ul>
 <#include "common-footer.ftl">

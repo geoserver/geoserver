@@ -1,5 +1,6 @@
-      <ul>
-      <#if collection.title??> 
+<div class="card-body">
+  <ul>
+    <#if collection.title??> 
       <li><b>Title</b>: <span id="${collection.htmlId}_title">${collection.title}</span><br/></li>
       </#if>
       <#if collection.description??>
@@ -13,15 +14,7 @@
       </#list>
       </ul>
       </li>
-      <li>Data as <a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('items', 'text/html')!}&limit=${service.maxNumberOfFeaturesForPreview}">HTML</a>.           
-      Collection items are also available in the following formats:
-      <select onchange="window.open(this.options[this.selectedIndex].value + '&limit=${service.maxNumberOfFeaturesForPreview}');this.selectedIndex=0" >
-      <option value="none" selected>--Please choose an option--</option>
-      <#list collection.getLinksExcept("items", "text/html") as link>
-      <option value="${link.href}">${link.type}</option>
-      </#list>
-      </select>
-      </li>
+      
       <li>Queryables as <a id="html_${collection.htmlId}_queryables" href="${collection.getLinkUrl('queryables', 'text/html')!}">HTML</a>.
       </li>
       <#if collection.mapPreviewURL??>
@@ -29,5 +22,22 @@
       </#if>
       <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
       ${htmlExtensions(collection)}
-      </ul>
+  </ul>
+</div>
+<div class="card-footer">
+  <div class="row">
+    <div class="col-auto pe-0 py-1">
+      Data as <a id="html_${collection.htmlId}_link" class="btn btn-outline-primary btn-sm" href="${collection.getLinkUrl('items', 'text/html')!}&limit=${service.maxNumberOfFeaturesForPreview}">HTML</a>    
+      or choose another format:
+    </div>
+    <div class="col-auto py-1">
+      <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value + '&limit=${service.maxNumberOfFeaturesForPreview}');this.selectedIndex=0" >
+        <option value="none" selected>-- Please choose a format --</option>
+        <#list collection.getLinksExcept("items", "text/html") as link>
+        <option value="${link.href}">${link.type}</option>
+        </#list>
+      </select>
+    </div>
+  </div>
+</div>
       

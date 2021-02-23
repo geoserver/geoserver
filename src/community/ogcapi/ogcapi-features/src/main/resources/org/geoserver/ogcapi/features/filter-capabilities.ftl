@@ -1,3 +1,4 @@
+<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>Filter capabilities</li>">
 <#include "common-header.ftl">
        <h2>Filter capabilities</h2>
        <#list model.capabilities as capability>

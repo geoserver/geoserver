@@ -1,3 +1,6 @@
+<#global pagetitle=model.id>
+<#global pagepath="/collections/"+model.id>
+<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"/collections'>Collections</a><b>"+model.id+"</b>">
 <#include "common-header.ftl">
        <h2>GeoServer Image Mosaics Collections</h2>
        <p>This document lists all the image collections available in the Images service.<br/>

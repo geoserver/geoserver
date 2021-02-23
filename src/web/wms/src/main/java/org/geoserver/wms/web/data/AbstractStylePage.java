@@ -613,6 +613,23 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                 };
         add(cancelLink);
+
+        // add additional style components that may be used e.g. by extensions
+        List<StyleComponentInfo> compInfo =
+                getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
+        for (StyleComponentInfo comp : compInfo) {
+            try {
+                Class<?> component = comp.getComponentClass();
+                Component c =
+                        (Component)
+                                component
+                                        .getConstructor(String.class, AbstractStylePage.class)
+                                        .newInstance(comp.getId(), this);
+                styleForm.add(c);
+            } catch (Exception e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
     }
 
     StyleHandler styleHandler() {

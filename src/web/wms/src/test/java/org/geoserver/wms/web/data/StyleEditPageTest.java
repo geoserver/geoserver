@@ -35,6 +35,7 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
@@ -78,6 +79,12 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     StyleInfo buildingsStyle;
     StyleEditPage edit;
+
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath*:/org/geoserver/wms/web/data/StyleComponentBean.xml");
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -956,5 +963,38 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testStyleComponents() {
+        // Reload the page
+        tester.startPage(
+                new StyleEditPage(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart())));
+
+        // check for correct bean initialization
+        getGeoServerApplication().getApplicationContext().getBean("style-component-mock");
+
+        // check for correct registration by Extension
+        List<StyleComponentInfo> compInfo =
+                getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
+        assertEquals(1, compInfo.size());
+
+        // check for correct embedding in page
+        tester.assertComponent(
+                "styleForm:style-component-mock", StyleEditPageTest.MockStyleComponent.class);
+    }
+
+    public static class MockStyleComponentInfo extends StyleComponentInfo {
+        public MockStyleComponentInfo(String id, AbstractStylePage clazz) {
+            super("test", clazz);
+        }
+
+        public MockStyleComponentInfo() {}
+    }
+
+    public static class MockStyleComponent extends Panel {
+        public MockStyleComponent(String id, AbstractStylePage clazz) {
+            super("style-component-mock");
+        }
     }
 }

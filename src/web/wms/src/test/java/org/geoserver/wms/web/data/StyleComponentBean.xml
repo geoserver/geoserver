@@ -1,0 +1,8 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="style-component-mock" class="org.geoserver.wms.web.data.StyleEditPageTest$MockStyleComponentInfo">
+        <property name="id" value="MyStyleComponent"/>
+        <property name="componentClass" value="org.geoserver.wms.web.data.StyleEditPageTest$MockStyleComponent"/>
+    </bean>
+</beans>

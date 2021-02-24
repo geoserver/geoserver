@@ -20,6 +20,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geoserver.wcs2_0.response.MultidimensionalCoverageResponse;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
@@ -34,7 +35,9 @@ import ucar.ma2.InvalidRangeException;
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate, ApplicationContextAware {
+        implements CoverageResponseDelegate,
+                ApplicationContextAware,
+                MultidimensionalCoverageResponse {
 
     public static final Logger LOGGER =
             Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
@@ -44,7 +47,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(NetCDFUtilities.NETCDF), // output formats
+                Arrays.asList(NetCDFUtilities.NETCDF, NetCDFUtilities.NETCDF4),
                 new HashMap<String, String>() { // file extensions
                     {
                         put(NetCDFUtilities.NETCDF, "nc");

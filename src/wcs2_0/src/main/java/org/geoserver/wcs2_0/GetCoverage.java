@@ -49,14 +49,17 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStackImpl;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
+import org.geoserver.wcs2_0.response.MultidimensionalCoverageResponse;
 import org.geoserver.wcs2_0.response.WCSDimensionsHelper;
 import org.geoserver.wcs2_0.response.WCSDimensionsSubsetHelper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -135,10 +138,17 @@ public class GetCoverage {
     private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
 
     static {
-        // TODO: This one should be pluggable through Extensions
+        List<CoverageResponseDelegate> delegates =
+                GeoServerExtensions.extensions(CoverageResponseDelegate.class);
         mdFormats = new HashSet<>();
-        mdFormats.add("application/x-netcdf");
-        mdFormats.add("application/x-netcdf4");
+        for (CoverageResponseDelegate delegate : delegates) {
+            if (delegate instanceof MultidimensionalCoverageResponse) {
+                List<String> formats = delegate.getOutputFormats();
+                for (String format : formats) {
+                    mdFormats.add(delegate.getMimeType(format));
+                }
+            }
+        }
     }
 
     /** Logger. */

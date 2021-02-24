@@ -14,10 +14,11 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.responses.BaseCoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs2_0.response.MultidimensionalCoverageResponse;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 public final class WCSResponseInterceptor extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate {
+        implements CoverageResponseDelegate, MultidimensionalCoverageResponse {
 
     public static final String MIME_TYPE = "application/custom";
 

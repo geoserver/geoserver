@@ -1,6 +1,5 @@
 <#global pagetitle=service.title!"GeoServer Images 1.0 Service">
-<#global pagepath="/collections/"+model.id>
-<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"/collections'>Collections</a><b>"+model.id+"</b>">
+<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
 <#include "common-header.ftl">
    <div id="content">
        <h2>${service.title!"GeoServer Images 1.0 Service"}</h2>

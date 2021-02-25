@@ -8,16 +8,6 @@
         <constructor-arg ref="dataDirectory"/>
     </bean>
 
-    <bean id="jsonCallback" class="org.geoserver.featurestemplating.request.JsonTemplateCallback">
-        <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="templateConfiguration"/>
-    </bean>
-
-    <bean id="jsonCallbackOGC" class="org.geoserver.featurestemplating.request.JsonTemplateCallBackOGC">
-        <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="templateConfiguration"/>
-    </bean>
-
     <bean id="JSONLDGetFeatureResponse" class="org.geoserver.featurestemplating.response.JSONLDGetFeatureResponse">
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="templateConfiguration"/>

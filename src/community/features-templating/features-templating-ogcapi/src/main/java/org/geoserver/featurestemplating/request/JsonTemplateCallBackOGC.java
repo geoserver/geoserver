@@ -29,10 +29,12 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -49,6 +51,8 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     private TemplateConfiguration configuration;
 
     private GeoServer gs;
+
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public JsonTemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
         this.catalog = gs.getCatalog();
@@ -156,7 +160,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         templateFilters.addAll(visitor.getFilters());
         if (templateFilters != null && templateFilters.size() > 0) {
             templateFilters.add(f);
-            f = JsonTemplateCallback.ff.and(templateFilters);
+            f = FF.and(templateFilters);
         }
         // Taking back a string from Function cause
         // OGC API get a string cql filter from query string

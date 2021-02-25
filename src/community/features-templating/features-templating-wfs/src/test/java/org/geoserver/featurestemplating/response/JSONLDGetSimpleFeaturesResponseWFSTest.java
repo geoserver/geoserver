@@ -8,10 +8,9 @@ import static org.junit.Assert.*;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 
-public class JSONLDGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestSupport {
+public class JSONLDGetSimpleFeaturesResponseWFSTest extends JSONLDGetSimpleFeaturesResponseTest {
 
     @Test
     public void testJsonLdResponse() throws Exception {
@@ -19,21 +18,6 @@ public class JSONLDGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestS
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=cite:NamedPlaces&outputFormat=");
         sb.append("application%2Fld%2Bjson");
-        JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
-        JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 2);
-        checkFeature((JSONObject) features.get(0));
-    }
-
-    @Test
-    public void testJsonLdResponseOGCAPI() throws Exception {
-        setUpSimple("NamedPlaces.json");
-        StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
@@ -76,40 +60,5 @@ public class JSONLDGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestS
         JSONObject geometry = (JSONObject) feature.get("geometry");
         assertEquals(geometry.getString("@type"), "MultiPolygon");
         assertNotNull(geometry.getString("wkt"));
-    }
-
-    @Test
-    public void testJsonLdResponseOGCAPIWithFilter() throws Exception {
-        setUpSimple("NamedPlaces.json");
-        StringBuilder path =
-                new StringBuilder("ogc/features/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter= features.id = '118'")
-                        .append("&filter-lang=cql-text");
-        JSONObject result = (JSONObject) getJsonLd(path.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
-        JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 1);
-        JSONObject feature = (JSONObject) features.get(0);
-        assertEquals(feature.getString("id"), "118");
-        assertNotNull(feature.getString("name"), "Goose Island");
-        JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("@type"), "MultiPolygon");
-        assertNotNull(geometry.getString("wkt"));
-    }
-
-    private void checkFeature(JSONObject feature) {
-        assertNotNull(feature.getString("id"));
-        assertNotNull(feature.getString("name"));
-        JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("@type"), "MultiPolygon");
-        assertNotNull(geometry.getString("wkt"));
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.JSONLD.getFilename();
     }
 }

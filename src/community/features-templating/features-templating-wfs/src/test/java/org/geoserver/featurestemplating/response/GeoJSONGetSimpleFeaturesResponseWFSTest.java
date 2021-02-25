@@ -4,14 +4,16 @@
  */
 package org.geoserver.featurestemplating.response;
 
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 
-public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestSupport {
+public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFeaturesResponseTest {
 
     @Test
     public void testGeoJSONResponse() throws Exception {
@@ -19,22 +21,6 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=cite:NamedPlaces&outputFormat=");
         sb.append("application/json");
-        JSONObject result = (JSONObject) getJson(sb.toString());
-        JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 2);
-        for (int i = 0; i < features.size(); i++) {
-            checkFeature(features.getJSONObject(i));
-        }
-        checkAdditionalInfo(result);
-    }
-
-    @Test
-    public void testGeoJSONResponseOGCAPI() throws Exception {
-        setUpSimple("NamedPlacesGeoJSON.json");
-        StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);
@@ -76,40 +62,5 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         JSONObject geometry = (JSONObject) feature.get("geometry");
         assertEquals(geometry.getString("type"), "MultiPolygon");
         checkAdditionalInfo(result);
-    }
-
-    @Test
-    public void testGeoJSONResponseOGCAPIWithFilter() throws Exception {
-        setUpSimple("NamedPlacesGeoJSON.json");
-        StringBuilder path =
-                new StringBuilder("ogc/features/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application/json")
-                        .append("&filter= features.id = '118'")
-                        .append("&filter-lang=cql-text");
-        JSONObject result = (JSONObject) getJson(path.toString());
-        JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 1);
-        JSONObject feature = (JSONObject) features.get(0);
-        assertEquals(feature.getString("id"), "118");
-        assertNotNull(feature.getString("name"), "Goose Island");
-        JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("type"), "MultiPolygon");
-        checkAdditionalInfo(result);
-    }
-
-    private void checkFeature(JSONObject feature) {
-        assertNotNull(feature.getString("id"));
-        assertNotNull(feature.getString("name"));
-        JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("type"), "MultiPolygon");
-        JSONArray coordinates = geometry.getJSONArray("coordinates");
-        assertNotNull(coordinates);
-        assertFalse(coordinates.isEmpty());
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.JSON.getFilename();
     }
 }

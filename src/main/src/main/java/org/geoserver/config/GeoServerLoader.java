@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -51,12 +52,17 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.ExtensionFilter;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.util.Filter;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Initializes GeoServer configuration and catalog on startup.
@@ -271,37 +277,65 @@ public abstract class GeoServerLoader {
             if (bean instanceof Wrapper && ((Wrapper) bean).isWrapperFor(Catalog.class)) {
                 return bean;
             }
-
-            // load
-            try {
-                Catalog catalog = (Catalog) bean;
-                XStreamPersister xp = xpf.createXMLPersister();
-                xp.setCatalog(catalog);
-                loadCatalog(catalog, xp);
-
-                // initialize styles
-                initializeStyles(catalog, xp);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            postProcessBeforeInitializationCatalog(bean);
         }
 
         if (bean instanceof GeoServer) {
-            geoserver = (GeoServer) bean;
-            try {
-                XStreamPersister xp = xpf.createXMLPersister();
-                xp.setCatalog(geoserver.getCatalog());
-                loadGeoServer(geoserver, xp);
-
-                // load initializers
-                loadInitializers(geoserver);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            // initialize();
+            postProcessBeforeInitializationGeoServer(bean);
         }
 
         return bean;
+    }
+
+    private void activateAdminRole() {
+        Collection<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(GeoServerRole.ADMIN_ROLE);
+        roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, null, roles);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    private void postProcessBeforeInitializationGeoServer(Object bean) {
+        geoserver = (GeoServer) bean;
+        try {
+            // setup ADMIN_ROLE security context to load secured resources
+            activateAdminRole();
+
+            XStreamPersister xp = xpf.createXMLPersister();
+            xp.setCatalog(geoserver.getCatalog());
+            loadGeoServer(geoserver, xp);
+
+            // load initializers
+            loadInitializers(geoserver);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            // clear security context
+            SecurityContextHolder.clearContext();
+        }
+        // initialize();
+    }
+
+    private void postProcessBeforeInitializationCatalog(Object bean) {
+        // load
+        try {
+            // setup ADMIN_ROLE security context to load secured resources
+            activateAdminRole();
+
+            Catalog catalog = (Catalog) bean;
+            XStreamPersister xp = xpf.createXMLPersister();
+            xp.setCatalog(catalog);
+            loadCatalog(catalog, xp);
+
+            // initialize styles
+            initializeStyles(catalog, xp);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            // clear security context
+            SecurityContextHolder.clearContext();
+        }
     }
 
     protected abstract void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception;

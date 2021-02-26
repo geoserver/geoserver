@@ -13,10 +13,10 @@ import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
+import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.request.JsonPathVisitor;
+import org.geoserver.featurestemplating.request.JSONPathVisitor;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -36,7 +36,7 @@ import org.opengis.filter.FilterFactory2;
  * path has been provided to cql_filter and evaluate it against the {@link TemplateBuilder} tree to
  * get the corresponding {@link Filter}
  */
-public class JsonTemplateCallback extends AbstractDispatcherCallback {
+public class JSONTemplateCallback extends AbstractDispatcherCallback {
 
     private Catalog catalog;
 
@@ -46,7 +46,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    public JsonTemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
+    public JSONTemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
         this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
@@ -95,8 +95,8 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 for (int i = 0; i < featureTypeInfos.size(); i++) {
                     FeatureTypeInfo fti = featureTypeInfos.get(i);
                     RootBuilder root = rootBuilders.get(i);
-                    if (validation && root instanceof JsonLdRootBuilder) {
-                        ((JsonLdRootBuilder) root).setSemanticValidation(validation);
+                    if (validation && root instanceof JSONLDRootBuilder) {
+                        ((JSONLDRootBuilder) root).setSemanticValidation(validation);
                     }
                     replaceTemplatePath(q, fti, root);
                 }
@@ -142,7 +142,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
     private void replaceTemplatePath(Query q, FeatureTypeInfo fti, RootBuilder root) {
         try {
 
-            JsonPathVisitor visitor = new JsonPathVisitor(fti.getFeatureType());
+            JSONPathVisitor visitor = new JSONPathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
                 Filter old = q.getFilter();
                 String cql = ECQL.toCQL(old);
@@ -192,7 +192,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                     getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
             if (rootBuilders.size() > 0) {
                 response =
-                        new GeoJsonTemplateGetFeatureResponse(
+                        new GeoJSONTemplateGetFeatureResponse(
                                 gs, configuration, TemplateIdentifier.JSON);
             }
         } catch (Exception e) {

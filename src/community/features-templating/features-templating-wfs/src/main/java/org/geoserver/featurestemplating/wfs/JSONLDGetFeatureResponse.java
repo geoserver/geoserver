@@ -10,11 +10,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
+import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.validation.JsonLdContextValidation;
-import org.geoserver.featurestemplating.writers.JsonLdWriter;
+import org.geoserver.featurestemplating.validation.JSONLDContextValidation;
+import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -47,13 +47,13 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         //  This is thus working only for one featureType and so the RootBuilder is being got before
         // iteration.
 
-        JsonLdContextValidation validator = null;
+        JSONLDContextValidation validator = null;
         try {
             FeatureTypeInfo info =
                     helper.getFirstFeatureTypeInfo(
                             GetFeatureRequest.adapt(getFeature.getParameters()[0]));
-            JsonLdRootBuilder root =
-                    (JsonLdRootBuilder)
+            JSONLDRootBuilder root =
+                    (JSONLDRootBuilder)
                             configuration.getTemplate(
                                     info, TemplateIdentifier.JSONLD.getOutputFormat());
             boolean validate = root.isSemanticValidation();
@@ -62,7 +62,7 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
             if (validate) {
                 validate(featureCollection, root);
             }
-            try (JsonLdWriter writer = (JsonLdWriter) helper.getOutputWriter(output)) {
+            try (JSONLDWriter writer = (JSONLDWriter) helper.getOutputWriter(output)) {
                 write(featureCollection, root, writer);
             } catch (Exception e) {
                 throw new ServiceException(e);
@@ -76,11 +76,11 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
-    private void validate(FeatureCollectionResponse featureCollection, JsonLdRootBuilder root)
+    private void validate(FeatureCollectionResponse featureCollection, JSONLDRootBuilder root)
             throws IOException {
-        JsonLdContextValidation validator = new JsonLdContextValidation();
-        try (JsonLdWriter writer =
-                (JsonLdWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
+        JSONLDContextValidation validator = new JSONLDContextValidation();
+        try (JSONLDWriter writer =
+                (JSONLDWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
             write(featureCollection, root, writer);
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -90,8 +90,8 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
     private void write(
             FeatureCollectionResponse featureCollection,
-            JsonLdRootBuilder root,
-            JsonLdWriter writer)
+            JSONLDRootBuilder root,
+            JSONLDWriter writer)
             throws IOException {
         writer.setContextHeader(root.getContextHeader());
         writer.startTemplateOutput();

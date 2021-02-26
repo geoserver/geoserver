@@ -20,13 +20,13 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 
 /** Decorator for a JsonGenerator that add some functionality mainly to write JsonNode */
-public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGenerator
+public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGenerator
         implements TemplateOutputWriter {
 
     private com.fasterxml.jackson.core.JsonGenerator delegate;
     private boolean flatOutput;
 
-    public CommonJsonWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
+    public CommonJSONWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
         this.delegate = generator;
     }
 

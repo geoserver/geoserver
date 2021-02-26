@@ -12,9 +12,9 @@ import org.geoserver.featurestemplating.builders.flat.FlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 
 /** GeoJson root builder used to support flat_output vendor parameter */
-public class GeoJsonRootBuilder extends RootBuilder {
+public class GeoJSONRootBuilder extends RootBuilder {
 
-    public GeoJsonRootBuilder() {
+    public GeoJSONRootBuilder() {
         supportedOptions.addAll(
                 Arrays.asList(FLAT_OUTPUT.getVendorOptionName(), SEPARATOR.getVendorOptionName()));
     }

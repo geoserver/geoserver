@@ -15,19 +15,19 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * This class handles the management of a single template file, giving access to the ${@link
  * RootBuilder} produced from it and issuing the reloading of the file when needed through ${@link
- * WFSTemplateWatcher}
+ * TemplateWatcher}
  */
-public class WFSTemplate {
+public class Template {
 
     private Resource templateFile;
-    private WFSTemplateWatcher watcher;
+    private TemplateWatcher watcher;
     private RootBuilder builderTree;
 
-    private static final Logger LOGGER = Logging.getLogger(WFSTemplate.class);
+    private static final Logger LOGGER = Logging.getLogger(Template.class);
 
-    public WFSTemplate(Resource templateFile, NamespaceSupport namespaces) {
+    public Template(Resource templateFile, NamespaceSupport namespaces) {
         this.templateFile = templateFile;
-        this.watcher = new WFSTemplateWatcher(templateFile, namespaces);
+        this.watcher = new TemplateWatcher(templateFile, namespaces);
         try {
             this.builderTree = watcher.getTemplate();
         } catch (IOException ioe) {

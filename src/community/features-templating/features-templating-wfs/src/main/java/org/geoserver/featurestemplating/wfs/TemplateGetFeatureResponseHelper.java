@@ -12,8 +12,8 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.writers.GeoJsonWriter;
-import org.geoserver.featurestemplating.writers.JsonLdWriter;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
+import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
@@ -44,12 +44,12 @@ public class TemplateGetFeatureResponseHelper {
             case JSON:
             case GEOJSON:
                 outputWriter =
-                        new GeoJsonWriter(
+                        new GeoJSONWriter(
                                 new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
             case JSONLD:
                 outputWriter =
-                        new JsonLdWriter(
+                        new JSONLDWriter(
                                 new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
             default:

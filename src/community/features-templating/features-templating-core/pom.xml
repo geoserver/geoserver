@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-app-schema</artifactId>
+            <artifactId>gt-complex</artifactId>
             <version>${gt.version}</version>
         </dependency>
         <dependency>
@@ -37,6 +37,12 @@
             <artifactId>gs-main</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-app-schema</artifactId>
+            <version>${gt.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

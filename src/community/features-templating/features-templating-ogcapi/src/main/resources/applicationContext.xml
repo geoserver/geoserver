@@ -6,7 +6,7 @@
 <beans>
 
     <bean id="jsonCallbackOGC"
-          class="org.geoserver.featurestemplating.request.JsonTemplateCallBackOGC">
+          class="org.geoserver.featurestemplating.ogapi.JsonTemplateCallBackOGC">
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="templateConfiguration"/>
     </bean>

@@ -15,11 +15,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
+import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
-import org.geoserver.featurestemplating.request.JsonPathVisitor;
+import org.geoserver.featurestemplating.request.JSONPathVisitor;
 import org.geoserver.ogcapi.features.FeaturesResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -43,7 +43,7 @@ import org.springframework.http.HttpHeaders;
  * dispatched event if a json-ld path has been provided to cql_filter and evaluate it against the
  * {@link TemplateBuilder} tree to get the corresponding {@link Filter}
  */
-public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
+public class JSONTemplateCallBackOGC extends AbstractDispatcherCallback {
 
     static final FormatOptionsKvpParser PARSER = new FormatOptionsKvpParser("env");
 
@@ -55,7 +55,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public JsonTemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
+    public JSONTemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
         this.gs = gs;
@@ -68,8 +68,8 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
             try {
                 FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
                 RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
-                if (root instanceof JsonLdRootBuilder) {
-                    setSemanticValidation((JsonLdRootBuilder) root, request);
+                if (root instanceof JSONLDRootBuilder) {
+                    setSemanticValidation((JSONLDRootBuilder) root, request);
                 }
                 String filterLang = (String) request.getKvp().get("FILTER-LANG");
                 if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
@@ -146,7 +146,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     private void replaceFilter(
             String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
-        JsonPathVisitor visitor = new JsonPathVisitor(typeInfo.getFeatureType());
+        JSONPathVisitor visitor = new JSONPathVisitor(typeInfo.getFeatureType());
         /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
         Filter old = XCQL.toFilter(strFilter);
@@ -176,7 +176,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         }
     }
 
-    private void setSemanticValidation(JsonLdRootBuilder root, Request request) {
+    private void setSemanticValidation(JSONLDRootBuilder root, Request request) {
         Map rawKvp = request.getRawKvp();
         Object value = rawKvp != null ? rawKvp.get("validation") : null;
         if (value != null) {

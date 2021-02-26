@@ -14,13 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class JsonLdContextValidationTest extends GeoServerSystemTestSupport {
+public class JSONLDContextValidationTest extends GeoServerSystemTestSupport {
 
     @Rule public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void testValidationSuccessFull() throws IOException {
-        JsonLdContextValidation validator = new JsonLdContextValidation();
+        JSONLDContextValidation validator = new JSONLDContextValidation();
         File file = validator.init();
         FileUtils.copyURLToFile(getClass().getResource("json-ld-success-validation.json"), file);
         validator.validate();
@@ -33,7 +33,7 @@ public class JsonLdContextValidationTest extends GeoServerSystemTestSupport {
         exceptionRule.expectMessage(
                 "Validation failed. Unable to resolve "
                         + "the following fields against the @context: geologicUnitType,dataType,CGI_TermValue,nilReason.");
-        JsonLdContextValidation validator = new JsonLdContextValidation();
+        JSONLDContextValidation validator = new JSONLDContextValidation();
         File file = validator.init();
         FileUtils.copyURLToFile(getClass().getResource("json-ld-failed-validation.json"), file);
         validator.validate();

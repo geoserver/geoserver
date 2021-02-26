@@ -16,9 +16,9 @@ import org.xml.sax.helpers.NamespaceSupport;
  * A CompositeBuilder to produce a Json-LD output. It checks that at least one of its children
  * doesn't evaluate to null before starting the evaluation process.
  */
-public class JsonLdCompositeBuilder extends CompositeBuilder {
+public class JSONLDCompositeBuilder extends CompositeBuilder {
 
-    public JsonLdCompositeBuilder(String key, NamespaceSupport namespaces) {
+    public JSONLDCompositeBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
     }
 
@@ -37,7 +37,7 @@ public class JsonLdCompositeBuilder extends CompositeBuilder {
                 if (b instanceof CompositeBuilder) {
                     if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
                 } else {
-                    if (!((JsonLdDynamicBuilder) b).checkNotNullValue(context)) falseCounter++;
+                    if (!((JSONLDDynamicBuilder) b).checkNotNullValue(context)) falseCounter++;
                 }
             }
             if (falseCounter == filtered.size()) return false;

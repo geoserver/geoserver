@@ -10,11 +10,11 @@ import java.math.BigInteger;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.builders.geojson.GeoJsonRootBuilder;
+import org.geoserver.featurestemplating.builders.geojson.GeoJSONRootBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.writers.GeoJsonWriter;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -29,11 +29,11 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Write a valid GeoJSON output from a template */
-public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureResponse {
+public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
     protected boolean hasGeometry;
 
-    public GeoJsonTemplateGetFeatureResponse(
+    public GeoJSONTemplateGetFeatureResponse(
             GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
         super(gs, configuration, identifier);
     }
@@ -43,7 +43,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
 
-        try (GeoJsonWriter writer = getOutputWriter(output)) {
+        try (GeoJSONWriter writer = getOutputWriter(output)) {
             writer.startTemplateOutput();
             iterateFeatureCollection(writer, featureCollection);
             writer.endArray();
@@ -54,15 +54,15 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
         }
     }
 
-    protected GeoJsonWriter getOutputWriter(OutputStream output) throws IOException {
-        return (GeoJsonWriter) helper.getOutputWriter(output);
+    protected GeoJSONWriter getOutputWriter(OutputStream output) throws IOException {
+        return (GeoJSONWriter) helper.getOutputWriter(output);
     }
 
     @Override
     protected void beforeFeatureIteration(
             TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
-        GeoJsonRootBuilder rb = (GeoJsonRootBuilder) root;
-        GeoJsonWriter jsonWriter = (GeoJsonWriter) writer;
+        GeoJSONRootBuilder rb = (GeoJSONRootBuilder) root;
+        GeoJSONWriter jsonWriter = (GeoJSONWriter) writer;
         String strFlatOutput =
                 rb.getVendorOption(RootBuilder.VendorOption.FLAT_OUTPUT.getVendorOptionName());
         boolean flatOutput = strFlatOutput != null ? Boolean.valueOf(strFlatOutput) : false;
@@ -72,7 +72,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
     @Override
     protected void beforeEvaluation(
             TemplateOutputWriter writer, RootBuilder root, Feature feature) {
-        GeoJsonWriter geoJsonWriter = (GeoJsonWriter) writer;
+        GeoJSONWriter geoJsonWriter = (GeoJSONWriter) writer;
         geoJsonWriter.incrementNumberReturned();
         if (!hasGeometry) {
             GeometryDescriptor descriptor = feature.getType().getGeometryDescriptor();
@@ -96,7 +96,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
 
     protected void writeCollectionBounds(
             boolean featureBounding,
-            GeoJsonWriter jsonWriter,
+            GeoJSONWriter jsonWriter,
             List<FeatureCollection> resultsList,
             boolean hasGeom)
             throws IOException {
@@ -114,7 +114,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
     }
 
     protected void writeAdditionFields(
-            GeoJsonWriter writer, FeatureCollectionResponse featureCollection, Operation getFeature)
+            GeoJSONWriter writer, FeatureCollectionResponse featureCollection, Operation getFeature)
             throws IOException, FactoryException {
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
         BigInteger featureCount =

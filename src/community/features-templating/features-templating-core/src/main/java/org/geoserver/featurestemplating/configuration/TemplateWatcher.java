@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.readers.JsonTemplateReader;
+import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReader;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
@@ -20,12 +20,12 @@ import org.xml.sax.helpers.NamespaceSupport;
  * This class extends {@link FileWatcher} to provide functionalities to dynamically reload a
  * template
  */
-public class WFSTemplateWatcher extends FileWatcher<RootBuilder> {
+public class TemplateWatcher extends FileWatcher<RootBuilder> {
 
     private NamespaceSupport namespaces;
     private String fileName;
 
-    public WFSTemplateWatcher(Resource resource, NamespaceSupport namespaces) {
+    public TemplateWatcher(Resource resource, NamespaceSupport namespaces) {
         super(resource);
         this.fileName = resource.name();
         this.namespaces = namespaces;
@@ -52,7 +52,7 @@ public class WFSTemplateWatcher extends FileWatcher<RootBuilder> {
         if (isJsonTemplateType()) {
             ObjectMapper mapper =
                     new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-            templateReader = new JsonTemplateReader(mapper.readTree(in), namespaces);
+            templateReader = new JSONTemplateReader(mapper.readTree(in), namespaces);
         }
         return templateReader;
     }

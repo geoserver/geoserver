@@ -16,7 +16,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 
 /** This class provides methods to validate json-ld features against the @context. */
-public class JsonLdContextValidation {
+public class JSONLDContextValidation {
 
     File tmpFile;
 

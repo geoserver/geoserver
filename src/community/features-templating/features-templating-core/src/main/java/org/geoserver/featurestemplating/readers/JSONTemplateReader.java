@@ -14,12 +14,12 @@ import org.geoserver.featurestemplating.builders.BuilderFactory;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.*;
-import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
+import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
-public class JsonTemplateReader implements TemplateReader {
+public class JSONTemplateReader implements TemplateReader {
 
     public static final String SOURCEKEY = "$source";
 
@@ -35,7 +35,7 @@ public class JsonTemplateReader implements TemplateReader {
 
     private NamespaceSupport namespaces;
 
-    public JsonTemplateReader(JsonNode template, NamespaceSupport namespaces) {
+    public JSONTemplateReader(JsonNode template, NamespaceSupport namespaces) {
         this.template = template;
         this.namespaces = namespaces;
     }
@@ -100,7 +100,7 @@ public class JsonTemplateReader implements TemplateReader {
                 } else if (entryName.equals(FILTERKEY)) {
                     setFilterToBuilder(currentBuilder, node);
                 } else if (entryName.equals(CONTEXTKEY)) {
-                    JsonLdRootBuilder rootBuilder = (JsonLdRootBuilder) currentBuilder;
+                    JSONLDRootBuilder rootBuilder = (JSONLDRootBuilder) currentBuilder;
                     rootBuilder.setContextHeader(valueNode);
                 } else if (entryName.equals(VENDOROPTION)) {
                     setVendorOptions(valueNode, (RootBuilder) currentBuilder, factory);

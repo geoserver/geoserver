@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.writers.GeoJsonWriter;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -32,7 +32,7 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
     @Override
     protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        GeoJsonWriter geoJsonWriter = (GeoJsonWriter) writer;
+        GeoJSONWriter geoJsonWriter = (GeoJSONWriter) writer;
         if (strValue != null)
             geoJsonWriter.writeStaticContent(
                     nameHelper.getFinalAttributeName(), strValue, nameHelper.getSeparator());

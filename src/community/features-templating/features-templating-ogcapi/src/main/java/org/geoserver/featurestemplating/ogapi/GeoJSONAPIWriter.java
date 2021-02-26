@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.features.CollectionDocument;
@@ -16,9 +17,9 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
 
-public class GeoJsonAPIWriter extends org.geoserver.featurestemplating.writers.GeoJsonWriter {
+public class GeoJSONAPIWriter extends GeoJSONWriter {
 
-    public GeoJsonAPIWriter(JsonGenerator generator) {
+    public GeoJSONAPIWriter(JsonGenerator generator) {
         super(generator);
     }
 

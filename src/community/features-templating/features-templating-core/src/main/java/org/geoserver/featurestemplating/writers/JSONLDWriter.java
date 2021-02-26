@@ -11,9 +11,9 @@ import java.io.IOException;
 import org.geotools.filter.function.FilterFunction_toWKT;
 
 /** Implements its superclass methods to write a valid json-ld output */
-public class JsonLdWriter extends CommonJsonWriter {
+public class JSONLDWriter extends CommonJSONWriter {
 
-    public JsonLdWriter(JsonGenerator generator) {
+    public JSONLDWriter(JsonGenerator generator) {
         super(generator);
     }
 

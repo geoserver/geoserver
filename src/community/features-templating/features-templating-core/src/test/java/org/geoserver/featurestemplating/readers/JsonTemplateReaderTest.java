@@ -41,7 +41,7 @@ public class JsonTemplateReaderTest {
         InputStream is = getClass().getResource(resourceName).openStream();
         ObjectMapper mapper =
                 new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        JsonTemplateReader templateReader = new JsonTemplateReader(mapper.readTree(is), null);
+        JSONTemplateReader templateReader = new JSONTemplateReader(mapper.readTree(is), null);
         return templateReader.getRootBuilder();
     }
 

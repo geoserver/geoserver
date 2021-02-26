@@ -10,7 +10,8 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-features-templating*.jar</include>
-        <include>jsonld-java-*.jar</include>
+	<include>jsonld-java-*.jar</include>
+	<include>gt-geojson-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

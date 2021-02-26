@@ -45,8 +45,8 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        JsonLdWriter writer =
-                new JsonLdWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer =
+                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeFieldName(prop.getName().toString());

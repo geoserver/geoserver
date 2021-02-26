@@ -5,10 +5,10 @@
 package org.geoserver.featurestemplating.builders.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.geoserver.featurestemplating.builders.geojson.GeoJsonRootBuilder;
+import org.geoserver.featurestemplating.builders.geojson.GeoJSONRootBuilder;
 
 /** JsonLd root builder used to hold the json-ld context */
-public class JsonLdRootBuilder extends GeoJsonRootBuilder {
+public class JSONLDRootBuilder extends GeoJSONRootBuilder {
 
     protected JsonNode contextHeader;
 

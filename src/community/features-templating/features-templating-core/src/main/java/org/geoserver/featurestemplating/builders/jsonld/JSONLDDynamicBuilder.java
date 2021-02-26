@@ -16,9 +16,9 @@ import org.xml.sax.helpers.NamespaceSupport;
  * A DynamicBuilder used to encode Json-LD output. It check that the value being encoded is not null
  * before writing.
  */
-public class JsonLdDynamicBuilder extends DynamicValueBuilder {
+public class JSONLDDynamicBuilder extends DynamicValueBuilder {
 
-    public JsonLdDynamicBuilder(String key, String expression, NamespaceSupport namespaces) {
+    public JSONLDDynamicBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key, expression, namespaces);
     }
 

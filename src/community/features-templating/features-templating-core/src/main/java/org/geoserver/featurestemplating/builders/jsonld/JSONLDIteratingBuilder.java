@@ -5,9 +5,9 @@ import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class JsonLdIteratingBuilder extends IteratingBuilder {
+public class JSONLDIteratingBuilder extends IteratingBuilder {
 
-    public JsonLdIteratingBuilder(String key, NamespaceSupport namespaces) {
+    public JSONLDIteratingBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
     }
 

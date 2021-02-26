@@ -29,7 +29,7 @@ import org.opengis.filter.expression.PropertyName;
  * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
  * guideline.
  */
-public class JsonPathVisitor extends DuplicatingFilterVisitor {
+public class JSONPathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
     protected String currentSource;
@@ -37,7 +37,7 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
-    public JsonPathVisitor(FeatureType type) {
+    public JSONPathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
     }
 

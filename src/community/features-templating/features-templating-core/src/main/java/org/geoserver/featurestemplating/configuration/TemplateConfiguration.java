@@ -27,7 +27,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 /** Manage the cache and the retrieving for all templates files */
 public class TemplateConfiguration {
 
-    private final LoadingCache<CacheKey, WFSTemplate> templateCache;
+    private final LoadingCache<CacheKey, Template> templateCache;
     private GeoServerDataDirectory dataDirectory;
 
     public TemplateConfiguration(GeoServerDataDirectory dd) {
@@ -38,9 +38,9 @@ public class TemplateConfiguration {
                         .initialCapacity(1)
                         .expireAfterAccess(120, TimeUnit.MINUTES)
                         .build(
-                                new CacheLoader<CacheKey, WFSTemplate>() {
+                                new CacheLoader<CacheKey, Template>() {
                                     @Override
-                                    public WFSTemplate load(CacheKey key) {
+                                    public Template load(CacheKey key) {
                                         NamespaceSupport namespaces = null;
                                         try {
                                             FeatureType type = key.getResource().getFeatureType();
@@ -55,8 +55,7 @@ public class TemplateConfiguration {
                                         Resource resource =
                                                 getDataDirectory()
                                                         .get(key.getResource(), key.getPath());
-                                        WFSTemplate template =
-                                                new WFSTemplate(resource, namespaces);
+                                        Template template = new Template(resource, namespaces);
                                         return template;
                                     }
                                 });
@@ -70,7 +69,7 @@ public class TemplateConfiguration {
             throws ExecutionException {
         String fileName = getTemplateName(outputFormat);
         CacheKey key = new CacheKey(typeInfo, fileName);
-        WFSTemplate template = templateCache.get(key);
+        Template template = templateCache.get(key);
         if (template.checkTemplate()) templateCache.put(key, template);
         RootBuilder root = template.getRootBuilder();
         // check if reload is needed anyway and eventually reload the template

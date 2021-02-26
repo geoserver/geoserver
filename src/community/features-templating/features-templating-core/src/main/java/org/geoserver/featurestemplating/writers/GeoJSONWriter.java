@@ -24,7 +24,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Implements its superclass methods to write a valid GeoJSON output */
-public class GeoJsonWriter extends CommonJsonWriter {
+public class GeoJSONWriter extends CommonJSONWriter {
 
     private long numberReturned;
 
@@ -32,7 +32,7 @@ public class GeoJsonWriter extends CommonJsonWriter {
 
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
-    public GeoJsonWriter(JsonGenerator generator) {
+    public GeoJSONWriter(JsonGenerator generator) {
         super(generator);
     }
 

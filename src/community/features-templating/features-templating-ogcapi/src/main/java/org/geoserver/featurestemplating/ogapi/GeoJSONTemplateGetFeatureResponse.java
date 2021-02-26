@@ -15,8 +15,7 @@ import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.wfs.GeoJsonTemplateGetFeatureResponse;
-import org.geoserver.featurestemplating.writers.GeoJsonWriter;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.opengis.referencing.FactoryException;
@@ -26,7 +25,8 @@ import org.springframework.web.context.request.RequestContextHolder;
  * OGC API - Features specific version of GeoJsonTemplateGetFeatureResponse, handles additional
  * fields in a different way if the response mime type is application/geo+json
  */
-class GeoJSONTemplateGetFeatureResponse extends GeoJsonTemplateGetFeatureResponse {
+class GeoJSONTemplateGetFeatureResponse
+        extends org.geoserver.featurestemplating.wfs.GeoJSONTemplateGetFeatureResponse {
 
     public GeoJSONTemplateGetFeatureResponse(
             GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
@@ -34,13 +34,13 @@ class GeoJSONTemplateGetFeatureResponse extends GeoJsonTemplateGetFeatureRespons
     }
 
     @Override
-    protected GeoJsonWriter getOutputWriter(OutputStream output) throws IOException {
-        return new GeoJsonAPIWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+    protected GeoJSONWriter getOutputWriter(OutputStream output) throws IOException {
+        return new GeoJSONAPIWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
     }
 
     @Override
     protected void writeAdditionFields(
-            GeoJsonWriter writer, FeatureCollectionResponse featureCollection, Operation getFeature)
+            GeoJSONWriter writer, FeatureCollectionResponse featureCollection, Operation getFeature)
             throws IOException, FactoryException {
         boolean isGeoJson = identifier.equals(TemplateIdentifier.GEOJSON);
         if (!isGeoJson) {
@@ -52,7 +52,7 @@ class GeoJSONTemplateGetFeatureResponse extends GeoJsonTemplateGetFeatureRespons
         writer.writeTimeStamp();
         String collId = getFeature.getParameters()[0].toString();
         String name = helper.getFeatureType(collId).prefixedName();
-        ((GeoJsonAPIWriter) writer)
+        ((GeoJSONAPIWriter) writer)
                 .writeLinks(
                         featureCollection.getPrevious(),
                         featureCollection.getNext(),

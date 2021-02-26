@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.response;
+package org.geoserver.featurestemplating.wfs;
 
 import java.io.IOException;
 import java.io.OutputStream;

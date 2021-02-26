@@ -8,9 +8,4 @@
         <constructor-arg ref="dataDirectory"/>
     </bean>
 
-    <bean id="JSONLDGetFeatureResponse" class="org.geoserver.featurestemplating.response.JSONLDGetFeatureResponse">
-        <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="templateConfiguration"/>
-    </bean>
-
 </beans>

@@ -92,7 +92,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                     FeatureCollection<T, F> retyped =
                             (FeatureCollection<T, F>) new ReTypingFeatureCollection(sfc, target);
 
-                    result = SecuredObjects.secure(retyped, policy);
+                    result = (FeatureCollection<T, F>) SecuredObjects.secure(retyped, policy);
                 } else {
                     List<PropertyName> readProps = readQuery.getProperties();
                     List<PropertyName> queryProps = query.getProperties();
@@ -106,10 +106,10 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                                         + "by security (because they are required by the schema). "
                                         + "Either the security setup is broken or you have a security breach");
                     }
-                    result = SecuredObjects.secure(fc, policy);
+                    result = (FeatureCollection) SecuredObjects.secure(fc, policy);
                 }
             } else {
-                result = SecuredObjects.secure(fc, policy);
+                result = (FeatureCollection) SecuredObjects.secure(fc, policy);
             }
         }
         AccessLimits limits = policy.getLimits();

@@ -11,13 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
-import org.geoserver.ogcapi.APIRequestInfo;
-import org.geoserver.ogcapi.Link;
-import org.geoserver.ogcapi.features.CollectionDocument;
-import org.geoserver.ogcapi.features.FeaturesResponse;
-import org.geoserver.ows.URLMangler;
-import org.geoserver.ows.util.ResponseUtils;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.gml2.SrsSyntax;
@@ -26,7 +22,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.http.MediaType;
 
 /** Implements its superclass methods to write a valid GeoJSON output */
 public class GeoJsonWriter extends CommonJsonWriter {
@@ -76,7 +71,7 @@ public class GeoJsonWriter extends CommonJsonWriter {
         endObject();
     }
 
-    private void writeLink(String title, String mimeType, String rel, String href)
+    protected void writeLink(String title, String mimeType, String rel, String href)
             throws IOException {
 
         if (href != null) {
@@ -130,58 +125,6 @@ public class GeoJsonWriter extends CommonJsonWriter {
     public void writeTimeStamp() throws IOException {
         writeFieldName("timeStamp");
         writeValue(new ISO8601Formatter().format(new Date()));
-    }
-
-    public void writeLinks(
-            String previous, String next, String prefixedName, String featureId, String mimeType)
-            throws IOException {
-        APIRequestInfo requestInfo = APIRequestInfo.get();
-        writeElementName("links");
-        startArray();
-        // paging links
-        if (previous != null) {
-            writeLink("Previous page", mimeType, "prev", previous);
-        }
-        if (next != null) {
-            writeLink("Next page", mimeType, "next", next);
-        }
-        // alternate/self links
-        String basePath = "ogc/features/collections/" + ResponseUtils.urlEncode(prefixedName);
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
-        for (MediaType format : formats) {
-            String path = basePath + "/items";
-            if (featureId != null) {
-                path += "/" + ResponseUtils.urlEncode(featureId);
-            }
-            String href =
-                    ResponseUtils.buildURL(
-                            requestInfo.getBaseURL(),
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_ALTERNATE;
-            String linkTitle = "This document as " + format;
-            if (format.toString().equals(mimeType)) {
-                linkType = Link.REL_SELF;
-                linkTitle = "This document";
-            }
-            writeLink(linkTitle, format.toString(), linkType, href);
-        }
-        // backpointer to the collection
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            requestInfo.getBaseURL(),
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_COLLECTION;
-            String linkTitle = "The collection description as " + format;
-            writeLink(linkTitle, format.toString(), linkType, href);
-        }
-        endArray();
     }
 
     public void writeCrs() throws FactoryException, IOException {

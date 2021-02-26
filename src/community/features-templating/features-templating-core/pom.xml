@@ -52,11 +52,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.geoserver.community</groupId>
-            <artifactId>gs-ogcapi-features</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
             <version>0.12.5</version>

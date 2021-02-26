@@ -4,11 +4,10 @@
  */
 package org.geoserver.featurestemplating.response;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
-import org.geoserver.api.features.FeatureService;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.geojson.GeoJsonRootBuilder;
@@ -28,13 +27,11 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 /** Write a valid GeoJSON output from a template */
 public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
-    private boolean hasGeometry;
+    protected boolean hasGeometry;
 
     public GeoJsonTemplateGetFeatureResponse(
             GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
@@ -46,7 +43,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
 
-        try (GeoJsonWriter writer = (GeoJsonWriter) helper.getOutputWriter(output)) {
+        try (GeoJsonWriter writer = getOutputWriter(output)) {
             writer.startTemplateOutput();
             iterateFeatureCollection(writer, featureCollection);
             writer.endArray();
@@ -55,6 +52,10 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    protected GeoJsonWriter getOutputWriter(OutputStream output) throws IOException {
+        return (GeoJsonWriter) helper.getOutputWriter(output);
     }
 
     @Override
@@ -93,18 +94,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
         return identifier.getOutputFormat();
     }
 
-    private String getItemId() {
-        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .map(
-                        att ->
-                                (String)
-                                        att.getAttribute(
-                                                FeatureService.ITEM_ID,
-                                                RequestAttributes.SCOPE_REQUEST))
-                .orElse(null);
-    }
-
-    private void writeCollectionBounds(
+    protected void writeCollectionBounds(
             boolean featureBounding,
             GeoJsonWriter jsonWriter,
             List<FeatureCollection> resultsList,
@@ -123,7 +113,7 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
         }
     }
 
-    private void writeAdditionFields(
+    protected void writeAdditionFields(
             GeoJsonWriter writer, FeatureCollectionResponse featureCollection, Operation getFeature)
             throws IOException, FactoryException {
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
@@ -132,30 +122,14 @@ public class GeoJsonTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
                         ? null
                         : totalNumberOfFeatures;
 
-        boolean isGeoJson = identifier.equals(TemplateIdentifier.GEOJSON);
-        if (isGeoJson) writer.writeNumberReturned();
-        else writer.writeCollectionCounts(featureCount);
+        writer.writeCollectionCounts(featureCount);
         writer.writeTimeStamp();
-        if (!isGeoJson) {
-            String previous = featureCollection.getPrevious();
-            String next = featureCollection.getNext();
-            if (next != null || previous != null)
-                writer.writePagingLinks(identifier.getOutputFormat(), previous, next);
-            writer.writeCrs();
-            writeCollectionBounds(
-                    getInfo().isFeatureBounding(),
-                    writer,
-                    featureCollection.getFeature(),
-                    hasGeometry);
-        } else {
-            String collId = getFeature.getParameters()[0].toString();
-            String name = helper.getFeatureType(collId).prefixedName();
-            writer.writeLinks(
-                    featureCollection.getPrevious(),
-                    featureCollection.getNext(),
-                    name,
-                    getItemId(),
-                    getMimeType(null, null));
-        }
+        String previous = featureCollection.getPrevious();
+        String next = featureCollection.getNext();
+        if (next != null || previous != null)
+            writer.writePagingLinks(identifier.getOutputFormat(), previous, next);
+        writer.writeCrs();
+        writeCollectionBounds(
+                getInfo().isFeatureBounding(), writer, featureCollection.getFeature(), hasGeometry);
     }
 }

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.request;
+package org.geoserver.featurestemplating.ogapi;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -19,7 +19,8 @@ import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
-import org.geoserver.featurestemplating.response.GeoJsonTemplateGetFeatureResponse;
+import org.geoserver.featurestemplating.request.JsonPathVisitor;
+import org.geoserver.ogcapi.features.FeaturesResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -215,8 +216,8 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     private Response wrapResponse(
             Operation operation, Object result, TemplateIdentifier identifier) {
 
-        GeoJsonTemplateGetFeatureResponse templatingResp =
-                new GeoJsonTemplateGetFeatureResponse(gs, configuration, identifier) {
+        GeoJSONTemplateGetFeatureResponse templatingResp =
+                new GeoJSONTemplateGetFeatureResponse(gs, configuration, identifier) {
                     @Override
                     protected void write(
                             FeatureCollectionResponse featureCollection,

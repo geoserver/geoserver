@@ -27,7 +27,7 @@ import org.opengis.feature.type.Name;
  * Helper class for Template responses which mainly allows to obtain a writer according to the
  * specified format and provides some methods to retrieve a ${@link FeatureTypeInfo}
  */
-class TemplateGetFeatureResponseHelper {
+public class TemplateGetFeatureResponseHelper {
 
     private Catalog catalog;
 
@@ -71,7 +71,7 @@ class TemplateGetFeatureResponseHelper {
         else return getFeatureTypeInfo(collection.getSchema().getName());
     }
 
-    FeatureTypeInfo getFeatureType(String collectionId) {
+    public FeatureTypeInfo getFeatureType(String collectionId) {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(collectionId);
         if (featureType == null) {
             throw new ServiceException(

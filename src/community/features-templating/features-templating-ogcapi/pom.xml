@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>org.geoserver.community</groupId>
-            <artifactId>gs-features-templating-core</artifactId>
+            <artifactId>gs-features-templating-wfs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

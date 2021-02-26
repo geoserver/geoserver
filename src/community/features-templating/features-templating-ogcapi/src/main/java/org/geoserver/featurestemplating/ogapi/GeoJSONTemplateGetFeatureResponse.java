@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.response.GeoJsonTemplateGetFeatureResponse;
+import org.geoserver.featurestemplating.wfs.GeoJsonTemplateGetFeatureResponse;
 import org.geoserver.featurestemplating.writers.GeoJsonWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;

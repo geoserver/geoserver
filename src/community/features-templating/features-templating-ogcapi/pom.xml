@@ -24,11 +24,6 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-app-schema</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
             <version>${gt.version}</version>
         </dependency>
@@ -79,6 +74,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-app-schema</artifactId>
+            <version>${gt.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>

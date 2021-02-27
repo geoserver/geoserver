@@ -1764,7 +1764,35 @@
        </execution>
      </executions>
    </plugin>
-   
+
+      <plugin>
+        <groupId>net.revelc.code.formatter</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+        <version>2.14.0</version>
+        <configuration>
+          <skipFormatting>${xml.fmt.skip}</skipFormatting>
+          <skipCssFormatting>true</skipCssFormatting>
+          <skipHtmlFormatting>true</skipHtmlFormatting>
+          <skipJavaFormatting>true</skipJavaFormatting>
+          <skipJsFormatting>true</skipJsFormatting>
+          <skipJsonFormatting>true</skipJsonFormatting>
+          <skipXmlFormatting>false</skipXmlFormatting>
+          <configXmlFile>${geoserverBaseDir}/../build/qa/xml-format.properties</configXmlFile>
+          <encoding>UTF-8</encoding>
+          <includes>
+            <include>application*Context.xml</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>${xml.fmt.action}</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+  
    <plugin>
     <groupId>org.commonjava.maven.plugins</groupId>
     <artifactId>directory-maven-plugin</artifactId>
@@ -2021,6 +2049,8 @@
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
+  <xml.fmt.action>format</xml.fmt.action>
+  <xml.fmt.skip>${fmt.skip}</xml.fmt.skip>
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.4</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>

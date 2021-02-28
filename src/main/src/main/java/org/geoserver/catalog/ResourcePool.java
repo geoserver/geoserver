@@ -1883,7 +1883,7 @@ public class ResourcePool {
                         HTTPClient client = getHTTPClient(expandedStore);
                         String capabilitiesURL = expandedStore.getCapabilitiesURL();
                         URL serverURL = new URL(capabilitiesURL);
-                        wmts = new WebMapTileServer(serverURL, client, null);
+                        wmts = new WebMapTileServer(serverURL, client);
 
                         if (StringUtils.isNotEmpty(info.getHeaderName())
                                 && StringUtils.isNotEmpty(info.getHeaderValue())) {

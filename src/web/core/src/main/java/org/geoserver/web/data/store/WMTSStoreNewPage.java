@@ -133,7 +133,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
                     }
                 }
 
-                WebMapTileServer server = new WebMapTileServer(new URL(url), client, null);
+                WebMapTileServer server = new WebMapTileServer(new URL(url), client);
                 server.getCapabilities();
             } catch (IOException | ServiceException e) {
                 IValidationError err =

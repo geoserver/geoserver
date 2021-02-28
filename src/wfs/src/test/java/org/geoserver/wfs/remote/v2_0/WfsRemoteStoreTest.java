@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class WfsRemoteStoreTest extends WFS20TestSupport {
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayer() throws Exception {
 
         // configure the test environment
@@ -116,6 +117,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayerSpecialChars() throws Exception {
 
         // configure the test environment

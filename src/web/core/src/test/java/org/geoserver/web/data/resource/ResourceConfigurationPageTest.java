@@ -377,6 +377,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testWFSDataStoreResource() throws IOException {
         // MOCKING WFS DataStore and Mock Remote Response
         String baseURL = TestHttpClientProvider.MOCKSERVER;

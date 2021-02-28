@@ -1769,6 +1769,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testWFSNGReprojection() throws Exception {
         String baseURL = TestHttpClientProvider.MOCKSERVER;
         MockHttpClient client = new MockHttpClient();

@@ -33,7 +33,7 @@ public class SecuredWebMapTileServerTest {
         TestHttpClientProvider.bind(mockClient, serverURL);
         HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
 
-        WebMapTileServer wmts = new WebMapTileServer(serverURL, client, null);
+        WebMapTileServer wmts = new WebMapTileServer(serverURL, client);
         assertNotNull(wmts);
 
         wmts = new SecuredWebMapTileServer(wmts);

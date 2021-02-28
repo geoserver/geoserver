@@ -35,6 +35,7 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     public MockHttpClient httpClient = new MockHttpClient();
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayer20() throws Exception {
 
         // register the http calls the http mock should expect

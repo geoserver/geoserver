@@ -1,0 +1,5 @@
+- label: "JIRA"
+  message: "$issuePrefix"
+  color: "#0052CC"
+  url: "https://osgeo-org.atlassian.net/browse/$issuePrefix"
+  when: "$issuePrefix"

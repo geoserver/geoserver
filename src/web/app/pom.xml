@@ -1788,5 +1788,15 @@
         </dependency>
       </dependencies>
     </profile>
+	<profile>
+      <id>cov-json</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cov-json</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 </profiles>
 </project>

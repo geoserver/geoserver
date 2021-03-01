@@ -273,6 +273,7 @@
         <module>importer-bdb</module>
         <module>imagemosaic-jdbc</module>
 		<module>cog</module>
+		<module>cov-json</module>
       </modules>
     </profile>
     <profile>
@@ -601,7 +602,13 @@
       <modules>
         <module>cog</module>
       </modules>
-    </profile>    
+    </profile>
+    <profile>
+      <id>cov-json</id>
+      <modules>
+        <module>cov-json</module>
+      </modules>
+    </profile>
     <profile>
       <id>taskmanager</id>
       <modules>

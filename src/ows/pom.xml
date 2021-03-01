@@ -71,10 +71,6 @@
    <scope>provided</scope>
   </dependency>
   <dependency>
-   <groupId>xpp3</groupId>
-   <artifactId>xpp3</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.springframework</groupId>
    <artifactId>spring-test</artifactId>
    <scope>test</scope>

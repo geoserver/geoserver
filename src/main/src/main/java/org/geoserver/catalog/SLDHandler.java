@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,8 +20,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
@@ -40,9 +46,6 @@ import org.geotools.xsd.Parser;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * SLD style handler.
@@ -343,28 +346,41 @@ public class SLDHandler extends StyleHandler {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
         }
 
-        String version;
+        String version = null;
+        XMLStreamReader parser;
         try {
             // create stream parser
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setValidating(false);
-
-            // parse root element
-            XmlPullParser parser = factory.newPullParser();
-            parser.setInput(reader);
-            parser.nextTag();
-
-            version = null;
-            for (int i = 0; i < parser.getAttributeCount(); i++) {
-                if ("version".equals(parser.getAttributeName(i))) {
-                    version = parser.getAttributeValue(i);
+            XMLInputFactory factory = XMLInputFactory.newFactory();
+            // disable DTDs
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            // disable external entities
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            parser = factory.createXMLStreamReader(reader);
+        } catch (XMLStreamException e) {
+            throw new IOException("Error creating xml parser", e);
+        }
+        try {
+            // position at root element
+            while (parser.hasNext()) {
+                if (START_ELEMENT == parser.next()) {
+                    break;
                 }
             }
 
-            parser.setInput(null);
-        } catch (XmlPullParserException e) {
-            throw (IOException) new IOException("Error parsing content").initCause(e);
+            for (int i = 0; i < parser.getAttributeCount(); i++) {
+                if ("version".equals(parser.getAttributeLocalName(i))) {
+                    version = parser.getAttributeValue(i);
+                }
+            }
+        } catch (XMLStreamException e) {
+            throw new IOException("Error parsing content", e);
+        } finally {
+            // release parser resources, does not close input stream
+            try {
+                parser.close();
+            } catch (XMLStreamException e) {
+                LOGGER.log(Level.WARNING, "Non fatal error closing XML Stream Parser", e);
+            }
         }
 
         // reset input stream

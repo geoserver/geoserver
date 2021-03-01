@@ -7,11 +7,7 @@ package org.geoserver.wfs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -25,6 +21,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.WFSResponse;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
@@ -315,14 +312,20 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        final String fileName;
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+
         FeatureCollectionResponse response;
         if (value instanceof FeatureCollectionResponse) {
             response = (FeatureCollectionResponse) value;
         } else {
             response = FeatureCollectionResponse.adapt(value);
         }
-        final String fileName;
-        if (response.getTypeNames() != null) {
+
+        if (request.getFormatOptions() != null
+                && request.getFormatOptions().containsKey("FILENAME")) {
+            fileName = (String) request.getFormatOptions().get("FILENAME");
+        } else if (response.getTypeNames() != null) {
             fileName =
                     response.getTypeNames()
                             .stream()
@@ -330,13 +333,29 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
                             .collect(Collectors.joining("_"));
         } else if (response.getTypeName() != null) {
             fileName = response.getTypeName().getLocalPart();
+        } else if (!request.getQueries().isEmpty() && request.getQueries().get(0) != null) {
+            Query query = request.getQueries().get(0);
+            if (query.getTypeNames() != null) {
+                fileName =
+                        query.getTypeNames()
+                                .stream()
+                                .map(tn -> tn.getLocalPart())
+                                .collect(Collectors.joining("_"));
+            } else {
+                fileName = response.getTypeName().getLocalPart();
+            }
         } else {
             fileName = "features";
         }
-        return fileName + "." + getExtension(response);
+
+        if (fileName.contains(".")) {
+            return fileName; // includes extension
+        } else {
+            return fileName + "." + getExtension(response);
+        }
     }
 
-    /** Sets the rigth extension for the response */
+    /** Sets the right extension for the response */
     protected String getExtension(FeatureCollectionResponse response) {
         String mimeType = getMimeType(null, null);
         if (mimeType != null) {

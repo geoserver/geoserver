@@ -69,6 +69,10 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        String fileName = super.getAttachmentFileName(value, operation);
+        if (fileName != null) {
+            return fileName;
+        }
         GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
 
         return Joiner.on("_")
@@ -83,6 +87,11 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
                                         }))
                 + "."
                 + EXTENSION;
+    }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return EXTENSION;
     }
 
     @Override

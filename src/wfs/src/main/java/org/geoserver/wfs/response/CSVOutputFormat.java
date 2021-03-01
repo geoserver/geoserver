@@ -69,14 +69,24 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "csv";
+    }
+
+    @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
     }
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        String fileName = super.getAttachmentFileName(value, operation);
+        if (fileName != null) {
+            return fileName;
+        }
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
+        String outputFileName =
+                request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
         return outputFileName + ".csv";
     }
 

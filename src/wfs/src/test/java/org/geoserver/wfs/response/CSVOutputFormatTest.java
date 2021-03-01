@@ -73,6 +73,21 @@ public class CSVOutputFormatTest extends WFSTestSupport {
     }
 
     @Test
+    public void testHTMLStuff() throws Exception {
+        MockHttpServletResponse resp =
+                getAsServletResponse(
+                        "wfs?version=1.1.0&request=GetFeature&"
+                                + "typeName=sf:PrimitiveGeoFeature&"
+                                + "outputFormat=csv&format_options=filename:test",
+                        "");
+
+        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+        assertEquals("text/csv", resp.getContentType());
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+        assertEquals("attachment; filename=test.csv", resp.getHeader("Content-Disposition"));
+    }
+
+    @Test
     public void testEscapes() throws Exception {
         // build some fake data in memory, the property data store cannot handle newlines in its
         // data

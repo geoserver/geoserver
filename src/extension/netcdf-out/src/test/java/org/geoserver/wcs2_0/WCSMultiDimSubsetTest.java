@@ -8,8 +8,6 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Field;
-import java.util.Set;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -46,16 +44,6 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // workaround to add our custom multi dimensional format
-        try {
-            Field field = GetCoverage.class.getDeclaredField("mdFormats");
-            field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
-        } catch (NoSuchFieldException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        }
-
         super.onSetUp(testData);
         testData.addRasterLayer(
                 LAMBERTMOSAIC, "lambertmosaic.zip", null, null, this.getClass(), getCatalog());

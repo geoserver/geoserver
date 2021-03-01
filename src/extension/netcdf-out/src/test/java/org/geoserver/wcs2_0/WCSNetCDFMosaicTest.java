@@ -14,12 +14,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
@@ -37,6 +36,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -54,6 +54,7 @@ import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.feature.NameImpl;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.util.DateRange;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,6 +100,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     public static QName BANDWITHCRS =
             new QName(CiteTestData.WCS_URI, "Band1", CiteTestData.WCS_PREFIX);
+    private static final QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     private static final String STANDARD_NAME = "visibility_in_air";
     private static final Section NETCDF_SECTION;
@@ -141,15 +144,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // workaround to add our custom multi dimensional format
-        try {
-            Field field = GetCoverage.class.getDeclaredField("mdFormats");
-            field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
-        } catch (NoSuchFieldException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        }
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         super.onSetUp(testData);
         testData.addRasterLayer(
@@ -857,6 +854,32 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
                     dataset.findGlobalAttribute("test-global-attribute-double").getNumericValue());
         } finally {
             FileUtils.deleteQuietly(file);
+        }
+    }
+
+    @Test
+    public void getTime() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=timeseries"
+                                + "&subset=time(\"2014-01-01T00:00:00Z\",\"2019-01-01T00:00:00Z\")"
+                                + "&format=application/custom");
+        assertNotNull(response);
+        GridCoverage2D lastResult =
+                applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
+        assertTrue(lastResult instanceof GranuleStack);
+        GranuleStack stack = (GranuleStack) lastResult;
+
+        // we expect 6 granules with 6 years starting from 2014
+        List<GridCoverage2D> granulesList = stack.getGranules();
+        int startingYear = 2014;
+        assertEquals(6, granulesList.size());
+
+        Calendar calendar = Calendar.getInstance();
+        for (GridCoverage2D c : granulesList) {
+            calendar.setTime(((DateRange) c.getProperty("TIME")).getMinValue());
+            assertEquals(startingYear++, calendar.get(Calendar.YEAR));
         }
     }
 }

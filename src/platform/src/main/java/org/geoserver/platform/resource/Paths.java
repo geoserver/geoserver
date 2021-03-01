@@ -423,7 +423,12 @@ public class Paths {
      */
     public static File toFile(File base, String path) {
         for (String item : Paths.names(path)) {
-            base = new File(base, item);
+            base =
+                    new File(
+                            base,
+                            base == null && File.separator.equalsIgnoreCase("\\")
+                                    ? item + "\\"
+                                    : item);
         }
         return base;
     }

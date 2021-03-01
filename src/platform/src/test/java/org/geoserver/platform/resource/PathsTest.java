@@ -12,6 +12,7 @@ import static org.geoserver.platform.resource.Paths.path;
 import static org.geoserver.platform.resource.Paths.sidecar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -32,6 +33,8 @@ public class PathsTest {
     final String SUBFOLDER = "directory/folder";
 
     final String FILE3 = "directory/folder/file3.txt";
+
+    final boolean WIN = System.getProperty("os.name").startsWith("Windows");
 
     @Test
     public void pathTest() {
@@ -134,6 +137,30 @@ public class PathsTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void toFileTest() {
+      File base;
+        if (WIN) {
+            File expected = new File("C:\\file.txt");
+            assertTrue(expected.isAbsolute());
+            assertTrue(Paths.toFile(null, "C:/file.txt").isAbsolute());
+            assertTrue(!Paths.toFile(null, "foo/bar/file.txt").isAbsolute());
+            assertTrue(!Paths.toFile(null, "C:file.txt").isAbsolute());
+            assertTrue(!Paths.toFile(null, "/foo/bar/file.txt").isAbsolute());
+            base = new File("c:\\foo");
+            assertTrue(Paths.toFile(base, "bar/file.txt").isAbsolute());
+        } else {
+            File expected = new File("/file.txt");
+            assertTrue(expected.isAbsolute());
+            assertTrue(!Paths.toFile(null, "/file.txt").isAbsolute());
+            assertTrue(!Paths.toFile(null, "foo/bar/file.txt").isAbsolute());
+            assertTrue(Paths.toFile(null, "/foo/bar/file.txt").isAbsolute());
+            base = new File("/foo");
+            assertTrue(Paths.toFile(base, "bar/file.txt").isAbsolute());
+        }
+        assertTrue(!Paths.toFile(null, "file.txt").isAbsolute());
     }
 
     @Test

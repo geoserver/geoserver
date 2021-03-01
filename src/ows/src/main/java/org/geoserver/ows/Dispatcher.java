@@ -5,6 +5,8 @@
  */
 package org.geoserver.ows;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -65,8 +69,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Dispatches an http request to an open web service (OWS).
@@ -1528,39 +1530,37 @@ public class Dispatcher extends AbstractController {
     Object parseRequestXML(Object requestBean, BufferedReader input, Request request)
             throws Exception {
         // check for an empty input stream
-        // if (input.available() == 0) {
         if (!input.ready()) {
             return null;
         }
 
         // create stream parser
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setValidating(false);
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        // disable DTDs
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        // disable external entities
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        XMLStreamReader parser = factory.createXMLStreamReader(input);
+        // position at root element
+        while (parser.hasNext()) {
+            if (START_ELEMENT == parser.next()) {
+                break;
+            }
+        }
 
-        // parse root element
-        XmlPullParser parser = factory.newPullParser();
-        // parser.setInput(input, "UTF-8");
-        parser.setInput(input);
-        parser.nextTag();
-
-        String namespace = (parser.getNamespace() != null) ? parser.getNamespace() : "";
-        String element = parser.getName();
+        String namespace = parser.getNamespaceURI() == null ? "" : parser.getNamespaceURI();
+        String element = parser.getLocalName();
         String version = null;
         String service = null;
 
         for (int i = 0; i < parser.getAttributeCount(); i++) {
-            if ("version".equals(parser.getAttributeName(i))) {
+            if ("version".equals(parser.getAttributeLocalName(i))) {
                 version = parser.getAttributeValue(i);
             }
-            if ("service".equals(parser.getAttributeName(i))) {
+            if ("service".equals(parser.getAttributeLocalName(i))) {
                 service = parser.getAttributeValue(i);
             }
         }
-
-        parser.setInput(null);
-
-        // reset input stream
         input.reset();
 
         XmlRequestReader xmlReader = findXmlReader(namespace, element, service, version);
@@ -1569,7 +1569,6 @@ public class Dispatcher extends AbstractController {
             return requestBean;
         }
 
-        // return xmlReader.read(input);
         return xmlReader.read(requestBean, input, request.getKvp());
     }
 
@@ -1599,27 +1598,31 @@ public class Dispatcher extends AbstractController {
      */
     public static Map readOpPost(BufferedReader input) throws Exception {
         // create stream parser
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setValidating(false);
-
-        // parse root element
-        XmlPullParser parser = factory.newPullParser();
-        parser.setInput(input);
-        parser.nextTag();
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        // disable DTDs
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        // disable external entities
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        XMLStreamReader parser = factory.createXMLStreamReader(input);
+        // position at root element
+        while (parser.hasNext()) {
+            if (START_ELEMENT == parser.next()) {
+                break;
+            }
+        }
 
         Map<String, String> map = new HashMap<>();
-        map.put("request", parser.getName());
-        map.put("namespace", parser.getNamespace());
+        map.put("request", parser.getLocalName());
+        map.put("namespace", parser.getNamespaceURI());
 
         for (int i = 0; i < parser.getAttributeCount(); i++) {
-            String attName = parser.getAttributeName(i);
+            String attName = parser.getAttributeLocalName(i);
 
             if ("service".equals(attName)) {
                 map.put("service", parser.getAttributeValue(i));
             }
 
-            if ("version".equals(parser.getAttributeName(i))) {
+            if ("version".equals(attName)) {
                 map.put("version", parser.getAttributeValue(i));
             }
 
@@ -1627,11 +1630,6 @@ public class Dispatcher extends AbstractController {
                 map.put("outputFormat", parser.getAttributeValue(i));
             }
         }
-
-        // close parser + release resources
-        parser.setInput(null);
-
-        // reset the input stream
         input.reset();
 
         return map;

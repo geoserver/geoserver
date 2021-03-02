@@ -6,8 +6,8 @@
     ant -f release.xml -Dcurrent=2.17 -Drelease=2.18
   -->
   <tstamp/>
-  <property name="current" value="2.18"/>
-  <property name="release" value="2.19"/>
+  <property name="current" value="2.19"/>
+  <property name="release" value="2.20"/>
   
   <target name="test">
      <echo>current: ${current}</echo>
@@ -24,6 +24,7 @@
       <replacefilter token="${current}-SNAPSHOT" value="${release}-SNAPSHOT"/>
     </replace>
     <replace dir="../doc/en">
+      <include name="build.xml"/>
       <include name="user/source/conf.py"/>
       <include name="developer/source/conf.py"/>
       <include name="docguide/source/conf.py"/>
@@ -31,8 +32,8 @@
     </replace>
     <replace dir="..">
       <include name="src/pom.xml"/>
-      <replacefilter token="24-SNAPSHOT" value="25-SNAPSHOT"/>
-      <replacefilter token="1.19-SNAPSHOT" value="1.19-SNAPSHOT"/>
+      <replacefilter token="25-SNAPSHOT" value="26-SNAPSHOT"/>
+      <replacefilter token="1.20-SNAPSHOT" value="1.20-SNAPSHOT"/>
     </replace>
   </target>
 

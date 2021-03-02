@@ -136,31 +136,45 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     @SuppressWarnings("unchecked")
     public String getAttachmentFileName(Object value, Operation operation) {
         try {
+            GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+
             FeatureCollectionResponse featureCollections = (FeatureCollectionResponse) value;
             TransformInfo info = locateTransformation(featureCollections, operation);
 
             // concatenate all feature types requested
+
             StringBuilder sb = new StringBuilder();
-            for (FeatureCollection fc : featureCollections.getFeatures()) {
-                sb.append(fc.getSchema().getName().getLocalPart());
-                sb.append("_");
+            if (request.getFormatOptions() != null
+                    && request.getFormatOptions().containsKey("FILENAME")) {
+                sb.append((String) request.getFormatOptions().get("FILENAME"));
+            } else {
+                for (FeatureCollection fc : featureCollections.getFeatures()) {
+                    sb.append(fc.getSchema().getName().getLocalPart());
+                    sb.append("_");
+                }
+                sb.setLength(sb.length() - 1);
             }
-            sb.setLength(sb.length() - 1);
 
-            String extension = info.getFileExtension();
-            if (extension == null) {
-                extension = ".txt";
-                sb.append(extension);
+            if (sb.indexOf(".") == -1) {
+                String extension = info.getFileExtension();
+                if (extension == null) {
+                    sb.append(".txt");
+                } else {
+                    if (!extension.startsWith(".")) {
+                        sb.append(".");
+                    }
+                    sb.append(extension);
+                }
             }
-            if (!extension.startsWith(".")) {
-                sb.append(".");
-            }
-            sb.append(extension);
-
             return sb.toString();
         } catch (IOException e) {
             throw new WFSException("Failed to locate the XSLT transformation", e);
         }
+    }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return null; // handled by getAttachmentFileName above
     }
 
     @Override

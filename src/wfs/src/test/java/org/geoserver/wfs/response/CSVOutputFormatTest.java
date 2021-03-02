@@ -81,7 +81,6 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                                 + "outputFormat=csv&format_options=filename:test",
                         "");
 
-        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         assertEquals("text/csv", resp.getContentType());
         assertEquals("UTF-8", resp.getCharacterEncoding());
         assertEquals("attachment; filename=test.csv", resp.getHeader("Content-Disposition"));

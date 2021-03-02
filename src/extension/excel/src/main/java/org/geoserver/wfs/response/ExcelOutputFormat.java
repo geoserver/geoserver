@@ -20,7 +20,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -57,18 +56,6 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return mimeType;
-    }
-
-    @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        String fileName = super.getAttachmentFileName(value, operation);
-        if (fileName != null) {
-            return fileName;
-        }
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
-
-        return outputFileName + "." + fileExtension;
     }
 
     @Override

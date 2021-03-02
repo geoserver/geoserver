@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
@@ -870,8 +871,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         assertEquals(6, granulesList.size());
 
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         for (GridCoverage2D c : granulesList) {
             calendar.setTime(((DateRange) c.getProperty("TIME")).getMinValue());
+            assertEquals(0, calendar.get(Calendar.HOUR));
             assertEquals(startingYear++, calendar.get(Calendar.YEAR));
         }
     }

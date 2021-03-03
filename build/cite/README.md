@@ -21,3 +21,12 @@ make test suite=<suite test>
 ```shell
 make all suite=<suite test>
 ```
+*Note*: <suite test> shall match the name of the subdirectory of the suite.
+  examples below.
+  
+  
+### example:
+Run the `wms11` suite:
+```
+make clean build test suite=wms11
+```

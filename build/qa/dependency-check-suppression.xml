@@ -23,11 +23,6 @@
         <cpe>cpe:/a:arc:arc</cpe>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: gs-arcsde.jar]]></notes>
-        <gav regex="true">^org\.geoserver\.extension:gs-arcsde:.*$</gav>
-        <cpe>cpe:/a:arc:arc</cpe>
-    </suppress>
-    <suppress>
         <notes><![CDATA[file name: gt-jdbc-mysql.jar]]></notes>
         <gav regex="true">^org\.geotools\.jdbc:gt-jdbc-mysql:.*$</gav>
         <cpe>cpe:/a:mysql:mysql</cpe>

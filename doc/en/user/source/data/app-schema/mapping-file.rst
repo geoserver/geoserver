@@ -409,7 +409,7 @@ Database identifiers
 When referring to database table/view names or column names, use:
 
 * lowercase for PostGIS
-* UPPERCASE for Oracle Spatial and ArcSDE
+* UPPERCASE for Oracle Spatial
 
 
 .. _app-schema.denormalised-sources:

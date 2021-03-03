@@ -431,7 +431,7 @@ definitions:
                 name:
                   type: string
                   description:  |
-                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml, ie. <name>ArcSDE DataStore Extensions</name>
+                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml.
                 component:
                   type: string
                   description: |

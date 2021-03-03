@@ -15,7 +15,6 @@ officially part of the GeoServer releases. They are however built along with the
 .. toctree::
    :maxdepth: 1
 
-   arcsde/index
    oauth2/index
    keycloak/index
    keycloak/keycloak_role_service

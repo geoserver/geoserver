@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 public class GroupAdminComponentAuthorizer extends AdminComponentAuthorizer {
 
     @Override
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         // full admin implies group admin
         if (super.isAccessAllowed(componentClass, authentication)) {
             return true;

@@ -24,7 +24,7 @@ public class AcceptableRange {
      * @param dataType The target data type (e.g. {@link Date}
      * @return An {@link AcceptableRange} object, or null if the spec was null or empty
      */
-    public static AcceptableRange getAcceptableRange(String spec, Class dataType)
+    public static AcceptableRange getAcceptableRange(String spec, Class<?> dataType)
             throws ParseException {
         if (spec == null || spec.trim().isEmpty()) {
             return null;
@@ -48,7 +48,7 @@ public class AcceptableRange {
         return new AcceptableRange(before, after, dataType);
     }
 
-    private static Number parseValue(String s, Class dataType) throws ParseException {
+    private static Number parseValue(String s, Class<?> dataType) throws ParseException {
         if (Date.class.isAssignableFrom(dataType)) {
             return TimeParser.parsePeriod(s);
         }
@@ -58,9 +58,9 @@ public class AcceptableRange {
 
     private Number before;
     private Number after;
-    private Class dataType;
+    private Class<?> dataType;
 
-    public AcceptableRange(Number before, Number after, Class dataType) {
+    public AcceptableRange(Number before, Number after, Class<?> dataType) {
         this.before = before;
         this.after = after;
         this.dataType = dataType;
@@ -105,7 +105,7 @@ public class AcceptableRange {
     }
 
     /** The range data type */
-    public Class getDataType() {
+    public Class<?> getDataType() {
         return dataType;
     }
 }

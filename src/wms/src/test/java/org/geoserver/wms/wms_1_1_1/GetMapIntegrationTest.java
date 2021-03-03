@@ -555,7 +555,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
     }
 
-    private org.apache.log4j.Logger getLog4JLogger(Class targetClass, String fieldName)
+    private org.apache.log4j.Logger getLog4JLogger(Class<?> targetClass, String fieldName)
             throws NoSuchFieldException, IllegalAccessException {
         Field field = targetClass.getDeclaredField(fieldName);
         field.setAccessible(true);

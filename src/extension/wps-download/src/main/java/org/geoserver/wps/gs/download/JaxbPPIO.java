@@ -24,7 +24,7 @@ public class JaxbPPIO extends ComplexPPIO {
     private JAXBContext context;
     private EntityResolverProvider resolverProvider;
 
-    public JaxbPPIO(Class targetClass, EntityResolverProvider resolverProvider)
+    public JaxbPPIO(Class<?> targetClass, EntityResolverProvider resolverProvider)
             throws JAXBException, TransformerException {
         super(targetClass, targetClass, "text/xml");
         this.resolverProvider = resolverProvider;

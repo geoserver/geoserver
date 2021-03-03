@@ -50,7 +50,7 @@ public class OperationsTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return null;
     }
 

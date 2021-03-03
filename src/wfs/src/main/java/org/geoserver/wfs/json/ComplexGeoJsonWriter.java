@@ -43,7 +43,7 @@ class ComplexGeoJsonWriter {
 
     static final Logger LOGGER = Logging.getLogger(ComplexGeoJsonWriter.class);
 
-    private static Class NON_FEATURE_TYPE_PROXY;
+    private static Class<?> NON_FEATURE_TYPE_PROXY;
     private static final String DATATYPE = "@dataType";
     /**
      * A string constant for representing a not needed key name because object is being added inside

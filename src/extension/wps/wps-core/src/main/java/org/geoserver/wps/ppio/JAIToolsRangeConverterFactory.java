@@ -37,7 +37,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Converter createConverter(Class source, Class target, Hints hints) {
+    public Converter createConverter(Class<?> source, Class<?> target, Hints hints) {
         if (target.equals(Range.class) && source.equals(String.class)) {
             return new Converter() {
 

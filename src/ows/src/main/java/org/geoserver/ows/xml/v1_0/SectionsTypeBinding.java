@@ -55,7 +55,7 @@ public class SectionsTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<SectionsType> getType() {
         return SectionsType.class;
     }
 

@@ -24,7 +24,7 @@ public class MasterPasswordProvidersPanel
     }
 
     @Override
-    protected Class getServiceClass() {
+    protected Class<MasterPasswordProvider> getServiceClass() {
         return MasterPasswordProvider.class;
     }
 

@@ -15,7 +15,7 @@ import org.geoserver.catalog.Info;
 public class CatalogObjectConverter implements Converter {
 
     @Override
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         return Info.class.isAssignableFrom(type);
     }
 

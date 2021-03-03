@@ -245,11 +245,11 @@ public abstract class ProcessParameterIO {
     /** identifier for the parameter */
     protected String identifer;
 
-    protected ProcessParameterIO(Class externalType, Class<?> internalType) {
+    protected ProcessParameterIO(Class<?> externalType, Class<?> internalType) {
         this(externalType, internalType, null);
     }
 
-    protected ProcessParameterIO(Class externalType, Class<?> internalType, String identifier) {
+    protected ProcessParameterIO(Class<?> externalType, Class<?> internalType, String identifier) {
         this.externalType = externalType;
         this.internalType = internalType;
         this.identifer = identifier;

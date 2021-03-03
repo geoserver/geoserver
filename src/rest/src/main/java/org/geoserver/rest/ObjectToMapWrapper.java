@@ -116,7 +116,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @param object Object to convert.
      * @param clazz The advertized class of the object, from which the map keys are generated.
      */
-    protected Map<String, Object> objectToMap(Object object, Class clazz) {
+    protected Map<String, Object> objectToMap(Object object, Class<?> clazz) {
         HashMap<String, Object> map = new HashMap<>();
 
         ClassProperties cp = OwsUtils.getClassProperties(clazz);
@@ -139,7 +139,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
                 value = "null";
             }
             String key = Character.toLowerCase(p.charAt(0)) + p.substring(1);
-            Class valueClass = getClassForUnwrapping(value);
+            Class<?> valueClass = getClassForUnwrapping(value);
             if (value instanceof Collection) {
                 List<Object> values = new ArrayList<>();
                 for (Object o : (Collection) value) {
@@ -160,7 +160,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         return map;
     }
 
-    private Class getClassForUnwrapping(Object o) {
+    private Class<?> getClassForUnwrapping(Object o) {
         for (Class<?> clazz : classesToExpand) {
             if (clazz.isAssignableFrom(o.getClass())) {
                 return clazz;

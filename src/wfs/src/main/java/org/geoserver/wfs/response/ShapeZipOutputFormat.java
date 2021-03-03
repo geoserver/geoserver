@@ -460,9 +460,9 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
 
     class FileNameSource {
 
-        private Class clazz;
+        private Class<?> clazz;
 
-        public FileNameSource(Class clazz) {
+        public FileNameSource(Class<?> clazz) {
             this.clazz = clazz;
         }
 

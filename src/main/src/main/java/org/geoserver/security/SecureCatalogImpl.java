@@ -1714,7 +1714,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     @Override
-    public void removeListeners(Class listenerClass) {
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

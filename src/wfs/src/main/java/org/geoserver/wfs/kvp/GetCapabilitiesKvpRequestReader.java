@@ -17,7 +17,7 @@ public class GetCapabilitiesKvpRequestReader extends WFSKvpRequestReader {
         this(GetCapabilitiesType.class, WfsFactory.eINSTANCE);
     }
 
-    public GetCapabilitiesKvpRequestReader(Class requestBean, EFactory factory) {
+    public GetCapabilitiesKvpRequestReader(Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
     }
 

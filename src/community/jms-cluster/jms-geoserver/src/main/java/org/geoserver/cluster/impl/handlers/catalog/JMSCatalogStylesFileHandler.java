@@ -22,6 +22,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
     private JMSConfiguration config;
     private final GeoServerResourceLoader loader;
 
+    @SuppressWarnings("rawtypes")
     public JMSCatalogStylesFileHandler(
             Catalog catalog, XStream xstream, Class clazz, GeoServerResourceLoader loader) {
         super(xstream, clazz);

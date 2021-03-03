@@ -693,6 +693,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             if (configuredRange != null
                     && !Double.isInfinite(configuredRange.getMinimum())
                     && !Double.isInfinite(configuredRange.getMaximum())) {
+                @SuppressWarnings("rawtypes")
                 Class targetType =
                         categories != null && !categories.isEmpty()
                                 ? categories.get(0).getRange().getElementClass()

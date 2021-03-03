@@ -16,7 +16,7 @@ import org.geoserver.ows.KvpParser;
  */
 public abstract class AbstractAxisValueKvpParser<T> extends KvpParser {
 
-    public AbstractAxisValueKvpParser(String key, Class binding) {
+    public AbstractAxisValueKvpParser(String key, Class<?> binding) {
         super(key, binding);
     }
 

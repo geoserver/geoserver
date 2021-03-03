@@ -822,7 +822,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public void removeListeners(Class<?> listenerClass) {
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

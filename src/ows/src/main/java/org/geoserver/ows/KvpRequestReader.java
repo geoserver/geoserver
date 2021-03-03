@@ -78,7 +78,7 @@ public class KvpRequestReader {
      *
      * @param requestBean The type of the request read, not <code>null</code>
      */
-    public KvpRequestReader(Class requestBean) {
+    public KvpRequestReader(Class<?> requestBean) {
         if (requestBean == null) {
             throw new NullPointerException();
         }

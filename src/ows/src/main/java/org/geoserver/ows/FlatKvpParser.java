@@ -38,7 +38,7 @@ public class FlatKvpParser extends KvpParser {
      * @param key The key to bind to.
      * @param binding The class of each token in the value.
      */
-    public FlatKvpParser(String key, Class binding) {
+    public FlatKvpParser(String key, Class<?> binding) {
         this(key, binding, ",");
     }
 
@@ -49,7 +49,7 @@ public class FlatKvpParser extends KvpParser {
      * @param binding The class of each token in the value.
      * @param delimiter The delimiter used to seperate tokens
      */
-    public FlatKvpParser(String key, Class binding, String delimiter) {
+    public FlatKvpParser(String key, Class<?> binding, String delimiter) {
         super(key, binding);
 
         this.delimiter = delimiter;

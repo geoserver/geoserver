@@ -858,7 +858,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                     (ComplexType) attribute.getType(), schema, factory);
                         }
                     } else {
-                        Class binding = attribute.getType().getBinding();
+                        Class<?> binding = attribute.getType().getBinding();
                         typeName = findTypeName(binding);
                         if (typeName == null) {
                             // Fallback on String

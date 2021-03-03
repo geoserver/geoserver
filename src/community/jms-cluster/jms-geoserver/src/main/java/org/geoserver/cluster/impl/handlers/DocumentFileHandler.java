@@ -17,7 +17,8 @@ import org.geoserver.platform.resource.Resources;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public class DocumentFileHandler extends JMSEventHandler<String, DocumentFile> {
-    public DocumentFileHandler(XStream xstream, Class clazz) {
+    @SuppressWarnings("unchecked")
+    public DocumentFileHandler(XStream xstream, @SuppressWarnings("rawtypes") Class clazz) {
         super(xstream, clazz);
     }
 

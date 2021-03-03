@@ -175,7 +175,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<QueryType> getType() {
         return QueryType.class;
     }
 

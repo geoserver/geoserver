@@ -96,7 +96,7 @@ public class LockFeatureResponseTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<LockFeatureResponseType> getType() {
         return LockFeatureResponseType.class;
     }
 

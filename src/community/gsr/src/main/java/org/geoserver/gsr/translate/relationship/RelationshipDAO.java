@@ -322,8 +322,8 @@ public class RelationshipDAO {
      * @param matchClass Java Class/Type
      * @return
      */
-    public Boolean fieldTypeMatches(AttributeTypeInfo attributeTypeInfo, Class matchClass) {
-        Class attributeClassBinding = attributeTypeInfo.getBinding();
+    public Boolean fieldTypeMatches(AttributeTypeInfo attributeTypeInfo, Class<?> matchClass) {
+        Class<?> attributeClassBinding = attributeTypeInfo.getBinding();
         return attributeClassBinding.equals(matchClass);
     }
 

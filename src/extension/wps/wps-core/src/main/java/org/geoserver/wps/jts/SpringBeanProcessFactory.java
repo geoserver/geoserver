@@ -45,17 +45,17 @@ public class SpringBeanProcessFactory
         extends org.geotools.process.factory.AnnotationDrivenProcessFactory
         implements ApplicationContextAware, ApplicationListener {
 
-    Map<String, Class> classMap;
+    Map<String, Class<?>> classMap;
 
     Map<String, String> beanMap;
 
-    Class markerInterface;
+    Class<?> markerInterface;
 
     ApplicationContext applicationContext;
 
     FactoryIteratorProvider iterator;
 
-    public SpringBeanProcessFactory(String title, String namespace, Class markerInterface) {
+    public SpringBeanProcessFactory(String title, String namespace, Class<?> markerInterface) {
         super(new SimpleInternationalString(title), namespace);
         this.markerInterface = markerInterface;
 
@@ -99,7 +99,7 @@ public class SpringBeanProcessFactory
         classMap = new HashMap<>();
         beanMap = new HashMap<>();
         for (String beanName : beanNames) {
-            Class c = applicationContext.getType(beanName);
+            Class<?> c = applicationContext.getType(beanName);
             if (c != null) {
                 String name = c.getSimpleName();
                 if (name.endsWith("Process")) {
@@ -123,7 +123,7 @@ public class SpringBeanProcessFactory
 
     @Override
     protected Method method(String className) {
-        Class c = classMap.get(className);
+        Class<?> c = classMap.get(className);
         Method lastExecute = null;
         if (c != null) {
             for (Method m : c.getMethods()) {

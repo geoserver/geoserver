@@ -65,7 +65,7 @@ public class LockTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<LockType> getType() {
         return LockType.class;
     }
 

@@ -109,7 +109,7 @@ class SVGWriter extends OutputStreamWriter {
         this.pointsAsCircles = asCircles;
     }
 
-    public void setGeometryType(Class gtype) {
+    public void setGeometryType(Class<?> gtype) {
         featureWriter = writers.get(gtype);
 
         if (featureWriter == null) {
@@ -201,7 +201,7 @@ class SVGWriter extends OutputStreamWriter {
         SimpleFeature ft;
 
         try {
-            Class gtype = featureType.getGeometryDescriptor().getType().getBinding();
+            Class<?> gtype = featureType.getGeometryDescriptor().getType().getBinding();
 
             boolean doCollect = false;
             /*

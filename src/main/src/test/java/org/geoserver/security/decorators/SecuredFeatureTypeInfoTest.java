@@ -24,17 +24,17 @@ public class SecuredFeatureTypeInfoTest
     }
 
     @Override
-    Class getDelegateClass() {
+    Class<FeatureTypeInfo> getDelegateClass() {
         return FeatureTypeInfo.class;
     }
 
     @Override
-    Class getSecuredDecoratorClass() {
+    Class<SecuredFeatureTypeInfo> getSecuredDecoratorClass() {
         return SecuredFeatureTypeInfo.class;
     }
 
     @Override
-    Class getSecuredStoreInfoClass() {
+    Class<SecuredDataStoreInfo> getSecuredStoreInfoClass() {
         return SecuredDataStoreInfo.class;
     }
 

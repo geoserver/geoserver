@@ -23,7 +23,7 @@ public class WFSKvpRequestReader extends EMFKvpRequestReader {
      *
      * @param requestBean The request class, which must be an emf class.
      */
-    public WFSKvpRequestReader(Class requestBean) {
+    public WFSKvpRequestReader(Class<?> requestBean) {
         this(requestBean, WfsFactory.eINSTANCE);
     }
 
@@ -33,7 +33,7 @@ public class WFSKvpRequestReader extends EMFKvpRequestReader {
      * @param requestBean The request class, which must be an emf class.
      * @param factory The emf factory for the request bean.
      */
-    public WFSKvpRequestReader(Class requestBean, EFactory factory) {
+    public WFSKvpRequestReader(Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
     }
 

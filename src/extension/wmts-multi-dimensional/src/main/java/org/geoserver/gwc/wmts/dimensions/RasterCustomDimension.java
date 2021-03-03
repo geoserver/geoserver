@@ -23,7 +23,7 @@ public class RasterCustomDimension extends RasterDimension {
     }
 
     @Override
-    public Class getDimensionType() {
+    public Class<String> getDimensionType() {
         return String.class;
     }
 

@@ -237,7 +237,7 @@ public class CoverageUtils {
                     }
                 }
             } else {
-                Class[] clArray = {getParamValue(paramValues, index).getClass()};
+                Class<?>[] clArray = {getParamValue(paramValues, index).getClass()};
                 Object[] inArray = {getParamValue(paramValues, index)};
                 value = param.getValue().getClass().getConstructor(clArray).newInstance(inArray);
             }
@@ -333,7 +333,7 @@ public class CoverageUtils {
                     if (params.get(key) != null) {
                         value = Color.decode((String) params.get(key));
                     } else {
-                        Class[] clArray = {Color.class};
+                        Class<?>[] clArray = {Color.class};
                         Object[] inArray = {params.get(key)};
                         value = target.getConstructor(clArray).newInstance(inArray);
                     }

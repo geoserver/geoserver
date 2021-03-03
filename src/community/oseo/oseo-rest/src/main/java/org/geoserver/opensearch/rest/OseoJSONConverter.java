@@ -32,7 +32,7 @@ public class OseoJSONConverter extends BaseMessageConverter<Object> {
     }
 
     @Override
-    protected boolean supports(Class clazz) {
+    protected boolean supports(Class<?> clazz) {
         return (OgcLinks.class.isAssignableFrom(clazz)
                 || (ProductReferences.class.isAssignableFrom(clazz))
                 || (CollectionLayer.class.isAssignableFrom(clazz)));
@@ -44,7 +44,7 @@ public class OseoJSONConverter extends BaseMessageConverter<Object> {
     }
 
     @Override
-    protected Object readInternal(Class clazz, HttpInputMessage inputMessage)
+    protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         return delegate.read(clazz, inputMessage);
     }

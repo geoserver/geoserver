@@ -87,7 +87,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      *     Class#getResource(String)}, may be <code>null</code>
      * @param rl The geoserver resource loader
      */
-    public GeoServerTemplateLoader(Class caller, GeoServerResourceLoader rl) throws IOException {
+    public GeoServerTemplateLoader(Class<?> caller, GeoServerResourceLoader rl) throws IOException {
         this(
                 caller,
                 rl == null
@@ -96,7 +96,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
                         : new GeoServerDataDirectory(rl));
     }
 
-    public GeoServerTemplateLoader(Class caller, GeoServerDataDirectory dd) throws IOException {
+    public GeoServerTemplateLoader(Class<?> caller, GeoServerDataDirectory dd) throws IOException {
         this.dd = dd;
 
         // create a file template loader to delegate to

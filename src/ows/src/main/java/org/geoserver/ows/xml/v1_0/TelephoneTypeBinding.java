@@ -63,7 +63,7 @@ public class TelephoneTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return null;
     }
 

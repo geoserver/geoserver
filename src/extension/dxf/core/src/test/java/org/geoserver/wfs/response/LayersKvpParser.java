@@ -19,7 +19,7 @@ public class LayersKvpParser extends KvpParser {
 
     public static boolean parseAsList = false;
 
-    public LayersKvpParser(String key, Class binding) {
+    public LayersKvpParser(String key, Class<?> binding) {
         super(key, binding);
     }
 

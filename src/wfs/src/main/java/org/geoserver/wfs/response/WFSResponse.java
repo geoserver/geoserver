@@ -19,17 +19,17 @@ public abstract class WFSResponse extends Response {
 
     protected GeoServer gs;
 
-    public WFSResponse(GeoServer gs, Class binding) {
+    public WFSResponse(GeoServer gs, Class<?> binding) {
         super(binding);
         this.gs = gs;
     }
 
-    public WFSResponse(GeoServer gs, Class binding, String outputFormat) {
+    public WFSResponse(GeoServer gs, Class<?> binding, String outputFormat) {
         super(binding, outputFormat);
         this.gs = gs;
     }
 
-    public WFSResponse(GeoServer gs, Class binding, Set<String> outputFormats) {
+    public WFSResponse(GeoServer gs, Class<?> binding, Set<String> outputFormats) {
         super(binding, outputFormats);
         this.gs = gs;
     }

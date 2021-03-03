@@ -12,7 +12,7 @@ package org.geoserver.wps.ppio;
  */
 public abstract class CDataPPIO extends ComplexPPIO {
 
-    protected CDataPPIO(Class externalType, Class internalType, String mimeType) {
+    protected CDataPPIO(Class<?> externalType, Class<?> internalType, String mimeType) {
         super(externalType, internalType, mimeType);
     }
 

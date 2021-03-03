@@ -56,7 +56,7 @@ public class MapResponseMessageConverter extends MessageConverterResponseAdapter
     }
 
     @Override
-    public List<MediaType> getSupportedMediaTypes(Class valueClass, WebMap value) {
+    public List<MediaType> getSupportedMediaTypes(Class<?> valueClass, WebMap value) {
         if (!canWrite(valueClass, null)) return Collections.emptyList();
         List<MediaType> result = new ArrayList<>(getSupportedMediaTypes());
         // allows supporting RawMap

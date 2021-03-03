@@ -149,7 +149,7 @@ public class FeatureDataConverter {
 
                     GeometryDescriptor gd = featureType.getGeometryDescriptor();
                     if (gd != null) {
-                        Class binding = gd.getType().getBinding();
+                        Class<?> binding = gd.getType().getBinding();
                         if (Geometry.class.equals(binding)) {
                             try {
                                 try (FeatureReader r = format.read(data, item)) {

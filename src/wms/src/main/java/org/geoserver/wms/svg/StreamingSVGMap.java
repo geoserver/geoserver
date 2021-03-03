@@ -96,7 +96,7 @@ public class StreamingSVGMap extends WebMap {
 
     private void writeDefs(SimpleFeatureType layer) throws IOException {
         GeometryDescriptor gtype = layer.getGeometryDescriptor();
-        Class geometryClass = gtype.getType().getBinding();
+        Class<?> geometryClass = gtype.getType().getBinding();
 
         if ((geometryClass == MultiPoint.class) || (geometryClass == Point.class)) {
             writePointDefs();

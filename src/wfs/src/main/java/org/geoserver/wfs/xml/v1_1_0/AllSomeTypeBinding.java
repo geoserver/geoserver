@@ -51,7 +51,7 @@ public class AllSomeTypeBinding extends AbstractSimpleBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<AllSomeType> getType() {
         return AllSomeType.class;
     }
 

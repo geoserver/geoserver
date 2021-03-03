@@ -168,7 +168,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
         DefaultParameterDescriptor descriptor = parameterDescriptorMap.get(keyName);
         if (descriptor != null) {
-            Class valueClass = descriptor.getValueClass();
+            Class<?> valueClass = descriptor.getValueClass();
 
             // checkbox for booleans
             if (valueClass.equals(Boolean.class)) {

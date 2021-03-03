@@ -104,8 +104,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             Name oldName = RESOURCE_NAME_MAPPER.apply(actualValue);
             Name newName = RESOURCE_NAME_MAPPER.apply(proxiedValue);
             if (!oldName.equals(newName)) {
-                @SuppressWarnings("unchecked")
-                Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
+                ConcurrentHashMap<Class<LayerInfo>, Map<Name, LayerInfo>> names = nameMultiMap;
+                Map<Name, LayerInfo> nameMap = getMapForValue(names, LayerInfoImpl.class);
                 LayerInfo value = nameMap.remove(oldName);
                 // handle case of feature type without a corresponding layer
                 if (value != null) {

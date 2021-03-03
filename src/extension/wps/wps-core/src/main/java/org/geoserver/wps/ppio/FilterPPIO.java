@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 public class FilterPPIO extends XMLPPIO {
     Configuration xml;
 
-    protected FilterPPIO(Class type, String mimeType, QName element) {
+    protected FilterPPIO(Class<?> type, String mimeType, QName element) {
         super(type, type, mimeType, element);
     }
 

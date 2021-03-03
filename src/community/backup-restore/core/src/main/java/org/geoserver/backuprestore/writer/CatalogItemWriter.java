@@ -91,7 +91,7 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
                                             .getResourceByName(
                                                     resourceInfo.getName(), CoverageInfo.class)
                                     == null) {
-                        Class clz = null;
+                        Class<? extends ResourceInfo> clz = null;
                         if (item instanceof FeatureTypeInfo) {
                             clz = FeatureTypeInfo.class;
                         } else if (item instanceof CoverageInfo) {

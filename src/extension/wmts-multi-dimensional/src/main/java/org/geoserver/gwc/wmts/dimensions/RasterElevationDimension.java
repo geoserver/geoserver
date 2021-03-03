@@ -27,7 +27,7 @@ public class RasterElevationDimension extends RasterDimension {
     }
 
     @Override
-    public Class getDimensionType() {
+    public Class<Number> getDimensionType() {
         return Number.class;
     }
 

@@ -110,7 +110,7 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
             Map rawKvp,
             String ncWmsParameter,
             String paletteParameter,
-            Class targetClass) {
+            Class<?> targetClass) {
         if (kvp.containsKey(ncWmsParameter)) {
             String str = (String) rawKvp.get(ncWmsParameter);
             Object value = Converters.convert(str, targetClass);

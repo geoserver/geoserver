@@ -85,7 +85,7 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<DescribeFeatureTypeType> getType() {
         return DescribeFeatureTypeType.class;
     }
 

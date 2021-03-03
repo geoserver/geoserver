@@ -647,7 +647,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
-    private Filter getTypeFilter(String prefixedName, Class clazz) {
+    private Filter getTypeFilter(String prefixedName, Class<?> clazz) {
         if (rawCatalog.getLayerByName(prefixedName) != null)
             if (clazz.equals(PublishedInfo.class)) {
                 // restrict to layers in this case

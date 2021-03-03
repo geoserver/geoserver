@@ -380,7 +380,7 @@ public class MockCatalogBuilder {
         return this;
     }
 
-    public MockCatalogBuilder coverage(QName qName, String fileName, String srs, Class scope) {
+    public MockCatalogBuilder coverage(QName qName, String fileName, String srs, Class<?> scope) {
         scope = scope != null ? scope : getClass();
 
         String cId = newId();

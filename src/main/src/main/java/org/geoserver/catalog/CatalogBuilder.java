@@ -1608,7 +1608,7 @@ public class CatalogBuilder {
             return null;
         }
 
-        Class gtype = gd.getType().getBinding();
+        Class<?> gtype = gd.getType().getBinding();
         if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POINT;
         } else if (LineString.class.isAssignableFrom(gtype)

@@ -16,13 +16,13 @@ import org.springframework.security.core.Authentication;
  */
 public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
 
-    List<Class> linkClasses = Collections.emptyList();
+    List<Class<?>> linkClasses = Collections.emptyList();
 
-    public List<Class> getLinkClasses() {
+    public List<Class<?>> getLinkClasses() {
         return linkClasses;
     }
 
-    public void setLinkClasses(List<Class> linkClasses) {
+    public void setLinkClasses(List<Class<?>> linkClasses) {
         this.linkClasses = linkClasses;
     }
 

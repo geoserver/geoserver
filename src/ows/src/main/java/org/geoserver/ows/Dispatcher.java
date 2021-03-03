@@ -1509,7 +1509,7 @@ public class Dispatcher extends AbstractController {
         return kvp;
     }
 
-    Object parseRequestKVP(Class type, Request request) throws Exception {
+    Object parseRequestKVP(Class<?> type, Request request) throws Exception {
         KvpRequestReader kvpReader = findKvpRequestReader(type);
 
         if (kvpReader != null) {

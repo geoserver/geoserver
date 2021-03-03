@@ -36,7 +36,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
     // ~ Methods
     // ========================================================================================================
     @Override
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
     }
 

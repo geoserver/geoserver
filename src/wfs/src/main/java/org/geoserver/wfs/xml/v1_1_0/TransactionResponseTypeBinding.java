@@ -96,7 +96,7 @@ public class TransactionResponseTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<TransactionResponseType> getType() {
         return TransactionResponseType.class;
     }
 

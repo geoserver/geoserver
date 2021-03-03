@@ -97,7 +97,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<GetGmlObjectType> getType() {
         return GetGmlObjectType.class;
     }
 

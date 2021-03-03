@@ -15,7 +15,7 @@ public class Queryable {
         this.type = type;
     }
 
-    public Queryable(String id, Class binding) {
+    public Queryable(String id, Class<?> binding) {
         this.id = id;
         this.type = AttributeType.fromClass(binding);
     }

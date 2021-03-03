@@ -53,7 +53,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * needed. We cache names instead of beans because doing the latter we would break the
      * "singleton=false" directive of some beans
      */
-    static SoftValueHashMap<Class, String[]> extensionsCache = new SoftValueHashMap<>(40);
+    static SoftValueHashMap<Class<?>, String[]> extensionsCache = new SoftValueHashMap<>(40);
 
     static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<>();
 
@@ -70,7 +70,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<>();
 
     /** SPI lookups are very expensive, we need to cache them */
-    static SoftValueHashMap<Class, List<?>> spiCache = new SoftValueHashMap<>(40);
+    static SoftValueHashMap<Class<?>, List<?>> spiCache = new SoftValueHashMap<>(40);
 
     /**
      * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)}

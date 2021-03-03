@@ -25,12 +25,12 @@ public class CollectionConverter
         super(mapper);
     }
 
-    public CollectionConverter(Mapper mapper, Class type) {
+    public CollectionConverter(Mapper mapper, Class<?> type) {
         super(mapper, type);
     }
 
     @Override
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         if (type != null) {
             String typeName = type.getName();
             if (typeName.equals(ARRAY_LIST)

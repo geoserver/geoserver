@@ -231,7 +231,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     }
                 }
                 if (!map.containsKey("pattern")) {
-                    Class type = param.getType();
+                    Class<?> type = param.getType();
                     if (Integer.class == type) {
                         map.put("pattern", "[+-][0-9]+");
                     } else if (Float.class == type || Double.class == type) {

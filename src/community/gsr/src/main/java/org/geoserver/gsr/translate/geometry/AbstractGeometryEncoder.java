@@ -629,7 +629,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     }
 
     @Override
-    public boolean canConvert(Class clazz) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
         return Geometry.class.isAssignableFrom(clazz) || Envelope.class.isAssignableFrom(clazz);
     }
 }

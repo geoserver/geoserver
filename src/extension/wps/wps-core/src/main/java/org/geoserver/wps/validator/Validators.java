@@ -21,7 +21,7 @@ public class Validators {
      * the specified filter classes is available
      */
     public static List<Validator> filterOutClasses(
-            Collection<Validator> validators, Class... filteredClasses) {
+            Collection<Validator> validators, Class<?>... filteredClasses) {
         if (validators == null) {
             return null;
         }

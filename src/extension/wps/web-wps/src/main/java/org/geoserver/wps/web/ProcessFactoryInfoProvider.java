@@ -43,7 +43,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
-                        Class factoryClass = item.getFactoryClass();
+                        Class<?> factoryClass = item.getFactoryClass();
                         Set<String> prefixes = new HashSet<>();
                         ProcessFactory pf =
                                 GeoServerProcessors.getProcessFactory(factoryClass, false);
@@ -78,7 +78,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
-                        Class factoryClass = item.getFactoryClass();
+                        Class<?> factoryClass = item.getFactoryClass();
                         String title = null;
                         ProcessFactory pf =
                                 GeoServerProcessors.getProcessFactory(factoryClass, false);
@@ -109,7 +109,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                                             .getString();
                                 }
 
-                                Class factoryClass = item.getFactoryClass();
+                                Class<?> factoryClass = item.getFactoryClass();
                                 ProcessFactory pf =
                                         GeoServerProcessors.getProcessFactory(factoryClass, false);
                                 if (pf != null) {

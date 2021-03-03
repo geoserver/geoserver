@@ -318,7 +318,8 @@ public abstract class BackupRestoreItem<T> {
     }
 
     /** */
-    protected boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class clazz) {
+    protected boolean filteredResource(
+            T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
         // Filtering Resources
         if (filterIsValid()) {
             if (resource == null || (clazz != null && clazz == WorkspaceInfo.class)) {
@@ -467,7 +468,7 @@ public abstract class BackupRestoreItem<T> {
             }
 
             @Override
-            public boolean canConvert(Class type) {
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                 if (BackupRestoreItem.class.equals(type)) {
                     return true;
                 } else {
@@ -712,7 +713,7 @@ public abstract class BackupRestoreItem<T> {
         return target;
     }
 
-    protected StoreInfo clone(StoreInfo source, WorkspaceInfo workspace, Class type) {
+    protected StoreInfo clone(StoreInfo source, WorkspaceInfo workspace, Class<?> type) {
         StoreInfo target = null;
         if (type == DataStoreInfo.class) {
             target = catalog.getFactory().createDataStore();
@@ -975,7 +976,7 @@ public abstract class BackupRestoreItem<T> {
         }
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             if (BackupRestoreItem.class.equals(type)) {
                 return true;
             } else {

@@ -552,7 +552,7 @@ public class DGGSDAPAExtension {
         for (String variable : variables) {
             for (Aggregate function : functions) {
                 Class<?> binding = featureType.getDescriptor(variable).getType().getBinding();
-                Class targetType = function.getTargetType(binding);
+                Class<?> targetType = function.getTargetType(binding);
                 String name = getAttributeName(variable, function);
                 builder.add(name, targetType);
             }
@@ -578,7 +578,7 @@ public class DGGSDAPAExtension {
         for (String variable : variables) {
             for (Aggregate function : functions) {
                 Class<?> binding = featureType.getDescriptor(variable).getType().getBinding();
-                Class targetType = function.getTargetType(binding);
+                Class<?> targetType = function.getTargetType(binding);
                 String name = getAttributeName(variable, function);
                 builder.add(name, targetType);
             }
@@ -596,7 +596,7 @@ public class DGGSDAPAExtension {
         for (String variable : variables) {
             for (Aggregate function : functions) {
                 Class<?> binding = featureType.getDescriptor(variable).getType().getBinding();
-                Class targetType = function.getTargetType(binding);
+                Class<?> targetType = function.getTargetType(binding);
                 String name = getAttributeName(variable, function);
                 builder.add(name, targetType);
             }

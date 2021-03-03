@@ -101,7 +101,7 @@ public class TreeMapConverter extends MapConverter {
         if (reader.hasMoreChildren()) {
             reader.moveDown();
             if (reader.getNodeName().equals("comparator")) {
-                Class comparatorClass = HierarchicalStreams.readClassType(reader, mapper);
+                Class<?> comparatorClass = HierarchicalStreams.readClassType(reader, mapper);
                 comparator = (Comparator) context.convertAnother(result, comparatorClass);
             } else if (reader.getNodeName().equals("no-comparator")) { // pre 1.4 format
                 comparator = null;

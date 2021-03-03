@@ -316,7 +316,7 @@ public class SimulateCallback implements DispatcherCallback {
         if (value instanceof Number) {
             return true;
         }
-        Class clazz = value.getClass();
+        Class<?> clazz = value.getClass();
         return clazz.isPrimitive() || ClassUtils.wrapperToPrimitive(clazz) != null;
     }
 
@@ -336,11 +336,11 @@ public class SimulateCallback implements DispatcherCallback {
 
     final class Property {
         final String name;
-        final Class type;
+        final Class<?> type;
         private final Supplier<Object> value;
         Object v;
 
-        Property(String name, Class type, Supplier<Object> value) {
+        Property(String name, Class<?> type, Supplier<Object> value) {
             this.name = name;
             this.type = type;
             this.value = value;

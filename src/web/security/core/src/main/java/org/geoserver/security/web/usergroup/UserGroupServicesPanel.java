@@ -24,7 +24,7 @@ public class UserGroupServicesPanel
     }
 
     @Override
-    protected Class getServiceClass() {
+    protected Class<GeoServerUserGroupService> getServiceClass() {
         return GeoServerUserGroupService.class;
     }
 

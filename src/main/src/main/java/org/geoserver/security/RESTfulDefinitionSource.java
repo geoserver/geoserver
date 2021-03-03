@@ -65,7 +65,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     }
 
     @Override
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
     }
 

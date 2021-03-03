@@ -85,7 +85,7 @@ public class PropertyTypePropertyExtractor implements PropertyExtractor {
     }
 
     private QName guessValueType(Object value) {
-        Class clazz = value.getClass();
+        Class<?> clazz = value.getClass();
         List profiles = Arrays.asList(new Object[] {new XSProfile(), new GML3Profile()});
 
         for (Object o : profiles) {

@@ -380,7 +380,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         // we might revisit this decision later
         if (converted == null) {
             if (targetClass.isArray() && value instanceof List) {
-                Class componentType = targetClass.getComponentType();
+                Class<?> componentType = targetClass.getComponentType();
                 List list = (List) value;
                 converted = Array.newInstance(componentType, list.size());
                 int i = 0;

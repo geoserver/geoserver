@@ -74,7 +74,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<PropertyType> getType() {
         return PropertyType.class;
     }
 

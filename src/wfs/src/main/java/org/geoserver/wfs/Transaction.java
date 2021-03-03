@@ -462,7 +462,7 @@ public class Transaction {
      * Finds the best transaction element handler for the specified element type (the one matching
      * the most specialized superclass of type)
      */
-    protected final TransactionElementHandler findElementHandler(Class type)
+    protected final TransactionElementHandler findElementHandler(Class<?> type)
             throws WFSTransactionException {
         List<TransactionElementHandler> matches = new ArrayList<>();
 

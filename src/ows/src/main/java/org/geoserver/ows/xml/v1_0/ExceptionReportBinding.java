@@ -67,7 +67,7 @@ public class ExceptionReportBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<ExceptionReportType> getType() {
         return ExceptionReportType.class;
     }
 }

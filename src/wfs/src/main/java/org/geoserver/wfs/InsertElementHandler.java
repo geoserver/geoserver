@@ -265,7 +265,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
     }
 
     @Override
-    public Class getElementClass() {
+    public Class<Insert> getElementClass() {
         return Insert.class;
     }
 

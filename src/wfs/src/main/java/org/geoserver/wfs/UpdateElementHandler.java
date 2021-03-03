@@ -62,8 +62,8 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
-    static final Map<String, Class> GML_PROPERTIES_BINDINGS =
-            new HashMap<String, Class>() {
+    static final Map<String, Class<?>> GML_PROPERTIES_BINDINGS =
+            new HashMap<String, Class<?>>() {
                 {
                     put("name", String.class);
                     put("description", String.class);
@@ -138,7 +138,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                     if (getInfo().isCiteCompliant()) {
                         // was it a common GML property that we don't have backing storage for?
                         String namespace = name.getNamespaceURI();
-                        Class binding = GML_PROPERTIES_BINDINGS.get(name.getLocalPart());
+                        Class<?> binding = GML_PROPERTIES_BINDINGS.get(name.getLocalPart());
                         if (GML_NAMESPACES.contains(namespace) && binding != null) {
                             // the hack is here, CITE tests want us to report that updating with an
                             // un-parseable KML point
@@ -397,7 +397,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
     /** @see org.geoserver.wfs.TransactionElementHandler#getElementClass() */
     @Override
-    public Class getElementClass() {
+    public Class<Update> getElementClass() {
         return Update.class;
     }
 

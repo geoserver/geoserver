@@ -66,7 +66,7 @@ public class ExceptionTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<ExceptionType> getType() {
         return ExceptionType.class;
     }
 }

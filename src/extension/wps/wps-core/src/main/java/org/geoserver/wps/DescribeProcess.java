@@ -73,7 +73,7 @@ public class DescribeProcess {
      * Maps the primitive types that can still be used in process input/output descriptions to
      * object wrappers that we can use in process descriptions
      */
-    static final Map<Class, Class> PRIMITIVE_TO_WRAPPER;
+    static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER;
 
     static {
         PRIMITIVE_TO_WRAPPER = new HashMap<>();
@@ -178,7 +178,7 @@ public class DescribeProcess {
 
                 // map the java class to an xml type name
                 if (!String.class.equals(lppio.getType())) {
-                    Class type = lppio.getType();
+                    Class<?> type = lppio.getType();
                     if (PRIMITIVE_TO_WRAPPER.containsKey(type)) {
                         type = PRIMITIVE_TO_WRAPPER.get(type);
                     }
@@ -354,7 +354,7 @@ public class DescribeProcess {
 
                 // map the java class to an xml type name
                 if (!String.class.equals(lppio.getType())) {
-                    Class type = lppio.getType();
+                    Class<?> type = lppio.getType();
                     if (PRIMITIVE_TO_WRAPPER.containsKey(type)) {
                         type = PRIMITIVE_TO_WRAPPER.get(type);
                     }

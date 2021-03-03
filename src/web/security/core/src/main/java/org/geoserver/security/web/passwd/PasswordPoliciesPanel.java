@@ -23,7 +23,7 @@ public class PasswordPoliciesPanel extends SecurityNamedServicesPanel<PasswordPo
     }
 
     @Override
-    protected Class getServiceClass() {
+    protected Class<PasswordValidator> getServiceClass() {
         return PasswordValidator.class;
     }
 

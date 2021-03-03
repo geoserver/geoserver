@@ -64,7 +64,7 @@ public class TypeNameListTypeBinding extends AbstractSimpleBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<List> getType() {
         return List.class;
     }
 

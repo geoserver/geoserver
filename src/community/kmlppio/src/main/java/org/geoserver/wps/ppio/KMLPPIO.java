@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -73,12 +74,12 @@ public class KMLPPIO extends CDataPPIO {
         this.type = b.buildFeatureType();
     }
 
-    private static final HashMap<Name, Class> getSignature(SimpleFeature f) {
+    private static final HashMap<Name, Class<?>> getSignature(SimpleFeature f) {
         HashMap ftype = new HashMap();
         Collection properties = f.getProperties();
         for (Object op : properties) {
             Property p = (Property) op;
-            Class c = p.getType().getBinding();
+            Class<?> c = p.getType().getBinding();
             if ((c.isAssignableFrom(String.class))
                     || (c.isAssignableFrom(Boolean.class))
                     || (c.isAssignableFrom(Integer.class))
@@ -91,14 +92,14 @@ public class KMLPPIO extends CDataPPIO {
         return ftype;
     }
 
-    private SimpleFeatureType getType(HashMap<Name, Class> ftype) {
+    private SimpleFeatureType getType(HashMap<Name, Class<?>> ftype) {
         SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
 
         b.setName("puregeometries");
 
         b.setCRS(DefaultGeographicCRS.WGS84);
-        for (Map.Entry entry : ftype.entrySet()) {
-            b.add(((Name) entry.getKey()).toString(), (Class) entry.getValue());
+        for (Entry<Name, Class<?>> entry : ftype.entrySet()) {
+            b.add(entry.getKey().toString(), entry.getValue());
         }
         return b.buildFeatureType();
     }

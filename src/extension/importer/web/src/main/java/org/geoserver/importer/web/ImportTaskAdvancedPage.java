@@ -155,7 +155,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                 atts.add(at.getName());
             }
 
-            final List<Class> types = Arrays.asList(Integer.class, Double.class, Date.class);
+            final List<Class<?>> types = Arrays.asList(Integer.class, Double.class, Date.class);
 
             final WebMarkupContainer remapContainer = new WebMarkupContainer("remapsContainer");
             remapContainer.setOutputMarkupId(true);
@@ -175,15 +175,15 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                             atts);
                             item.add(attChoice);
 
-                            final DropDownChoice<Class> typeChoice =
+                            final DropDownChoice<Class<?>> typeChoice =
                                     new DropDownChoice<>(
                                             "type",
                                             new PropertyModel<>(item.getModel(), "type"),
                                             types,
-                                            new ChoiceRenderer<Class>() {
+                                            new ChoiceRenderer<Class<?>>() {
 
                                                 @Override
-                                                public Object getDisplayValue(Class object) {
+                                                public Object getDisplayValue(Class<?> object) {
                                                     return object.getSimpleName();
                                                 }
                                             });

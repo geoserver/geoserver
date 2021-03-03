@@ -25,7 +25,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class BoundingBoxPPIO extends ProcessParameterIO {
 
-    public BoundingBoxPPIO(Class type) {
+    public BoundingBoxPPIO(Class<?> type) {
         super(type, type);
     }
 

@@ -28,7 +28,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
     }
 
     public DescribeFeatureTypeKvpRequestReader(
-            final Catalog catalog, Class requestBean, EFactory factory) {
+            final Catalog catalog, Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
         this.catalog = catalog;
     }

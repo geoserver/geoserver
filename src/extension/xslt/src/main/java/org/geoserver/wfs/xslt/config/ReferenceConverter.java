@@ -21,18 +21,17 @@ import org.geoserver.ows.util.OwsUtils;
  * XStreamPersister}
  */
 class ReferenceConverter implements Converter {
-    Class clazz;
+    Class<?> clazz;
 
     private Catalog catalog;
 
-    public ReferenceConverter(Class clazz, Catalog catalog) {
+    public ReferenceConverter(Class<?> clazz, Catalog catalog) {
         this.catalog = catalog;
         this.clazz = clazz;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         return clazz.isAssignableFrom(type);
     }
 

@@ -14,7 +14,7 @@ import org.opengis.filter.FilterFactory;
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
     public GetFeatureKvpRequestReader(
-            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         super(requestBean, Wfs20Factory.eINSTANCE, geoServer, filterFactory);
     }
 

@@ -34,7 +34,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     public static class Factory implements GeoPkgExtensionFactory {
 
         @Override
-        public GeoPkgExtension getExtension(String name, GeoPackage geoPackage) {
+        public SemanticAnnotationsExtension getExtension(String name, GeoPackage geoPackage) {
             try {
                 if (NAME.equals(name)) {
                     return new SemanticAnnotationsExtension(geoPackage);
@@ -50,7 +50,8 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
         }
 
         @Override
-        public GeoPkgExtension getExtension(Class extensionClass, GeoPackage geoPackage) {
+        public GeoPkgExtension getExtension(
+                @SuppressWarnings("rawtypes") Class extensionClass, GeoPackage geoPackage) {
             if (SemanticAnnotationsExtension.class.equals(extensionClass)) {
                 try {
                     return new SemanticAnnotationsExtension(geoPackage);

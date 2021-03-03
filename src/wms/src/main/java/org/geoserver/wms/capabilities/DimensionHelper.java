@@ -148,7 +148,7 @@ abstract class DimensionHelper {
             String metadata;
             String units = customDim.getValue().getUnits();
             String unitSymbol = customDim.getValue().getUnitSymbol();
-            final Optional<Class> dataTypeOpt = getDataType(values);
+            final Optional<Class<?>> dataTypeOpt = getDataType(values);
             if (dataTypeOpt.isPresent()) {
                 final Class<?> type = dataTypeOpt.get();
                 if (Date.class.isAssignableFrom(type)) {
@@ -175,7 +175,7 @@ abstract class DimensionHelper {
         }
     }
 
-    Optional<Class> getDataType(Set<Object> values) {
+    Optional<Class<?>> getDataType(Set<Object> values) {
         return values.stream().filter(x -> x != null).findFirst().map(Object::getClass);
     }
 

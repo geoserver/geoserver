@@ -145,7 +145,7 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
                     .stream()
                     .filter(
                             attribute -> {
-                                Class binding = attribute.getType().getBinding();
+                                Class<?> binding = attribute.getType().getBinding();
                                 return Long.class.isAssignableFrom(binding)
                                         || Date.class.isAssignableFrom(binding)
                                         || Timestamp.class.isAssignableFrom(binding);

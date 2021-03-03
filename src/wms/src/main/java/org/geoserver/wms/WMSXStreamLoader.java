@@ -108,7 +108,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return WMSInfo.class.isAssignableFrom(type);
         }
 

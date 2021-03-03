@@ -15,7 +15,7 @@ public abstract class BaseKvpRequestReader extends KvpRequestReader {
      *
      * @param requestBean The type of the request read, not <code>null</code>
      */
-    public BaseKvpRequestReader(Class requestBean) {
+    public BaseKvpRequestReader(Class<?> requestBean) {
         super(requestBean);
     }
 

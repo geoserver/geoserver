@@ -100,7 +100,7 @@ public class StyleGenerator {
         GeometryDescriptor gd = nativeFeatureType.getGeometryDescriptor();
         if (gd == null) return catalog.getStyleByName(StyleInfo.DEFAULT_POINT);
 
-        Class gtype = gd.getType().getBinding();
+        Class<?> gtype = gd.getType().getBinding();
         StyleType st;
         if (LineString.class.isAssignableFrom(gtype)
                 || MultiLineString.class.isAssignableFrom(gtype)) {

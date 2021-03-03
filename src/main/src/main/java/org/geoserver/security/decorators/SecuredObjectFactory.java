@@ -19,7 +19,7 @@ public interface SecuredObjectFactory extends ExtensionPriority {
     /**
      * Returns true if this factory can properly wrap the specified objects of the specified class
      */
-    boolean canSecure(Class clazz);
+    boolean canSecure(Class<?> clazz);
 
     /**
      * Wraps the data access object into a secured wrapper

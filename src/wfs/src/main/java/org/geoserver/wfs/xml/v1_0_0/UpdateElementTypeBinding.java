@@ -71,7 +71,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<UpdateElementType> getType() {
         return UpdateElementType.class;
     }
 

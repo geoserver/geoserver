@@ -280,10 +280,10 @@ public class JDBCConfigTestSupport {
         expect(appContext.containsBean("JDBCConfigXStreamPersisterInitializer"))
                 .andStubReturn(true);
 
-        expect(appContext.getBeansOfType((Class) anyObject()))
+        expect(appContext.getBeansOfType((Class<?>) anyObject()))
                 .andReturn(Collections.emptyMap())
                 .anyTimes();
-        expect(appContext.getBeanNamesForType((Class) anyObject()))
+        expect(appContext.getBeanNamesForType((Class<?>) anyObject()))
                 .andReturn(new String[] {})
                 .anyTimes();
 

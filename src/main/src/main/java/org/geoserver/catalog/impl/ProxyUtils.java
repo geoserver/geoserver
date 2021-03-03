@@ -26,10 +26,10 @@ public class ProxyUtils {
             new ConcurrentHashMap<>();
 
     static final class ProxyClassConstructorKey {
-        Class c1;
-        Class c2;
+        Class<?> c1;
+        Class<?> c2;
 
-        public ProxyClassConstructorKey(Class c1, Class c2) {
+        public ProxyClassConstructorKey(Class<?> c1, Class<?> c2) {
             this.c1 = c1;
             this.c2 = c2;
         }
@@ -83,11 +83,11 @@ public class ProxyUtils {
     public static <T> T createProxy(T proxyObject, Class<? extends T> clazz, InvocationHandler h) {
         try {
             // proxy all interfaces implemented by the source object
-            List<Class> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
+            List<Class<?>> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
 
             // ensure that the specified class is included
             boolean add = true;
-            for (Class interfce : proxyObject.getClass().getInterfaces()) {
+            for (Class<?> interfce : proxyObject.getClass().getInterfaces()) {
                 if (clazz.isAssignableFrom(interfce)) {
                     add = false;
                     break;

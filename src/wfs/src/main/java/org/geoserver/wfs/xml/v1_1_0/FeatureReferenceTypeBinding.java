@@ -58,7 +58,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<Association> getType() {
         return Association.class;
     }
 

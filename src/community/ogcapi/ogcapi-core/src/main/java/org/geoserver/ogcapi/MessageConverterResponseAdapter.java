@@ -36,11 +36,11 @@ public class MessageConverterResponseAdapter<T>
         implements HttpMessageConverter<T>, ApplicationContextAware {
 
     protected final Class<T> valueClass;
-    protected final Class responseBinding;
+    protected final Class<?> responseBinding;
     protected List<Response> responses;
     protected List<MediaType> supportedMediaTypes;
 
-    public MessageConverterResponseAdapter(Class<T> valueClass, Class responseBinding) {
+    public MessageConverterResponseAdapter(Class<T> valueClass, Class<?> responseBinding) {
         this.valueClass = valueClass;
         this.responseBinding = responseBinding;
     }

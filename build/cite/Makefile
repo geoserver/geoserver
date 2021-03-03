@@ -1,9 +1,8 @@
 # Usage:
 # make        # Show this help to know which commands can run
-# make clean  # Will Clean the Environment of previous runs.
-# make build # Will Build the GeoServer Docker Image for the Environment.
-# make test  # Will Run the Suite test with teamengine.
-# make all   # Will Run all the previous steps {clean build test}
+# make clean suite=<suite test>  # Will Clean the environment of previous runs of a specific suite.
+# make build suite=<suite test>  # Will Build the GeoServer docker image of a specific suite.
+# make suite=<suite test>        # Will Run the specific test suite via a teamengine container.
 
 .DEFAULT_GOAL := help
 .PHONY = help
@@ -13,8 +12,6 @@ war_url = "https://build.geoserver.org/geoserver/master/geoserver-master-latest-
 
 help:
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
-
-all: clean build test
 
 clean: $(suite)		## Will Clean the Environment of previous runs.
 	@echo Cleaning up previous runs

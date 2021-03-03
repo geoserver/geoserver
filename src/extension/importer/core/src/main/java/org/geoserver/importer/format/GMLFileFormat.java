@@ -63,14 +63,14 @@ import org.xmlpull.v1.XmlPullParserFactory;
  */
 public class GMLFileFormat extends VectorFormat {
 
-    private static final Class[] TYPE_GUESS_TARGETS = {
+    private static final Class<?>[] TYPE_GUESS_TARGETS = {
         Integer.class, Long.class, Double.class, Boolean.class, Date.class
     };
 
-    private static final HashSet<Class> VALID_ATTRIBUTE_TYPES =
+    private static final HashSet<Class<?>> VALID_ATTRIBUTE_TYPES =
             new HashSet<>(
                     Arrays.asList(
-                            (Class) Geometry.class,
+                            (Class<?>) Geometry.class,
                             Number.class,
                             Date.class,
                             Boolean.class,
@@ -79,8 +79,8 @@ public class GMLFileFormat extends VectorFormat {
     private static final List<String> GML_ATTRIBUTES =
             Arrays.asList("name", "description", "boundedBy", "location");
 
-    private static final Map<Class, Class> TYPE_PROMOTIONS =
-            new HashMap<Class, Class>() {
+    private static final Map<Class<?>, Class<?>> TYPE_PROMOTIONS =
+            new HashMap<Class<?>, Class<?>>() {
                 {
                     put(Integer.class, Long.class);
                     put(Long.class, Double.class);
@@ -351,7 +351,7 @@ public class GMLFileFormat extends VectorFormat {
         if (ad != null) {
             target = ad.getType().getBinding();
         }
-        Class originalTarget = target;
+        Class<?> originalTarget = target;
         if (String.class.equals(target) || Geometry.class.equals(target)) {
             return;
         }

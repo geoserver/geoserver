@@ -475,7 +475,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
                                             @Override
                                             @SuppressWarnings("unchecked")
-                                            public boolean canConvert(Class cls) {
+                                            public boolean canConvert(
+                                                    @SuppressWarnings("rawtypes") Class cls) {
                                                 return cls.isAssignableFrom(RoleSource.class);
                                             }
 
@@ -3254,7 +3255,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return GeoServerSecurityFilterChain.class.isAssignableFrom(type);
         }
 

@@ -52,7 +52,7 @@ public class CircleTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<Circle> getType() {
         return Circle.class;
     }
 

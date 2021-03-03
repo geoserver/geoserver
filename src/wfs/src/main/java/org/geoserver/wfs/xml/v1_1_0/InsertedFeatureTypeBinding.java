@@ -71,7 +71,7 @@ public class InsertedFeatureTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<InsertedFeatureType> getType() {
         return InsertedFeatureType.class;
     }
 

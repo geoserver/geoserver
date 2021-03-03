@@ -40,7 +40,7 @@ public class NestedKvpParser extends KvpParser {
      * @param key The key to bind to.
      * @param binding The class of each token in the value.
      */
-    public NestedKvpParser(String key, Class binding) {
+    public NestedKvpParser(String key, Class<?> binding) {
         super(key, binding);
     }
 

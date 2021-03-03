@@ -18,7 +18,7 @@ class ParameterBuilder {
 
     String key;
 
-    Class type;
+    Class<?> type;
 
     boolean required;
 
@@ -30,7 +30,7 @@ class ParameterBuilder {
 
     String name;
 
-    ParameterBuilder(String key, Class type) {
+    ParameterBuilder(String key, Class<?> type) {
         this.key = key;
         this.type = type;
     }

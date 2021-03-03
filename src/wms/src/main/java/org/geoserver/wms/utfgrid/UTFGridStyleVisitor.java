@@ -105,7 +105,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         if (copy.getTransformation() instanceof Function) {
             transformations = true;
             Function f = (Function) fts.getTransformation();
-            Class returnType = getFunctionReturnType(f);
+            Class<?> returnType = getFunctionReturnType(f);
             if (Object.class.equals(returnType)
                     || FeatureCollection.class.isAssignableFrom(returnType)) {
                 vectorTransformations = true;
@@ -143,7 +143,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
     };
 
     /** Returns the function return type, or {@link Object} if it could not be determined */
-    Class getFunctionReturnType(Function f) {
+    Class<?> getFunctionReturnType(Function f) {
         FunctionName name = f.getFunctionName();
         if (name == null || name.getReturn() == null) {
             return Object.class;

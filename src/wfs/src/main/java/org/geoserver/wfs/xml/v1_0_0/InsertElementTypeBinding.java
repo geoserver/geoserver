@@ -61,7 +61,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<InsertElementTypeBinding> getType() {
         return InsertElementTypeBinding.class;
     }
 

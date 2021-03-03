@@ -19,7 +19,7 @@ public class SecuredWMSLayerInfoTest
     }
 
     @Override
-    Class getDelegateClass() {
+    Class<WMSLayerInfo> getDelegateClass() {
         return WMSLayerInfo.class;
     }
 
@@ -29,12 +29,12 @@ public class SecuredWMSLayerInfoTest
     }
 
     @Override
-    Class getSecuredDecoratorClass() {
+    Class<SecuredWMSLayerInfo> getSecuredDecoratorClass() {
         return SecuredWMSLayerInfo.class;
     }
 
     @Override
-    Class getSecuredStoreInfoClass() {
+    Class<SecuredWMSStoreInfo> getSecuredStoreInfoClass() {
         return SecuredWMSStoreInfo.class;
     }
 

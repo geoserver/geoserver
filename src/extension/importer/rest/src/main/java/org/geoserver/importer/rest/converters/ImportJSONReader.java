@@ -320,7 +320,7 @@ public class ImportJSONReader {
         } else if ("CreateIndexTransform".equalsIgnoreCase(type)) {
             transform = new CreateIndexTransform(json.getString("field"));
         } else if ("AttributeRemapTransform".equalsIgnoreCase(type)) {
-            Class clazz;
+            Class<?> clazz;
             try {
                 clazz = Class.forName(json.getString("target"));
             } catch (ClassNotFoundException cnfe) {
@@ -329,7 +329,7 @@ public class ImportJSONReader {
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
         } else if ("AttributeComputeTransform".equalsIgnoreCase(type)) {
-            Class clazz;
+            Class<?> clazz;
             try {
                 clazz = Class.forName(json.getString("fieldType"));
             } catch (ClassNotFoundException cnfe) {

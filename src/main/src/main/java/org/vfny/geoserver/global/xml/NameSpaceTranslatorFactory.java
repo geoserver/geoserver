@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
 public class NameSpaceTranslatorFactory {
     static final Logger LOGGER = Logging.getLogger(NameSpaceTranslatorFactory.class);
     /** map of namespace names as Strings -> Class representations of NameSpaceTranslators */
-    private Map<String, Class> namespaceTranslators;
+    private Map<String, Class<?>> namespaceTranslators;
 
     /** map of prefixs as String -> Instances of NameSpaceTranslators */
     private Map<String, NameSpaceTranslator> namespaceTranslatorInstances;
@@ -124,9 +124,9 @@ public class NameSpaceTranslatorFactory {
      * @param namespace The namespace.
      * @param nameSpaceTranslator The translator class for this namespace.
      */
-    public void registerNameSpaceTranslator(String namespace, Class nameSpaceTranslator) {
-        if ((nameSpaceTranslator != null)
-                && NameSpaceTranslator.class.isAssignableFrom(nameSpaceTranslator)) {
+    public void registerNameSpaceTranslator(
+            String namespace, Class<? extends NameSpaceTranslator> nameSpaceTranslator) {
+        if (nameSpaceTranslator != null) {
             namespaceTranslators.put(namespace, nameSpaceTranslator);
         }
     }

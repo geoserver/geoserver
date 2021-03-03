@@ -186,7 +186,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                 : null;
 
                 if (((ResourceInfo) resource).getStore() == null && filterIsValid()) {
-                    Class clz = null;
+                    Class<? extends ResourceInfo> clz = null;
                     if (resource instanceof FeatureTypeInfo) {
                         clz = FeatureTypeInfo.class;
                     } else if (resource instanceof CoverageInfo) {
@@ -198,7 +198,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                     .getResourceByName(((ResourceInfo) resource).getName(), clz);
                     if (source != null && source.getStore() != null) {
                         StoreInfo ds =
-                                getCatalog().getStoreByName(source.getStore().getName(), clz);
+                                getCatalog()
+                                        .getStoreByName(
+                                                source.getStore().getName(), StoreInfo.class);
                         if (ds == null) {
                             return null;
                         }

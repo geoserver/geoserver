@@ -103,7 +103,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         HttpMessageConverter converter;
         if (htmlResponseBody != null && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
             // direct HTML encoding based on annotations
-            Class baseClass = htmlResponseBody.baseClass();
+            Class<?> baseClass = htmlResponseBody.baseClass();
             if (baseClass == Object.class) {
                 baseClass = returnType.getContainingClass();
             }
@@ -366,7 +366,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             throws IOException, HttpMediaTypeNotAcceptableException,
                     HttpMessageNotWritableException {
         Object body;
-        Class valueType;
+        Class<?> valueType;
         Type targetType;
         if (value instanceof CharSequence) {
             body = value.toString();

@@ -51,7 +51,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
     }
 
     @Override
-    public Class getElementClass() {
+    public Class<Delete> getElementClass() {
         return Delete.class;
     }
 

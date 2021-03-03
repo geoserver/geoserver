@@ -57,7 +57,7 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
                 throws IOException, ClassNotFoundException {
             ObjectStreamClass resultClassDescriptor =
                     super.readClassDescriptor(); // initially streams descriptor
-            Class localClass =
+            Class<?> localClass =
                     Class.forName(
                             resultClassDescriptor
                                     .getName()); // the class in the local JVM that this descriptor

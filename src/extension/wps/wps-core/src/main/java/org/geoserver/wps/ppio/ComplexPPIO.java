@@ -21,7 +21,7 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     protected String mimeType;
 
     /** Constructor. */
-    protected ComplexPPIO(Class externalType, Class internalType, String mimeType) {
+    protected ComplexPPIO(Class<?> externalType, Class<?> internalType, String mimeType) {
         super(externalType, internalType);
         this.mimeType = mimeType;
     }

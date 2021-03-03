@@ -25,7 +25,7 @@ public class GMLPPIO extends XMLPPIO {
 
     Configuration xml;
 
-    protected GMLPPIO(Class type, String mimeType, QName element) {
+    protected GMLPPIO(Class<?> type, String mimeType, QName element) {
         super(type, type, mimeType, element);
     }
 
@@ -43,7 +43,7 @@ public class GMLPPIO extends XMLPPIO {
 
     public static class GML2 extends GMLPPIO {
 
-        public GML2(Class type, QName element) {
+        public GML2(Class<?> type, QName element) {
             super(type, "text/xml; subtype=gml/2.1.2", element);
             xml = new GMLConfiguration();
         }
@@ -90,7 +90,7 @@ public class GMLPPIO extends XMLPPIO {
 
     public static class GML3 extends GMLPPIO {
 
-        public GML3(Class type, QName element) {
+        public GML3(Class<?> type, QName element) {
             super(type, "text/xml; subtype=gml/3.1.1", element);
             xml = new org.geotools.gml3.GMLConfiguration();
         }

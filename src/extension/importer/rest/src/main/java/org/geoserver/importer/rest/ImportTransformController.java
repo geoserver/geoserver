@@ -111,7 +111,7 @@ public class ImportTransformController extends ImportBaseController {
         ImportTask task = task(importId, taskId);
         ImportTransform orig = transform(task, transformId, false);
         @SuppressWarnings("unchecked")
-        Class<ImportTransform> txc = (Class) orig.getClass();
+        Class<ImportTransform> txc = (Class<ImportTransform>) orig.getClass();
         OwsUtils.copy(importTransform, orig, txc);
         importer.changed(task);
 

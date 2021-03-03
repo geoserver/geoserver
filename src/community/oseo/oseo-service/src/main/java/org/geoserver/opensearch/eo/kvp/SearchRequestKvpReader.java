@@ -569,7 +569,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             Parameter<?> parameter, String value, Class<?> type, PropertyName pn) {
         // for numeric and range parameters check the range syntax
         String input = value;
-        Class target = type;
+        Class<?> target = type;
         if (type != null && type.isArray()) {
             target = target.getComponentType();
         }
@@ -659,7 +659,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     }
 
     private Object parseParameter(Parameter<?> parameter, String value) {
-        Class target = parameter.getType();
+        Class<?> target = parameter.getType();
         // for searches on array types
         if (target != null && target.isArray()) {
             target = target.getComponentType();

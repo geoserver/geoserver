@@ -55,7 +55,7 @@ public class NativeElementHandler implements TransactionElementHandler {
     }
 
     @Override
-    public Class getElementClass() {
+    public Class<Native> getElementClass() {
         return Native.class;
     }
 

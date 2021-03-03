@@ -1762,7 +1762,7 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
-    public void removeListeners(Class listenerClass) {
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         new ArrayList<>(listeners)
                 .stream()
                 .filter(l -> listenerClass.isInstance(l))

@@ -228,7 +228,7 @@ public class ManifestLoader {
                             .toString();
             geoserverPath = geoserverPath + "!/META-INF/MANIFEST.MF";
 
-            Class geoserver_class = GeoServer.class;
+            Class<GeoServer> geoserver_class = GeoServer.class;
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
             if (manifest != null) {
                 model.add(
@@ -255,7 +255,7 @@ public class ManifestLoader {
                             .toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
-            Class geoserver_class = GeoTools.class;
+            Class<GeoTools> geoserver_class = GeoTools.class;
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
 
             if (manifest != null) {
@@ -287,7 +287,7 @@ public class ManifestLoader {
                             .toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
-            Class geoserver_class = Class.forName("org.geowebcache.GeoWebCache");
+            Class<?> geoserver_class = Class.forName("org.geowebcache.GeoWebCache");
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
             if (manifest != null) {
                 model.add(

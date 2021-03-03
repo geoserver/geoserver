@@ -28,6 +28,7 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
 
     private final ToggleSwitch producer;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public JMSGeoServerHandler(GeoServer geo, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.geoServer = geo;

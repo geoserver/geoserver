@@ -17,7 +17,7 @@ class EncryptedFieldConverter extends AbstractSingleValueConverter {
     }
 
     @Override
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         return String.class.equals(type);
     }
 

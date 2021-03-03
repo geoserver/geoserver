@@ -50,7 +50,7 @@ public class AcceptFormatsTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<AcceptFormatsType> getType() {
         return AcceptFormatsType.class;
     }
 

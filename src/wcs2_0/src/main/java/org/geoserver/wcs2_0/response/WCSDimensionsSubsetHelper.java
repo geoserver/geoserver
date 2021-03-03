@@ -1006,7 +1006,7 @@ public class WCSDimensionsSubsetHelper {
                 Object value = feature.getAttribute(startAttribute);
                 if (endAttribute != null) {
                     Object endValue = feature.getAttribute(endAttribute);
-                    Class objectClass = endValue.getClass();
+                    Class<?> objectClass = endValue.getClass();
                     String classDataType = objectClass.toString();
                     if (classDataType.endsWith("Timestamp")) {
                         value =
@@ -1029,8 +1029,10 @@ public class WCSDimensionsSubsetHelper {
         subRequest.setDimensionsSubset(dimensionsSubset);
     }
 
-    @SuppressWarnings("unchecked") // used when the range class is not known at compile time
-    private NumberRange newGenericNumberRange(Class numberClass, Number start, Number end) {
+    // used when the range class is not known at compile time
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private NumberRange<? extends Number> newGenericNumberRange(
+            Class<?> numberClass, Number start, Number end) {
         return new NumberRange(numberClass, start, end);
     }
 

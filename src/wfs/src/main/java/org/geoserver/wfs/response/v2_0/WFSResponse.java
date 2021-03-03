@@ -23,15 +23,15 @@ import org.geotools.xsd.Encoder;
 
 public abstract class WFSResponse extends org.geoserver.wfs.response.WFSResponse {
 
-    public WFSResponse(GeoServer gs, Class binding, Set<String> outputFormats) {
+    public WFSResponse(GeoServer gs, Class<?> binding, Set<String> outputFormats) {
         super(gs, binding, outputFormats);
     }
 
-    public WFSResponse(GeoServer gs, Class binding, String outputFormat) {
+    public WFSResponse(GeoServer gs, Class<?> binding, String outputFormat) {
         super(gs, binding, outputFormat);
     }
 
-    public WFSResponse(GeoServer gs, Class binding) {
+    public WFSResponse(GeoServer gs, Class<?> binding) {
         super(gs, binding);
     }
 

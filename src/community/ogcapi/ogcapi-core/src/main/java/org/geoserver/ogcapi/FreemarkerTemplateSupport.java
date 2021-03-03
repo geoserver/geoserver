@@ -36,7 +36,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class FreemarkerTemplateSupport {
 
-    private static final Map<Class, Configuration> configurationCache = new SoftValueHashMap<>(10);
+    private static final Map<Class<?>, Configuration> configurationCache =
+            new SoftValueHashMap<>(10);
 
     private final GeoServerResourceLoader resourceLoader;
 
@@ -102,7 +103,7 @@ public class FreemarkerTemplateSupport {
         }
     }
 
-    Configuration getTemplateConfiguration(Class clazz) {
+    Configuration getTemplateConfiguration(Class<?> clazz) {
         return configurationCache.computeIfAbsent(
                 clazz,
                 k -> {
@@ -124,7 +125,7 @@ public class FreemarkerTemplateSupport {
     public void processTemplate(
             ResourceInfo resource,
             String templateName,
-            Class referenceClass,
+            Class<?> referenceClass,
             Map<String, Object> model,
             Writer writer)
             throws IOException {
@@ -148,7 +149,7 @@ public class FreemarkerTemplateSupport {
     public String processTemplate(
             ResourceInfo resource,
             String templateName,
-            Class referenceClass,
+            Class<?> referenceClass,
             Map<String, Object> model)
             throws IOException {
         StringWriter sw = new StringWriter();

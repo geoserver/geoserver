@@ -53,7 +53,7 @@ public class AcceptVersionsTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<AcceptVersionsType> getType() {
         return AcceptVersionsType.class;
     }
 

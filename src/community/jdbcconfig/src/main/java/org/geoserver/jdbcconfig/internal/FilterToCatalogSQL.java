@@ -331,7 +331,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     private String handleInstanceOf(IsInstanceOf instanceOf) {
         Expression expression1 = instanceOf.getParameters().get(0);
 
-        Class clazz = expression1.evaluate(null, Class.class);
+        Class<?> clazz = expression1.evaluate(null, Class.class);
 
         if (clazz == null || dbMappings.getTypeId(clazz) == null) {
             return "(1=0) /* EXCLUDE */\n";

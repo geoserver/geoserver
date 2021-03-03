@@ -70,7 +70,7 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<ResultTypeType> getType() {
         return ResultTypeType.class;
     }
 

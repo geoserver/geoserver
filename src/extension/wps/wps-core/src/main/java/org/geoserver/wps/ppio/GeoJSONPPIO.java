@@ -23,12 +23,12 @@ import org.locationtech.jts.geom.Geometry;
 public abstract class GeoJSONPPIO extends CDataPPIO {
     GeoServer gs;
 
-    protected GeoJSONPPIO(Class clazz) {
+    protected GeoJSONPPIO(Class<?> clazz) {
         super(clazz, clazz, "application/json");
         this.gs = (GeoServer) GeoServerExtensions.bean("geoServer");
     }
 
-    protected GeoJSONPPIO(Class clazz, GeoServer gs) {
+    protected GeoJSONPPIO(Class<?> clazz, GeoServer gs) {
         super(clazz, clazz, "application/json");
         this.gs = gs;
     }

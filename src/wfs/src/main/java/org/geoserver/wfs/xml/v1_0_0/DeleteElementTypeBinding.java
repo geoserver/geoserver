@@ -70,7 +70,7 @@ public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<DeleteElementType> getType() {
         return DeleteElementType.class;
     }
 

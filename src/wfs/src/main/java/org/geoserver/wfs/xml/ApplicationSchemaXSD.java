@@ -337,7 +337,7 @@ public class ApplicationSchemaXSD extends XSD {
             element.setName(attribute.getLocalName());
             element.setNillable(attribute.isNillable());
 
-            Class binding = attribute.getType().getBinding();
+            Class<?> binding = attribute.getType().getBinding();
             Name typeName = findTypeName(binding);
 
             if (typeName == null) {
@@ -389,7 +389,7 @@ public class ApplicationSchemaXSD extends XSD {
                 || "boundedBy".equals(attribute.getName().getLocalPart());
     }
 
-    Name findTypeName(Class binding) {
+    Name findTypeName(Class<?> binding) {
         return typeMappingProfile.name(binding);
     }
 }

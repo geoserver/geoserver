@@ -71,7 +71,7 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<GetFeatureWithLockType> getType() {
         return GetFeatureWithLockType.class;
     }
 

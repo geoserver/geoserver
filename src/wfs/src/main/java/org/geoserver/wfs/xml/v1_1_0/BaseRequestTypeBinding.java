@@ -102,7 +102,7 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<BaseRequestType> getType() {
         return BaseRequestType.class;
     }
 

@@ -940,8 +940,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
             final Class<T> infoType, final Filter filter);
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void removeListeners(Class listenerClass) {
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

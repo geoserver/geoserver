@@ -163,7 +163,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<GetFeatureType> getType() {
         return GetFeatureType.class;
     }
 

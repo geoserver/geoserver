@@ -23,7 +23,7 @@ public class RoleServicesPanel extends SecurityNamedServicesPanel<SecurityRoleSe
     }
 
     @Override
-    protected Class getServiceClass() {
+    protected Class<GeoServerRoleService> getServiceClass() {
         return GeoServerRoleService.class;
     }
 

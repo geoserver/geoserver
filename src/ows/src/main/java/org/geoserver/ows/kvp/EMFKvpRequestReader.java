@@ -31,7 +31,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
      *
      * @param requestBean The request class, which must be an emf class.
      */
-    public EMFKvpRequestReader(Class requestBean, EFactory factory) {
+    public EMFKvpRequestReader(Class<?> requestBean, EFactory factory) {
         super(requestBean);
 
         // make sure an eobject is passed in

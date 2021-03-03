@@ -1430,13 +1430,13 @@ public class XMPPClient extends RemoteProcessClient {
 
         // Retrieve the Class of the parameter through the mapping
         String mimeTypes = "";
-        Class c = null;
+        Class<?> c = null;
         if (name.equalsIgnoreCase("complex") || name.equalsIgnoreCase("complex")) {
             // Is it a complex/raw data type?
             c = RawData.class;
         } else if (PRIMITIVE_NAME_TYPE_MAP.get(name) != null) {
             // Check for a primitive type
-            c = (Class) ((Object[]) PRIMITIVE_NAME_TYPE_MAP.get(name))[0];
+            c = (Class<?>) ((Object[]) PRIMITIVE_NAME_TYPE_MAP.get(name))[0];
         }
 
         if (c == null) {

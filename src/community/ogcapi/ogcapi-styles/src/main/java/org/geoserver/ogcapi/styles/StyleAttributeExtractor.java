@@ -84,7 +84,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
      */
     boolean symbolizerGeometriesVisitEnabled = true;
 
-    Map<PropertyName, Class> propertyTypes = new LinkedHashMap<>();
+    Map<PropertyName, Class<?>> propertyTypes = new LinkedHashMap<>();
 
     public StyleAttributeExtractor() {
         // simple case
@@ -573,7 +573,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         if (ad != null) {
             propertyTypes.put(expression, ad.getType().getBinding());
         } else if (data instanceof Class) {
-            propertyTypes.put(expression, (Class) data);
+            propertyTypes.put(expression, (Class<?>) data);
         } else {
             propertyTypes.put(expression, Object.class);
         }
@@ -587,7 +587,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
      * would be allowed thanks to converters, the most specific is used (e.g., Color instead of
      * String)
      */
-    public Map<PropertyName, Class> getPropertyTypes() {
+    public Map<PropertyName, Class<?>> getPropertyTypes() {
         return Collections.unmodifiableMap(propertyTypes);
     }
 }

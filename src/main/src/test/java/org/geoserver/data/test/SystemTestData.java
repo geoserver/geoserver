@@ -221,7 +221,7 @@ public class SystemTestData extends CiteTestData {
      *
      * @see {@link #addVectorLayer(QName, Map, Class, Catalog)}
      */
-    public void setUpVectorLayer(QName qName, Map<LayerProperty, Object> props, Class scope)
+    public void setUpVectorLayer(QName qName, Map<LayerProperty, Object> props, Class<?> scope)
             throws IOException {
         addVectorLayer(qName, props, scope, catalog);
     }
@@ -235,7 +235,7 @@ public class SystemTestData extends CiteTestData {
      * @see {@link #addVectorLayer(QName, Map, String, Class, Catalog)}
      */
     public void setUpVectorLayer(
-            QName qName, Map<LayerProperty, Object> props, String filename, Class scope)
+            QName qName, Map<LayerProperty, Object> props, String filename, Class<?> scope)
             throws IOException {
         addVectorLayer(qName, props, filename, scope, catalog);
     }
@@ -280,7 +280,7 @@ public class SystemTestData extends CiteTestData {
             String filename,
             String extension,
             Map<LayerProperty, Object> props,
-            Class scope)
+            Class<?> scope)
             throws IOException {
         addRasterLayer(qName, filename, extension, props, scope, catalog);
     }
@@ -417,7 +417,7 @@ public class SystemTestData extends CiteTestData {
      * @param name The name of the style.
      * @param scope Class from which to load sld resource from.
      */
-    public void addStyle(String name, Class scope, Catalog catalog) throws IOException {
+    public void addStyle(String name, Class<?> scope, Catalog catalog) throws IOException {
         addStyle(name, name + ".sld", scope, catalog);
     }
 
@@ -431,7 +431,7 @@ public class SystemTestData extends CiteTestData {
      * @param filename The filename to copy from classpath.
      * @param scope Class from which to load sld resource from.
      */
-    public void addStyle(String name, String filename, Class scope, Catalog catalog)
+    public void addStyle(String name, String filename, Class<?> scope, Catalog catalog)
             throws IOException {
         addStyle(null, name, filename, scope, catalog);
     }
@@ -449,7 +449,7 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(
-            WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog)
+            WorkspaceInfo ws, String name, String filename, Class<?> scope, Catalog catalog)
             throws IOException {
         addStyle(ws, name, filename, scope, catalog, Collections.emptyMap());
     }
@@ -470,7 +470,7 @@ public class SystemTestData extends CiteTestData {
             WorkspaceInfo ws,
             String name,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog,
             LegendInfo legend)
             throws IOException {
@@ -500,7 +500,7 @@ public class SystemTestData extends CiteTestData {
             WorkspaceInfo ws,
             String name,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog,
             Map<StyleProperty, Object> properties)
             throws IOException {
@@ -565,7 +565,7 @@ public class SystemTestData extends CiteTestData {
      * {@link LayerProperty} class for supported properties.
      */
     public void addVectorLayer(
-            QName qName, Map<LayerProperty, Object> props, Class scope, Catalog catalog)
+            QName qName, Map<LayerProperty, Object> props, Class<?> scope, Catalog catalog)
             throws IOException {
         addVectorLayer(qName, props, qName.getLocalPart() + ".properties", scope, catalog);
     }
@@ -590,7 +590,7 @@ public class SystemTestData extends CiteTestData {
             QName qName,
             Map<LayerProperty, Object> props,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog)
             throws IOException {
         String prefix = qName.getPrefix();
@@ -800,7 +800,7 @@ public class SystemTestData extends CiteTestData {
             String filename,
             String extension,
             Map<LayerProperty, Object> props,
-            Class scope,
+            Class<?> scope,
             Catalog catalog)
             throws IOException {
 

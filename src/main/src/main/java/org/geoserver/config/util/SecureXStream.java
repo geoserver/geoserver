@@ -453,7 +453,7 @@ public class SecureXStream extends XStream {
     private void registerConverterDynamically(
             String className,
             int priority,
-            Class[] constructorParamTypes,
+            Class<?>[] constructorParamTypes,
             Object[] constructorParamValues) {
         try {
             Class<?> type =
@@ -483,7 +483,7 @@ public class SecureXStream extends XStream {
         }
 
         @Override
-        public Class realClass(String elementName) {
+        public Class<?> realClass(String elementName) {
             try {
                 return super.realClass(elementName);
             } catch (ForbiddenClassException e) {

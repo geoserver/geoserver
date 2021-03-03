@@ -26,13 +26,13 @@ import org.opengis.feature.type.Schema;
 public class TypeMappingProfile /*extends ProfileImpl*/ {
 
     /** Set of profiles to do mappings from. */
-    Set /*<Profile>*/ profiles;
+    Set<Schema> profiles;
 
     //    public TypeMappingProfile(Schema schema, Set profile) {
     //        super(schema, profile);
     //    }
 
-    public TypeMappingProfile(Set profiles) {
+    public TypeMappingProfile(Set<Schema> profiles) {
         this.profiles = profiles;
     }
 
@@ -46,7 +46,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
      * @return The AttributeType, or <code>null</code> if no atttribute type mapped to <code>clazz
      *     </code>
      */
-    public AttributeType type(Class clazz) {
+    public AttributeType type(Class<?> clazz) {
         List<AttributeType> assignable = new ArrayList<>();
 
         for (Object o : profiles) {
@@ -103,7 +103,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
      * @param clazz The class.
      * @return The Name, or <code>null</code> if no atttribute type mapped to <code>clazz</code>
      */
-    public Name name(Class clazz) {
+    public Name name(Class<?> clazz) {
         List<Map.Entry> assignable = new ArrayList<>();
 
         for (Object o : profiles) {

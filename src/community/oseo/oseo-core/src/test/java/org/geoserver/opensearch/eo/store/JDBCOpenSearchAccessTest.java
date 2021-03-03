@@ -435,7 +435,7 @@ public class JDBCOpenSearchAccessTest {
         MatcherAssert.assertThat(schema, instanceOf(SimpleFeatureType.class));
         SimpleFeatureType ft = (SimpleFeatureType) schema;
         // check there are no foreign attributes
-        Map<String, Class> mappings = new HashMap<>();
+        Map<String, Class<?>> mappings = new HashMap<>();
         for (AttributeDescriptor ad : ft.getAttributeDescriptors()) {
             final String adName = ad.getLocalName();
             for (ProductClass pc : ProductClass.DEFAULT_PRODUCT_CLASSES) {

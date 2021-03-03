@@ -37,7 +37,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     ConcurrentHashMap<Class<T>, Map<String, T>> idMultiMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<Class<T>, Map<Name, T>> nameMultiMap = new ConcurrentHashMap<>();
     Function<T, Name> nameMapper;
-    static final Predicate TRUE = x -> true;
+    static final Predicate<?> TRUE = x -> true;
 
     /** Returns {@link CatalogInfoLookup#TRUE} in a type-safe way */
     @SuppressWarnings("unchecked")
@@ -46,7 +46,6 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     }
 
     public CatalogInfoLookup(Function<T, Name> nameMapper) {
-        super();
         this.nameMapper = nameMapper;
     }
 
@@ -64,16 +63,18 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return getMapForValue(maps, vc);
     }
 
-    @SuppressWarnings("unchecked")
     // cannot get the layer lookup to work otherwise, "vc" cannot be parameterized to "T"
     // or the LayerInfoLookup in DefaultCatalogFacade won't work. Issue being that the maps
     // contains LayerInfoImpl (extracted from the values) but the container is parameterized
     // by LayerInfo. I suppose it could be solved by having a mapping function going from class
     // to key class (LayerInfoImpl to LayerInfo) and use it consistently across the lookup?
-    protected <K> Map<K, T> getMapForValue(ConcurrentHashMap<Class<T>, Map<K, T>> maps, Class vc) {
+    protected <K> Map<K, T> getMapForValue(
+            ConcurrentHashMap<Class<T>, Map<K, T>> maps, Class<?> vc) {
         Map<K, T> vcMap = maps.get(vc);
         if (vcMap == null) {
-            vcMap = maps.computeIfAbsent(vc, k -> new ConcurrentSkipListMap<>());
+            @SuppressWarnings("unchecked")
+            Class<T> uncheked = (Class<T>) vc;
+            vcMap = maps.computeIfAbsent(uncheked, k -> new ConcurrentSkipListMap<K, T>());
         }
         return vcMap;
     }

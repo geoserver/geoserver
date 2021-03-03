@@ -15,7 +15,7 @@ public interface ResponseMessageConverter<T> extends HttpMessageConverter<T> {
      * as well (to support generic {@link org.geoserver.ows.Response} objects gathering the output
      * media type from the response, like RawMap in WMS
      */
-    List<MediaType> getSupportedMediaTypes(Class valueClass, T value);
+    List<MediaType> getSupportedMediaTypes(Class<?> valueClass, T value);
 
     boolean canWrite(Object value, MediaType mediaType);
 }

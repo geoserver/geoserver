@@ -34,7 +34,7 @@ public class RasterTimeDimension extends RasterDimension {
     }
 
     @Override
-    public Class getDimensionType() {
+    public Class<Date> getDimensionType() {
         return Date.class;
     }
 

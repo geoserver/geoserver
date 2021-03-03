@@ -21,6 +21,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
@@ -546,7 +547,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     @Override
-    public void removeListeners(Class<?> listenerClass) {
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

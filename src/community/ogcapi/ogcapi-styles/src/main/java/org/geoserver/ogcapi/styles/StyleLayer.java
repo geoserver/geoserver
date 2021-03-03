@@ -199,7 +199,7 @@ public class StyleLayer implements Serializable {
                         ? new StyleAttributeExtractor((SimpleFeatureType) featureType)
                         : new StyleAttributeExtractor();
         acceptvisitor(source, extractor);
-        Map<PropertyName, Class> propertyTypes = extractor.getPropertyTypes();
+        Map<PropertyName, Class<?>> propertyTypes = extractor.getPropertyTypes();
 
         return propertyTypes
                 .entrySet()

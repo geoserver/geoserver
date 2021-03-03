@@ -74,10 +74,10 @@ public class OwsUtils {
     }
 
     /** Cache of reflection information about a class, keyed by class. */
-    static Map<Class, ClassProperties> classPropertiesCache = new SoftValueHashMap<>();
+    static Map<Class<?>, ClassProperties> classPropertiesCache = new SoftValueHashMap<>();
 
     /** Accessor for the class to property info cache. */
-    static ClassProperties classProperties(Class clazz) {
+    static ClassProperties classProperties(Class<?> clazz) {
         // SoftValueHashMap is thread safe, no need to synch
         ClassProperties properties = classPropertiesCache.get(clazz);
         if (properties == null) {
@@ -88,7 +88,7 @@ public class OwsUtils {
     }
 
     /** Returns the properties object describing the properties of a class. */
-    public static ClassProperties getClassProperties(Class clazz) {
+    public static ClassProperties getClassProperties(Class<?> clazz) {
         return classProperties(clazz);
     }
 
@@ -104,7 +104,7 @@ public class OwsUtils {
      * @param type The type of the property, may be <code>null</code>.
      * @return The setter method, or <code>null</code> if not found.
      */
-    public static Method setter(Class clazz, String property, Class type) {
+    public static Method setter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).setter(property, type);
     }
 
@@ -186,7 +186,7 @@ public class OwsUtils {
      * @param type The type of the property, may be null.
      * @return The setter method, or <code>null</code> if not found.
      */
-    public static Method getter(Class clazz, String property, Class type) {
+    public static Method getter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).getter(property, type);
     }
 
@@ -220,7 +220,7 @@ public class OwsUtils {
      * @param name The name of the method.
      * @return The method, or <code>null</code> if it could not be found.
      */
-    public static Method method(Class clazz, String name) {
+    public static Method method(Class<?> clazz, String name) {
         return classProperties(clazz).method(name);
     }
 
@@ -286,7 +286,7 @@ public class OwsUtils {
      * @param target The target object.
      * @param clazz The class of source and target.
      */
-    public static <T> void copy(T source, T target, Class<T> clazz) {
+    public static <T> void copy(T source, T target, Class<? extends T> clazz) {
         ClassProperties properties = getClassProperties(clazz);
         for (String p : properties.properties()) {
             Method getter = properties.getter(p, null);
@@ -294,7 +294,7 @@ public class OwsUtils {
                 continue; // should not really happen
             }
 
-            Class type = getter.getReturnType();
+            Class<?> type = getter.getReturnType();
             Method setter = properties.setter(p, type);
 
             // do a check for read only before calling the getter to avoid an uneccesary call

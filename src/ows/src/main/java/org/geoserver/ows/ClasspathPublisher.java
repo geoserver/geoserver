@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Andrea Aime - GeoSolutions
  */
 public class ClasspathPublisher extends AbstractURLPublisher {
-    Class clazz;
+    Class<?> clazz;
 
     /**
      * Creates the new classpath publisher.
@@ -41,7 +41,7 @@ public class ClasspathPublisher extends AbstractURLPublisher {
      * @param clazz the class used to perform classpath lookups with {@link
      *     Class#getResource(String)}
      */
-    public ClasspathPublisher(Class clazz) {
+    public ClasspathPublisher(Class<?> clazz) {
         this.clazz = clazz;
     }
 

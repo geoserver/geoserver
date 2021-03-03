@@ -42,7 +42,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
     }
 
     @Override
-    public Class getElementClass() {
+    public Class<Replace> getElementClass() {
         return Replace.class;
     }
 

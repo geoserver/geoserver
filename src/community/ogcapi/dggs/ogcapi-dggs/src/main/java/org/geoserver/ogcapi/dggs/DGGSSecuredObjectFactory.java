@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DGGSSecuredObjectFactory implements SecuredObjectFactory {
     @Override
-    public boolean canSecure(Class clazz) {
+    public boolean canSecure(Class<?> clazz) {
         // TODO: handle DGGSFeatureSource methods providing data access
         return DGGSStore.class.isAssignableFrom(clazz);
     }

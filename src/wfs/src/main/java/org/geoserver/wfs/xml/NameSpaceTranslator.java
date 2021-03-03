@@ -267,7 +267,7 @@ public abstract class NameSpaceTranslator {
      * NamespaceElements, so that each class only has one that returns true for isDefault(). Sorry
      * for the hackiness, I need to get a release out.
      */
-    public NameSpaceElement getDefaultElement(Class type) {
+    public NameSpaceElement getDefaultElement(Class<?> type) {
         Set posibilities = getElements(type);
 
         // System.out.println("getting default for type: " + type + " = " + posibilities);
@@ -296,7 +296,7 @@ public abstract class NameSpaceTranslator {
      * @param name The name of the element definition
      * @return NameSpaceElement
      */
-    public NameSpaceElement getElement(Class type, String name) {
+    public NameSpaceElement getElement(Class<?> type, String name) {
         if (type == null) {
             return null;
         }

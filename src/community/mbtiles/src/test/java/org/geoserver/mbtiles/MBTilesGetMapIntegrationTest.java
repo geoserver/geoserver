@@ -90,7 +90,7 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
     }
 
     private DataStoreInfo addMBStore(
-            Catalog catalog, WorkspaceInfo ws, String storeName, String fileName, Class scope)
+            Catalog catalog, WorkspaceInfo ws, String storeName, String fileName, Class<?> scope)
             throws URISyntaxException {
         DataStoreInfo store = catalog.getDataStoreByName(storeName);
         if (store == null) {

@@ -1569,7 +1569,7 @@ public interface Catalog extends CatalogInfo {
             @Nullable SortBy sortBy);
 
     /** Removes all the listeners which are instances of the specified class */
-    public void removeListeners(Class<?> listenerClass);
+    public void removeListeners(Class<? extends CatalogListener> listenerClass);
 
     /**
      * Return the catalog capabilities supported by this catalog. Normally this will correspond to

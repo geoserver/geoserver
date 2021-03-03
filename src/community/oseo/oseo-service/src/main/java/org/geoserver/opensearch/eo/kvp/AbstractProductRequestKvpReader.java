@@ -18,7 +18,7 @@ public abstract class AbstractProductRequestKvpReader extends KvpRequestReader {
 
     private boolean parentIdRequired;
 
-    public AbstractProductRequestKvpReader(Class requestBean, boolean parentIdRequired) {
+    public AbstractProductRequestKvpReader(Class<?> requestBean, boolean parentIdRequired) {
         super(requestBean);
         this.parentIdRequired = parentIdRequired;
     }

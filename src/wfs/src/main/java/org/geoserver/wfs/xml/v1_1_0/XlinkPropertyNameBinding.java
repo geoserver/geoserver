@@ -95,7 +95,7 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<XlinkPropertyNameType> getType() {
         return XlinkPropertyNameType.class;
     }
 

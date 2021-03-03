@@ -41,7 +41,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
     };
 
     /** Input Parameter class */
-    private static final Class[] paramClasses = {
+    private static final Class<?>[] paramClasses = {
         MathTransform.class, MathTransform.class, it.geosolutions.jaiext.range.Range.class
     };
 

@@ -227,7 +227,7 @@ public class FeatureTemplate {
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public void template(SimpleFeature feature, Writer writer, String template, Class lookup)
+    public void template(SimpleFeature feature, Writer writer, String template, Class<?> lookup)
             throws IOException {
         execute(feature, feature.getFeatureType(), writer, template, lookup);
     }
@@ -245,7 +245,8 @@ public class FeatureTemplate {
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public void template(SimpleFeature feature, OutputStream output, String template, Class lookup)
+    public void template(
+            SimpleFeature feature, OutputStream output, String template, Class<?> lookup)
             throws IOException {
         template(feature, new OutputStreamWriter(output), template, lookup);
     }
@@ -262,7 +263,7 @@ public class FeatureTemplate {
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public String template(SimpleFeature feature, String template, Class lookup)
+    public String template(SimpleFeature feature, String template, Class<?> lookup)
             throws IOException {
         caw.reset();
         template(feature, caw, template, lookup);
@@ -278,7 +279,7 @@ public class FeatureTemplate {
             SimpleFeatureType featureType,
             Writer writer,
             String template,
-            Class lookup)
+            Class<?> lookup)
             throws IOException {
 
         Template t = lookupTemplate(featureType, template, lookup);
@@ -295,7 +296,7 @@ public class FeatureTemplate {
      * Returns the template for the specified feature type. Looking up templates is pretty
      * expensive, so we cache templates by feture type and template.
      */
-    private Template lookupTemplate(SimpleFeatureType featureType, String template, Class lookup)
+    private Template lookupTemplate(SimpleFeatureType featureType, String template, Class<?> lookup)
             throws IOException {
 
         // lookup the cache first

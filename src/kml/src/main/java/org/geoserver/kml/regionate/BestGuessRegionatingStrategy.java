@@ -40,7 +40,7 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
     @Override
     public Filter getFilter(WMSMapContent context, Layer layer) {
         SimpleFeatureType type = ((SimpleFeatureSource) layer.getFeatureSource()).getSchema();
-        Class geomtype = type.getGeometryDescriptor().getType().getBinding();
+        Class<?> geomtype = type.getGeometryDescriptor().getType().getBinding();
 
         if (Point.class.isAssignableFrom(geomtype))
             return new RandomRegionatingStrategy(gs).getFilter(context, layer);

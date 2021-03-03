@@ -78,7 +78,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<GetCapabilitiesType> getType() {
         return GetCapabilitiesType.class;
     }
 

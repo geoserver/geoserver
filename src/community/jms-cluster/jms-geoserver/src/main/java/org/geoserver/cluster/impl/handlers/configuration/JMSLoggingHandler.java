@@ -21,6 +21,7 @@ public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
 
     private final ToggleSwitch producer;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public JMSLoggingHandler(GeoServer geo, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.geoServer = geo;

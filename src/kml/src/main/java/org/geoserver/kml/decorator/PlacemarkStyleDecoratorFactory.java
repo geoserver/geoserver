@@ -83,7 +83,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             SimpleFeature sf = context.getCurrentFeature();
             if (!symbolizers.isEmpty() && sf.getDefaultGeometry() != null) {
                 // sort by point, text, line and polygon
-                Map<Class, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
+                Map<Class<?>, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
 
                 // if no point symbolizers, create a default one
                 List<Symbolizer> points = classified.get(PointSymbolizer.class);
@@ -137,8 +137,8 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             return feature;
         }
 
-        private Map<Class, List<Symbolizer>> classifySymbolizers(List<Symbolizer> symbolizers) {
-            Map<Class, List<Symbolizer>> result = new HashMap<>();
+        private Map<Class<?>, List<Symbolizer>> classifySymbolizers(List<Symbolizer> symbolizers) {
+            Map<Class<?>, List<Symbolizer>> result = new HashMap<>();
             result.put(PointSymbolizer.class, new ArrayList<>());
             result.put(LineSymbolizer.class, new ArrayList<>());
             result.put(PolygonSymbolizer.class, new ArrayList<>());

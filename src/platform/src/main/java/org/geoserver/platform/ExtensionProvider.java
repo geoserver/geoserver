@@ -33,5 +33,5 @@ public interface ExtensionProvider<T> {
      * @return A list of objects implementing <tt>extensionPoint</tt>, or an empty list if no such
      *     objects are available.
      */
-    List<T> getExtensions(Class<T> extensionPoint);
+    List<? extends T> getExtensions(Class<T> extensionPoint);
 }

@@ -288,7 +288,7 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
     }
 
     protected String matchAggregateFunction(FeatureVisitor visitor) {
-        Class visitorClass = visitor.getClass();
+        Class<?> visitorClass = visitor.getClass();
         String function = null;
         // try to find a matching aggregate function walking up the hierarchy if necessary
         while (function == null && visitorClass != null) {

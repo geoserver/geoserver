@@ -20,7 +20,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     protected transient AttributeDescriptor attribute;
     protected MetadataMap metadata = new MetadataMap();
     protected FeatureTypeInfo featureType;
-    protected Class binding;
+    protected Class<?> binding;
     protected Integer length;
 
     public String getId() {
@@ -106,12 +106,12 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     }
 
     @Override
-    public Class getBinding() {
+    public Class<?> getBinding() {
         return binding;
     }
 
     @Override
-    public void setBinding(Class binding) {
+    public void setBinding(Class<?> binding) {
         this.binding = binding;
     }
 

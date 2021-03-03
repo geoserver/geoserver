@@ -312,7 +312,7 @@ public class Predicates {
         return factory.sort(propertyName, ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING);
     }
 
-    public static Filter isInstanceOf(Class clazz) {
+    public static Filter isInstanceOf(Class<?> clazz) {
         return factory.equals(
                 factory.function("isInstanceOf", factory.literal(clazz)), factory.literal(true));
     }

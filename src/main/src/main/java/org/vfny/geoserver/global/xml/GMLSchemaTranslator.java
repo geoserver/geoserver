@@ -143,7 +143,7 @@ class AbstractFeatureElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -197,7 +197,8 @@ class AbstractFeatureCollectionBaseElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    @SuppressWarnings("rawtypes")
+    public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }
 
@@ -251,7 +252,8 @@ class AbstractFeatureCollectionElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    @SuppressWarnings("rawtypes")
+    public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }
 
@@ -314,7 +316,7 @@ class GeometryPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Geometry> getJavaClass() {
         return Geometry.class;
     }
 
@@ -820,7 +822,7 @@ class PointPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Point> getJavaClass() {
         return Point.class;
     }
 
@@ -892,7 +894,7 @@ class PolygonPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Polygon> getJavaClass() {
         return Polygon.class;
     }
 
@@ -954,7 +956,7 @@ class LineStringPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<LineString> getJavaClass() {
         return LineString.class;
     }
 
@@ -1021,7 +1023,7 @@ class MultiPointPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<MultiPoint> getJavaClass() {
         return MultiPoint.class;
     }
 
@@ -1088,7 +1090,7 @@ class MultiLineStringPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<MultiLineString> getJavaClass() {
         return MultiLineString.class;
     }
 
@@ -1155,7 +1157,7 @@ class MultiPolygonPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<MultiPolygon> getJavaClass() {
         return MultiPolygon.class;
     }
 
@@ -1222,7 +1224,7 @@ class MultiGeometryPropertyElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<GeometryCollection> getJavaClass() {
         return GeometryCollection.class;
     }
 
@@ -1294,7 +1296,7 @@ class NullElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         return null;
     }
 }

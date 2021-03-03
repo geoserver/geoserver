@@ -63,7 +63,7 @@ public class InsertResultTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<InsertResultsType> getType() {
         return InsertResultsType.class;
     }
 

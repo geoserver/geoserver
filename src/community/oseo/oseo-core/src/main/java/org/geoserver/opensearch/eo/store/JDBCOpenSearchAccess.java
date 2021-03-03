@@ -197,7 +197,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return typeBuilder.feature();
     }
 
-    private AttributeDescriptor buildSimpleDescriptor(Name name, String prefix, Class binding) {
+    private AttributeDescriptor buildSimpleDescriptor(Name name, String prefix, Class<?> binding) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
         ab.setBinding(binding);

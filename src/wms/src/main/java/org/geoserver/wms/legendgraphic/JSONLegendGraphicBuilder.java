@@ -233,7 +233,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     public static final String GRAPHIC = "graphic";
 
-    static Map<Class, String> symbolizerNames = new HashMap<>();
+    static Map<Class<?>, String> symbolizerNames = new HashMap<>();
 
     static {
         symbolizerNames.put(PolygonSymbolizer.class, POLYGON);

@@ -16,7 +16,8 @@ import org.geoserver.ows.XmlObjectEncodingResponse;
  */
 public class WPSObjectEncodingResponse extends XmlObjectEncodingResponse {
 
-    public WPSObjectEncodingResponse(Class binding, String elementName, Class xmlConfiguration) {
+    public WPSObjectEncodingResponse(
+            Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(binding, elementName, xmlConfiguration);
     }
 

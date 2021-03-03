@@ -34,12 +34,15 @@ import org.opengis.filter.FilterFactory;
 public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
     public GetFeatureKvpRequestReader(
-            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
     public GetFeatureKvpRequestReader(
-            Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean,
+            EFactory factory,
+            GeoServer geoServer,
+            FilterFactory filterFactory) {
         super(requestBean, factory, geoServer, filterFactory);
     }
 

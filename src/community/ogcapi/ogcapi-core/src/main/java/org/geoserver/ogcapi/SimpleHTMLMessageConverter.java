@@ -22,7 +22,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 public class SimpleHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<T> {
 
     private final String templateName;
-    private final Class serviceClass;
+    private final Class<?> serviceClass;
 
     /**
      * Builds a message converter
@@ -35,9 +35,9 @@ public class SimpleHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<
      * @param templateName templateName
      */
     public SimpleHTMLMessageConverter(
-            Class binding,
+            Class<?> binding,
             Class<? extends ServiceInfo> serviceConfigurationClass,
-            Class serviceClass,
+            Class<?> serviceClass,
             FreemarkerTemplateSupport support,
             GeoServer geoServer,
             String templateName) {

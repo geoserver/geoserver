@@ -43,7 +43,7 @@ import org.geotools.ows.wmts.WebMapTileServer;
 public class DefaultSecureDataFactory implements SecuredObjectFactory {
 
     @Override
-    public boolean canSecure(Class clazz) {
+    public boolean canSecure(Class<?> clazz) {
         return DataAccess.class.isAssignableFrom(clazz)
                 || DataStore.class.isAssignableFrom(clazz)
                 || FeatureSource.class.isAssignableFrom(clazz)
@@ -65,7 +65,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         if (object == null) return null;
 
         // wrapping check
-        Class clazz = object.getClass();
+        Class<?> clazz = object.getClass();
         if (!canSecure(clazz))
             throw new IllegalArgumentException(
                     "Don't know how to wrap objects of class " + object.getClass());

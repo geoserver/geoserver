@@ -83,7 +83,7 @@ public class IdentifierGenerationOptionTypeBinding extends AbstractSimpleBinding
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<IdentifierGenerationOptionType> getType() {
         return IdentifierGenerationOptionType.class;
     }
 

@@ -51,7 +51,7 @@ public class FeaturesLockedTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<FeaturesLockedType> getType() {
         return FeaturesLockedType.class;
     }
 

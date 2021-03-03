@@ -151,7 +151,7 @@ class BooleanElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Boolean> getJavaClass() {
         return Boolean.class;
     }
 
@@ -213,7 +213,7 @@ class DecimalElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<BigDecimal> getJavaClass() {
         return BigDecimal.class;
     }
 
@@ -280,7 +280,7 @@ class IntegerElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -342,7 +342,7 @@ class NegativeIntegerElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -404,7 +404,7 @@ class NonNegativeIntegerElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -466,7 +466,7 @@ class PositiveIntegerElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -528,7 +528,7 @@ class LongElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Long> getJavaClass() {
         return Long.class;
     }
 
@@ -595,7 +595,7 @@ class IntElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -662,7 +662,7 @@ class ShortElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Short> getJavaClass() {
         return Short.class;
     }
 
@@ -729,7 +729,7 @@ class ByteElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Byte> getJavaClass() {
         return Byte.class;
     }
 
@@ -796,7 +796,7 @@ class UnsignedLongElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Long> getJavaClass() {
         return Long.class;
     }
 
@@ -858,7 +858,7 @@ class UnsignedShortElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Short> getJavaClass() {
         return Short.class;
     }
 
@@ -920,7 +920,7 @@ class UnsignedIntElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Integer> getJavaClass() {
         return Integer.class;
     }
 
@@ -982,7 +982,7 @@ class UnsignedByteElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Byte> getJavaClass() {
         return Byte.class;
     }
 
@@ -1044,7 +1044,7 @@ class FloatElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Float> getJavaClass() {
         return Float.class;
     }
 
@@ -1111,7 +1111,7 @@ class DoubleElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Double> getJavaClass() {
         return Double.class;
     }
 
@@ -1178,7 +1178,7 @@ class DateElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1240,7 +1240,7 @@ class DateTimeElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1307,7 +1307,7 @@ class DurationElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Long> getJavaClass() {
         return Long.class;
     }
 
@@ -1369,7 +1369,7 @@ class GDayElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1431,7 +1431,7 @@ class GMonthElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1493,7 +1493,7 @@ class GMonthDayElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1555,7 +1555,7 @@ class GYearElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1617,7 +1617,7 @@ class GYearMonthElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1679,7 +1679,7 @@ class TimeElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Date> getJavaClass() {
         return Date.class;
     }
 
@@ -1741,7 +1741,7 @@ class IDElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -1803,7 +1803,7 @@ class IDREFElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -1865,7 +1865,7 @@ class IDREFSElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -1927,7 +1927,7 @@ class ENTITYElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -1989,7 +1989,7 @@ class ENTITIESElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2051,7 +2051,7 @@ class NMTOKENElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2113,7 +2113,7 @@ class NMTOKENSElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2175,7 +2175,7 @@ class NOTATIONElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2237,7 +2237,7 @@ class StringElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<String> getJavaClass() {
         return String.class;
     }
 
@@ -2304,7 +2304,7 @@ class NormalizedStringElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<String> getJavaClass() {
         return String.class;
     }
 
@@ -2366,7 +2366,7 @@ class TokenElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2428,7 +2428,7 @@ class QNameElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2490,7 +2490,7 @@ class NameElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
@@ -2552,7 +2552,7 @@ class NCNameElement extends NameSpaceElement {
     }
 
     @Override
-    public Class getJavaClass() {
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 

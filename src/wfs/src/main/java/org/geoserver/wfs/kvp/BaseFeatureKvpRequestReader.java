@@ -50,12 +50,15 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
     protected final QNameKvpParser qNameParser;
 
     public BaseFeatureKvpRequestReader(
-            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
     public BaseFeatureKvpRequestReader(
-            Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean,
+            EFactory factory,
+            GeoServer geoServer,
+            FilterFactory filterFactory) {
         super(requestBean, factory);
         this.catalog = geoServer.getCatalog();
         this.geoServer = geoServer;

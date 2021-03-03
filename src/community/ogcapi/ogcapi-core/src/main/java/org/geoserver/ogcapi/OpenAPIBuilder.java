@@ -41,7 +41,8 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     private final String defaultTitle;
     private final String serviceBase;
 
-    public OpenAPIBuilder(Class clazz, String location, String defaultTitle, String serviceBase) {
+    public OpenAPIBuilder(
+            Class<?> clazz, String location, String defaultTitle, String serviceBase) {
         try (InputStream is = clazz.getResourceAsStream(location)) {
             if (is == null) {
                 throw new RuntimeException(
@@ -81,7 +82,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      * Returns the landing page document class. By default it returns {@link
      * AbstractLandingPageDocument} in case a service has more representations than usual
      */
-    protected Class getLandingPageDocumentClass() {
+    protected Class<? extends AbstractLandingPageDocument> getLandingPageDocumentClass() {
         return AbstractLandingPageDocument.class;
     }
 

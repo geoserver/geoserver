@@ -577,7 +577,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         byte[] value = binding.objectToEntry(info);
         final String blob = new String(value, StandardCharsets.UTF_8);
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         final Class<T> interf = (Class) ClassMappings.fromImpl(info.getClass()).getInterface();
         final Integer typeId = dbMappings.getTypeId(interf);
 
@@ -894,7 +894,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         updateQueryableProperties(oldObject, objectId, changedProperties);
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         Class<T> clazz = (Class) ClassMappings.fromImpl(oldObject.getClass()).getInterface();
 
         // / <HACK>

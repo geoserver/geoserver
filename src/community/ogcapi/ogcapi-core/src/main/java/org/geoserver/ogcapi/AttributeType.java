@@ -41,7 +41,7 @@ public enum AttributeType {
         return getType();
     }
 
-    public static AttributeType fromClass(Class binding) {
+    public static AttributeType fromClass(Class<?> binding) {
         if (Number.class.isAssignableFrom(binding)) {
             if (Float.class.isAssignableFrom(binding)
                     || Double.class.isAssignableFrom(binding)

@@ -31,7 +31,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
 
     public SecurityNamedServicePage() {}
 
-    protected StringResourceModel createTitleModel(Class serviceClass) {
+    protected StringResourceModel createTitleModel(Class<?> serviceClass) {
         return new StringResourceModel(serviceClass.getName() + ".title", new Model());
     }
 

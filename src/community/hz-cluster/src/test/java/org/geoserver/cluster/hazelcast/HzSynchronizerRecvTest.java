@@ -14,6 +14,7 @@ import org.easymock.EasyMock;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -73,7 +74,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestStoreDelete(
-            DataStoreInfo info, String StoreName, String storeId, Class clazz) throws Exception;
+            DataStoreInfo info, String StoreName, String storeId, Class<? extends StoreInfo> clazz)
+            throws Exception;
 
     @Test
     public void testStoreDelete() throws Exception {
@@ -112,7 +114,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestFTDelete(
-            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz)
+            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz)
             throws Exception;
 
     @SuppressWarnings("unchecked")

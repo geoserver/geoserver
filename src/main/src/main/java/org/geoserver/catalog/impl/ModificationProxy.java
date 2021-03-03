@@ -234,7 +234,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     /** Helper method for determining if a property of a proxied object should also be proxied. */
-    boolean shouldProxyProperty(Class propertyType) {
+    boolean shouldProxyProperty(Class<?> propertyType) {
         if (Catalog.class.isAssignableFrom(propertyType)) {
             // never proxy the catalog
             return false;
@@ -401,7 +401,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /*
      * Helper method for looking up a getter method.
      */
-    Method setter(String propertyName, Class type) {
+    Method setter(String propertyName, Class<?> type) {
         Method s = null;
         try {
             s = proxyObject.getClass().getMethod("set" + propertyName, type);

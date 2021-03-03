@@ -59,8 +59,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
         implements FormatConverter, ComplexFeatureAwareFormat {
 
     /** The types of geometries a shapefile can handle */
-    private static final Set<Class> SHAPEFILE_GEOM_TYPES =
-            new HashSet<Class>() {
+    private static final Set<Class<?>> SHAPEFILE_GEOM_TYPES =
+            new HashSet<Class<?>>() {
                 {
                     add(Point.class);
                     add(LineString.class);

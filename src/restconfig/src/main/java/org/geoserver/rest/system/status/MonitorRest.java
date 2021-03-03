@@ -80,7 +80,7 @@ public class MonitorRest extends RestBaseController {
     private static final class ValueHolderConverter implements Converter {
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return MetricValue.ValueHolder.class.isAssignableFrom(type);
         }
 

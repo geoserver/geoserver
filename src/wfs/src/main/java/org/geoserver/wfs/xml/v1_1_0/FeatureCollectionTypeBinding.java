@@ -131,7 +131,7 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<FeatureCollectionType> getType() {
         return FeatureCollectionType.class;
     }
 

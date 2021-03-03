@@ -74,7 +74,7 @@ public class NativeTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     @Override
-    public Class getType() {
+    public Class<NativeType> getType() {
         return NativeType.class;
     }
 

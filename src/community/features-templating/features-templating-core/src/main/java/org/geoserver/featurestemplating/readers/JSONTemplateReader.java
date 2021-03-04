@@ -4,7 +4,8 @@
  */
 package org.geoserver.featurestemplating.readers;
 
-import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.*;
+import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.SEPARATOR;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
@@ -13,10 +14,9 @@ import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.BuilderFactory;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
-import org.geoserver.featurestemplating.builders.impl.*;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geotools.filter.text.cql2.CQLException;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {
@@ -33,11 +33,11 @@ public class JSONTemplateReader implements TemplateReader {
 
     private JsonNode template;
 
-    private NamespaceSupport namespaces;
+    private TemplateReaderConfiguration configuration;
 
-    public JSONTemplateReader(JsonNode template, NamespaceSupport namespaces) {
+    public JSONTemplateReader(JsonNode template, TemplateReaderConfiguration configuration) {
         this.template = template;
-        this.namespaces = namespaces;
+        this.configuration = configuration;
     }
 
     /**
@@ -51,7 +51,7 @@ public class JSONTemplateReader implements TemplateReader {
         boolean isJsonLd;
         if (template.has(CONTEXTKEY)) isJsonLd = true;
         else isJsonLd = false;
-        BuilderFactory factory = new BuilderFactory(isJsonLd);
+        BuilderFactory factory = configuration.getBuilderFactory(isJsonLd);
         root = factory.getRootBuilder();
         getBuilderFromJson(null, template, root, factory);
         return root;
@@ -108,12 +108,14 @@ public class JSONTemplateReader implements TemplateReader {
                         && !strValueNode.contains(FILTERKEY)
                         && !jumpField) {
                     TemplateBuilder builder =
-                            factory.getStaticBuilder(entryName, valueNode, namespaces);
+                            factory.getStaticBuilder(
+                                    entryName, valueNode, configuration.getNamespaces());
                     currentBuilder.addChild(builder);
                 } else {
                     if (valueNode.isObject()) {
                         TemplateBuilder compositeBuilder =
-                                factory.getCompositeBuilder(entryName, namespaces);
+                                factory.getCompositeBuilder(
+                                        entryName, configuration.getNamespaces());
                         currentBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(valueNode, compositeBuilder, factory);
                     } else if (valueNode.isArray()) {
@@ -133,10 +135,12 @@ public class JSONTemplateReader implements TemplateReader {
             JsonNode node,
             TemplateBuilder currentBuilder,
             BuilderFactory factory) {
-        TemplateBuilder iteratingBuilder = factory.getIteratingBuilder(nodeName, namespaces);
+        TemplateBuilder iteratingBuilder =
+                factory.getIteratingBuilder(nodeName, configuration.getNamespaces());
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART)) {
-            TemplateBuilder staticBuilder = factory.getStaticBuilder(nodeName, node, namespaces);
+            TemplateBuilder staticBuilder =
+                    factory.getStaticBuilder(nodeName, node, configuration.getNamespaces());
             currentBuilder.addChild(staticBuilder);
         } else {
             Iterator<JsonNode> arrayIterator = node.elements();
@@ -146,14 +150,14 @@ public class JSONTemplateReader implements TemplateReader {
                     if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
                         // CompositeBuilder child of Iterating has no key
                         TemplateBuilder compositeBuilder =
-                                factory.getCompositeBuilder(null, namespaces);
+                                factory.getCompositeBuilder(null, configuration.getNamespaces());
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder, factory);
                     } else {
                         getBuilderFromJsonObject(childNode, iteratingBuilder, factory);
                     }
                 } else if (childNode.isArray()) {
-                    getBuilderFromJsonArray(nodeName, childNode, iteratingBuilder, factory);
+                    getBuilderFromJsonArray(null, childNode, iteratingBuilder, factory);
                 } else {
                     getBuilderFromJsonAttribute(null, childNode, iteratingBuilder, factory);
                 }
@@ -179,7 +183,7 @@ public class JSONTemplateReader implements TemplateReader {
         }
         if (node.toString().contains(EXPRSTART) && !node.asText().equals("FeatureCollection")) {
             TemplateBuilder dynamicBuilder =
-                    factory.getDynamicBuilder(nodeName, strNode, namespaces);
+                    factory.getDynamicBuilder(nodeName, strNode, configuration.getNamespaces());
             if (filter != null) {
                 setFilterToBuilder(dynamicBuilder, filter);
             }
@@ -187,10 +191,12 @@ public class JSONTemplateReader implements TemplateReader {
         } else {
             TemplateBuilder staticBuilder;
             if (filter != null) {
-                staticBuilder = factory.getStaticBuilder(nodeName, strNode, namespaces);
+                staticBuilder =
+                        factory.getStaticBuilder(nodeName, strNode, configuration.getNamespaces());
                 setFilterToBuilder(staticBuilder, filter);
             } else {
-                staticBuilder = factory.getStaticBuilder(nodeName, node, namespaces);
+                staticBuilder =
+                        factory.getStaticBuilder(nodeName, node, configuration.getNamespaces());
             }
             currentBuilder.addChild(staticBuilder);
         }

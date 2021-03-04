@@ -49,12 +49,17 @@ public class SimpleHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<
     @Override
     protected void writeInternal(T value, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        HashMap<String, Object> model = setupModel(value);
-        templateSupport.processTemplate(
-                null,
-                templateName,
-                serviceClass,
-                model,
-                new OutputStreamWriter(outputMessage.getBody()));
+        try {
+            HashMap<String, Object> model = setupModel(value);
+            templateSupport.processTemplate(
+                    null,
+                    templateName,
+                    serviceClass,
+                    model,
+                    new OutputStreamWriter(outputMessage.getBody()));
+        } finally {
+            // the model can be working over feature collections, make sure they are cleaned up
+            purgeIterators();
+        }
     }
 }

@@ -18,9 +18,17 @@ import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.FilterFactory2;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -33,6 +41,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 )
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac")
 public class STACService {
+
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public static final String STAC_VERSION = "1.0.0-beta.2";
 
@@ -108,5 +118,27 @@ public class STACService {
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
         return new STACAPIBuilder(accessProvider).build(getService());
+    }
+
+    @GetMapping(path = "collections", name = "getCollections")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
+    public CollectionsResponse collections() throws IOException {
+        FeatureCollection<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures();
+        return new CollectionsResponse(collections);
+    }
+
+    @GetMapping(path = "collections/{collectionId}", name = "getCollection")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
+    public CollectionResponse collection(@PathVariable("collectionId") String collectionId)
+            throws IOException {
+        Query q = new Query();
+        q.setFilter(FF.equals(FF.property("name"), FF.literal(collectionId)));
+        FeatureCollection<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
+        Feature collection = DataUtilities.first(collections);
+        return new CollectionResponse(collection);
     }
 }

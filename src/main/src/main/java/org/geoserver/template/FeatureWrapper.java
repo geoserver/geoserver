@@ -295,6 +295,9 @@ public class FeatureWrapper extends BeansWrapper {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
         map.put("attributes", new SequenceMapModel(attributeMap, this));
+        if (att instanceof Feature) {
+            map.put("bounds", ((Feature) att).getBounds());
+        }
 
         return map;
     }

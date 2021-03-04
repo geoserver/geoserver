@@ -5,13 +5,20 @@
 package org.geoserver.ogcapi.stac;
 
 import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.io.IOException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.platform.GeoServerExtensions;
+import org.jsoup.select.Elements;
 import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
@@ -36,5 +43,21 @@ public class STACTestSupport extends OGCApiTestSupport {
     @BeforeClass
     public static void checkOnLine() {
         GeoServerOpenSearchTestSupport.checkOnLine();
+    }
+
+    /**
+     * Returns the {@link OpenSearchAccess} backing the OpenSearch/STAC services
+     *
+     * @return
+     * @throws IOException
+     */
+    public OpenSearchAccess getOpenSearchAccess() throws IOException {
+        OpenSearchAccessProvider provider =
+                GeoServerExtensions.bean(OpenSearchAccessProvider.class);
+        return provider.getOpenSearchAccess();
+    }
+
+    protected void assertTextContains(Elements elements, String selector, String text) {
+        assertThat(elements.select(selector).text(), containsString(text));
     }
 }

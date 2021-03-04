@@ -6,12 +6,15 @@
 package org.geoserver.wfs;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs.GetGmlObjectType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geotools.data.DataAccess;
 import org.geotools.data.GmlObjectStore;
 import org.geotools.util.factory.Hints;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
@@ -23,6 +26,7 @@ import org.opengis.filter.identity.GmlObjectId;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class GetGmlObject {
+    static final Logger LOGGER = Logging.getLogger(GetGmlObject.class);
 
     /** wfs config */
     WFSInfo wfs;
@@ -70,7 +74,7 @@ public class GetGmlObject {
                         return obj;
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e);
                 }
             }
         }

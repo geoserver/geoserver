@@ -915,7 +915,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
             fail("This should have thrown an exception because of the non existent layer");
         } catch (ServiceException e) {
-            e.printStackTrace();
             assertEquals("RemoteOWSFailure", e.getCode());
         }
     }

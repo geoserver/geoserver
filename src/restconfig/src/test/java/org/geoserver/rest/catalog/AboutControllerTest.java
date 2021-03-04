@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
+import java.util.logging.Level;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -36,8 +37,8 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         try {
             getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*");
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
-            e.printStackTrace();
         }
     }
 
@@ -178,7 +179,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
             // System.out.println(sw.toString());
         } catch (TransformerFactoryConfigurationError | TransformerException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "", ex);
             throw ex;
         }
     }

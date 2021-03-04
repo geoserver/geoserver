@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.changeset;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ogcapi.APIRequestInfo;
@@ -52,7 +53,7 @@ public class ChangeSetLinkCallback implements DocumentCallback {
                     tiles.getLinks().addAll(links);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "", e);
             }
         }
     }

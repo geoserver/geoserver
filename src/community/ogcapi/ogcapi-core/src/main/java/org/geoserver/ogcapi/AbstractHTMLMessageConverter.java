@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -23,6 +25,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -35,7 +38,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
  * @param <T>
  */
 public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessageConverter<T> {
-
+    static final Logger LOGGER = Logging.getLogger(AbstractHTMLMessageConverter.class);
     protected final Class<?> binding;
     protected final GeoServer geoServer;
     protected final FreemarkerTemplateSupport templateSupport;
@@ -160,7 +163,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
                                 try {
                                     return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
                                 } catch (TemplateModelException e) {
-                                    e.printStackTrace();
+                                    LOGGER.log(Level.WARNING, "", e);
                                 }
                             }
                             return v;

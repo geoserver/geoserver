@@ -902,7 +902,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         importer.run(context);
         Exception error = task.getError();
         if (error != null) {
-            error.printStackTrace();
+            LOGGER.log(Level.WARNING, "", error);
             fail(error.getMessage());
         }
         assertNotEquals("Bounding box not updated", emptyBounds, resource.getNativeBoundingBox());

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -18,6 +20,7 @@ import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.util.factory.Hints;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageWriter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.ParameterDescriptor;
@@ -31,6 +34,7 @@ public final class CustomFormat extends AbstractGridFormat {
 
     public static final String CUSTOM_DIMENSION_NAME = "MY_DIMENSION";
     private static final String TYPE_NAME = "org.geoserver.catalog.testreader.CustomFormat";
+    static final Logger LOGGER = Logging.getLogger(CustomFormat.class);
 
     @SuppressWarnings("rawtypes")
     private static final ParameterDescriptor<List> CUSTOM_DIMENSION =
@@ -84,7 +88,7 @@ public final class CustomFormat extends AbstractGridFormat {
                     props.load(fis);
                     return TYPE_NAME.equalsIgnoreCase(props.getProperty("type"));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e);
                 }
             }
         }
@@ -106,7 +110,7 @@ public final class CustomFormat extends AbstractGridFormat {
         try {
             return new CustomFormatReader(source, hints);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             return null;
         }
     }

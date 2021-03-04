@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
 import org.geoserver.catalog.Catalog;
@@ -552,7 +553,7 @@ public class ImportProcess implements GeoServerProcess {
             } catch (IOException e) {
                 throw new ProcessException("I/O Exception", e);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 throw new ProcessException("Exception", e);
             }
         }

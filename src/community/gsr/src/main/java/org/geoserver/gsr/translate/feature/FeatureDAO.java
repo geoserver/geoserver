@@ -183,7 +183,7 @@ public class FeatureDAO {
                             FeatureServiceErrors.rolledBack1(
                                     Collections.singletonList(e.getMessage())));
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e1);
                     throw new ServiceException(
                             e1,
                             FeatureServiceErrors.nonSpecific(

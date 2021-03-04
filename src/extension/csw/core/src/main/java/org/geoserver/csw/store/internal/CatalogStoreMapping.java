@@ -252,7 +252,6 @@ public class CatalogStoreMapping {
                                 + ":\n"
                                 + formattedErrorMessage);
             } catch (Exception e) {
-                e.printStackTrace();
                 String msg = "parsing expression " + sourceExpr;
                 LOGGER.log(Level.SEVERE, msg, e);
                 throw new IllegalArgumentException(msg + ": " + e.getMessage(), e);

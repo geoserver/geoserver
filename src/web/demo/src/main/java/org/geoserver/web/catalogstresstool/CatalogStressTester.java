@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -526,7 +527,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 sw.stop();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }

@@ -87,7 +87,6 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
                 }
             } catch (IOException e) {
                 LOGGER.warning("Error aborting OutputStream");
-                e.printStackTrace();
             }
         }
     }

@@ -111,7 +111,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                     GSFixtureUtilitiesDelegate.printSkipNotice(fixtureId, fixtureFile);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.ERROR, "", e);
             }
         }
     }

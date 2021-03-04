@@ -205,7 +205,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             // exception.
             sb.append("\nDetails:\n");
             ByteArrayOutputStream trace = new ByteArrayOutputStream();
-            exception.printStackTrace(new PrintStream(trace));
+            exception.printStackTrace(new PrintStream(trace)); // NOPMD
             sb.append(new String(trace.toByteArray()));
         }
 

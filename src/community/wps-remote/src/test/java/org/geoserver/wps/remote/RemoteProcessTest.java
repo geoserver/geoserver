@@ -125,7 +125,7 @@ public class RemoteProcessTest extends WPSTestSupport {
 
             factory.deregisterProcess(name);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             fail(e.getLocalizedMessage());
         } finally {
             assertTrue(names.size() == 0);

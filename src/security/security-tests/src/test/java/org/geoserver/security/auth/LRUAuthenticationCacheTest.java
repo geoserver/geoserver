@@ -12,10 +12,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
+
+    static final Logger LOGGER = Logging.getLogger(LRUAuthenticationCacheTest.class);
 
     @Test
     public void testLRUCache() {
@@ -103,7 +108,7 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
         try {
             Thread.sleep(milliSecs);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 

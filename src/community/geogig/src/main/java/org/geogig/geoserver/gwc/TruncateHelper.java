@@ -128,7 +128,7 @@ class TruncateHelper {
             try {
                 truncate(tileLayer, gridsetId, geomInGridsetCrs, breeder);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
         }
     }

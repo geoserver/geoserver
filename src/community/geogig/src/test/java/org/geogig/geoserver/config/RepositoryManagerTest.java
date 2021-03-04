@@ -445,7 +445,6 @@ public class RepositoryManagerTest extends GeoServerSystemTestSupport {
             repoManager.getRepository(info.getId());
             fail();
         } catch (Exception e) {
-            e.printStackTrace();
             // expected
             assertTrue(e.getMessage().contains("Repository not found: " + info.getId()));
         }

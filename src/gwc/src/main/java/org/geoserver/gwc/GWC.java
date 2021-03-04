@@ -882,7 +882,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         } catch (Exception e) {
             if (log.isLoggable(Level.FINE)) {
-                e.printStackTrace();
                 log.log(Level.FINE, "Exception caught checking gwc dispatch preconditions", e);
             }
             Throwable rootCause = getRootCause(e);
@@ -1333,7 +1332,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             Quota usedQuotaByLayerName = monitor.getUsedQuotaByLayerName(layerName);
             return usedQuotaByLayerName;
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.log(Level.WARNING, "", e);
         }
         return null;
     }

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -392,7 +393,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
             try {
                 Thread.sleep(timeOut);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
 
             frame.dispose();
@@ -402,7 +403,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     /**
      * Performs some checks on an image response assuming the image is a png.
      *
-     * @see #checkImage(MockHttpServletResponse, String)
+     * @see #checkImage(MockHttpServletResponse, String, int, int)
      */
     protected void checkImage(MockHttpServletResponse response) {
         checkImage(response, "image/png", -1, -1);
@@ -433,7 +434,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
                 assertEquals(height, image.getHeight());
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOGGER.log(Level.WARNING, "", t);
             fail("Could not read image returned from GetMap:" + t.getLocalizedMessage());
         }
     }

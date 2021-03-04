@@ -11,12 +11,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -35,6 +38,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Roldan
  */
 public class DynamicCrsMapResource extends AbstractResource {
+
+    static final Logger LOGGER = Logging.getLogger(DynamicCrsMapResource.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -68,7 +73,7 @@ public class DynamicCrsMapResource extends AbstractResource {
                                 ImageIO.write(image, "PNG", output);
                             } catch (Exception e) {
                                 output = null;
-                                e.printStackTrace();
+                                LOGGER.log(Level.WARNING, "", e);
                             }
                         }
 

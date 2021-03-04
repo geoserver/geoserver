@@ -103,7 +103,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
             Polygon queryPolygon = JTS.toGeometry(queryEnvelope);
             getFInfoFilter = ff.intersects(ff.property(localName), ff.literal(queryPolygon));
         } catch (IllegalFilterException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.FINE, "", e);
             throw new ServiceException("Internal error : " + e.getMessage(), e);
         }
 

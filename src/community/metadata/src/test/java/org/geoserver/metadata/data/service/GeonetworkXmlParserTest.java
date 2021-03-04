@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,6 +23,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +37,8 @@ import org.xml.sax.SAXException;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class GeonetworkXmlParserTest extends AbstractMetadataTest {
+
+    static final Logger LOGGER = Logging.getLogger(GeonetworkXmlParserTest.class);
 
     @Autowired GeonetworkXmlParser xmlParser;
 
@@ -125,14 +130,11 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
                     Document doc = db.parse(stream);
                     doc.getDocumentElement().normalize();
                     return doc;
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
-                    e.printStackTrace();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
+                } catch (MalformedURLException
+                        | ParserConfigurationException
+                        | SAXException
+                        | IllegalStateException e) {
+                    LOGGER.log(Level.WARNING, "", e);
                 }
             }
         }

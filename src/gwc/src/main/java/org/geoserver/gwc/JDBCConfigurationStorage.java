@@ -150,8 +150,7 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
                 }
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 }

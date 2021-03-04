@@ -5,6 +5,8 @@
 package org.geoserver.featurestemplating.validation;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
@@ -16,6 +18,7 @@ import org.geoserver.featurestemplating.expressions.XpathFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
@@ -25,6 +28,8 @@ import org.opengis.filter.expression.PropertyName;
  * {@link ValidateExpressionVisitor}
  */
 public class TemplateValidator {
+
+    static final Logger LOGGER = Logging.getLogger(TemplateValidator.class);
 
     private FeatureTypeInfo type;
 
@@ -43,7 +48,7 @@ public class TemplateValidator {
                             new TemplateBuilderContext(type.getFeatureType()));
             return validateExpressions(root, validateVisitor, source);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
         return false;
     }

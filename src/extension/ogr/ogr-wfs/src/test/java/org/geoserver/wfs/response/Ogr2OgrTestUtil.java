@@ -39,7 +39,6 @@ public class Ogr2OgrTestUtil {
                 IS_OGR_AVAILABLE = ogr.isAvailable();
             } catch (Exception e) {
                 IS_OGR_AVAILABLE = false;
-                e.printStackTrace();
                 LOGGER.log(
                         Level.SEVERE,
                         "Disabling ogr2ogr output format tests, as ogr2ogr lookup failed",

@@ -131,7 +131,7 @@ public class Start {
                                     }
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                e.printStackTrace(); // NOPMD
                                 System.exit(1);
                             }
                         }

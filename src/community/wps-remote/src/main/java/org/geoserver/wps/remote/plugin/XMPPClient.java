@@ -1304,7 +1304,7 @@ public class XMPPClient extends RemoteProcessClient {
             System.arraycopy(bytes, 0, result, 2, bytes.length);
             return result;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
             return null;
         }
     }

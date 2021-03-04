@@ -11,7 +11,11 @@ import org.geoserver.featurestemplating.builders.flat.FlatDynamicBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatIteratingBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatStaticBuilder;
 import org.geoserver.featurestemplating.builders.geojson.GeoJSONRootBuilder;
-import org.geoserver.featurestemplating.builders.impl.*;
+import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
+import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JSONLDCompositeBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JSONLDDynamicBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JSONLDIteratingBuilder;
@@ -24,12 +28,25 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class BuilderFactory {
 
+    /**
+     * Name of the collection at the root of the document. This one receives special treatment as
+     * it's the one that the FeatureCollection to be encoded is iterated on.
+     */
+    private static final String GEOJSON_ROOT_COLLECTION_NAME = "features";
+
+    private final String rootCollectionName;
+
     private boolean isJsonLd;
     private boolean flatOutput;
     private String separator = "_";
 
     public BuilderFactory(boolean isJsonLd) {
+        this(isJsonLd, GEOJSON_ROOT_COLLECTION_NAME);
+    }
+
+    public BuilderFactory(boolean isJsonLd, String rootCollectionName) {
         this.isJsonLd = isJsonLd;
+        this.rootCollectionName = rootCollectionName;
     }
 
     /**
@@ -40,13 +57,14 @@ public class BuilderFactory {
      * @return an IteratingBuilder
      */
     public TemplateBuilder getIteratingBuilder(String key, NamespaceSupport namespaces) {
-        TemplateBuilder iterating;
+        IteratingBuilder iterating;
         if (isJsonLd) {
             iterating = new JSONLDIteratingBuilder(key, namespaces);
         } else {
             if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces, separator);
             else iterating = new IteratingBuilder(key, namespaces);
         }
+        iterating.setRootCollection(key != null && key.equalsIgnoreCase(rootCollectionName));
         return iterating;
     }
 

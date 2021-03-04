@@ -28,15 +28,15 @@ public class ColorPickerField extends TextField<String> {
 
     public ColorPickerField(String id) {
         super(id, String.class);
-        init();
+        initComponents();
     }
 
     public ColorPickerField(String id, IModel<String> model) {
         super(id, model, String.class);
-        init();
+        initComponents();
     }
 
-    void init() {
+    void initComponents() {
         add(
                 new Behavior() {
                     private static final long serialVersionUID = 4269437302317170665L;

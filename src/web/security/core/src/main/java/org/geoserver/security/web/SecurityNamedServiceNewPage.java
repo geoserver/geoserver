@@ -149,13 +149,11 @@ public class SecurityNamedServiceNewPage<
 
         public AjaxLinkGroup(String id, List<T> list) {
             super(id, list);
+            setOutputMarkupId(true);
         }
 
         public AjaxLinkGroup(String id) {
             super(id);
-        }
-
-        void init() {
             setOutputMarkupId(true);
         }
 

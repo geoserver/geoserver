@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
+import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class handles the management of a single template file, giving access to the ${@link
@@ -20,16 +21,16 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class Template {
 
     private Resource templateFile;
-    private TemplateWatcher watcher;
+    private FileWatcher<RootBuilder> watcher;
     private RootBuilder builderTree;
 
     private static final Logger LOGGER = Logging.getLogger(Template.class);
 
-    public Template(Resource templateFile, NamespaceSupport namespaces) {
+    public Template(Resource templateFile, TemplateReaderConfiguration configuration) {
         this.templateFile = templateFile;
-        this.watcher = new TemplateWatcher(templateFile, namespaces);
+        this.watcher = new TemplateWatcher(templateFile, configuration);
         try {
-            this.builderTree = watcher.getTemplate();
+            this.builderTree = watcher.read();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -45,7 +46,7 @@ public class Template {
             synchronized (this) {
                 if (watcher != null && watcher.isModified()) {
                     try {
-                        RootBuilder root = watcher.getTemplate();
+                        RootBuilder root = watcher.read();
                         this.builderTree = root;
                         return true;
                     } catch (IOException ioe) {
@@ -61,7 +62,7 @@ public class Template {
         synchronized (this) {
             if (watcher != null) {
                 try {
-                    RootBuilder root = watcher.getTemplate();
+                    RootBuilder root = watcher.read();
                     this.builderTree = root;
                 } catch (IOException ioe) {
                     throw new RuntimeException(ioe);

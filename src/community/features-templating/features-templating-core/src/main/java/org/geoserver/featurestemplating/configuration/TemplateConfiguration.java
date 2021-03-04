@@ -17,6 +17,7 @@ import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.TemplateValidator;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
@@ -55,7 +56,11 @@ public class TemplateConfiguration {
                                         Resource resource =
                                                 getDataDirectory()
                                                         .get(key.getResource(), key.getPath());
-                                        Template template = new Template(resource, namespaces);
+                                        Template template =
+                                                new Template(
+                                                        resource,
+                                                        new TemplateReaderConfiguration(
+                                                                namespaces));
                                         return template;
                                     }
                                 });

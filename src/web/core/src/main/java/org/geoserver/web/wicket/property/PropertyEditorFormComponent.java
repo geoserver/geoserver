@@ -39,15 +39,15 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
     public PropertyEditorFormComponent(String id) {
         super(id);
-        init();
+        initComponents();
     }
 
     public PropertyEditorFormComponent(String id, IModel<Properties> model) {
         super(id, model);
-        init();
+        initComponents();
     }
 
-    void init() {
+    void initComponents() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);

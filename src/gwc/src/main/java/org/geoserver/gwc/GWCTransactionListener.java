@@ -66,6 +66,7 @@ public class GWCTransactionListener implements TransactionCallback {
      * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction}
      * hooks
      */
+    @Override
     public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
         // nothing to do
         return request;
@@ -77,6 +78,7 @@ public class GWCTransactionListener implements TransactionCallback {
      *
      * @see org.geoserver.wfs.TransactionPlugin#beforeCommit(net.opengis.wfs.TransactionRequest)
      */
+    @Override
     public void beforeCommit(TransactionRequest request) throws WFSException {
         // nothing to do
     }
@@ -87,6 +89,7 @@ public class GWCTransactionListener implements TransactionCallback {
      *
      * @see org.geoserver.wfs.TransactionPlugin#afterTransaction
      */
+    @Override
     public void afterTransaction(
             final TransactionRequest request, TransactionResponse result, boolean committed) {
         if (!committed) {
@@ -157,6 +160,7 @@ public class GWCTransactionListener implements TransactionCallback {
      * @return {@code 0}, we don't need any special treatment
      * @see org.geoserver.wfs.TransactionPlugin#getPriority()
      */
+    @Override
     public int getPriority() {
         return 0;
     }
@@ -167,6 +171,7 @@ public class GWCTransactionListener implements TransactionCallback {
      * @see
      *     org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
      */
+    @Override
     public void dataStoreChange(final TransactionEvent event) throws WFSException {
         log.info("DataStoreChange: " + event.getLayerName() + " " + event.getType());
         try {

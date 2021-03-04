@@ -537,10 +537,12 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      */
     static class GeometryTypeRenderer extends ChoiceRenderer<Class<? extends Geometry>> {
 
+        @Override
         public Object getDisplayValue(Class<? extends Geometry> object) {
             return object.getSimpleName();
         }
 
+        @Override
         public String getIdValue(Class<? extends Geometry> object, int index) {
             return (String) getDisplayValue(object);
         }

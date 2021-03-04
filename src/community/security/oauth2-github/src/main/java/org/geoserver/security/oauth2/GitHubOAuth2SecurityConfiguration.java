@@ -61,6 +61,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableOAuth2Client
 class GitHubOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
+    @Override
     @Bean(name = "githubOAuth2Resource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
         return super.geoServerOAuth2Resource();
@@ -72,6 +73,7 @@ class GitHubOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfigura
     }
 
     /** Must have "session" scope */
+    @Override
     @Bean(name = "githubOauth2RestTemplate")
     @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {

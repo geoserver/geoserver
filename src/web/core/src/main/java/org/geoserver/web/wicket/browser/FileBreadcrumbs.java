@@ -86,6 +86,7 @@ public abstract class FileBreadcrumbs extends Panel {
             this.currentFileModel = currentFileModel;
         }
 
+        @Override
         public List<File> getObject() {
             File root = rootFileModel.getObject();
             File current = currentFileModel.getObject();
@@ -104,10 +105,12 @@ public abstract class FileBreadcrumbs extends Panel {
             return files;
         }
 
+        @Override
         public void setObject(List<File> object) {
             throw new UnsupportedOperationException("This model cannot be set!");
         }
 
+        @Override
         public void detach() {
             // nothing to do here
         }

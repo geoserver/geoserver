@@ -14,6 +14,7 @@ public class JDBCConfirmRemovalUserPanelTest extends ConfirmRemovalUserPanelTest
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     @Test
     public void testRemoveUser() throws Exception {
         disassociateRoles = false;
@@ -21,6 +22,7 @@ public class JDBCConfirmRemovalUserPanelTest extends ConfirmRemovalUserPanelTest
         removeObject();
     }
 
+    @Override
     @Test
     public void testRemoveUserWithRoles() throws Exception {
         disassociateRoles = true;

@@ -70,6 +70,7 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
 
         private static final long serialVersionUID = 9198622236589910965L;
 
+        @Override
         public Object getDisplayValue(String str) {
             IStringResourceLoader loader = new GeoServerStringResourceLoader();
             if (ByteOrder.LITTLE_ENDIAN.toString().equals(str)) {
@@ -84,6 +85,7 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
             return str;
         }
 
+        @Override
         public String getIdValue(String str, int index) {
             return str;
         }

@@ -43,6 +43,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
      *
      * @param service The Opensearch for EO configuration
      */
+    @Override
     public OpenAPI build(OSEOInfo service) throws IOException {
         OpenAPI api = super.build(service);
 

@@ -25,6 +25,7 @@ public class CSWRecordsResponse extends AbstractRecordsResponse {
         super(CSWRecordDescriptor.RECORD_TYPE, CSW.NAMESPACE, gs);
     }
 
+    @Override
     protected void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
         CSWRecordTransformer transformer =

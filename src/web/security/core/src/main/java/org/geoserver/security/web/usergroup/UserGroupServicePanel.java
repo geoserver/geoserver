@@ -106,6 +106,7 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
         }
     }
 
+    @Override
     public void doLoad(T config) throws Exception {
         getSecurityManager().loadUserGroupServiceConfig(config.getName());
     }

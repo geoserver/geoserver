@@ -202,6 +202,7 @@ public class FeatureWrapper extends BeansWrapper {
         return name.getNamespaceURI() == null ? "" : name.getNamespaceURI();
     }
 
+    @Override
     public TemplateModel wrap(Object object) throws TemplateModelException {
         // check for feature collection
         if (object instanceof FeatureCollection) {
@@ -337,6 +338,7 @@ public class FeatureWrapper extends BeansWrapper {
             this.feature = feature;
         }
 
+        @Override
         public Set entrySet() {
             if (entrySet == null) {
                 entrySet = new LinkedHashSet<>();
@@ -397,6 +399,7 @@ public class FeatureWrapper extends BeansWrapper {
          * Override so asking for the hashCode does not implies traversing the whole map and thus
          * calling entrySet() prematurely
          */
+        @Override
         @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public int hashCode() {
             return attributeName.hashCode();
@@ -408,6 +411,7 @@ public class FeatureWrapper extends BeansWrapper {
          * </code> property, which is lazily evaluated through the use of a {@link
          * DeferredValueEntry}
          */
+        @Override
         public Set entrySet() {
             if (entrySet == null) {
                 entrySet = new LinkedHashSet<>();
@@ -483,6 +487,7 @@ public class FeatureWrapper extends BeansWrapper {
             }
 
             /** Returns the value corresponding to this entry, as a String. */
+            @Override
             public Object getValue() {
                 Object actualValue = super.getValue();
                 String stringValue = FeatureWrapper.valueToString(actualValue);
@@ -511,6 +516,7 @@ public class FeatureWrapper extends BeansWrapper {
     protected static class CopyTemplateFeatureCollectionFactory
             implements TemplateFeatureCollectionFactory<CollectionModel> {
 
+        @Override
         @SuppressWarnings("unchecked")
         public CollectionModel createTemplateFeatureCollection(
                 FeatureCollection collection, BeansWrapper wrapper) {

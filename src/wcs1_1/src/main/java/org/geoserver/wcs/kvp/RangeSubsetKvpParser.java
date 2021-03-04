@@ -68,10 +68,12 @@ public class RangeSubsetKvpParser extends KvpParser {
         Wcs111Factory wcsf = Wcs111Factory.eINSTANCE;
         Ows11Factory owsf = Ows11Factory.eINSTANCE;
 
+        @Override
         public Object visit(SimpleNode node, Object data) {
             throw new UnsupportedOperationException("This method should never be reached");
         }
 
+        @Override
         @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTRangeSubset node, Object data) {
             RangeSubsetType rs = wcsf.createRangeSubsetType();
@@ -83,6 +85,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             return rs;
         }
 
+        @Override
         @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTFieldSubset node, Object data) {
             FieldSubsetType fs = wcsf.createFieldSubsetType();
@@ -102,6 +105,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             return fs;
         }
 
+        @Override
         @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTAxisSubset node, Object data) {
             AxisSubsetType as = wcsf.createAxisSubsetType();
@@ -112,18 +116,22 @@ public class RangeSubsetKvpParser extends KvpParser {
             return as;
         }
 
+        @Override
         public Object visit(ASTFieldId node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTAxisId node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTInterpolation node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTKey node, Object data) {
             return node.getContent();
         }

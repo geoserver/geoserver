@@ -103,6 +103,7 @@ public class KMLPPIO extends CDataPPIO {
         return b.buildFeatureType();
     }
 
+    @Override
     public Object decode(InputStream input) throws Exception {
         StreamingParser parser = new StreamingParser(new KMLConfiguration(), input, KML.Placemark);
         SimpleFeature f = null;
@@ -133,6 +134,7 @@ public class KMLPPIO extends CDataPPIO {
         return features;
     }
 
+    @Override
     public Object decode(String input) throws Exception {
         return decode(new ByteArrayInputStream(input.getBytes()));
     }
@@ -228,6 +230,7 @@ public class KMLPPIO extends CDataPPIO {
             this.kmz = false;
         }
 
+        @Override
         public List<SimpleFeatureType> getFeatureTypes() {
             List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
             for (SimpleFeatureCollection fc : collections) {
@@ -250,6 +253,7 @@ public class KMLPPIO extends CDataPPIO {
         }
     }
 
+    @Override
     public String getFileExtension() {
         return "kml";
     }

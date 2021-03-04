@@ -23,16 +23,19 @@ public class ResourceModel implements IModel<ResourceInfo> {
         this.resourceInfo = resourceInfo;
     }
 
+    @Override
     public ResourceInfo getObject() {
         if (resourceInfo.getCatalog() == null)
             new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(resourceInfo);
         return resourceInfo;
     }
 
+    @Override
     public void setObject(ResourceInfo object) {
         this.resourceInfo = object;
     }
 
+    @Override
     public void detach() {
         // nothing specific to do
     }

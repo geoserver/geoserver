@@ -21,6 +21,7 @@ public class SRSPanelTest extends GeoServerWicketTestSupport implements Serializ
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new SRSListPanel(id) {
 

@@ -50,6 +50,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      *     (see {@link org.apache.wicket.Session})
      * @return The string resource value or null if resource not found
      */
+    @Override
     public String loadStringResource(
             Class<?> clazz,
             final String key,
@@ -101,6 +102,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      *     org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
      *     java.lang.String)
      */
+    @Override
     public String loadStringResource(
             final Component component,
             final String key,

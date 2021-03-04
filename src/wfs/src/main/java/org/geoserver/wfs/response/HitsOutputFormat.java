@@ -41,11 +41,13 @@ public class HitsOutputFormat extends WFSResponse {
     }
 
     /** @return "text/xml"; */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
     /** Checks that the resultType is of type "hits". */
+    @Override
     public boolean canHandle(Operation operation) {
         GetFeatureType request =
                 OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
@@ -53,6 +55,7 @@ public class HitsOutputFormat extends WFSResponse {
         return (request != null) && (request.getResultType() == ResultTypeType.HITS_LITERAL);
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         WFSInfo wfs = getInfo();

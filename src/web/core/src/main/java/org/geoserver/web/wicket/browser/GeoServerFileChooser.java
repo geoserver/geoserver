@@ -260,6 +260,7 @@ public class GeoServerFileChooser extends Panel {
             this.component = component;
         }
 
+        @Override
         public Object getDisplayValue(File f) {
 
             if (f == USER_HOME) {
@@ -292,6 +293,7 @@ public class GeoServerFileChooser extends Panel {
             return f.getName();
         }
 
+        @Override
         public String getIdValue(File f, int count) {
             return "" + count;
         }

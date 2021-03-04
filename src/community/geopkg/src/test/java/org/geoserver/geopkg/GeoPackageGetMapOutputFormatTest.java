@@ -132,6 +132,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         //        })[0]);
     }
 
+    @Override
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
         GetMapRequest request = super.createGetMapRequest(layerNames);
         request.setBbox(new Envelope(-180, 180, -90, 90));

@@ -14,6 +14,7 @@ import java.awt.Color;
  */
 public class BlueColorRamp extends SingleColorRamp {
 
+    @Override
     protected Color getColorForIndex(double step, int idx) {
         return new Color(0, 0, (int) (step * idx + 30));
     }

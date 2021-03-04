@@ -62,14 +62,17 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
     private static final class EmptyExtendedCapabilitiesProvider
             implements ExtendedCapabilitiesProvider {
+        @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void registerNamespaces(NamespaceSupport namespaces) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
             return null;
         }
@@ -78,11 +81,13 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
          * @see
          *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
+        @Override
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
             return null;
         }
 
+        @Override
         public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
                 throws IOException {}
 
@@ -98,14 +103,17 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
     private static final class TestExtendedCapabilitiesProvider
             implements ExtendedCapabilitiesProvider {
+        @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void registerNamespaces(NamespaceSupport namespaces) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
             return Collections.singletonList("TestElement?");
         }
@@ -114,11 +122,13 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
          * @see
          *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
+        @Override
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
             return Collections.singletonList("<!ELEMENT TestSubElement (#PCDATA) >");
         }
 
+        @Override
         public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
                 throws IOException {
             tx.start("TestElement");

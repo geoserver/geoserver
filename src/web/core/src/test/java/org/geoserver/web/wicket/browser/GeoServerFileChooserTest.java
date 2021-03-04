@@ -58,6 +58,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new GeoServerFileChooser(id, new Model<>(file));
                             }
@@ -102,6 +103,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new GeoServerDialog(id);
                             }
@@ -139,6 +141,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         tester.startPage(
                 new FormTestPage(
                         new ComponentBuilder() {
+                            @Override
                             public Component buildComponent(String id) {
                                 return new GeoServerFileChooser(id, new Model<>(), true);
                             }

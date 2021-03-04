@@ -64,76 +64,94 @@ public class DimensionInfoImpl implements DimensionInfo {
         this.rawNearestMatchEnabled = info.isRawNearestMatchEnabled();
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public String getAttribute() {
         return attribute;
     }
 
+    @Override
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 
+    @Override
     public String getEndAttribute() {
         return this.endAttribute;
     }
 
+    @Override
     public void setEndAttribute(String attribute) {
         this.endAttribute = attribute;
     }
 
+    @Override
     public DimensionPresentation getPresentation() {
         return presentation;
     }
 
+    @Override
     public void setPresentation(DimensionPresentation presentation) {
         this.presentation = presentation;
     }
 
+    @Override
     public BigDecimal getResolution() {
         return resolution;
     }
 
+    @Override
     public void setResolution(BigDecimal resolution) {
         this.resolution = resolution;
     }
 
+    @Override
     public String getUnits() {
         return units;
     }
 
+    @Override
     public void setUnits(String units) {
         this.units = units;
     }
 
+    @Override
     public String getUnitSymbol() {
         return unitSymbol;
     }
 
+    @Override
     public void setUnitSymbol(String unitSymbol) {
         this.unitSymbol = unitSymbol;
     }
 
+    @Override
     public boolean isNearestMatchEnabled() {
         // for backwards compatiblity we allow nearest search to be null
         return nearestMatchEnabled == null ? false : nearestMatchEnabled;
     }
 
+    @Override
     public void setNearestMatchEnabled(boolean nearestMatchEnabled) {
         this.nearestMatchEnabled = nearestMatchEnabled;
     }
 
+    @Override
     public boolean isRawNearestMatchEnabled() {
         // for backwards compatiblity we allow nearest search to be null
         return rawNearestMatchEnabled == null ? false : rawNearestMatchEnabled;
     }
 
+    @Override
     public void setRawNearestMatchEnabled(boolean rawNearestMatchEnabled) {
         this.rawNearestMatchEnabled = rawNearestMatchEnabled;
     }

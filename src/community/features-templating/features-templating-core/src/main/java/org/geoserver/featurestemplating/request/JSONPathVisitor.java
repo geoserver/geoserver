@@ -41,6 +41,7 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
         this.isSimple = type instanceof SimpleFeatureType;
     }
 
+    @Override
     public Object visit(PropertyName expression, Object extraData) {
         String propertyValue = expression.getPropertyName();
         Object newExpression = null;

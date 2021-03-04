@@ -112,11 +112,13 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
                 configuration.getProperties().contains(GMLConfiguration.ENCODE_FEATURE_MEMBER);
     }
 
+    @Override
     public int getExecutionMode() {
         return OVERRIDE;
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.FEATURECOLLECTIONTYPE;
     }
@@ -128,6 +130,7 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return FeatureCollectionType.class;
     }
@@ -139,10 +142,12 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         return value;
     }
 
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         // check for feature collection members
         if (GML.featureMembers.equals(name)) {

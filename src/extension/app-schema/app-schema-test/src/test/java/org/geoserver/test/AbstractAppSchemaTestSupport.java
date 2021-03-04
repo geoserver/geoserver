@@ -495,6 +495,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @param image the imgage to check it is not "blank"
      * @param bgColor the background color for which differing pixels are looked for
      */
+    @Override
     protected void assertNotBlank(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = super.countNonBlankPixels(testName, image, bgColor);
         assertTrue(testName + " image is completely blank", 0 < pixelsDiffer);

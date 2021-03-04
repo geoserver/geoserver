@@ -106,6 +106,7 @@ public class MonitorRequestController extends RestBaseController {
             BaseMonitorConverter.handleRequests(
                     object,
                     new RequestDataVisitor() {
+                        @Override
                         public void visit(RequestData data, Object... aggregates) {
                             requests.add(data);
                         }
@@ -120,6 +121,7 @@ public class MonitorRequestController extends RestBaseController {
      *
      * @param o The object being serialized.
      */
+    @Override
     protected String getTemplateName(Object o) {
         if (o instanceof RequestData) {
             return "request.html";

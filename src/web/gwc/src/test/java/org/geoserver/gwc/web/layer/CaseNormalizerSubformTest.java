@@ -143,6 +143,7 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new CaseNormalizerSubform(id, model);
                             }

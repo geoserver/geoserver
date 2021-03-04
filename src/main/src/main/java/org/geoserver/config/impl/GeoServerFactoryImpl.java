@@ -29,38 +29,47 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
         this.gs = gs;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public GeoServerInfo createGlobal() {
         return new GeoServerInfoImpl(gs);
     }
 
+    @Override
     public SettingsInfo createSettings() {
         return new SettingsInfoImpl();
     }
 
+    @Override
     public ContactInfo createContact() {
         return new ContactInfoImpl();
     }
 
+    @Override
     public JAIInfo createJAI() {
         return new JAIInfoImpl();
     }
 
+    @Override
     public MetadataLinkInfo createMetadataLink() {
         return new MetadataLinkInfoImpl();
     }
 
+    @Override
     public ServiceInfo createService() {
         return new ServiceInfoImpl();
     }
 
+    @Override
     public LoggingInfo createLogging() {
         return new LoggingInfoImpl();
     }
 
+    @Override
     public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
             Collection extensions =

@@ -184,6 +184,7 @@ public class WFSXmlUtils {
             this.clazz = clazz;
         }
 
+        @Override
         public boolean isResolvable(
                 PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {

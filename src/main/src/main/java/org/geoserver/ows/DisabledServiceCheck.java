@@ -24,10 +24,12 @@ public class DisabledServiceCheck implements DispatcherCallback {
 
     static final Logger LOGGER = Logging.getLogger(DisabledServiceCheck.class);
 
+    @Override
     public Request init(Request request) {
         return request;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) {
         // first get serviceInfo object from service
         Object s = service.getService();
@@ -76,18 +78,22 @@ public class DisabledServiceCheck implements DispatcherCallback {
         return service;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         return operation;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return result;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return response;
     }
 
+    @Override
     public void finished(Request request) {}
 }

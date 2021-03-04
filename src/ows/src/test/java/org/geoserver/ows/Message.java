@@ -22,6 +22,7 @@ public class Message {
         this.message = message;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Message) {
             Message other = (Message) obj;
@@ -36,6 +37,7 @@ public class Message {
         return false;
     }
 
+    @Override
     public int hashCode() {
         return (message != null) ? message.hashCode() : 0;
     }

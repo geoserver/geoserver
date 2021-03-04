@@ -22,6 +22,7 @@ public class AcceptFormatsKvpParser extends org.geoserver.ows.kvp.AcceptFormatsK
         setService("csw");
     }
 
+    @Override
     protected EObject createObject() {
         return Ows10Factory.eINSTANCE.createAcceptFormatsType();
     }

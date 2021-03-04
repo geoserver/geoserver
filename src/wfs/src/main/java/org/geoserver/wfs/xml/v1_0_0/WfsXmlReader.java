@@ -47,6 +47,7 @@ public class WfsXmlReader extends XmlRequestReader {
         this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
 
+    @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // TODO: refactor this method to use WFSXmlUtils
         Catalog catalog = geoServer.getCatalog();

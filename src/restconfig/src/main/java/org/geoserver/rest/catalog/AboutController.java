@@ -170,6 +170,7 @@ public class AboutController extends RestBaseController {
         }
     }
 
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xs = persister.getXStream();
 

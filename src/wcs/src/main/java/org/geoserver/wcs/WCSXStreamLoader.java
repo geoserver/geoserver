@@ -23,10 +23,12 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
         super(resourceLoader, "wcs");
     }
 
+    @Override
     public Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }
 
+    @Override
     protected WCSInfo createServiceFromScratch(GeoServer gs) {
 
         WCSInfoImpl wcs = new WCSInfoImpl();

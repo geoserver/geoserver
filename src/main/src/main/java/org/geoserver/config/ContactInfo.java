@@ -15,6 +15,7 @@ import org.geoserver.catalog.Info;
 public interface ContactInfo extends Info {
 
     /** Identifier. */
+    @Override
     String getId();
 
     /** @uml.property name="address" */

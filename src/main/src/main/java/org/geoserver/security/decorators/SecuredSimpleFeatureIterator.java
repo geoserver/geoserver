@@ -25,14 +25,17 @@ public class SecuredSimpleFeatureIterator
         this.wrapped = wrapped;
     }
 
+    @Override
     public void close() {
         wrapped.close();
     }
 
+    @Override
     public boolean hasNext() {
         return wrapped.hasNext();
     }
 
+    @Override
     public SimpleFeature next() throws NoSuchElementException {
         return wrapped.next();
     }

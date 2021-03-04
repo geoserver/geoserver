@@ -100,6 +100,7 @@ public class YsldStyleGeneratorTest {
 
         StyleGenerator gen =
                 new StyleGenerator(cat) {
+                    @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
                     };

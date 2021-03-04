@@ -49,6 +49,7 @@ public class PasswordParamPanel extends Panel implements ParamPanel<String> {
         add(requiredFieldFeedback);
     }
 
+    @Override
     public PasswordTextField getFormComponent() {
         return passwordField;
     }

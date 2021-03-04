@@ -34,6 +34,7 @@ public class CSWRecordingXmlReader extends CSWXmlReader implements DispatcherCal
         super(element, version, configuration, resolverProvider);
     }
 
+    @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         String requestText = IOUtils.toString(reader);
         RECORDED_REQUEST.set(requestText);

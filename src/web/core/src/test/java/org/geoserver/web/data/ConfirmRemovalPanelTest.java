@@ -40,6 +40,7 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new ConfirmRemovalPanel(id, roots);
                             }

@@ -24,6 +24,7 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
         setObject(store);
     }
 
+    @Override
     public void setObject(T object) {
         super.setObject(object);
         if (object != null) {

@@ -162,6 +162,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.QUERYTYPE;
     }
@@ -173,10 +174,12 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return QueryType.class;
     }
 
+    @Override
     public void initializeChildContext(
             ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
@@ -200,6 +203,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType query = wfsfactory.createQueryType();

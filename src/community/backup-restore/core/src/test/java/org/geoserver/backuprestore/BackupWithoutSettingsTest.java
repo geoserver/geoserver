@@ -19,6 +19,7 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
 
     protected static Backup backupFacade;
 
+    @Override
     @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");

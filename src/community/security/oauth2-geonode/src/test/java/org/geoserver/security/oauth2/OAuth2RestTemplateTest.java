@@ -178,6 +178,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
             this.accessToken = accessToken;
         }
 
+        @Override
         protected Map<String, Object> postForMap(
                 String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
 

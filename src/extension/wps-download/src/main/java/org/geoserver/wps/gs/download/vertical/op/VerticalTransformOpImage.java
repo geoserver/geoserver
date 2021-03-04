@@ -76,6 +76,7 @@ public class VerticalTransformOpImage extends PointOpImage {
      * @param dest The tile containing the rectangle to be computed.
      * @param destRect The rectangle within the tile to be computed.
      */
+    @Override
     protected void computeRect(Raster[] sources, WritableRaster dest, Rectangle destRect) {
 
         // Retrieve format tags.

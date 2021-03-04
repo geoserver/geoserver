@@ -44,14 +44,17 @@ class DynamicCryptoMapper implements IRequestMapperDelegate {
         }
     }
 
+    @Override
     public IRequestHandler mapRequest(Request request) {
         return getMapper().mapRequest(request);
     }
 
+    @Override
     public int getCompatibilityScore(Request request) {
         return getMapper().getCompatibilityScore(request);
     }
 
+    @Override
     public Url mapHandler(IRequestHandler requestHandler) {
         return getMapper().mapHandler(requestHandler);
     }

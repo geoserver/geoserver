@@ -66,8 +66,10 @@ public class MonitorFilter implements GeoServerFilter {
         }
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -210,6 +212,7 @@ public class MonitorFilter implements GeoServerFilter {
         }
     }
 
+    @Override
     public void destroy() {
         postProcessExecutor.shutdown();
         monitor.dispose();
@@ -285,6 +288,7 @@ public class MonitorFilter implements GeoServerFilter {
             this.propagatedAuth = propagatedAuth;
         }
 
+        @Override
         public void run() {
             try {
                 SecurityContextHolder.getContext().setAuthentication(propagatedAuth);

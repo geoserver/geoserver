@@ -17,6 +17,7 @@ public class LongKvpParser extends KvpParser {
         super(key, Long.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         return Long.valueOf(value);
     }

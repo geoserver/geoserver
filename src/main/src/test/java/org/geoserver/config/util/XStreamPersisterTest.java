@@ -205,6 +205,7 @@ public class XStreamPersisterTest {
             this.foo = foo;
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof MyServiceInfo)) {
                 return false;

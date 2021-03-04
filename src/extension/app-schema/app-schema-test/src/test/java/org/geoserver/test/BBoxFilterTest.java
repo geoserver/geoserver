@@ -41,6 +41,7 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
 
     private final String EPSG_4283 = "urn:x-ogc:def:crs:EPSG:4283";
 
+    @Override
     protected BBoxMockData createTestData() {
         return new BBoxMockData();
     }

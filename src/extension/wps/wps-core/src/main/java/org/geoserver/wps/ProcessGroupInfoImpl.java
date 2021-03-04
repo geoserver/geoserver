@@ -30,22 +30,27 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         return "wpsProcessFactory-" + factoryClass.getName();
     }
 
+    @Override
     public Class<? extends ProcessFactory> getFactoryClass() {
         return factoryClass;
     }
 
+    @Override
     public void setFactoryClass(Class<? extends ProcessFactory> factoryClass) {
         this.factoryClass = factoryClass;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public List<ProcessInfo> getFilteredProcesses() {
         return filteredProcesses;
     }

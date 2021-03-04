@@ -166,6 +166,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
         return PasswordEncodingType.ENCRYPT;
     }
 
+    @Override
     public String decode(String encPass) throws UnsupportedOperationException {
         if (stringEncrypter == null) {
             // not initialized

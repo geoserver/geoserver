@@ -17,11 +17,13 @@ public class JDBCEditRolePageTest extends EditRolePageTest {
         initializeForJDBC();
     }
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();
     }
 
+    @Override
     @Test
     public void testFill2() throws Exception {
         doTestFill2();

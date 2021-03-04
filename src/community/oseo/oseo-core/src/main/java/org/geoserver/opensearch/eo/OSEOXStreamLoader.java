@@ -24,10 +24,12 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         super(resourceLoader, "oseo");
     }
 
+    @Override
     public Class<OSEOInfo> getServiceClass() {
         return OSEOInfo.class;
     }
 
+    @Override
     protected OSEOInfo createServiceFromScratch(GeoServer gs) {
         OSEOInfo oseo = new OSEOInfoImpl();
         oseo.setName("OSEO");

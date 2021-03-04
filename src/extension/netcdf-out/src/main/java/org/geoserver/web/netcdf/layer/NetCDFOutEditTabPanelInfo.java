@@ -21,6 +21,7 @@ public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
+    @Override
     public boolean supports(PublishedInfo pi) {
         return super.supports(pi) && ((LayerInfo) pi).getResource() instanceof CoverageInfo;
     }

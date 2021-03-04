@@ -23,6 +23,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
     public IModel<GeoServer> getGeoServerModel() {
         return new LoadableDetachableModel<GeoServer>() {
+            @Override
             public GeoServer load() {
                 return getGeoServerApplication().getGeoServer();
             }
@@ -31,6 +32,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
     public IModel<GeoServerInfo> getGlobalInfoModel() {
         return new LoadableDetachableModel<GeoServerInfo>() {
+            @Override
             public GeoServerInfo load() {
                 return getGeoServerApplication().getGeoServer().getGlobal();
             }
@@ -72,6 +74,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
     public IModel<ContactInfo> getContactInfoModel() {
         return new LoadableDetachableModel<ContactInfo>() {
+            @Override
             public ContactInfo load() {
                 return getGeoServerApplication()
                         .getGeoServer()

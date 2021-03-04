@@ -73,6 +73,7 @@ public class ElevationParser {
                 new TreeSet(
                         new Comparator() {
 
+                            @Override
                             public int compare(Object o1, Object o2) {
                                 final boolean o1Double = o1 instanceof Double;
                                 final boolean o2Double = o2 instanceof Double;

@@ -86,6 +86,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
         tasks.shutdown();
     }
 
+    @Override
     public void run() {
 
         for (Queue<Pipelineable<K>> pipeline : pipelines.values()) {

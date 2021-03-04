@@ -14,6 +14,7 @@ public class ConformanceDocumentResponse extends JacksonResponse {
         super(gs, ConformanceDocument.class);
     }
 
+    @Override
     protected String getFileName(Object value, Operation operation) {
         return "conformance";
     }

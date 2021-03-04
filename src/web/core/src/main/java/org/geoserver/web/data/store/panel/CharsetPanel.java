@@ -51,6 +51,7 @@ public class CharsetPanel extends Panel implements ParamPanel<String> {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      */
+    @Override
     public FormComponent<String> getFormComponent() {
         return choice;
     }

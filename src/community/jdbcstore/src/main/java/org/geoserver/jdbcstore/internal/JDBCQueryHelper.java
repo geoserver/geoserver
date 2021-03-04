@@ -230,6 +230,7 @@ public class JDBCQueryHelper {
             }
         }
 
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(stringBuilder.toString());
             for (Parameter<?> pam : parameters) {

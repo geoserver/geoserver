@@ -64,21 +64,25 @@ public class RetypingDataStore extends DecoratingDataStore {
         return unwrap(DataStore.class);
     }
 
+    @Override
     public void createSchema(SimpleFeatureType featureType) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema creation at the moment");
     }
 
+    @Override
     public void updateSchema(String typeName, SimpleFeatureType featureType) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema updates at the moment");
     }
 
+    @Override
     public void removeSchema(String typeName) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema removal at the moment");
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
             String typeName, Filter filter, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
@@ -89,6 +93,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
@@ -99,6 +104,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriterAppend(
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
@@ -109,6 +115,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public SimpleFeatureType getSchema(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, false);
         if (map == null) throw new IOException("Unknown type " + typeName);
@@ -116,6 +123,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return map.getFeatureType();
     }
 
+    @Override
     public String[] getTypeNames() throws IOException {
         // here we transform the names, and also refresh the type maps so that
         // they don't contain stale elements
@@ -148,6 +156,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return transformedNames.toArray(new String[transformedNames.size()]);
     }
 
+    @Override
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(query.getTypeName(), true);
@@ -159,6 +168,7 @@ public class RetypingDataStore extends DecoratingDataStore {
                 reader, map.getFeatureType(query));
     }
 
+    @Override
     public SimpleFeatureSource getFeatureSource(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
@@ -174,6 +184,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureSource(this, source, map);
     }
 
+    @Override
     public LockingManager getLockingManager() {
         return wrapped.getLockingManager();
     }
@@ -241,6 +252,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return originalName.replaceAll(":", "_");
     }
 
+    @Override
     public void dispose() {
         wrapped.dispose();
     }
@@ -280,6 +292,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return (Filter) filter.accept(visitor, null);
     }
 
+    @Override
     public ServiceInfo getInfo() {
         return wrapped.getInfo();
     }
@@ -290,6 +303,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 2.5
      * @see DataAccess#getFeatureSource(Name)
      */
+    @Override
     public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
         return getFeatureSource(typeName.getLocalPart());
     }
@@ -301,6 +315,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getNames()
      */
+    @Override
     public List<Name> getNames() throws IOException {
         String[] typeNames = getTypeNames();
         List<Name> names = new ArrayList<>(typeNames.length);
@@ -316,6 +331,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getSchema(Name)
      */
+    @Override
     public SimpleFeatureType getSchema(Name name) throws IOException {
         return getSchema(name.getLocalPart());
     }
@@ -327,11 +343,13 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getFeatureSource(Name)
      */
+    @Override
     public void updateSchema(Name typeName, SimpleFeatureType featureType) throws IOException {
         updateSchema(typeName.getLocalPart(), featureType);
     }
 
     /** Delegates to {@link #removeSchema(String)} with {@code name.getLocalPart()} */
+    @Override
     public void removeSchema(Name typeName) throws IOException {
         removeSchema(typeName.getLocalPart());
     }

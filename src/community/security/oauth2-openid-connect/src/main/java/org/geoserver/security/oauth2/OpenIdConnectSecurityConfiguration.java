@@ -25,6 +25,7 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
 
     private OpenIdConnectFilterConfig config;
 
+    @Override
     @Bean(name = "openIdConnectResource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
         return super.geoServerOAuth2Resource();
@@ -36,6 +37,7 @@ class OpenIdConnectSecurityConfiguration extends GeoServerOAuth2SecurityConfigur
     }
 
     /** Must have "session" scope */
+    @Override
     @Bean(name = "openIdConnectRestTemplate")
     @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {

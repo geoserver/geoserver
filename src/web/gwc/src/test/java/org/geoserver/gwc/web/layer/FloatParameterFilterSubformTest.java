@@ -97,6 +97,7 @@ public class FloatParameterFilterSubformTest extends GeoServerWicketTestSupport 
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new FloatParameterFilterSubform(id, model);
                             }

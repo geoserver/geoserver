@@ -57,6 +57,7 @@ public class ProgressPanel extends Panel {
                         new ProgressionModel() {
                             private static final long serialVersionUID = 5716227987463146386L;
 
+                            @Override
                             protected Progression getProgression() {
                                 return new Progression(
                                         cancelMe ? 100 : Math.round(100 * model.getObject()));
@@ -64,6 +65,7 @@ public class ProgressPanel extends Panel {
                         }) {
                     private static final long serialVersionUID = 6384204231727968702L;
 
+                    @Override
                     protected void onFinished(AjaxRequestTarget target) {
                         window.close(target);
                         if (cancelMe) {

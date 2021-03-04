@@ -68,6 +68,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         this.colorFunction = colorFunction;
     }
 
+    @Override
     public void visit(Style style) {
         super.visit(style);
         Style copy = (Style) pages.pop();
@@ -124,6 +125,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         }
     }
 
+    @Override
     public void visit(Rule rule) {
         super.visit(rule);
         // clean up removed symbolizers

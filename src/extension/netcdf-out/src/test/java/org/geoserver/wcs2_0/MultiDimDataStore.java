@@ -396,10 +396,12 @@ public class MultiDimDataStore extends ContentDataStore {
                 return FEATURE_TYPE;
             }
 
+            @Override
             public ContentDataStore getDataStore() {
                 return MultiDimDataStore.this;
             }
 
+            @Override
             public String toString() {
                 return "AbstractDataStore.AbstractFeatureSource(" + TYPENAME + ")";
             }

@@ -34,12 +34,14 @@ public class DGGSXStreamLoader extends XStreamServiceLoader<DGGSInfo> {
         xs.allowTypes(new Class[] {DGGSInfo.class});
     }
 
+    @Override
     protected DGGSInfo createServiceFromScratch(GeoServer gs) {
         DGGSInfoImpl dggs = new DGGSInfoImpl();
         dggs.setName("DGGS");
         return dggs;
     }
 
+    @Override
     public Class<DGGSInfo> getServiceClass() {
         return DGGSInfo.class;
     }

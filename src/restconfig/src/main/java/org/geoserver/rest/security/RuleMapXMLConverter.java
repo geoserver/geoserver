@@ -43,6 +43,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
      *
      * @param elem , the root elment
      */
+    @Override
     @SuppressWarnings("unchecked")
     protected final void insert(Element elem, Object o) {
         if (o instanceof RuleMap) {
@@ -64,6 +65,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
      * @param elem a JDOM element
      * @return the Map<String,String> produced by interpreting the XML
      */
+    @Override
     protected Map<String, String> convert(Element elem) {
         Map<String, String> ruleMap = new RuleMap<>();
         @SuppressWarnings("unchecked")

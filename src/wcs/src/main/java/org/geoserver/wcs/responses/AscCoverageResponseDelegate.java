@@ -70,6 +70,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
     }
 
     // gzipOut is just a wrapper, output closing managed outside
+    @Override
     @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     public void encode(
             GridCoverage2D sourceCoverage,

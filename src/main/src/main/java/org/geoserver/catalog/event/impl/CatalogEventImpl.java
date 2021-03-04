@@ -12,6 +12,7 @@ public class CatalogEventImpl implements CatalogEvent {
 
     CatalogInfo source;
 
+    @Override
     public CatalogInfo getSource() {
         return source;
     }

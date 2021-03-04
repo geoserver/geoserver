@@ -29,10 +29,12 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.wms");
 
+    @Override
     public Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public WMSInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
         WMSInfoImpl wms = new WMSInfoImpl();

@@ -30,6 +30,7 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
         this.resourceFilePanel = resourceFilePanel;
     }
 
+    @Override
     public void setObject(T object) {
         super.setObject(object);
         if (object != null) {

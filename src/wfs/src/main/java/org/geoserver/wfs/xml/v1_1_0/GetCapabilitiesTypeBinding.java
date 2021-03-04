@@ -54,11 +54,13 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
+    @Override
     public int getExecutionMode() {
         return AFTER;
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETCAPABILITIESTYPE;
     }
@@ -70,6 +72,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return GetCapabilitiesType.class;
     }
@@ -81,6 +84,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         net.opengis.ows10.GetCapabilitiesType owsGetCapabilities =
                 (net.opengis.ows10.GetCapabilitiesType) value;

@@ -44,6 +44,7 @@ public class CoverageJsonResponseDelegate extends BaseCoverageResponseDelegate
                 });
     }
 
+    @Override
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,

@@ -49,11 +49,13 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
         return DataUtilities.simple(super.getFeatures(query));
     }
 
+    @Override
     public void modifyFeatures(String name, Object attributeValue, Filter filter)
             throws IOException {
         modifyFeatures(new String[] {name}, new Object[] {attributeValue}, filter);
     }
 
+    @Override
     public void modifyFeatures(String[] names, Object[] values, Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);

@@ -297,6 +297,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             this.prefix = prefix;
         }
 
+        @Override
         public int compare(String f1, String f2) {
             String t1 = translateFormat(prefix, f1);
             String t2 = translateFormat(prefix, f2);

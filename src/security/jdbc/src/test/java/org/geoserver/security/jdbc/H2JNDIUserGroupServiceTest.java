@@ -21,6 +21,7 @@ public class H2JNDIUserGroupServiceTest extends JDBCUserGroupServiceTest {
         return JDBCTestSupport.createConfigObjectH2Jndi(serviceName, getSecurityManager());
     }
 
+    @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
         return JDBCTestSupport.createH2UserGroupServiceFromJNDI(
                 getFixtureId(), getSecurityManager());

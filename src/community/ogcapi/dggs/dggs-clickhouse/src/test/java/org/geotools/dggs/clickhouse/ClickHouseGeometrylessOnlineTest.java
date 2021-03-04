@@ -27,6 +27,7 @@ public class ClickHouseGeometrylessOnlineTest extends JDBCGeometrylessOnlineTest
         return new ClickHouseGeometrylessTestSetup(new ClickHouseJDBCTestSetup());
     }
 
+    @Override
     protected Map<String, Object> createDataStoreFactoryParams() throws Exception {
         Map<String, Object> params = super.createDataStoreFactoryParams();
         params.put(JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));

@@ -26,6 +26,7 @@ class InfoComparator implements Comparator<Info> {
         this.ascending = ascending;
     }
 
+    @Override
     public int compare(Info i1, Info i2) {
         int result = compareAscending(i1, i2);
         if (ascending) {

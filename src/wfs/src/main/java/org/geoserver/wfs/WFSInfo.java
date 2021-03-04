@@ -71,41 +71,49 @@ public interface WFSInfo extends ServiceInfo {
 
     static enum Operation {
         GETCAPABILITIES {
+            @Override
             public int getCode() {
                 return 0;
             }
         },
         DESCRIBEFEATURETYPE {
+            @Override
             public int getCode() {
                 return 0;
             }
         },
         GETFEATURE {
+            @Override
             public int getCode() {
                 return 1;
             }
         },
         LOCKFEATURE {
+            @Override
             public int getCode() {
                 return 2;
             }
         },
         TRANSACTION_INSERT {
+            @Override
             public int getCode() {
                 return 4;
             }
         },
         TRANSACTION_UPDATE {
+            @Override
             public int getCode() {
                 return 8;
             }
         },
         TRANSACTION_DELETE {
+            @Override
             public int getCode() {
                 return 16;
             }
         },
         TRANSACTION_REPLACE {
+            @Override
             public int getCode() {
                 return 32;
             }
@@ -116,10 +124,12 @@ public interface WFSInfo extends ServiceInfo {
 
     static enum ServiceLevel {
         BASIC {
+            @Override
             public int getCode() {
                 return 1;
             }
 
+            @Override
             public List<Operation> getOps() {
                 return Arrays.asList(
                         Operation.GETCAPABILITIES,
@@ -128,10 +138,12 @@ public interface WFSInfo extends ServiceInfo {
             }
         },
         TRANSACTIONAL {
+            @Override
             public int getCode() {
                 return 15;
             }
 
+            @Override
             public List<Operation> getOps() {
                 return Arrays.asList(
                         Operation.GETCAPABILITIES,
@@ -144,10 +156,12 @@ public interface WFSInfo extends ServiceInfo {
             }
         },
         COMPLETE {
+            @Override
             public int getCode() {
                 return 31;
             }
 
+            @Override
             public List<Operation> getOps() {
                 return Arrays.asList(
                         Operation.GETCAPABILITIES, Operation.DESCRIBEFEATURETYPE,

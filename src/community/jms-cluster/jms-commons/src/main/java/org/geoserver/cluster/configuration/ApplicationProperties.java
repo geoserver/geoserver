@@ -35,6 +35,7 @@ public class ApplicationProperties implements ApplicationContextAware {
      *
      * <p>This is the context that is used for methods which dont supply their own context.
      */
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         ApplicationProperties.context = context;
     }

@@ -28,24 +28,29 @@ class PassThroughTileFactory implements TileFactory, TileRecycler {
     public PassThroughTileFactory() {}
 
     /** Returns <code>false</code> since we don't cache. */
+    @Override
     public boolean canReclaimMemory() {
         return false;
     }
 
     /** Returns <code>false</code> since we don't cache. */
+    @Override
     public boolean isMemoryCache() {
         return false;
     }
 
     /** Always returns -1, does not do used memory accounting */
+    @Override
     public long getMemoryUsed() {
         return -1;
     }
 
     /** Clean up the cache. Noop. */
+    @Override
     public void flush() {}
 
     /** Builds a new tile, creating it from scratch. */
+    @Override
     public WritableRaster createTile(SampleModel sampleModel, Point location) {
         // sanity checks
         if (sampleModel == null) {
@@ -59,5 +64,6 @@ class PassThroughTileFactory implements TileFactory, TileRecycler {
     }
 
     /** Recycles the given tile. Noop. */
+    @Override
     public void recycleTile(Raster tile) {}
 }

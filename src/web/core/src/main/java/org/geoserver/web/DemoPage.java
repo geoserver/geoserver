@@ -18,6 +18,7 @@ public class DemoPage extends GeoServerBasePage {
         List<DemoLinkInfo> links = getGeoServerApplication().getBeansOfType(DemoLinkInfo.class);
         add(
                 new ListView<DemoLinkInfo>("demoList", links) {
+                    @Override
                     public void populateItem(ListItem<DemoLinkInfo> item) {
                         final DemoLinkInfo info = item.getModelObject();
                         item.add(

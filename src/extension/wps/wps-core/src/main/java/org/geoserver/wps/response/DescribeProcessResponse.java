@@ -29,10 +29,12 @@ public class DescribeProcessResponse extends Response {
                 && operation.getService().getId().equals("wps");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return "application/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

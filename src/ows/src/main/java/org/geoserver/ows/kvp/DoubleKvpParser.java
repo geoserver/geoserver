@@ -22,6 +22,7 @@ public class DoubleKvpParser extends KvpParser {
         super(key, Double.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         return Double.valueOf(value);
     }

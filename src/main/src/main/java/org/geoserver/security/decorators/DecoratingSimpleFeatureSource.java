@@ -35,58 +35,72 @@ public abstract class DecoratingSimpleFeatureSource extends AbstractDecorator<Si
         super(delegate);
     }
 
+    @Override
     public void addFeatureListener(FeatureListener listener) {
         delegate.addFeatureListener(listener);
     }
 
+    @Override
     public ReferencedEnvelope getBounds() throws IOException {
         return delegate.getBounds();
     }
 
+    @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         return delegate.getBounds(query);
     }
 
+    @Override
     public int getCount(Query query) throws IOException {
         return delegate.getCount(query);
     }
 
+    @Override
     public DataAccess<SimpleFeatureType, SimpleFeature> getDataStore() {
         return delegate.getDataStore();
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         return delegate.getFeatures();
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return delegate.getFeatures(filter);
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         return delegate.getFeatures(query);
     }
 
+    @Override
     public ResourceInfo getInfo() {
         return delegate.getInfo();
     }
 
+    @Override
     public Name getName() {
         return delegate.getName();
     }
 
+    @Override
     public QueryCapabilities getQueryCapabilities() {
         return delegate.getQueryCapabilities();
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return delegate.getSchema();
     }
 
+    @Override
     public Set<Key> getSupportedHints() {
         return delegate.getSupportedHints();
     }
 
+    @Override
     public void removeFeatureListener(FeatureListener listener) {
         delegate.removeFeatureListener(listener);
     }

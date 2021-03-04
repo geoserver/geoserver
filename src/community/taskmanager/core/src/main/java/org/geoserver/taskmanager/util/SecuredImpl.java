@@ -10,6 +10,7 @@ public class SecuredImpl extends NamedImpl implements Secured {
 
     private List<String> roles;
 
+    @Override
     public List<String> getRoles() {
         return roles;
     }

@@ -651,6 +651,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
     }
 
+    @Override
     public void dispose() throws IOException {
         delegate.dispose();
     }

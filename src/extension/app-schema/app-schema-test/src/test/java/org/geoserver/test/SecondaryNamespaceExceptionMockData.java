@@ -27,6 +27,7 @@ public class SecondaryNamespaceExceptionMockData extends AbstractAppSchemaMockDa
     protected static final String SA_URI = "http://www.opengis.net/sampling/1.0";
 
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
+    @Override
     public void addContent() {
         putNamespace(EX_PREFIX, EX_URI);
         removeNamespace(SA_PREFIX);

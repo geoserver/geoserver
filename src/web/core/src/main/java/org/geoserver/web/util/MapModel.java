@@ -35,16 +35,19 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
         return expression;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getObject() {
         return (T) model.getObject().get(expression);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setObject(T val) {
         ((Map<String, Object>) model.getObject()).put(expression, val);
     }
 
+    @Override
     public void detach() {
         model.detach();
     }
@@ -58,18 +61,23 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
             myMap = m;
         }
 
+        @Override
         public Map<String, ?> getObject() {
             return myMap;
         }
 
+        @Override
         public void setObject(Map<String, ?> arg0) {}
 
+        @Override
         public void detach() {}
     }
 
+    @Override
     public IModel<?> getChainedModel() {
         return null;
     }
 
+    @Override
     public void setChainedModel(IModel<?> arg0) {}
 }

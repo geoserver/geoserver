@@ -77,6 +77,7 @@ public class UserConcurrentFlowController extends QueueController {
         }
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) {
         boolean retval = true;
         long now = System.currentTimeMillis();

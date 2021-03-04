@@ -467,14 +467,17 @@ public class APIDispatcherTest {
                 new MockHttpServletRequest() {
                     String encoding;
 
+                    @Override
                     public int getServerPort() {
                         return 8080;
                     }
 
+                    @Override
                     public String getCharacterEncoding() {
                         return encoding;
                     }
 
+                    @Override
                     public void setCharacterEncoding(String encoding) {
                         this.encoding = encoding;
                     }

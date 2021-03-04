@@ -482,6 +482,7 @@ public class Transaction {
             // sort by class hierarchy
             Comparator<TransactionElementHandler> comparator =
                     new Comparator<TransactionElementHandler>() {
+                        @Override
                         public int compare(
                                 TransactionElementHandler h1, TransactionElementHandler h2) {
                             if (h2.getElementClass().isAssignableFrom(h1.getElementClass())) {
@@ -620,6 +621,7 @@ public class Transaction {
             }
         }
 
+        @Override
         public void dataStoreChange(TransactionEvent event) throws WFSException {
             dataStoreChange(transactionCallbacks, event);
             dataStoreChange(transactionListeners, event);

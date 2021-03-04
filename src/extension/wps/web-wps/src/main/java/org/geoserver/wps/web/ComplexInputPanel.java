@@ -74,6 +74,7 @@ public class ComplexInputPanel extends Panel {
         subprocesswindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         return new SubProcessBuilder(
                                 (ExecuteRequest) subprocesswindow.getDefaultModelObject(),
@@ -239,6 +240,7 @@ public class ComplexInputPanel extends Panel {
             subprocesswindow.setWindowClosedCallback(
                     new ModalWindow.WindowClosedCallback() {
 
+                        @Override
                         public void onClose(AjaxRequestTarget target) {
                             // turn the GUI request into an actual WPS request
                             xml.setModelObject(getExecuteXML());

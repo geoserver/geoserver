@@ -15,6 +15,7 @@ public class PaletteKvpParser extends KvpParser {
         super("palette", IndexColorModel.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         // palette
         try {

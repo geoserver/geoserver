@@ -43,77 +43,95 @@ public class ConfigurableQuotaStore implements QuotaStore {
         this.delegate = delegate;
     }
 
+    @Override
     public TilePageCalculator getTilePageCalculator() {
         return delegate.getTilePageCalculator();
     }
 
+    @Override
     public void createLayer(String layerName) throws InterruptedException {
         delegate.createLayer(layerName);
     }
 
+    @Override
     public Quota getGloballyUsedQuota() throws InterruptedException {
         return delegate.getGloballyUsedQuota();
     }
 
+    @Override
     public Quota getUsedQuotaByTileSetId(String tileSetId) throws InterruptedException {
         return delegate.getUsedQuotaByTileSetId(tileSetId);
     }
 
+    @Override
     public void deleteLayer(String layerName) {
         delegate.deleteLayer(layerName);
     }
 
+    @Override
     public void renameLayer(String oldLayerName, String newLayerName) throws InterruptedException {
         delegate.renameLayer(oldLayerName, newLayerName);
     }
 
+    @Override
     public Quota getUsedQuotaByLayerName(String layerName) throws InterruptedException {
         return delegate.getUsedQuotaByLayerName(layerName);
     }
 
+    @Override
     public long[][] getTilesForPage(TilePage page) throws InterruptedException {
         return delegate.getTilesForPage(page);
     }
 
+    @Override
     public Set<TileSet> getTileSets() {
         return delegate.getTileSets();
     }
 
+    @Override
     public TileSet getTileSetById(String tileSetId) throws InterruptedException {
         return delegate.getTileSetById(tileSetId);
     }
 
+    @Override
     public void accept(TileSetVisitor visitor) {
         delegate.accept(visitor);
     }
 
+    @Override
     public void addToQuotaAndTileCounts(
             TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
             throws InterruptedException {
         delegate.addToQuotaAndTileCounts(tileSet, quotaDiff, tileCountDiffs);
     }
 
+    @Override
     public Future<List<PageStats>> addHitsAndSetAccesTime(
             Collection<PageStatsPayload> statsUpdates) {
         return delegate.addHitsAndSetAccesTime(statsUpdates);
     }
 
+    @Override
     public TilePage getLeastFrequentlyUsedPage(Set<String> layerNames) throws InterruptedException {
         return delegate.getLeastFrequentlyUsedPage(layerNames);
     }
 
+    @Override
     public TilePage getLeastRecentlyUsedPage(Set<String> layerNames) throws InterruptedException {
         return delegate.getLeastRecentlyUsedPage(layerNames);
     }
 
+    @Override
     public PageStats setTruncated(TilePage tilePage) throws InterruptedException {
         return delegate.setTruncated(tilePage);
     }
 
+    @Override
     public void deleteGridSubset(String layerName, String gridSetId) {
         delegate.deleteGridSubset(layerName, gridSetId);
     }
 
+    @Override
     public void close() throws Exception {
         delegate.close();
     }

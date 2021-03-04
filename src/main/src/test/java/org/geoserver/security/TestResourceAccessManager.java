@@ -36,6 +36,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         this.defaultWorkspaceAccessLimits = defaultWorkspaceAccessLimits;
     }
 
+    @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         if (user == null) {
             return null;
@@ -50,6 +51,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         }
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
         if (user == null) {
             return null;
@@ -63,6 +65,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         return limits;
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         if (user == null) {
             return null;
@@ -72,6 +75,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         return (DataAccessLimits) getUserMap(name).get(resource.getId());
     }
 
+    @Override
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style) {
         if (user == null) {
             return null;

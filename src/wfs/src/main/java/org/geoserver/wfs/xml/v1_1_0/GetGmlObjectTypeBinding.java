@@ -84,6 +84,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETGMLOBJECTTYPE;
     }
@@ -95,6 +96,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return GetGmlObjectType.class;
     }
@@ -106,6 +108,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         GetGmlObjectType getGmlObject = wfsfactory.createGetGmlObjectType();

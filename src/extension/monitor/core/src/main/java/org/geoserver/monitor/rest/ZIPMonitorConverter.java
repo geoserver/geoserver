@@ -51,6 +51,7 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
             monitor.query(
                     (Query) object,
                     new RequestDataVisitor() {
+                        @Override
                         public void visit(RequestData data, Object... aggregates) {
                             try {
                                 writeBodyAndError(data, zout, body, error, true);

@@ -32,6 +32,7 @@ public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>
             //
         }
 
+        @Override
         public int compare(WorkspaceInfo w1, WorkspaceInfo w2) {
             return w1.getName().compareToIgnoreCase(w2.getName());
         }

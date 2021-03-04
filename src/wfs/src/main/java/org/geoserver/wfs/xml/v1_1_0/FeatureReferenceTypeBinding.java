@@ -45,6 +45,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
             new QName("http://cite.opengeospatial.org/gmlsf", "FeatureReferenceType");
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return FeatureReferenceType;
     }
@@ -56,6 +57,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return Association.class;
     }
@@ -67,12 +69,14 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         // TODO: implement and remove call to super
         return super.parse(instance, node, value);
     }
 
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         Association association = (Association) object;
 

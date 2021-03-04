@@ -122,18 +122,23 @@ public class MIMETypeMapper implements ApplicationContextAware {
     public class MimeTypeCacheClearingListener extends CatalogVisitorAdapter
             implements CatalogListener {
 
+        @Override
         public void handleAddEvent(CatalogAddEvent event) {}
 
+        @Override
         public void handleModifyEvent(CatalogModifyEvent event) {}
 
+        @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             event.getSource().accept(this);
         }
 
+        @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             event.getSource().accept(this);
         }
 
+        @Override
         public void reloaded() {
             outputMimeTypes.clear();
         }

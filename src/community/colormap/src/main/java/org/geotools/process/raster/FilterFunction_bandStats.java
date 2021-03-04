@@ -33,6 +33,7 @@ public class FilterFunction_bandStats extends FunctionExpressionImpl {
         super(NAME);
     }
 
+    @Override
     public Object evaluate(Object feature) {
         try {
             Integer bandIndex = (getExpression(0).evaluate(feature, Integer.class));

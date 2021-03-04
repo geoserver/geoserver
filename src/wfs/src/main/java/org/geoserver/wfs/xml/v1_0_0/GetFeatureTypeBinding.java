@@ -79,6 +79,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETFEATURETYPE;
     }
@@ -90,6 +91,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class<?> getType() {
         return GetFeatureType.class;
     }
@@ -101,6 +103,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
 

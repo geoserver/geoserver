@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
  */
 public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
 
+    @Override
     protected WaterMLTimeSeriesMockData createTestData() {
         return new WaterMLTimeSeriesMockData();
     }

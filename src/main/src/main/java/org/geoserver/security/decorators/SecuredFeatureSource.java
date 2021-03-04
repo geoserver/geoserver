@@ -55,22 +55,26 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
         this.policy = policy;
     }
 
+    @Override
     public DataAccess<T, F> getDataStore() {
         final DataAccess<T, F> store = delegate.getDataStore();
         if (store == null) return null;
         else return SecuredObjects.secure(store, policy);
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures() throws IOException {
         final FeatureCollection<T, F> fc = delegate.getFeatures(getReadQuery());
         if (fc == null) return null;
         else return SecuredObjects.secure(fc, policy);
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures(Filter filter) throws IOException {
         return getFeatures(new Query(null, filter));
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
         // mix the external query with the access limits one
         final Query readQuery = getReadQuery();

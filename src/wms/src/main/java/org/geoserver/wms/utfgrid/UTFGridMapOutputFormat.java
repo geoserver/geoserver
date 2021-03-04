@@ -74,6 +74,7 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
         this.wms = wms;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

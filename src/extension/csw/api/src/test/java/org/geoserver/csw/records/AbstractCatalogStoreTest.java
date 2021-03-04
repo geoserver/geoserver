@@ -73,6 +73,7 @@ public class AbstractCatalogStoreTest {
             return INSTANCE;
         }
 
+        @Override
         public FeatureType getFeatureType() {
             FeatureType ft = delegate.getFeatureType();
             FeatureTypeFactory factory = new FeatureTypeFactoryImpl();
@@ -88,6 +89,7 @@ public class AbstractCatalogStoreTest {
             return gsft;
         }
 
+        @Override
         public AttributeDescriptor getFeatureDescriptor() {
             AttributeTypeBuilder builder = new AttributeTypeBuilder();
             AttributeDescriptor descriptor =
@@ -96,38 +98,47 @@ public class AbstractCatalogStoreTest {
             return descriptor;
         }
 
+        @Override
         public String getOutputSchema() {
             return delegate.getOutputSchema();
         }
 
+        @Override
         public List<Name> getPropertiesForElementSet(ElementSetType elementSet) {
             return delegate.getPropertiesForElementSet(elementSet);
         }
 
+        @Override
         public NamespaceSupport getNamespaceSupport() {
             return delegate.getNamespaceSupport();
         }
 
+        @Override
         public Query adaptQuery(Query query) {
             return delegate.adaptQuery(query);
         }
 
+        @Override
         public String getBoundingBoxPropertyName() {
             return delegate.getBoundingBoxPropertyName();
         }
 
+        @Override
         public List<Name> getQueryables() {
             return delegate.getQueryables();
         }
 
+        @Override
         public String getQueryablesDescription() {
             return delegate.getQueryablesDescription();
         }
 
+        @Override
         public PropertyName translateProperty(Name name) {
             return delegate.translateProperty(name);
         }
 
+        @Override
         public void verifySpatialFilters(Filter filter) {
             delegate.verifySpatialFilters(filter);
         }

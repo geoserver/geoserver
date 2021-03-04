@@ -62,6 +62,7 @@ public class URLProxifyingTest {
         expect(request.getHttpRequest())
                 .andReturn(
                         new HttpServletRequestWrapper(new MockHttpServletRequest()) {
+                            @Override
                             public String getHeader(String name) {
                                 return headers.get(name);
                             }

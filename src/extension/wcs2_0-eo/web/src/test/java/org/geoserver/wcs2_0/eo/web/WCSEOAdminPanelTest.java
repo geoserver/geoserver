@@ -32,6 +32,7 @@ public class WCSEOAdminPanelTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WCSEOAdminPanel(id, new Model<>(wcs));
                             }

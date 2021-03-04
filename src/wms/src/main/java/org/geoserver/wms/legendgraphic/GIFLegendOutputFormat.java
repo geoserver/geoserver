@@ -25,6 +25,7 @@ public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      * @see BufferedImageLegendGraphicBuilder
      */
+    @Override
     public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
         LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
@@ -37,6 +38,7 @@ public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @return {@code "image/gif"}
      * @see GetLegendGraphicOutputFormat#getContentType()
      */
+    @Override
     public String getContentType() {
         return MIME_TYPE;
     }

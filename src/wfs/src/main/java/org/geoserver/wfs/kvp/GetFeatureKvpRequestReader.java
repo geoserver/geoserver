@@ -43,11 +43,13 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(requestBean, factory, geoServer, filterFactory);
     }
 
+    @Override
     protected WFSInfo getWFS() {
         return geoServer.getService(WFSInfo.class);
     }
 
     /** Performs additional GetFeature/GetFeatureWithLock kvp parsing requirements */
+    @Override
     public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
         // hack but startIndex conflicts with WMS startIndex... which parses to different type, so
@@ -166,6 +168,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         return request;
     }
 
+    @Override
     protected <T> void querySet(EObject request, String property, List<T> values)
             throws WFSException {
         // no values specified, do nothing
@@ -233,6 +236,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         EMFUtils.set(query, property, values);
     }
 
+    @Override
     protected void buildStoredQueries(
             EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         GetFeatureRequest req = GetFeatureRequest.adapt(request);

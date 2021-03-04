@@ -175,6 +175,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         return new MBTilesFile(f);
     }
 
+    @Override
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
         GetMapRequest request = super.createGetMapRequest(layerNames);
         request.setBbox(new Envelope(-180, 180, -90, 90));

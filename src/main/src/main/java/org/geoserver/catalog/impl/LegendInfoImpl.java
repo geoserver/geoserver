@@ -19,6 +19,7 @@ public class LegendInfoImpl implements LegendInfo {
 
     String onlineResource;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -27,34 +28,42 @@ public class LegendInfoImpl implements LegendInfo {
         this.id = id;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public void setWidth(int width) {
         this.width = width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
 
+    @Override
     public void setHeight(int height) {
         this.height = height;
     }
 
+    @Override
     public String getFormat() {
         return format;
     }
 
+    @Override
     public void setFormat(String format) {
         this.format = format;
     }
 
+    @Override
     public String getOnlineResource() {
         return onlineResource;
     }
 
+    @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
     }

@@ -85,6 +85,7 @@ public abstract class AbstractInputProvider implements InputProvider {
         this.inputId = input.getIdentifier().getValue();
     }
 
+    @Override
     public String getInputId() {
         return inputId;
     }

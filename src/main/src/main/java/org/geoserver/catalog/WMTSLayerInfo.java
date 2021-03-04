@@ -10,6 +10,7 @@ import org.opengis.util.ProgressListener;
 
 public interface WMTSLayerInfo extends ResourceInfo {
 
+    @Override
     public WMTSStoreInfo getStore();
 
     /** Returns the raw WMTS layer associated to this resource */

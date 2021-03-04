@@ -43,6 +43,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> DATA_TYPE =
             new AbstractProperty<StoreInfo>("datatype") {
 
+                @Override
                 public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
                     return new AbstractReadOnlyModel<String>() {
 
@@ -54,6 +55,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                     };
                 }
 
+                @Override
                 public Object getPropertyValue(StoreInfo item) {
                     if (item instanceof DataStoreInfo) return "vector";
                     else return "raster";
@@ -67,6 +69,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     final Property<StoreInfo> TYPE =
             new AbstractProperty<StoreInfo>("type") {
 
+                @Override
                 public Object getPropertyValue(StoreInfo item) {
                     String type = item.getType();
                     if (type != null) {
@@ -144,6 +147,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return super.getComparator(sort);
     }
 
+    @Override
     public IModel<StoreInfo> newModel(StoreInfo object) {
         return new StoreInfoDetachableModel(object);
     }

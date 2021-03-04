@@ -93,6 +93,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         this.add(
                 new DropTarget(Operation.MOVE) {
 
+                    @Override
                     public void onDrop(
                             AjaxRequestTarget target, Transfer transfer, Location location) {
                         if (location == null

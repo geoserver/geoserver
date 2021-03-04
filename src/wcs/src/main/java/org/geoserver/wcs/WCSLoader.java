@@ -18,10 +18,12 @@ import org.geotools.util.Version;
  */
 public class WCSLoader extends LegacyServiceLoader<WCSInfo> {
 
+    @Override
     public Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }
 
+    @Override
     public WCSInfo load(LegacyServicesReader reader, GeoServer gs) throws Exception {
 
         WCSInfoImpl wcs = new WCSInfoImpl();
@@ -37,5 +39,6 @@ public class WCSLoader extends LegacyServiceLoader<WCSInfo> {
         return wcs;
     }
 
+    @Override
     public void save(WCSInfo service, GeoServer gs) throws Exception {}
 }

@@ -40,6 +40,7 @@ public class CSWXmlReader extends XmlRequestReader {
         this.resolverProvider = resolverProvider;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         Parser parser = new Parser(configuration);

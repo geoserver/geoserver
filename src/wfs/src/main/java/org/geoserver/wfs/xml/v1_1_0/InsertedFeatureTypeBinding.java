@@ -58,6 +58,7 @@ public class InsertedFeatureTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.INSERTEDFEATURETYPE;
     }
@@ -69,6 +70,7 @@ public class InsertedFeatureTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return InsertedFeatureType.class;
     }
@@ -80,6 +82,7 @@ public class InsertedFeatureTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

@@ -287,6 +287,7 @@ public class DownloadServiceConfigurationWatcher extends TimerTask
     }
 
     /** Returns the {@link DownloadServiceConfiguration} instance. */
+    @Override
     public DownloadServiceConfiguration getConfiguration() {
         return configuration;
     }

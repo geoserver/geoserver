@@ -18,26 +18,31 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DefaultOutputStrategy implements ServiceStrategy {
     /** @return The string "default". */
+    @Override
     public String getId() {
         return "default";
     }
 
     /** @return response.getOutputStream(); */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         return new DispatcherOutputStream(outputStream);
     }
 
     /** Calls response.getOutputStream().flush() */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         response.getOutputStream().flush();
     }
 
     /** Does nothing. */
+    @Override
     public void abort() {
         // do nothing
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new DefaultOutputStrategy();
     }

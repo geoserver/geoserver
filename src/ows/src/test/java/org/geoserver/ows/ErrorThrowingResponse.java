@@ -15,10 +15,12 @@ public class ErrorThrowingResponse extends Response {
         super(Message.class);
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return "text/plain";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         Message message = (Message) value;
         output.write(message.message.getBytes());

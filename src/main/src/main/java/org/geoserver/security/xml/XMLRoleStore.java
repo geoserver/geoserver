@@ -67,6 +67,7 @@ public class XMLRoleStore extends AbstractRoleStore {
     /* (non-Javadoc)
      * @see org.geoserver.security.impl.AbstractRoleStore#initializeFromService(org.geoserver.security.GeoserverRoleService)
      */
+    @Override
     public void initializeFromService(GeoServerRoleService service) throws IOException {
         this.roleResource = ((XMLRoleService) service).roleResource;
         this.validatingXMLSchema = ((XMLRoleService) service).isValidatingXMLSchema();

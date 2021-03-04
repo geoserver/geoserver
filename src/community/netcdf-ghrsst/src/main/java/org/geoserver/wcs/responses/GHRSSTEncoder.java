@@ -210,6 +210,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Initialize the NetCDF variables on this writer */
+    @Override
     protected void initializeVariables() {
         // group the dimensions to be added to the variable
         List<Dimension> netCDFDimensions = new LinkedList<Dimension>();
@@ -507,6 +508,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Set the variables values */
+    @Override
     protected void writeDataValues() throws IOException, InvalidRangeException {
 
         // Initialize dimensions sizes
@@ -627,6 +629,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Add global attributes to the Dataset if needed */
+    @Override
     protected void initializeGlobalAttributes() {
         copyGlobalAttribute();
 

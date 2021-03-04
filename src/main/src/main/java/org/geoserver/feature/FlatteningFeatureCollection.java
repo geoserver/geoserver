@@ -98,6 +98,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         return flattenedType;
     }
 
+    @Override
     public SimpleFeatureIterator features() {
         return new FlatteningFeatureIterator(delegate.features(), flattenedType);
     }

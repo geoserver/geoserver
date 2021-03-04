@@ -27,6 +27,7 @@ public class GZIPResponseStream extends ServletOutputStream {
         gzipstream = new GZIPOutputStream(delegateStream, 4096, true);
     }
 
+    @Override
     public void close() throws IOException {
         if (closed) {
             throw new IOException("This output stream has already been closed");
@@ -35,12 +36,14 @@ public class GZIPResponseStream extends ServletOutputStream {
         closed = true;
     }
 
+    @Override
     public void flush() throws IOException {
         if (!closed) {
             gzipstream.flush();
         }
     }
 
+    @Override
     public void write(int b) throws IOException {
         if (closed) {
             throw new IOException("Cannot write to a closed output stream");
@@ -48,10 +51,12 @@ public class GZIPResponseStream extends ServletOutputStream {
         gzipstream.write((byte) b);
     }
 
+    @Override
     public void write(byte b[]) throws IOException {
         write(b, 0, b.length);
     }
 
+    @Override
     public void write(byte b[], int off, int len) throws IOException {
         if (closed) {
             throw new IOException("Cannot write to a closed output stream");

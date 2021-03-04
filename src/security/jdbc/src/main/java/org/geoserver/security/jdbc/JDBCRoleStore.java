@@ -56,6 +56,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
      *
      * @see org.geoserver.security.jdbc.JDBCRoleService#load()
      */
+    @Override
     public void load() throws IOException {
         // Simply roll back the transaction
         try {
@@ -89,6 +90,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#addRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public void addRole(GeoServerRole role) throws IOException {
 
         Connection con = null;
@@ -113,6 +115,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#updateRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public void updateRole(GeoServerRole role) throws IOException {
 
         // No attributes for update
@@ -143,6 +146,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#removeRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public boolean removeRole(GeoServerRole role) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -188,6 +192,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
      *
      * @see org.geoserver.security.GeoServerRoleStore#store()
      */
+    @Override
     public void store() throws IOException {
         // Simply commit the transaction
         try {
@@ -202,6 +207,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#associateRoleToUser(org.geoserver.security.impl.GeoserverRole, java.lang.String)
      */
+    @Override
     public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
 
         Connection con = null;
@@ -223,6 +229,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#disAssociateRoleFromUser(org.geoserver.security.impl.GeoserverRole, java.lang.String)
      */
+    @Override
     public void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException {
 
         Connection con = null;
@@ -244,6 +251,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#associateRoleToGroup(org.geoserver.security.impl.GeoserverRole, java.lang.String)
      */
+    @Override
     public void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException {
 
         Connection con = null;
@@ -265,6 +273,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#disAssociateRoleFromGroup(org.geoserver.security.impl.GeoserverRole, java.lang.String)
      */
+    @Override
     public void disAssociateRoleFromGroup(GeoServerRole role, String groupname) throws IOException {
 
         Connection con = null;
@@ -283,6 +292,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
         setModified(true);
     }
 
+    @Override
     public boolean isModified() {
         return modified;
     }
@@ -294,6 +304,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#setParentRole(org.geoserver.security.impl.GeoserverRole, org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
 
         RoleHierarchyHelper helper = new RoleHierarchyHelper(getParentMappings());
@@ -326,6 +337,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#clear()
      */
+    @Override
     public void clear() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -357,6 +369,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleStore#initializeFromService(org.geoserver.security.GeoserverRoleService)
      */
+    @Override
     public void initializeFromService(GeoServerRoleService service) throws IOException {
         JDBCRoleService jdbcService = (JDBCRoleService) service;
         this.name = service.getName();

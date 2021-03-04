@@ -254,6 +254,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         }
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }

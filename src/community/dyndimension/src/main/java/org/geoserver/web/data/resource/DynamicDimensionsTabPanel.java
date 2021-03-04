@@ -264,6 +264,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                         private static final long serialVersionUID =
                                                 685833036040462732L;
 
+                                        @Override
                                         public void onComponentTag(
                                                 Component component, ComponentTag tag) {
                                             if (property == DEFAULT_VALUE_EXPRESSION) {

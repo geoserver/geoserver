@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FreefsLog extends HttpServlet {
 
     /** Initializes logging and config. */
+    @Override
     public void init() throws ServletException {
         // configure log4j, since console logging is configured elsewhere
         // we deny all logging, this is really just to prevent log4j
@@ -44,7 +45,9 @@ public class FreefsLog extends HttpServlet {
      * @param req The servlet request object.
      * @param res The servlet response object.
      */
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) {
         // BasicConfigurator.configure();
     }
+    @Override
 }

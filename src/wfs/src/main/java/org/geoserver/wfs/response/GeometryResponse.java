@@ -34,11 +34,13 @@ public class GeometryResponse extends WFSResponse {
         super(gs, Geometry.class);
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
 
         return "text/xml; subtype=gml/3.1.1";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
 

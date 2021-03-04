@@ -24,10 +24,12 @@ public class GetFeatureTypeBinding extends ComplexEMFBinding {
         this.namespaceContext = namespaceContext;
     }
 
+    @Override
     public QName getTarget() {
         return WFS.GetFeatureType;
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         SqlViewParamsExtractor.fixNodeObject(node);
         return super.parse(instance, node, value);

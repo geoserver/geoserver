@@ -71,6 +71,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
 
+    @Override
     public void logout() {
         login("anonymousUser", "", "ROLE_ANONYMOUS");
     }

@@ -133,6 +133,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         new BackupRestoreStoresIndexModel(workspace, backupRestoreFileResource),
                         new StoreChoiceRenderer()) {
 
+                    @Override
                     protected String getNullValidKey() {
                         return BackupRestoreDataPage.class.getSimpleName()
                                 + "."
@@ -160,6 +161,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         new BackupRestoreLayersIndexModel(store, backupRestoreFileResource),
                         new LayerChoiceRenderer()) {
 
+                    @Override
                     protected String getNullValidKey() {
                         return BackupRestoreDataPage.class.getSimpleName()
                                 + "."
@@ -253,10 +255,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
 
                         // update status to indicate we are working
@@ -425,6 +429,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
         form.add(
                 new AjaxLink<Long>("cancel", new Model<Long>()) {
+                    @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
                         tag.setName("a");
@@ -466,6 +471,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         },
                         true,
                         BackupExecutionAdapter.class) {
+                    @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {};
                 };
         backupRestoreExecutionsTable.setOutputMarkupId(true);
@@ -490,10 +496,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
 
                         // update status to indicate we are working
@@ -678,6 +686,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
         form.add(
                 new AjaxLink<Long>("cancel", new Model<Long>()) {
+                    @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
                         tag.setName("a");
@@ -719,6 +728,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         },
                         true,
                         RestoreExecutionAdapter.class) {
+                    @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {};
                 };
         restoreExecutionsTable.setOutputMarkupId(true);

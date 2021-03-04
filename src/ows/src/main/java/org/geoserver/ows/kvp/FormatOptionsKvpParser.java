@@ -40,10 +40,12 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
         super(key, Map.class);
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         Map<String, Object> formatOptions = new CaseInsensitiveMap<>(new TreeMap<>());
         List<String> kvps = KvpUtils.escapedTokens(value, ';');

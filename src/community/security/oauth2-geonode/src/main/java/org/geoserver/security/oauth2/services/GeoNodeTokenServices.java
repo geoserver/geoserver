@@ -24,6 +24,7 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
         super(new GeoServerAccessTokenConverter());
     }
 
+    @Override
     protected Map<String, Object> checkToken(String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("token", accessToken);
@@ -32,12 +33,14 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
         return postForMap(checkTokenEndpointUrl, formData, headers);
     }
 
+    @Override
     protected void transformNonStandardValuesToStandardValues(Map<String, Object> map) {
         LOGGER.debug("Original map = " + map);
         map.put("user_name", map.get("issued_to")); // GeoNode sends 'client_id' as 'issued_to'
         LOGGER.debug("Transformed = " + map);
     }
 
+    @Override
     protected String getAuthorizationHeader(String accessToken) {
         String creds = String.format("%s:%s", clientId, clientSecret);
         try {

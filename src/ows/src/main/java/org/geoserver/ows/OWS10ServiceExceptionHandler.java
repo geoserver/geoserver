@@ -55,6 +55,7 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
     }
 
     /** Writes out an OWS ExceptionReport document. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         Ows10Factory factory = Ows10Factory.eINSTANCE;
 

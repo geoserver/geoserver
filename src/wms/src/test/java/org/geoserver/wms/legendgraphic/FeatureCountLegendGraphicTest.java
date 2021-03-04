@@ -453,6 +453,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         final Style style = legend.getStyle();
         DuplicatingStyleVisitor matchFirstCloner =
                 new DuplicatingStyleVisitor() {
+                    @Override
                     public void visit(FeatureTypeStyle fts) {
                         super.visit(fts);
                         FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();

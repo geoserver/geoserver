@@ -38,10 +38,12 @@ public class LockFeatureTypeResponse extends WFSResponse {
         this.configuration = configuration;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         WFSInfo wfs = getInfo();

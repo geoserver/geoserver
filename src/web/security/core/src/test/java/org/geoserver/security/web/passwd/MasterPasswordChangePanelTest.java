@@ -17,6 +17,7 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
 
     FormTester ft;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         // We need to enable Master Root login first

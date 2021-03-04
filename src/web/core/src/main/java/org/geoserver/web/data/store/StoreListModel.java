@@ -28,6 +28,7 @@ public class StoreListModel extends LoadableDetachableModel<List<StoreInfo>> {
         Collections.sort(
                 stores,
                 new Comparator<StoreInfo>() {
+                    @Override
                     public int compare(StoreInfo o1, StoreInfo o2) {
                         if (o1.getWorkspace().equals(o2.getWorkspace())) {
                             return o1.getName().compareTo(o2.getName());

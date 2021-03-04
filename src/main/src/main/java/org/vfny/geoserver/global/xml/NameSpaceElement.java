@@ -154,6 +154,7 @@ public abstract class NameSpaceElement {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return getQualifiedTypeDefName(prefix);
     }

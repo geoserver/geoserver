@@ -23,6 +23,7 @@ import org.geoserver.ows.ServiceStrategy;
  * @author jgarnett
  */
 public class SpeedStrategy implements ServiceStrategy {
+    @Override
     public String getId() {
         return "SPEED";
     }
@@ -38,6 +39,7 @@ public class SpeedStrategy implements ServiceStrategy {
      * @return An OutputStream that works against, the response output stream.
      * @throws IOException If response output stream could not be aquired
      */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         out = response.getOutputStream();
 
@@ -49,6 +51,7 @@ public class SpeedStrategy implements ServiceStrategy {
      *
      * @throws IOException If Response.getOutputStream not available.
      */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         if (out != null) {
             out.flush();
@@ -58,10 +61,12 @@ public class SpeedStrategy implements ServiceStrategy {
     /* (non-Javadoc)
      * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#abort()
      */
+    @Override
     public void abort() {
         // out.close();
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new SpeedStrategy();
     }

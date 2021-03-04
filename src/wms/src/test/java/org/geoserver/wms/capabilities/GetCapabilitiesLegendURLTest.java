@@ -192,6 +192,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     }
 
     /** Accessor for global catalog instance from the test application context. */
+    @Override
     protected Catalog getCatalog() {
         return (Catalog) applicationContext.getBean("catalog");
     }

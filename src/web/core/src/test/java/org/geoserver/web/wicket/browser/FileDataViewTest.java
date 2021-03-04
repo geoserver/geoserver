@@ -53,6 +53,7 @@ public class FileDataViewTest {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
 
                                 return new FileDataView(id, fileProvider) {

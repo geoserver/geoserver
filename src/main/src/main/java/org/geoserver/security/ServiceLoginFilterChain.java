@@ -24,6 +24,7 @@ public class ServiceLoginFilterChain extends VariableFilterChain {
         super(patterns);
     }
 
+    @Override
     public SortedSet<String> listFilterCandidates(GeoServerSecurityManager m) throws IOException {
         SortedSet<String> result = new TreeSet<>();
         for (String filterName : m.listFilters(GeoServerAuthenticationFilter.class)) {

@@ -93,10 +93,12 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         super(service);
     }
 
+    @Override
     protected Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
         // popups support
@@ -426,6 +428,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
                         GeoServerFileChooser chooser =
                                 new GeoServerFileChooser(modal.getContentId(), new Model<>(file)) {
+                                    @Override
                                     protected void fileClicked(
                                             File file, AjaxRequestTarget target) {
                                         // clear the raw input of the field won't show the new model
@@ -452,17 +455,20 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return model;
     }
 
+    @Override
     protected String getServiceName() {
         return "WMS";
     }
 
     private class WatermarkPositionRenderer extends ChoiceRenderer {
 
+        @Override
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((Position) object).name(), WMSAdminPage.this, null)
                     .getString();
         }
 
+        @Override
         public String getIdValue(Object object, int index) {
             return ((Position) object).name();
         }
@@ -470,12 +476,14 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private class InterpolationRenderer extends ChoiceRenderer {
 
+        @Override
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(
                             ((WMSInterpolation) object).name(), WMSAdminPage.this, null)
                     .getString();
         }
 
+        @Override
         public String getIdValue(Object object, int index) {
             return ((WMSInterpolation) object).name();
         }
@@ -483,10 +491,12 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private class SVGMethodRenderer extends ChoiceRenderer {
 
+        @Override
         public Object getDisplayValue(Object object) {
             return new StringResourceModel("svg." + object, WMSAdminPage.this, null).getString();
         }
 
+        @Override
         public String getIdValue(Object object, int index) {
             return (String) object;
         }

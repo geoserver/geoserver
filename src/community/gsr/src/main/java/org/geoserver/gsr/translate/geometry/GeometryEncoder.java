@@ -15,6 +15,7 @@ package org.geoserver.gsr.translate.geometry;
  */
 public final class GeometryEncoder extends AbstractGeometryEncoder<Double> {
 
+    @Override
     protected Double[] embeddedCoordinate(org.locationtech.jts.geom.Coordinate coord) {
         return new Double[] {coord.x, coord.y};
     }

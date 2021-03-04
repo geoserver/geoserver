@@ -26,10 +26,12 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
 
     protected static final String WS_STYLE = "wsStyle";
 
+    @Override
     protected void setUpTestData(org.geoserver.data.test.SystemTestData testData) throws Exception {
         // add nothing here
     };
 
+    @Override
     protected void onSetUp(org.geoserver.data.test.SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
 

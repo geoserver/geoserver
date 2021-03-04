@@ -167,6 +167,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
             this.kmz = false;
         }
 
+        @Override
         public List<SimpleFeatureType> getFeatureTypes() {
             List<SimpleFeatureType> results = new ArrayList<>();
             for (SimpleFeatureCollection fc : collections) {

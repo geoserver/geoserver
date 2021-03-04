@@ -159,6 +159,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // Apply the new feature to the page
         page.add(
                 new AjaxEventBehavior("ondblclick") {
+                    @Override
                     public void onEvent(AjaxRequestTarget target) {
                         page.updateResource(info, target);
                     }

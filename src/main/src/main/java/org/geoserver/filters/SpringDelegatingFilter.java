@@ -32,15 +32,18 @@ public class SpringDelegatingFilter implements Filter {
 
     List<GeoServerFilter> filters;
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         filters = GeoServerExtensions.extensions(GeoServerFilter.class);
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         new Chain(chain).doFilter(request, response);
     }
 
+    @Override
     public void destroy() {
         if (filters != null) {
             for (Filter f : filters) {
@@ -59,6 +62,7 @@ public class SpringDelegatingFilter implements Filter {
             this.delegate = chain;
         }
 
+        @Override
         public void doFilter(ServletRequest request, ServletResponse response)
                 throws IOException, ServletException {
 

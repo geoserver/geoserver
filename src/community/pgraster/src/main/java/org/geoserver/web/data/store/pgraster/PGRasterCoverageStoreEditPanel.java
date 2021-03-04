@@ -84,6 +84,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
                 new IFormValidator() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public FormComponent[] getDependentFormComponents() {
                         if (enabled.getModelObject()) {
                             return advancedConfigPanel.getDependentFormComponents();
@@ -92,6 +93,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
                         }
                     }
 
+                    @Override
                     public void validate(final Form form) {
                         CoverageStoreInfo storeInfo = (CoverageStoreInfo) form.getModelObject();
                         String coverageUrl = urlFormComponent.getValue();

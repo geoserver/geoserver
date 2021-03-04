@@ -42,6 +42,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         this.xpf = xpf;
     }
 
+    @Override
     public final T load(GeoServer gs) throws Exception {
         return load(gs, resourceLoader.get(""));
     }
@@ -101,6 +102,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         return service;
     }
 
+    @Override
     public final void save(T service, GeoServer gs) throws Exception {}
 
     public final void save(T service, GeoServer gs, Resource directory) throws Exception {
@@ -127,6 +129,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         xp.getXStream().alias(filenameBase, getServiceClass());
     }
 
+    @Override
     public final T create(GeoServer gs) {
         return createServiceFromScratch(gs);
     }

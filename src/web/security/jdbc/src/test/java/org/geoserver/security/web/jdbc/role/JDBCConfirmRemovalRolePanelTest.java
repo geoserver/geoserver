@@ -14,6 +14,7 @@ public class JDBCConfirmRemovalRolePanelTest extends ConfirmRemovalRolePanelTest
 
     private static final long serialVersionUID = -7197515540318374854L;
 
+    @Override
     @Test
     public void testRemoveRole() throws Exception {
         initializeForJDBC();
@@ -24,10 +25,12 @@ public class JDBCConfirmRemovalRolePanelTest extends ConfirmRemovalRolePanelTest
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }
 
+    @Override
     public String getRoleServiceName() {
         return "h2";
     }
 
+    @Override
     public String getUserGroupServiceName() {
         return "h2";
     }

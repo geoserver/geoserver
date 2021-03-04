@@ -14,10 +14,12 @@ import org.geotools.util.Version;
 
 public class WFSLoader extends LegacyServiceLoader<WFSInfo> {
 
+    @Override
     public Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;
     }
 
+    @Override
     public WFSInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
 
         WFSInfoImpl wfs = new WFSInfoImpl();

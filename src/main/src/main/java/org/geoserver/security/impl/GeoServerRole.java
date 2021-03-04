@@ -80,6 +80,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
         return properties;
     }
 
+    @Override
     public int compareTo(GeoServerRole o) {
         if (o == null) return 1;
         if (getAuthority().equals(o.getAuthority())) {
@@ -93,6 +94,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
 
     // not sure why the equals would compare against types that are not a GeoServerRole
     // suppressing for the moment...
+    @Override
     @SuppressFBWarnings("EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS")
     public boolean equals(Object obj) {
         if (obj == null) return false;
@@ -118,12 +120,14 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
         return this.role.equals(((GrantedAuthority) obj).getAuthority());
     }
 
+    @Override
     public int hashCode() {
         int hash = getAuthority().hashCode();
         if (getUserName() != null) hash += getUserName().hashCode();
         return hash;
     }
 
+    @Override
     public String toString() {
         if (getUserName() != null) {
             StringBuffer buff = new StringBuffer(role);

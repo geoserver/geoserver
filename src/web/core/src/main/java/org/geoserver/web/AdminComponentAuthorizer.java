@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
  */
 public class AdminComponentAuthorizer implements ComponentAuthorizer {
 
+    @Override
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         return getSecurityManager().checkAuthenticationForAdminRole(authentication);
     }

@@ -25,6 +25,7 @@ public abstract class AcceptFormatsKvpParser extends KvpParser {
         super("acceptFormats", clazz);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         List<String> values = KvpUtils.readFlat(value);
 

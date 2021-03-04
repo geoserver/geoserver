@@ -40,6 +40,7 @@ public class ControlFlowCallbackProxy implements InvocationHandler, BeanPostProc
         return (Long) OwsUtils.get(target, "blockedRequests");
     }
 
+    @Override
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
         if ("ControlFlowCallback".equals(bean.getClass().getSimpleName())) {
@@ -54,11 +55,13 @@ public class ControlFlowCallbackProxy implements InvocationHandler, BeanPostProc
         return bean;
     }
 
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName)
             throws BeansException {
         return bean;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("operationDispatched".equals(method.getName()) && monitor.current() != null) {
             RequestData data = monitor.current();

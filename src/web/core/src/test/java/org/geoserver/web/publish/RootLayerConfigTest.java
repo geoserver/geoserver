@@ -34,6 +34,7 @@ public class RootLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new RootLayerConfig(id, new Model<>(polygons));
                             }

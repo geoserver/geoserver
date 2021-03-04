@@ -130,6 +130,7 @@ public class CatalogLayerEventListener implements CatalogListener {
      * @see #createTileLayer(LayerInfo)
      * @see #createTileLayer(LayerGroupInfo)
      */
+    @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         GWCConfig config = mediator.getConfig();
         boolean sane = config.isSane();
@@ -189,6 +190,7 @@ public class CatalogLayerEventListener implements CatalogListener {
      *     org.geoserver.catalog.event.CatalogListener#handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent)
      * @see #handlePostModifyEvent
      */
+    @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         CatalogInfo source = event.getSource();
         if (source instanceof LayerInfo
@@ -222,6 +224,7 @@ public class CatalogLayerEventListener implements CatalogListener {
      * @see
      *     org.geoserver.catalog.event.CatalogListener#handlePostModifyEvent(org.geoserver.catalog.event.CatalogPostModifyEvent)
      */
+    @Override
     public void handlePostModifyEvent(final CatalogPostModifyEvent event) throws CatalogException {
         final CatalogInfo source = event.getSource();
         if (!(source instanceof LayerInfo
@@ -644,6 +647,7 @@ public class CatalogLayerEventListener implements CatalogListener {
      *     org.geoserver.catalog.event.CatalogListener#handleRemoveEvent(org.geoserver.catalog.event.CatalogRemoveEvent)
      * @see GWC#removeTileLayers(List)
      */
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         CatalogInfo obj = event.getSource();
         if (!(obj instanceof LayerInfo || obj instanceof LayerGroupInfo)) {
@@ -670,6 +674,7 @@ public class CatalogLayerEventListener implements CatalogListener {
     }
 
     /** @see org.geoserver.catalog.event.CatalogListener#reloaded() */
+    @Override
     public void reloaded() {
         //
     }

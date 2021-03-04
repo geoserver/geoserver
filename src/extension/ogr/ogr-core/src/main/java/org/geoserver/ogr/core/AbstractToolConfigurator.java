@@ -43,6 +43,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     // ConfigurationPoller
     protected ResourceListener listener =
             new ResourceListener() {
+                @Override
                 public void changed(ResourceNotification notify) {
                     loadConfiguration();
                 }
@@ -148,6 +149,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     }
 
     /** Kill all threads on web app context shutdown to avoid permgen leaks */
+    @Override
     public void onApplicationEvent(ContextClosedEvent event) {
         if (configFile != null) {
             configFile.removeListener(listener);

@@ -23,23 +23,27 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
         myErrorCode = 200;
     }
 
+    @Override
     public void setStatus(int sc) {
         myErrorCode = sc;
         super.setStatus(sc);
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     public void setStatus(int sc, String sm) {
         myErrorCode = sc;
         super.setStatus(sc, sm);
     }
 
+    @Override
     public void sendError(int sc) throws IOException {
         error = true;
         myErrorCode = sc;
         super.sendError(sc);
     }
 
+    @Override
     public void sendError(int sc, String sm) throws IOException {
         error = true;
         myErrorCode = sc;

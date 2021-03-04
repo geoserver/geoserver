@@ -1569,6 +1569,7 @@ public class GetFeature {
         final FeatureType featureType = meta.getFeatureType();
         ExpressionVisitor visitor =
                 new AbstractExpressionVisitor() {
+                    @Override
                     public Object visit(PropertyName name, Object data) {
                         // case of multiple geometries being returned
                         if (name.evaluate(featureType) == null && !isGmlBoundedBy(name)) {
@@ -1591,6 +1592,7 @@ public class GetFeature {
         AbstractFilterVisitor fvisitor =
                 new AbstractFilterVisitor() {
 
+                    @Override
                     protected Object visit(BinarySpatialOperator filter, Object data) {
                         PropertyName name = null;
                         if (filter.getExpression1() instanceof PropertyName) {
@@ -1764,6 +1766,7 @@ public class GetFeature {
             this.request = request;
         }
 
+        @Override
         public Object visit(BBOX filter, Object data) {
             ReferencedEnvelope ex2Envelope =
                     filter.getExpression2().evaluate(null, ReferencedEnvelope.class);

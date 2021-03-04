@@ -57,6 +57,7 @@ public class GeoServerResourcePersister implements CatalogListener {
     @Override
     public void reloaded() {}
 
+    @Override
     public void handleModifyEvent(CatalogModifyEvent event) {
         Object source = event.getSource();
 
@@ -97,6 +98,7 @@ public class GeoServerResourcePersister implements CatalogListener {
         }
     }
 
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {

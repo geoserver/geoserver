@@ -54,6 +54,7 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
         return PasswordEncodingType.PLAIN;
     }
 
+    @Override
     public String decode(String encPass) throws UnsupportedOperationException {
         return removePrefix(encPass);
     }

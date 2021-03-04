@@ -66,6 +66,7 @@ public class SQLViewEditPage extends SQLViewAbstractPage {
         }
     }
 
+    @Override
     protected void onCancel() {
         setResponsePage(previusPage);
     }

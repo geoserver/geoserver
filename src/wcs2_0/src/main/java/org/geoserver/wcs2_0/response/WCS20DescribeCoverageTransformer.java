@@ -88,6 +88,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 wcsDescribeCoverageExtensions != null && !wcsDescribeCoverageExtensions.isEmpty();
     }
 
+    @Override
     public WCS20DescribeCoverageTranslator createTranslator(ContentHandler handler) {
         return new WCS20DescribeCoverageTranslator(handler);
     }

@@ -33,10 +33,12 @@ public class MemoryUserGroupServiceConfigImpl extends BaseSecurityNamedServiceCo
         this.toBeEncrypted = toBeEncrypted;
     }
 
+    @Override
     public String getPasswordPolicyName() {
         return passwordPolicyName;
     }
 
+    @Override
     public void setPasswordPolicyName(String passwordPolicyName) {
         this.passwordPolicyName = passwordPolicyName;
     }

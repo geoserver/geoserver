@@ -28,6 +28,7 @@ class FidTransformeVisitor extends DuplicatingFilterVisitor {
         this.map = map;
     }
 
+    @Override
     public Object visit(Id filter, Object extraData) {
         Set ids = filter.getIDs();
         if (ids.isEmpty()) {

@@ -15,5 +15,6 @@ import org.geoserver.catalog.CatalogInfo;
 public interface CatalogRemoveEvent extends CatalogEvent {
 
     /** the object that was removed. */
+    @Override
     CatalogInfo getSource();
 }

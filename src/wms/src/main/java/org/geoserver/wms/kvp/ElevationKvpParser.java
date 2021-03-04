@@ -25,6 +25,7 @@ public class ElevationKvpParser extends org.geoserver.ows.kvp.ElevationKvpParser
         this.wms = wms;
     }
 
+    @Override
     protected ElevationParser getElevationParser() {
         int maxRequestedDimensionValues = wms.getMaxRequestedDimensionValues();
         return new ElevationParser(maxRequestedDimensionValues);

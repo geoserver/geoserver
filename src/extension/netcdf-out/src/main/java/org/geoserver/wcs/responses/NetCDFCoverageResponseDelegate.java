@@ -73,6 +73,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 });
     }
 
+    @Override
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,

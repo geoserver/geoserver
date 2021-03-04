@@ -100,11 +100,13 @@ public abstract class XStreamCatalogListConverter
                 });
         xstream.registerConverter(
                 new Converter() {
+                    @Override
                     @SuppressWarnings("rawtypes")
                     public boolean canConvert(Class type) {
                         return clazz.isAssignableFrom(type);
                     }
 
+                    @Override
                     public void marshal(
                             Object source,
                             HierarchicalStreamWriter writer,
@@ -138,6 +140,7 @@ public abstract class XStreamCatalogListConverter
                         encodeLink(encode(ref), writer);
                     }
 
+                    @Override
                     public Object unmarshal(
                             HierarchicalStreamReader reader, UnmarshallingContext context) {
                         return null;

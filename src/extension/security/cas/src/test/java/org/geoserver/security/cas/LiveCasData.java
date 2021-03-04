@@ -160,6 +160,7 @@ public class LiveCasData extends LiveSystemTestData {
         return fixtureFile;
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return fixture != null;
     }
@@ -218,6 +219,7 @@ public class LiveCasData extends LiveSystemTestData {
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
         httpsServer.setHttpsConfigurator(
                 new HttpsConfigurator(sslContext) {
+                    @Override
                     public void configure(HttpsParameters params) {
                         try {
                             // initialise the SSL context

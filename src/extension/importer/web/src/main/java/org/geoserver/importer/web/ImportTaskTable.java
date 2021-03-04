@@ -192,16 +192,20 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             this.chained = model;
         }
 
+        @Override
         public void setObject(T object) {}
 
+        @Override
         public void detach() {
             chained.detach();
         }
 
+        @Override
         public void setChainedModel(IModel<?> model) {
             this.chained = model;
         }
 
+        @Override
         public IModel<?> getChainedModel() {
             return chained;
         }
@@ -213,6 +217,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             super(model);
         }
 
+        @Override
         public PackageResourceReference getObject() {
             ImportTask.State state = (ImportTask.State) chained.getObject();
             switch (state) {
@@ -267,6 +272,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             super(model);
         }
 
+        @Override
         public String getObject() {
             ImportTask.State state = (ImportTask.State) chained.getObject();
             return new StringResourceModel(state.name().toLowerCase(), ImportTaskTable.this, null)
@@ -403,6 +409,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
                             setResponsePage(
                                     new LayerPage(task.getLayer(), pp) {
+                                        @Override
                                         protected void onSuccessfulSave(boolean doReturn) {
                                             super.onSuccessfulSave(doReturn);
 

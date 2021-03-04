@@ -11,10 +11,12 @@ import org.geoserver.catalog.LayerInfo;
 @SuppressWarnings("serial")
 public class LayerChoiceRenderer extends ChoiceRenderer {
 
+    @Override
     public Object getDisplayValue(Object object) {
         return ((LayerInfo) object).getName();
     }
 
+    @Override
     public String getIdValue(Object object, int index) {
         return ((LayerInfo) object).getName();
     }

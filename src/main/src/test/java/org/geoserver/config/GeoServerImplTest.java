@@ -157,6 +157,7 @@ public class GeoServerImplTest {
         List<Object> sOldValues = new ArrayList<>();
         List<Object> sNewValues = new ArrayList<>();
 
+        @Override
         public void handleGlobalChange(
                 GeoServerInfo global,
                 List<String> propertyNames,
@@ -167,6 +168,7 @@ public class GeoServerImplTest {
             gNewValues.addAll(newValues);
         }
 
+        @Override
         public void handleServiceChange(
                 ServiceInfo service,
                 List<String> propertyNames,

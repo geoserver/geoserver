@@ -55,10 +55,12 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
         return defaultDMLFilename();
     }
 
+    @Override
     public String getGroupAdminRoleName() {
         return groupAdminRoleName;
     }
 
+    @Override
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }

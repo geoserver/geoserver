@@ -23,6 +23,7 @@ public class NamespaceInfoImpl implements NamespaceInfo {
 
     private boolean isolated;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -39,26 +40,32 @@ public class NamespaceInfoImpl implements NamespaceInfo {
         this._default = _default;
     }
 
+    @Override
     public String getPrefix() {
         return prefix;
     }
 
+    @Override
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
+    @Override
     public String getName() {
         return getPrefix();
     }
 
+    @Override
     public String getURI() {
         return uri;
     }
 
+    @Override
     public void setURI(String uri) {
         this.uri = uri;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -67,14 +74,17 @@ public class NamespaceInfoImpl implements NamespaceInfo {
         this.metadata = metadata;
     }
 
+    @Override
     public boolean isIsolated() {
         return isolated;
     }
 
+    @Override
     public void setIsolated(boolean isolated) {
         this.isolated = isolated;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -90,6 +100,7 @@ public class NamespaceInfoImpl implements NamespaceInfo {
                 .toString();
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -98,6 +109,7 @@ public class NamespaceInfoImpl implements NamespaceInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

@@ -47,6 +47,7 @@ public class MetadataLinkEditorTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new MetadataLinkEditor(id, new Model<>(featureType));
                             }

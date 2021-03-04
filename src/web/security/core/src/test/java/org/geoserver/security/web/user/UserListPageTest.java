@@ -22,18 +22,21 @@ import org.junit.Test;
 public class UserListPageTest extends AbstractTabbedListPageTest<GeoServerUser> {
     protected boolean withRoles = false;
 
+    @Override
     protected AbstractSecurityPage listPage(String serviceName) {
         AbstractSecurityPage result = initializeForUGServiceNamed(serviceName);
         tester.clickLink(getTabbedPanelPath() + ":tabs-container:tabs:1:link", true);
         return result;
     }
 
+    @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0)
             return new NewUserPage(getUserGroupServiceName()).setReturnPage(page);
         else return new NewUserPage((String) params[0]).setReturnPage(page);
     }
 
+    @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
             return new EditUserPage(getUserGroupServiceName(), new GeoServerUser("dummyuser"))

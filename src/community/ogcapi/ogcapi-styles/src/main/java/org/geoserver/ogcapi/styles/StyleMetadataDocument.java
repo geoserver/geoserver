@@ -186,6 +186,7 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
                 .map(s -> s.getDescription());
     }
 
+    @Override
     public String getId() {
         return id;
     }

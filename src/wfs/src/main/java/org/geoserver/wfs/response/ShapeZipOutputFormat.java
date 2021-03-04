@@ -104,10 +104,12 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     /** @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation) */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "application/zip";
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "SHAPE-ZIP";
     }
@@ -116,6 +118,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
      * We abuse this method to pre-discover the query typenames so we know what to set in the
      * content-disposition header.
      */
+    @Override
     protected boolean canHandleInternal(Operation operation) {
         return true;
     }
@@ -160,6 +163,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         return filename + (filename.endsWith(".zip") ? "" : ".zip");
     }
 
+    @Override
     public void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
@@ -231,6 +235,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
             final FilenameFilter filter =
                     new FilenameFilter() {
 
+                        @Override
                         public boolean accept(File dir, String name) {
                             name = name.toLowerCase();
                             return name.endsWith(".shp")
@@ -434,6 +439,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         return result != null ? result : Charset.forName("ISO-8859-1");
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }

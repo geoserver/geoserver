@@ -30,30 +30,37 @@ public class UserDetailsWrapper implements UserDetails {
         this.details = details;
     }
 
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return details.getAuthorities();
     }
 
+    @Override
     public String getPassword() {
         return details.getPassword();
     }
 
+    @Override
     public String getUsername() {
         return details.getUsername();
     }
 
+    @Override
     public boolean isAccountNonExpired() {
         return details.isAccountNonExpired();
     }
 
+    @Override
     public boolean isAccountNonLocked() {
         return details.isAccountNonLocked();
     }
 
+    @Override
     public boolean isCredentialsNonExpired() {
         return details.isCredentialsNonExpired();
     }
 
+    @Override
     public boolean isEnabled() {
         return details.isEnabled();
     }

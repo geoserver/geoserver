@@ -25,10 +25,12 @@ public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig
         passwordPolicyName = other.getPasswordPolicyName();
     }
 
+    @Override
     public String getPasswordPolicyName() {
         return passwordPolicyName;
     }
 
+    @Override
     public void setPasswordPolicyName(String passwordPolicyName) {
         this.passwordPolicyName = passwordPolicyName;
     }

@@ -35,6 +35,7 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
         super(NAME);
     }
 
+    @Override
     public Object evaluate(Object feature) {
         String arg0;
 

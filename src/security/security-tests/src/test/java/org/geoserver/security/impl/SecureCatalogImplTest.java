@@ -96,6 +96,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     public GeoServerExtensionsHelper.ExtensionsHelperRule extensions =
             new GeoServerExtensionsHelper.ExtensionsHelperRule();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

@@ -59,6 +59,7 @@ public class StyleInfoImpl implements StyleInfo {
         this.catalog = catalog;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -67,46 +68,57 @@ public class StyleInfoImpl implements StyleInfo {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }
 
+    @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
     }
 
+    @Override
     public String getFormat() {
         return format;
     }
 
+    @Override
     public void setFormat(String language) {
         this.format = language;
     };
 
+    @Override
     public Version getFormatVersion() {
         return languageVersion;
     }
 
+    @Override
     public void setFormatVersion(Version version) {
         this.languageVersion = version;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    @Override
     public Style getStyle() throws IOException {
         // for capability document request
         // remote style does not exist in local catalog
@@ -116,14 +128,17 @@ public class StyleInfoImpl implements StyleInfo {
         return catalog.getResourcePool().getStyle(this);
     }
 
+    @Override
     public StyledLayerDescriptor getSLD() throws IOException {
         return catalog.getResourcePool().getSld(this);
     }
 
+    @Override
     public LegendInfo getLegend() {
         return legend;
     }
 
+    @Override
     public void setLegend(LegendInfo legend) {
         this.legend = legend;
     }
@@ -143,10 +158,12 @@ public class StyleInfoImpl implements StyleInfo {
         if (metadata == null) metadata = new MetadataMap();
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -159,6 +176,7 @@ public class StyleInfoImpl implements StyleInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

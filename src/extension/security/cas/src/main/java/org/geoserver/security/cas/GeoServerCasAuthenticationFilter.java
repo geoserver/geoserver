@@ -171,6 +171,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         return serviceUrl;
     }
 
+    @Override
     protected String getPreAuthenticatedPrincipal(HttpServletRequest request) {
 
         String principal = super.getPreAuthenticatedPrincipal(request);

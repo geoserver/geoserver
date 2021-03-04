@@ -18,54 +18,63 @@ public interface WatermarkInfo extends Serializable {
     public static enum Position {
         TOP_LEFT {
 
+            @Override
             public int getCode() {
                 return 0;
             }
         },
         TOP_CENTER {
 
+            @Override
             public int getCode() {
                 return 1;
             }
         },
         TOP_RIGHT {
 
+            @Override
             public int getCode() {
                 return 2;
             }
         },
         MID_LEFT {
 
+            @Override
             public int getCode() {
                 return 3;
             }
         },
         MID_CENTER {
 
+            @Override
             public int getCode() {
                 return 4;
             }
         },
         MID_RIGHT {
 
+            @Override
             public int getCode() {
                 return 5;
             }
         },
         BOT_LEFT {
 
+            @Override
             public int getCode() {
                 return 6;
             }
         },
         BOT_CENTER {
 
+            @Override
             public int getCode() {
                 return 7;
             }
         },
         BOT_RIGHT {
 
+            @Override
             public int getCode() {
                 return 8;
             }

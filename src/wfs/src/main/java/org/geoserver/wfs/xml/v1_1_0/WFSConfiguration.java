@@ -76,6 +76,7 @@ public class WFSConfiguration extends Configuration {
         return WFSXmlUtils.getSrsSyntax(this);
     }
 
+    @Override
     protected void registerBindings(MutablePicoContainer container) {
         // Types
         container.registerComponentImplementation(WFS.ACTIONTYPE, ActionTypeBinding.class);
@@ -159,11 +160,13 @@ public class WFSConfiguration extends Configuration {
         return catalog;
     }
 
+    @Override
     public void addDependency(Configuration dependency) {
         // override to make public
         super.addDependency(dependency);
     }
 
+    @Override
     protected void configureContext(MutablePicoContainer context) {
         super.configureContext(context);
 

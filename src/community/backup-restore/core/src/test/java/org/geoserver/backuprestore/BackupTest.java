@@ -47,6 +47,7 @@ import org.springframework.batch.core.BatchStatus;
 /** @author Alessio Fabiani, GeoSolutions */
 public class BackupTest extends BackupRestoreTestSupport {
 
+    @Override
     @Before
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();

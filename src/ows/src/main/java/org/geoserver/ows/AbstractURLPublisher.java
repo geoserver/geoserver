@@ -52,6 +52,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class AbstractURLPublisher extends AbstractController {
 
+    @Override
     protected ModelAndView handleRequestInternal(
             HttpServletRequest request, HttpServletResponse response) throws Exception {
         URL url = getUrl(request);

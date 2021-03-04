@@ -84,6 +84,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                 });
     }
 
+    @Override
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,

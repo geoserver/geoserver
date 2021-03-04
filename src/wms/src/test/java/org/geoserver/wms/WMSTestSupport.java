@@ -327,6 +327,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
          * @author Andrea Aime - TOPP
          */
         class EmptyResolver implements org.xml.sax.EntityResolver {
+            @Override
             public InputSource resolveEntity(String publicId, String systemId)
                     throws org.xml.sax.SAXException, IOException {
                 StringReader reader =
@@ -373,6 +374,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
             Frame frame = new Frame(frameName);
             frame.addWindowListener(
                     new WindowAdapter() {
+                        @Override
                         public void windowClosing(WindowEvent e) {
                             e.getWindow().dispose();
                         }
@@ -380,6 +382,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
             Panel p = new Panel(null) { // no layout manager so it respects
                         // setSize
+                        @Override
                         public void paint(Graphics g) {
                             g.drawImage(image, 0, 0, this);
                         }

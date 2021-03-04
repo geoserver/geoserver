@@ -33,6 +33,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
         this.catalog = catalog;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // let super do its thing

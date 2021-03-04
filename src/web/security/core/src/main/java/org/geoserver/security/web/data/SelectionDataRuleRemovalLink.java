@@ -50,6 +50,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                 target,
                 delegate =
                         new GeoServerDialog.DialogDelegate() {
+                            @Override
                             protected Component getContents(String id) {
                                 // show a confirmation panel for all the objects we have to remove
                                 return removePanel =
@@ -63,6 +64,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                                         };
                             }
 
+                            @Override
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection

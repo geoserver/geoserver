@@ -142,6 +142,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForCreate() */
+    @Override
     protected String[] getOrderedNamesForCreate() {
         return new String[] {
             "users.create",
@@ -154,11 +155,13 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         };
     }
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForDrop() */
+    @Override
     protected String[] getOrderedNamesForDrop() {
         return new String[] {"groupmembers.drop", "groups.drop", "userprops.drop", "users.drop"};
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUserByUsername(java.lang.String) */
+    @Override
     public GeoServerUser getUserByUsername(String username) throws IOException {
 
         Connection con = null;
@@ -197,6 +200,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     /**
      * @see org.geoserver.security.GeoServerUserGroupService#getGroupByGroupname(java.lang.String)
      */
+    @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -223,6 +227,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUsers() */
+    @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -267,6 +272,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUserGroups() */
+    @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -298,6 +304,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String,
      *     java.lang.String, boolean)
      */
+    @Override
     public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException {
         GeoServerUser user = new GeoServerUser(username);
@@ -310,6 +317,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String,
      *     boolean)
      */
+    @Override
     public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
             throws IOException {
         GeoServerUserGroup group = new GeoServerUserGroup(groupname);
@@ -321,6 +329,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
      */
+    @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -353,6 +362,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#getUsersForGroup(org.geoserver.security.impl.GeoServerUserGroup)
      */
+    @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
@@ -400,6 +410,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         return Collections.unmodifiableSortedSet(users);
     }
 
+    @Override
     public int getUserCount() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -421,6 +432,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         return count;
     }
 
+    @Override
     public int getGroupCount() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -443,6 +455,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#load() */
+    @Override
     public void load() throws IOException {
         // do nothing
     }
@@ -451,6 +464,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.add(listener);
     }
@@ -459,6 +473,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.remove(listener);
     }

@@ -41,21 +41,25 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
         this.getMap = getMap;
     }
 
+    @Override
     public void addQueryLayer(Layer layer) {
         queryLayers.add(layer);
     }
 
+    @Override
     public void setQueryLayers(Set<Layer> layers) {
         queryLayers.clear();
         queryLayers.addAll(layers);
     }
 
+    @Override
     public void setQueryPoint(int x, int y) {
         this.x = x;
         this.y = y;
         delegate.setQueryPoint(x, y);
     }
 
+    @Override
     public URL getFinalURL() {
         // scan and check the layers
         for (Layer layer : queryLayers) {
@@ -96,38 +100,47 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
     // Pure delegate methods
     // ----------------------------------------------------------------------------------------
 
+    @Override
     public Response createResponse(HTTPResponse response) throws ServiceException, IOException {
         return delegate.createResponse(response);
     }
 
+    @Override
     public String getPostContentType() {
         return delegate.getPostContentType();
     }
 
+    @Override
     public Properties getProperties() {
         return delegate.getProperties();
     }
 
+    @Override
     public void performPostOutput(OutputStream outputStream) throws IOException {
         delegate.performPostOutput(outputStream);
     }
 
+    @Override
     public boolean requiresPost() {
         return delegate.requiresPost();
     }
 
+    @Override
     public void setFeatureCount(int featureCount) {
         delegate.setFeatureCount(featureCount);
     }
 
+    @Override
     public void setFeatureCount(String featureCount) {
         delegate.setFeatureCount(featureCount);
     }
 
+    @Override
     public void setInfoFormat(String infoFormat) {
         delegate.setInfoFormat(infoFormat);
     }
 
+    @Override
     public void setProperty(String name, String value) {
         delegate.setProperty(name, value);
     }

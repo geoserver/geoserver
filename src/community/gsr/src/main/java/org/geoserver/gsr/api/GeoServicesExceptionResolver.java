@@ -51,6 +51,7 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         return "/gsr".equals(request.getServletPath());
     }
 
+    @Override
     protected ModelAndView doResolveException(
             HttpServletRequest request,
             HttpServletResponse response,

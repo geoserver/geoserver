@@ -41,6 +41,7 @@ public class GeoServerRuntimException extends RuntimeException implements IGeoSe
         super(cause);
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -54,6 +55,7 @@ public class GeoServerRuntimException extends RuntimeException implements IGeoSe
         return this;
     }
 
+    @Override
     public Object[] getArgs() {
         return args;
     }

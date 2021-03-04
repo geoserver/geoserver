@@ -215,6 +215,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.test.NamespaceTestData#getNamespaces()
      */
+    @Override
     public Map<String, String> getNamespaces() {
         return Collections.unmodifiableMap(namespaces);
     }
@@ -282,6 +283,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#getDataDirectoryRoot()
      */
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
@@ -291,6 +293,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#isTestDataAvailable()
      */
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }
@@ -300,6 +303,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#setUp()
      */
+    @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws IOException {
         setUpCatalog();
@@ -317,6 +321,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#tearDown()
      */
+    @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         try {

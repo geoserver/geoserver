@@ -140,6 +140,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
      *
      * @return legend dimensions
      */
+    @Override
     public Dimension getLegendURLSize(StyleInfo style) throws Exception {
         synchronized (style) {
             GetLegendGraphicOutputFormat pngOutputFormat = new PNGLegendOutputFormat();

@@ -112,6 +112,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     }
 
     /** @see GetMapOutputFormat#produceMap(WMSMapContent) */
+    @Override
     public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         try {
             // create the template
@@ -340,6 +341,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
         return ((w > h) ? w : h) / 256;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

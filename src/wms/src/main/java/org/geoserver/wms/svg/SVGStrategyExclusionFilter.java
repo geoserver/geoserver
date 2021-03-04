@@ -47,6 +47,7 @@ public class SVGStrategyExclusionFilter implements ExtensionFilter, ApplicationC
      *     constructor
      * @see ApplicationContextAware#setApplicationContext(ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         this.ctx = ctx;
     }
@@ -56,6 +57,7 @@ public class SVGStrategyExclusionFilter implements ExtensionFilter, ApplicationC
      *     that shall be used as per {@link WMS#getSvgRenderer()}
      * @see ExtensionFilter#exclude(String, Object)
      */
+    @Override
     public boolean exclude(String beanId, Object bean) {
         boolean exclude = false;
         /*

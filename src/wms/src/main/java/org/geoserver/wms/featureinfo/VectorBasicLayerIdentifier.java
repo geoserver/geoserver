@@ -62,6 +62,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         this.wms = wms;
     }
 
+    @Override
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
             throws Exception {
         LOGGER.log(Level.FINER, "Appliying bbox based feature info identifier");

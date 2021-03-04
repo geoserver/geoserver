@@ -266,6 +266,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         }
     }
 
+    @Override
     protected void onBeforeRender() {
         tablePanel.clearSelection();
         removeLink.setEnabled(false);

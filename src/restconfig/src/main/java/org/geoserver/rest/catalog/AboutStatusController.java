@@ -113,6 +113,7 @@ public class AboutStatusController extends RestBaseController {
                             new CollectionModel(
                                     list,
                                     new BeansWrapper(FM_VERSION) {
+                                        @Override
                                         public TemplateModel wrap(Object object)
                                                 throws TemplateModelException {
                                             if (object instanceof ModuleStatus) {

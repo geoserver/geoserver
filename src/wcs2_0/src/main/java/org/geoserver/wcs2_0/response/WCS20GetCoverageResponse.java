@@ -38,6 +38,7 @@ public class WCS20GetCoverageResponse extends Response {
         this.responseFactory = responseFactory;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String format = getCoverage.getFormat();
@@ -69,6 +70,7 @@ public class WCS20GetCoverageResponse extends Response {
         return getCoverage.getMediaType() == null;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // grab the coverage
         GridCoverage2D coverage = (GridCoverage2D) value;

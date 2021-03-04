@@ -33,6 +33,7 @@ public class CheckBoxParamPanel extends Panel implements ParamPanel<Boolean> {
         add(checkBox);
     }
 
+    @Override
     public FormComponent<Boolean> getFormComponent() {
         return checkBox;
     }

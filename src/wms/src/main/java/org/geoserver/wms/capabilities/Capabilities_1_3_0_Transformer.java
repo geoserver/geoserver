@@ -280,6 +280,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param o the {@link GetCapabilitiesRequest}
          * @throws IllegalArgumentException if {@code o} is not of the expected type
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesRequest)) {
                 throw new IllegalArgumentException();
@@ -633,18 +634,22 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 try {
                     cp.encode(
                             new ExtendedCapabilitiesProvider.Translator() {
+                                @Override
                                 public void start(String element) {
                                     Capabilities_1_3_0_Translator.this.start(element);
                                 }
 
+                                @Override
                                 public void start(String element, Attributes attributes) {
                                     Capabilities_1_3_0_Translator.this.start(element, attributes);
                                 }
 
+                                @Override
                                 public void chars(String text) {
                                     Capabilities_1_3_0_Translator.this.chars(text);
                                 }
 
+                                @Override
                                 public void end(String element) {
                                     Capabilities_1_3_0_Translator.this.end(element);
                                 }
@@ -993,6 +998,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Collections.sort(
                     data,
                     new Comparator<LayerInfo>() {
+                        @Override
                         public int compare(LayerInfo o1, LayerInfo o2) {
                             return o1.getName().compareTo(o2.getName());
                         }

@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
 
+    @Override
     public Request init(Request request) {
         // see if we have an env map already parsed in the request
         Object obj = request.getKvp().get("env");
@@ -43,6 +44,7 @@ public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
         return request;
     }
 
+    @Override
     public void finished(Request request) {
         // clean up when we're done
         EnvFunction.clearLocalValues();

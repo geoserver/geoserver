@@ -99,6 +99,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             return 17 * code.hashCode();
         }
 
+        @Override
         public int compareTo(SRS o) {
             return code.compareTo(o.code);
         }
@@ -132,6 +133,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
                 public Comparator<SRS> getComparator() {
                     return new Comparator<SRS>() {
 
+                        @Override
                         public int compare(SRS o1, SRS o2) {
                             return String.CASE_INSENSITIVE_ORDER.compare(
                                     o1.getDescription(), o2.getDescription());
@@ -213,6 +215,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
      */
     private static class CodeComparator implements Comparator<SRS> {
 
+        @Override
         public int compare(SRS srs1, SRS srs2) {
             String s1 = srs1.getCode();
             String s2 = srs2.getCode();

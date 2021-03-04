@@ -128,6 +128,7 @@ public class RateFlowController implements FlowController {
         // nothing to do
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) {
         if (!matcher.apply(request)) {
             return true;

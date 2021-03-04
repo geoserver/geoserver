@@ -24,10 +24,12 @@ public class XMLRoleServiceConfig extends XMLSecurityServiceConfig
         groupAdminRoleName = other.getGroupAdminRoleName();
     }
 
+    @Override
     public String getGroupAdminRoleName() {
         return groupAdminRoleName;
     }
 
+    @Override
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }

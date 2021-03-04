@@ -52,6 +52,7 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serial
         add(feedback);
     }
 
+    @Override
     public DropDownChoice<Serializable> getFormComponent() {
         return choice;
     }

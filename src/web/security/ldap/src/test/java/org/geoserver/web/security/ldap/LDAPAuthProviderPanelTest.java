@@ -101,6 +101,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 7319919840443122283L;
 
+                            @Override
                             public Component buildComponent(String id) {
 
                                 return current = new LDAPAuthProviderPanel(id, new Model<>(config));

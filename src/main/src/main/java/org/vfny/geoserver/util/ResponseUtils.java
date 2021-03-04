@@ -157,6 +157,7 @@ public final class ResponseUtils {
             this.entityResolver = entityResolver;
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             if (skipTargetNamespaceException
                     && exception
@@ -169,10 +170,12 @@ public final class ResponseUtils {
             errors.add(exception);
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             errors.add(exception);
         }
 
+        @Override
         public void warning(SAXParseException exception) throws SAXException {
             // do nothing
         }

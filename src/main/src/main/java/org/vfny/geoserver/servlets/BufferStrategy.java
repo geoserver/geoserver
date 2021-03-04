@@ -21,6 +21,7 @@ import org.geoserver.ows.ServiceStrategy;
  * @author jgarnett
  */
 public class BufferStrategy implements ServiceStrategy {
+    @Override
     public String getId() {
         return "BUFFER";
     }
@@ -33,6 +34,7 @@ public class BufferStrategy implements ServiceStrategy {
      * @param response Response being processed.
      * @return A ByteArrayOutputStream for writeTo opperation.
      */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         buffer = new ByteArrayOutputStream(1024 * 1024);
 
@@ -44,6 +46,7 @@ public class BufferStrategy implements ServiceStrategy {
      *
      * @throws IOException If the response outputt stream is unavailable.
      */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         if ((buffer == null) || (response == null)) {
             return; // should we throw an Exception here
@@ -61,10 +64,12 @@ public class BufferStrategy implements ServiceStrategy {
      *
      * @see org.geoserver.ows.ServiceStrategy#abort()
      */
+    @Override
     public void abort() {
         buffer = null;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new BufferStrategy();
     }

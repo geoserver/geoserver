@@ -32,6 +32,7 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("bulkRun")) {
                     private static final long serialVersionUID = 4375160438369461475L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new BulkRunPanel(panelId);
                     }
@@ -40,6 +41,7 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("bulkImport")) {
                     private static final long serialVersionUID = 4375160438369461475L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new BulkImportPanel(panelId);
                     }
@@ -48,6 +50,7 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("bulkInitialize")) {
                     private static final long serialVersionUID = 4375160438369461475L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new BulkInitPanel(panelId);
                     }
@@ -57,6 +60,7 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
         add(form);
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.ADMIN;
     }

@@ -197,6 +197,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public int removeGranules(Filter filter) {
             return removeGranules(filter, new Hints());
         }

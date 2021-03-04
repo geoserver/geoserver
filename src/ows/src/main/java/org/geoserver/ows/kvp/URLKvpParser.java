@@ -24,6 +24,7 @@ public class URLKvpParser extends KvpParser {
         super(key, URL.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         try {
             return new URL(value);

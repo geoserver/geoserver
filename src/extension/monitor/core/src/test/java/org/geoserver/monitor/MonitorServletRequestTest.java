@@ -31,6 +31,7 @@ public class MonitorServletRequestTest {
 
         AtomicBoolean called = new AtomicBoolean(false);
 
+        @Override
         public javax.servlet.ServletInputStream getInputStream() {
             checkCalled();
             final ByteArrayInputStream bis = new ByteArrayInputStream(BUFFER);

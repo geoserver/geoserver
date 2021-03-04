@@ -163,6 +163,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                         store,
                         new EnabledStoresModel(workspace),
                         new StoreChoiceRenderer()) {
+                    @Override
                     protected String getNullValidKey() {
                         return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
                     };
@@ -182,10 +183,12 @@ public class ImportDataPage extends GeoServerSecuredPage {
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
 
                         // update status to indicate we are working
@@ -287,6 +290,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
         form.add(
                 new AjaxLink<Long>("cancel", new Model<>()) {
+                    @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
                         ImporterWebUtils.disableLink(tag);
@@ -329,6 +333,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                             }
                         },
                         true) {
+                    @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
                         removeImportLink.setEnabled(!getSelection().isEmpty());
                         target.add(removeImportLink);

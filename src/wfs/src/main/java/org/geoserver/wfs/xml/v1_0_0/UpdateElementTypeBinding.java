@@ -58,6 +58,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.UPDATEELEMENTTYPE;
     }
@@ -69,6 +70,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return UpdateElementType.class;
     }
@@ -80,6 +82,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         UpdateElementType updateElement = wfsfactory.createUpdateElementType();

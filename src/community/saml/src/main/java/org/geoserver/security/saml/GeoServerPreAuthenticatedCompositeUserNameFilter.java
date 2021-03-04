@@ -42,6 +42,7 @@ public abstract class GeoServerPreAuthenticatedCompositeUserNameFilter
             this.originalChain = chain;
         }
 
+        @Override
         public void doFilter(final ServletRequest request, final ServletResponse response)
                 throws IOException, ServletException {
 

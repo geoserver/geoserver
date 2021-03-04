@@ -507,6 +507,7 @@ public class TreeView<T> extends Panel {
             }
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public TreeNodeView getChildView(String id) {
             return (TreeNodeView) get("children").get(id);

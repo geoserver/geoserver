@@ -46,6 +46,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
 
     boolean dynamic = false;
 
+    @Override
     public void visit(Rule rule) {
         super.visit(rule);
         Rule copy = (Rule) pages.peek();

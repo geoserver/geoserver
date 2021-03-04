@@ -28,6 +28,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
     public WFSInfoImpl() {}
 
+    @Override
     public Map<Version, GMLInfo> getGML() {
         return gml;
     }
@@ -36,50 +37,61 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         this.gml = gml;
     }
 
+    @Override
     public ServiceLevel getServiceLevel() {
         return serviceLevel;
     }
 
+    @Override
     public void setServiceLevel(ServiceLevel serviceLevel) {
         this.serviceLevel = serviceLevel;
     }
 
+    @Override
     public void setMaxFeatures(int maxFeatures) {
         this.maxFeatures = maxFeatures;
     }
 
+    @Override
     public int getMaxFeatures() {
         return maxFeatures;
     }
 
+    @Override
     public void setFeatureBounding(boolean featureBounding) {
         this.featureBounding = featureBounding;
     }
 
+    @Override
     public boolean isFeatureBounding() {
         return featureBounding;
     }
 
     /** @see org.geoserver.wfs.WFSInfo#isCanonicalSchemaLocation() */
+    @Override
     public boolean isCanonicalSchemaLocation() {
         return canonicalSchemaLocation;
     }
 
     /** @see org.geoserver.wfs.WFSInfo#setCanonicalSchemaLocation(boolean) */
+    @Override
     public void setCanonicalSchemaLocation(boolean canonicalSchemaLocation) {
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
 
+    @Override
     public void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile) {
         this.includeWFSRequestDumpFile = includeWFSRequestDumpFile;
     }
 
+    @Override
     public boolean getIncludeWFSRequestDumpFile() {
         return includeWFSRequestDumpFile;
     }
     /*
      * @see org.geoserver.wfs.WFSInfo#isEncodingFeatureMember()
      */
+    @Override
     public boolean isEncodeFeatureMember() {
         return this.encodeFeatureMember;
     }
@@ -87,6 +99,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     /*
      * @see org.geoserver.wfs.WFSInfo#setEncodeFeatureMember(java.lang.Boolean)
      */
+    @Override
     public void setEncodeFeatureMember(boolean encodeFeatureMember) {
         this.encodeFeatureMember = encodeFeatureMember;
     }
@@ -112,6 +125,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         getMetadata().put("maxNumberOfFeaturesForPreview", maxNumberOfFeaturesForPreview);
     }
 
+    @Override
     public List<String> getSRS() {
         return srs;
     }

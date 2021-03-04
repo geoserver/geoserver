@@ -182,6 +182,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
             super(model, expression, target);
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public T getObject() {
             return (T)
@@ -189,6 +190,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                             .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
         }
 
+        @Override
         public void setObject(T object) {
             (model.getObject())
                     .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);

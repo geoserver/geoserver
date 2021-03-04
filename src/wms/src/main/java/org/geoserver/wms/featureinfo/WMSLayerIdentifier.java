@@ -57,6 +57,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
         this.wms = wms;
     }
 
+    @Override
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
             throws IOException {
         final int x = params.getX();
@@ -144,6 +145,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
         return results;
     }
 
+    @Override
     public boolean canHandle(MapLayerInfo layer) {
         return layer.getType() == MapLayerInfo.TYPE_WMS;
     }
@@ -189,6 +191,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
         return wms;
     }
 
+    @Override
     public SimpleFeatureCollection handleClipParam(
             FeatureInfoRequestParameters params, SimpleFeatureCollection fc) {
         Geometry clipGeometry = params.getGetMapRequest().getClip();

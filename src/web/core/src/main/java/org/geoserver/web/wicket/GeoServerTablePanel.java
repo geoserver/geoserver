@@ -767,14 +767,17 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             validateSelectionIndex(index);
         }
 
+        @Override
         public Boolean getObject() {
             return selection[index];
         }
 
+        @Override
         public void setObject(Boolean object) {
             selection[index] = object.booleanValue();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }

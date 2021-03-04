@@ -60,6 +60,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     public QuickTileCache(GeoServer geoServer) {
         geoServer.addListener(
                 new ConfigurationListenerAdapter() {
+                    @Override
                     public void handleGlobalChange(
                             GeoServerInfo global,
                             List<String> propertyNames,
@@ -68,6 +69,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
                         tileCache.clear();
                     }
 
+                    @Override
                     public void handleServiceChange(
                             ServiceInfo service,
                             List<String> propertyNames,
@@ -76,6 +78,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
                         tileCache.clear();
                     }
 
+                    @Override
                     public void reloaded() {
                         tileCache.clear();
                     }
@@ -225,6 +228,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
             this.origin = origin;
         }
 
+        @Override
         public int hashCode() {
             return new HashCodeBuilder()
                     .append(mapDefinition)
@@ -234,6 +238,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
                     .toHashCode();
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof MapKey)) {
                 return false;
@@ -248,6 +253,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
                     .isEquals();
         }
 
+        @Override
         public String toString() {
             return mapDefinition
                     + "\nw:"
@@ -288,10 +294,12 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
             return metaTileEnvelope;
         }
 
+        @Override
         public int hashCode() {
             return new HashCodeBuilder().append(mapKey).append(metaTileCoords).toHashCode();
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof MetaTileKey)) {
                 return false;
@@ -313,6 +321,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
             return 256;
         }
 
+        @Override
         public String toString() {
             return mapKey + "\nmtc:" + metaTileCoords.x + "," + metaTileCoords.y;
         }
@@ -356,6 +365,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         }
     }
 
+    @Override
     public void dataStoreChange(TransactionEvent event) throws WFSException {
         // if anything changes we just wipe out the cache. the mapkey
         // contains a string with part of the map request where the layer
@@ -375,6 +385,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         tileCache.clear();
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }

@@ -41,6 +41,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         xs.allowTypes(new Class[] {WFSInfo.Version.class, GMLInfo.class, GMLInfoImpl.class});
     }
 
+    @Override
     protected WFSInfo createServiceFromScratch(GeoServer gs) {
         WFSInfoImpl wfs = new WFSInfoImpl();
         wfs.setName("WFS");
@@ -57,6 +58,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         return wfs;
     }
 
+    @Override
     public Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;
     }

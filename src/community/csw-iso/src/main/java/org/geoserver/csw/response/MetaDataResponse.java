@@ -25,6 +25,7 @@ public class MetaDataResponse extends AbstractRecordsResponse {
         super(CSWRecordDescriptor.RECORD_TYPE, MetaDataDescriptor.NAMESPACE_GMD, gs);
     }
 
+    @Override
     protected void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
         MetaDataTransformer transformer =

@@ -67,6 +67,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                 target,
                 delegate =
                         new GeoServerDialog.DialogDelegate() {
+                            @Override
                             protected Component getContents(String id) {
                                 // show a confirmation panel for all the objects we have to remove
                                 Model<Boolean> model =
@@ -82,6 +83,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                                         };
                             }
 
+                            @Override
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection

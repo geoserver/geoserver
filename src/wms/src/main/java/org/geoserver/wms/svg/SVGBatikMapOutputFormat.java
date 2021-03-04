@@ -63,6 +63,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      * @return {@code ["image/svg+xml", "image/svg xml", "image/svg"]}
      * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
      */
+    @Override
     public Set<String> getOutputFormatNames() {
         return SVG.OUTPUT_FORMATS;
     }
@@ -71,11 +72,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      * @return {@code "image/svg+xml"}
      * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
      */
+    @Override
     public String getMimeType() {
         return SVG.MIME_TYPE;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public BatikSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
 
         StreamingRenderer renderer = setUpRenderer(mapContent);
@@ -207,6 +210,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         return SVGGeneratorContext.createDefault(document);
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

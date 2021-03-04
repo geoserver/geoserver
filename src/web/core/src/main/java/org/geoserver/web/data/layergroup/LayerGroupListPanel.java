@@ -48,6 +48,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
                         return Arrays.asList(NAME, WORKSPACE);
                     }
 
+                    @Override
                     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
                         return new LayerGroupDetachableModel(object);
                     }

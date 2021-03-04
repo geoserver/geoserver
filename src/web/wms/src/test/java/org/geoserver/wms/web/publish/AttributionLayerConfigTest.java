@@ -28,6 +28,7 @@ public class AttributionLayerConfigTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 6999752257807054508L;
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new AttributionLayerConfigPanel(id, publishedInfoModel);
                             }

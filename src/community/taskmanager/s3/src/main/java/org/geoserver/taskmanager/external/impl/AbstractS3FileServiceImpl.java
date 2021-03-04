@@ -226,6 +226,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService {
         this.prepareScript = prepareScript;
     }
 
+    @Override
     public List<String> getRoles() {
         return roles;
     }

@@ -96,9 +96,11 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     Map<String, Integer> handles = new HashMap<>();
 
     /** Create a new instance of the writer, using the given underlying writer. */
+    @Override
     public abstract DXFWriter newInstance(Writer writer);
 
     /** Verifies if the writer supports the request dxf version. */
+    @Override
     public boolean supportsVersion(String version) {
         if (version == null) return true;
         return false;
@@ -145,6 +147,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /** Performs the actual writing. Override it in the actual implementation class. */
+    @Override
     public abstract void write(List<SimpleFeatureCollection> featureList, String version)
             throws IOException;
 
@@ -410,6 +413,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /** Configure an option (usually got as a format option). */
+    @Override
     public void setOption(String optionName, Object optionValue) {
         if (optionName.equalsIgnoreCase("geometryasblock")) {
             setGeometryAsBlock(((Boolean) optionValue).booleanValue());

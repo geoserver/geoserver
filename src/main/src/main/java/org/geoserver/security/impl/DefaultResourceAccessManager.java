@@ -379,6 +379,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         return root;
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(
             Authentication user, LayerInfo layer, List<LayerGroupInfo> context) {
         final boolean directAccess = context == null || context.isEmpty();
@@ -389,6 +390,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         return buildLimits(layer.getResource().getClass(), readFilter, writeFilter);
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         boolean read = canAccess(user, resource, AccessMode.READ, true);
         boolean write = canAccess(user, resource, AccessMode.WRITE, true);
@@ -429,6 +431,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
+    @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         boolean readable = canAccess(user, workspace, AccessMode.READ);
         boolean writable = canAccess(user, workspace, AccessMode.WRITE);

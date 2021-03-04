@@ -23,6 +23,7 @@ public class Wcs10DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         super(DescribeCoverageType.class, Wcs10Factory.eINSTANCE);
     }
 
+    @Override
     public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
         // let super do its thing

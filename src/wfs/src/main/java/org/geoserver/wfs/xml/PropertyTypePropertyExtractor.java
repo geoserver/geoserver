@@ -35,10 +35,12 @@ public class PropertyTypePropertyExtractor implements PropertyExtractor {
         this.index = index;
     }
 
+    @Override
     public boolean canHandle(Object object) {
         return object instanceof PropertyType;
     }
 
+    @Override
     public List<Object[]> properties(Object object, XSDElementDeclaration element) {
         PropertyType property = (PropertyType) object;
 

@@ -172,6 +172,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
             return (String) obj;
         }
 
+        @Override
         public void setObject(String location) {
             if (location != null) {
                 if (!cog.getObject()) {

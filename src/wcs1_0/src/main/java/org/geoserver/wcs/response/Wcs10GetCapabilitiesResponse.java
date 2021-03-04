@@ -24,17 +24,20 @@ public class Wcs10GetCapabilitiesResponse extends Response {
     }
 
     /** Makes sure this triggers only */
+    @Override
     public boolean canHandle(Operation operation) {
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
                 && operation.getService().getId().equals("wcs")
                 && operation.getService().getVersion().toString().equals("1.0.0");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         // default
         return "application/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

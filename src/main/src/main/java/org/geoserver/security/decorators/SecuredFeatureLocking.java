@@ -33,10 +33,12 @@ public class SecuredFeatureLocking<T extends FeatureType, F extends Feature>
         this.lockDelegate = delegate;
     }
 
+    @Override
     public int lockFeatures() throws IOException {
         return lockFeatures(Filter.INCLUDE);
     }
 
+    @Override
     public int lockFeatures(Query query) throws IOException {
         Query writeQuery = getWriteQuery(policy);
         Query mixed = mixQueries(query, writeQuery);
@@ -51,10 +53,12 @@ public class SecuredFeatureLocking<T extends FeatureType, F extends Feature>
         }
     }
 
+    @Override
     public int lockFeatures(Filter filter) throws IOException {
         return lockDelegate.lockFeatures(new Query(null, filter));
     }
 
+    @Override
     public void setFeatureLock(FeatureLock lock) {
         Query writeQuery = getWriteQuery(policy);
         if (writeQuery.getFilter() == Filter.EXCLUDE) {
@@ -64,14 +68,17 @@ public class SecuredFeatureLocking<T extends FeatureType, F extends Feature>
         }
     }
 
+    @Override
     public void unLockFeatures() throws IOException {
         unLockFeatures(Query.ALL);
     }
 
+    @Override
     public void unLockFeatures(Filter filter) throws IOException {
         unLockFeatures(new Query(null, filter));
     }
 
+    @Override
     public void unLockFeatures(Query query) throws IOException {
         Query writeQuery = getWriteQuery(policy);
         Query mixed = mixQueries(query, writeQuery);

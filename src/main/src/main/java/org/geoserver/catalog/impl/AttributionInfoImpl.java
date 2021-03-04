@@ -21,54 +21,67 @@ public class AttributionInfoImpl implements AttributionInfo {
     private int logoHeight;
     private String logoType;
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public String getHref() {
         return href;
     }
 
+    @Override
     public String getLogoURL() {
         return logoURL;
     }
 
+    @Override
     public String getLogoType() {
         return logoType;
     }
 
+    @Override
     public int getLogoWidth() {
         return logoWidth;
     }
 
+    @Override
     public int getLogoHeight() {
         return logoHeight;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public void setHref(String href) {
         this.href = href;
     }
 
+    @Override
     public void setLogoURL(String logoURL) {
         this.logoURL = logoURL;
     }
 
+    @Override
     public void setLogoType(String type) {
         this.logoType = type;
     }
 
+    @Override
     public void setLogoWidth(int width) {
         this.logoWidth = width;
     }
 
+    @Override
     public void setLogoHeight(int height) {
         this.logoHeight = height;
     }
 
+    @Override
     public String getId() {
         return id;
     }

@@ -32,6 +32,7 @@ public class CDataEncoderDelegate implements EncoderDelegate {
         this.object = object;
     }
 
+    @Override
     public void encode(ContentHandler output) throws Exception {
         ((LexicalHandler) output).startCDATA();
         try (OutputStream os = new WriterOutputStream(new ContentHandlerWriter(output), "UTF-8")) {

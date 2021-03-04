@@ -83,6 +83,7 @@ public class DataLinkInfoImplTest {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         info.setContent("::^%/[*] FOO ::");
                     };
@@ -96,6 +97,7 @@ public class DataLinkInfoImplTest {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         info.setContent("https://example.com/::^%/[*] FOO ::");
                     };

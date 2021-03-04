@@ -15,6 +15,7 @@ public class ParamsExtractorRulePageTest extends GeoServerWicketTestSupport {
     private static final String BASIC_TRANSFORM = "CQL_FILTER=name%3D{PARAMETER}";
     private static final String COMPLEX_TRANSFORM = "CQL_FILTER=value%3D$1";
 
+    @Override
     @Before
     public void login() {
         super.login();

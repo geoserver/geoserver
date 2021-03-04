@@ -59,6 +59,7 @@ public class WCSMultipartResponse extends Response {
         return DISPOSITION_ATTACH;
     }
 
+    @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         final GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         final String identifier = request.getIdentifier().getValue();

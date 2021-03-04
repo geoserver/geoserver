@@ -66,6 +66,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Supports version if it's a number and equals to 14. */
+    @Override
     public boolean supportsVersion(String version) {
         if (super.supportsVersion(version)) return true;
         try {
@@ -77,6 +78,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Creates a new writer, using the given underlying writer. */
+    @Override
     public DXFWriter newInstance(Writer writer) {
         return new Rel14DXFWriter(writer);
     }
@@ -940,6 +942,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Description for the writer. */
+    @Override
     public String getDescription() {
         return "DXF Release 14";
     }

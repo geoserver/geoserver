@@ -38,6 +38,7 @@ public class GoogleAccessTokenConverter extends DefaultAccessTokenConverter {
      *
      * @param userTokenConverter the userTokenConverter to set
      */
+    @Override
     public final void setUserTokenConverter(UserAuthenticationConverter userTokenConverter) {
         this.userTokenConverter = userTokenConverter;
         super.setUserTokenConverter(userTokenConverter);

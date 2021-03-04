@@ -17,6 +17,7 @@ import org.opengis.feature.type.Name;
 public class RecordDescriptorsMap extends LinkedHashMap<Name, RecordDescriptor> {
     private static final long serialVersionUID = 335115347101959746L;
 
+    @Override
     public RecordDescriptor get(Object key) {
         if (!(key instanceof Name)) {
             return null;

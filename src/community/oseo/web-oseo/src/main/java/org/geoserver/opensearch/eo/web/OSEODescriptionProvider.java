@@ -17,6 +17,7 @@ import org.geotools.util.Version;
 public class OSEODescriptionProvider implements CapabilitiesHomePageLinkProvider {
 
     /** @see org.geoserver.web.CapabilitiesHomePageLinkProvider#getCapabilitiesComponent */
+    @Override
     public Component getCapabilitiesComponent(final String id) {
         List<CapsInfo> serviceInfoLinks = new ArrayList<CapabilitiesHomePagePanel.CapsInfo>();
         String capsLink = "../oseo/description";

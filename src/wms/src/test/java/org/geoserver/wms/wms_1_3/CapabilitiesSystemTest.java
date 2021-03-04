@@ -109,6 +109,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
         factory.setResourceResolver(
                 new LSResourceResolver() {
 
+                    @Override
                     public LSInput resolveResource(
                             String type,
                             String namespaceURI,

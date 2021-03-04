@@ -65,6 +65,7 @@ public class RelationshipControllerTest extends ControllerTest {
      * @param contentType
      * @return the servlet response
      */
+    @Override
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
         MockHttpServletRequest request = createRequest(path);

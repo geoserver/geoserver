@@ -74,6 +74,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
@@ -250,6 +251,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * back reference to the classloader that loaded it). The same happens for any residual thread
      * launched by the web app.
      */
+    @Override
     @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void contextDestroyed(ServletContextEvent sce) {
         try {

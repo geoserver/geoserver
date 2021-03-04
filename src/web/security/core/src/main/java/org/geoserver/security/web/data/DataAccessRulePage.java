@@ -149,10 +149,12 @@ public class DataAccessRulePage extends AbstractSecurityPage {
 
     class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
+        @Override
         public Object getDisplayValue(CatalogMode cm) {
             return new ParamResourceModel(cm.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(CatalogMode cm, int index) {
             return cm.name();
         }

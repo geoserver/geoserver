@@ -68,6 +68,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
     }
 
     /** Writes out an OWS ExceptionReport document. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         String version = null;
         if (useServiceVersion && request.getServiceDescriptor() != null) {

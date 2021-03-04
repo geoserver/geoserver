@@ -29,6 +29,7 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
         this.resourceFilePanel = resourceFilePanel;
     }
 
+    @Override
     public void setObject(T store) {
         super.setObject(store);
         if (store != null) {

@@ -123,11 +123,13 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Style) */
+    @Override
     public void visit(Style style) {
         style.featureTypeStyles().forEach(ft -> ft.accept(this));
     }
 
     /** @see StyleVisitor#visit(Rule) */
+    @Override
     public void visit(Rule rule) {
         Filter filter = rule.getFilter();
 
@@ -139,6 +141,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(FeatureTypeStyle) */
+    @Override
     public void visit(FeatureTypeStyle fts) {
         for (Rule rule : fts.rules()) {
             rule.accept(this);
@@ -146,6 +149,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Fill) */
+    @Override
     public void visit(Fill fill) {
         if (fill.getColor() != null) {
             fill.getColor().accept(this, Color.class);
@@ -161,6 +165,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Stroke) */
+    @Override
     public void visit(Stroke stroke) {
         if (stroke.getColor() != null) {
             stroke.getColor().accept(this, Color.class);
@@ -202,6 +207,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Symbolizer) */
+    @Override
     public void visit(Symbolizer sym) {
         if (sym instanceof PointSymbolizer) {
             visit((PointSymbolizer) sym);
@@ -224,6 +230,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         }
     }
 
+    @Override
     public void visit(RasterSymbolizer rs) {
         if (symbolizerGeometriesVisitEnabled) {
             if (rs.getGeometry() != null) {
@@ -241,6 +248,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(PointSymbolizer) */
+    @Override
     public void visit(PointSymbolizer ps) {
         if (symbolizerGeometriesVisitEnabled) {
             if (ps.getGeometry() != null) {
@@ -256,6 +264,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(LineSymbolizer) */
+    @Override
     public void visit(LineSymbolizer line) {
         if (symbolizerGeometriesVisitEnabled) {
             if (line.getGeometry() != null) {
@@ -275,6 +284,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(PolygonSymbolizer) */
+    @Override
     public void visit(PolygonSymbolizer poly) {
         if (symbolizerGeometriesVisitEnabled) {
             if (poly.getGeometry() != null) {
@@ -294,6 +304,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(TextSymbolizer) */
+    @Override
     public void visit(TextSymbolizer text) {
         if (symbolizerGeometriesVisitEnabled) {
             if (text.getGeometry() != null) {
@@ -451,6 +462,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Displacement) */
+    @Override
     public void visit(Displacement dis) {
         if (dis.getDisplacementX() != null) {
             dis.getDisplacementX().accept(this, Double.class);
@@ -462,6 +474,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(LinePlacement) */
+    @Override
     public void visit(LinePlacement lp) {
         if (lp.getPerpendicularOffset() != null) {
             lp.getPerpendicularOffset().accept(this, Double.class);
@@ -469,6 +482,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /** @see StyleVisitor#visit(Halo) */
+    @Override
     public void visit(Halo halo) {
         if (halo.getFill() != null) {
             halo.getFill().accept(this);

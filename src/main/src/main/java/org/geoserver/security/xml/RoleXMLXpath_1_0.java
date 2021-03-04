@@ -123,58 +123,72 @@ public class RoleXMLXpath_1_0 extends RoleXMLXpath {
         groupRolRefNameExpression = compileRelativeAttribute(xpath, A_ROLEREFID_RR, NSP_RR);
     }
 
+    @Override
     public XPathExpression getRoleListExpression() {
         return roleListExpression;
     }
 
+    @Override
     public XPathExpression getParentExpression() {
         return parentExpression;
     }
 
+    @Override
     public XPathExpression getRoleNameExpression() {
         return roleNameExpression;
     }
 
+    @Override
     public XPathExpression getRolePropertiesExpression() {
         return rolePropertiesExpression;
     }
 
+    @Override
     public XPathExpression getPropertyNameExpression() {
         return propertyNameExpression;
     }
 
+    @Override
     public XPathExpression getPropertyValueExpression() {
         return propertyValueExpression;
     }
 
+    @Override
     public XPathExpression getUserRolesExpression() {
         return userRolesExpression;
     }
 
+    @Override
     public XPathExpression getUserNameExpression() {
         return userNameExpression;
     }
 
+    @Override
     public XPathExpression getUserRolRefsExpression() {
         return userRolRefsExpression;
     }
 
+    @Override
     public XPathExpression getUserRolRefNameExpression() {
         return userRolRefNameExpression;
     }
 
+    @Override
     public XPathExpression getGroupRolesExpression() {
         return groupRolesExpression;
     }
 
+    @Override
     public XPathExpression getGroupNameExpression() {
         return groupNameExpression;
     }
 
+    @Override
     public XPathExpression getGroupRolRefsExpression() {
         return groupRolRefsExpression;
     }
 
+    @Override
     public XPathExpression getGroupRolRefNameExpression() {
         return groupRolRefNameExpression;
     }

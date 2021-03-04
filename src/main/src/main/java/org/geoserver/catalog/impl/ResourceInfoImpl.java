@@ -96,80 +96,99 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public Catalog getCatalog() {
         return catalog;
     }
 
+    @Override
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
     /** @see org.geoserver.catalog.ResourceInfo#getQualifiedName() */
+    @Override
     public Name getQualifiedName() {
         return new NameImpl(getNamespace().getURI(), getName());
     }
 
+    @Override
     public String getNativeName() {
         return nativeName;
     }
 
+    @Override
     public void setNativeName(String nativeName) {
         this.nativeName = nativeName;
     }
 
     /** @see org.geoserver.catalog.ResourceInfo#getQualifiedNativeName() */
+    @Override
     public Name getQualifiedNativeName() {
         return new NameImpl(getNamespace().getURI(), getNativeName());
     }
 
+    @Override
     public NamespaceInfo getNamespace() {
         return namespace;
     }
 
+    @Override
     public void setNamespace(NamespaceInfo namespace) {
         this.namespace = namespace;
     }
 
+    @Override
     public String prefixedName() {
         return getNamespace().getPrefix() + ":" + getName();
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getAbstract() {
         return _abstract;
     }
 
+    @Override
     public void setAbstract(String _abstract) {
         this._abstract = _abstract;
     }
 
+    @Override
     public List<KeywordInfo> getKeywords() {
         return keywords;
     }
@@ -178,6 +197,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.keywords = keywords;
     }
 
+    @Override
     public List<String> keywordValues() {
         List<String> values = new ArrayList<>();
         if (keywords != null) {
@@ -188,22 +208,27 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return values;
     }
 
+    @Override
     public List<MetadataLinkInfo> getMetadataLinks() {
         return metadataLinks;
     }
 
+    @Override
     public List<DataLinkInfo> getDataLinks() {
         return dataLinks;
     }
 
+    @Override
     public String getSRS() {
         return srs;
     }
 
+    @Override
     public void setSRS(String srs) {
         this.srs = srs;
     }
 
+    @Override
     public ReferencedEnvelope boundingBox() throws Exception {
         CoordinateReferenceSystem declaredCRS = getCRS();
         CoordinateReferenceSystem nativeCRS = getNativeCRS();
@@ -235,29 +260,35 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return ReferencedEnvelope.create(result);
     }
 
+    @Override
     public ReferencedEnvelope getLatLonBoundingBox() {
         return latLonBoundingBox;
     }
 
+    @Override
     public void setLatLonBoundingBox(ReferencedEnvelope box) {
         this.latLonBoundingBox = box;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
     /** @see ResourceInfo#enabled() */
+    @Override
     public boolean enabled() {
         StoreInfo store = getStore();
         boolean storeEnabled = store != null && store.isEnabled();
         return storeEnabled && this.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -274,14 +305,17 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.dataLinks = dataLinks;
     }
 
+    @Override
     public StoreInfo getStore() {
         return store;
     }
 
+    @Override
     public void setStore(StoreInfo store) {
         this.store = store;
     }
 
+    @Override
     public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
@@ -296,6 +330,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 .toString();
     }
 
+    @Override
     public List<String> getAlias() {
         return alias;
     }
@@ -304,6 +339,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.alias = alias;
     }
 
+    @Override
     public CoordinateReferenceSystem getCRS() {
         if (getSRS() == null) {
             return null;
@@ -318,26 +354,32 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         }
     }
 
+    @Override
     public ReferencedEnvelope getNativeBoundingBox() {
         return nativeBoundingBox;
     }
 
+    @Override
     public void setNativeBoundingBox(ReferencedEnvelope box) {
         this.nativeBoundingBox = box;
     }
 
+    @Override
     public CoordinateReferenceSystem getNativeCRS() {
         return nativeCRS;
     }
 
+    @Override
     public void setNativeCRS(CoordinateReferenceSystem nativeCRS) {
         this.nativeCRS = nativeCRS;
     }
 
+    @Override
     public ProjectionPolicy getProjectionPolicy() {
         return projectionPolicy;
     }
 
+    @Override
     public void setProjectionPolicy(ProjectionPolicy projectionPolicy) {
         this.projectionPolicy = projectionPolicy;
     }
@@ -395,6 +437,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.simpleConversionEnabled = simpleConversionEnabled;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

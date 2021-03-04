@@ -66,6 +66,7 @@ public class AuditTemplateLoader implements TemplateLoader {
         return null;
     }
 
+    @Override
     public Reader getReader(Object source, String encoding) throws IOException {
         if (source instanceof File) {
             // loaded from file

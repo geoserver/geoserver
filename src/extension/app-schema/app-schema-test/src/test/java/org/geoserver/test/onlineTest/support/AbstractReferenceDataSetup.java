@@ -41,18 +41,23 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
     protected static Map<String, Boolean> found = new HashMap<>();
 
     // The type of database to use.
+    @Override
     public abstract JDBCDataStoreFactory createDataStoreFactory();
 
     // Setup the data.
+    @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public abstract void setUp() throws Exception;
 
+    @Override
     protected abstract Properties createExampleFixture();
 
+    @Override
     public void setUpData() throws Exception {
         super.setUpData();
     }
 
+    @Override
     public void initializeDatabase() throws Exception {
         super.initializeDatabase();
     }

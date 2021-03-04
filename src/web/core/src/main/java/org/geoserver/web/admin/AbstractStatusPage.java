@@ -43,6 +43,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                         new AbstractTab(new Model<>("Status")) {
                             private static final long serialVersionUID = 9062803783143908814L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new StatusPanel(id, AbstractStatusPage.this);
                             }
@@ -52,6 +53,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                         new AbstractTab(new Model<>("Modules")) {
                             private static final long serialVersionUID = -5301288750339244612L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new ModuleStatusPanel(id, AbstractStatusPage.this);
                             }
@@ -61,6 +63,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                         new AbstractTab(new StringResourceModel("MonitoringPanel.title")) {
                             private static final long serialVersionUID = -5301288750339244612L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new SystemStatusMonitorPanel(id);
                             }
@@ -84,6 +87,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
                                                         -5301288750339244612L;
                                                 // create the extra tab panel passing down the
                                                 // container id
+                                                @Override
                                                 public Panel getPanel(String panelId) {
                                                     return tabDefinition.createPanel(
                                                             panelId, AbstractStatusPage.this);

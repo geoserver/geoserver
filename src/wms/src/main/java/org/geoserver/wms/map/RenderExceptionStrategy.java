@@ -75,6 +75,7 @@ public class RenderExceptionStrategy implements RenderListener {
      * Upon a render exception check if its cause is one that we actually want to ignore, and if not
      * abort the rendering process so the map producer can fail.
      */
+    @Override
     public void errorOccurred(final Exception renderException) {
 
         Throwable cause = renderException;
@@ -105,6 +106,7 @@ public class RenderExceptionStrategy implements RenderListener {
      *
      * @see RenderListener#featureRenderer(SimpleFeature)
      */
+    @Override
     public void featureRenderer(SimpleFeature feature) {
         // intentionally left blank
     }

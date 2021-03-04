@@ -165,6 +165,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
     }
 
     /** Initializes the DDL and DML property files based on the database type. */
+    @Override
     public void initBeforeSave() {
         if (propertyFileNameDDL == null) {
             propertyFileNameDDL = isMySQL() ? defaultDDLFilenameMySQL() : defaultDDLFilename();

@@ -17,6 +17,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
  */
 public class FeatureTypeInfoTitleComparator implements Comparator<FeatureTypeInfo> {
 
+    @Override
     public int compare(FeatureTypeInfo ft1, FeatureTypeInfo ft2) {
         // this will take care of null values as well
         return new CompareToBuilder().append(ft1.getTitle(), ft2.getTitle()).toComparison();

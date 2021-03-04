@@ -41,6 +41,7 @@ public class PositionType2DBinding extends AbstractSimpleBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.POSITIONTYPE2D;
     }
@@ -52,6 +53,7 @@ public class PositionType2DBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return null;
     }
@@ -63,6 +65,7 @@ public class PositionType2DBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         // TODO: implement
         return null;

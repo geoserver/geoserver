@@ -37,6 +37,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      * @throws ServiceException if an error occurs during rendering
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
+    @Override
     public EncodeHTMLImageMap produceMap(WMSMapContent mapContent)
             throws ServiceException, IOException {
         Assert.notNull(mapContent, "mapContent is not set");
@@ -47,6 +48,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      * @see GetMapOutputFormat#getOutputFormatNames()
      * @see #getMimeType()
      */
+    @Override
     public Set<String> getOutputFormatNames() {
         return Collections.singleton(MIME_TYPE);
     }
@@ -55,10 +57,12 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      * @return {@code text/html}
      * @see GetMapOutputFormat#getMimeType()
      */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

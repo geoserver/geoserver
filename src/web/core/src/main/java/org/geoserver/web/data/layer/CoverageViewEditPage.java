@@ -38,6 +38,7 @@ public class CoverageViewEditPage extends CoverageViewAbstractPage {
 
     private ResourceConfigurationPage previousPage;
 
+    @Override
     protected void onSave() {
         try {
             final Catalog catalog = getCatalog();
@@ -61,6 +62,7 @@ public class CoverageViewEditPage extends CoverageViewAbstractPage {
         }
     }
 
+    @Override
     protected void onCancel() {
         setResponsePage(previousPage);
     }

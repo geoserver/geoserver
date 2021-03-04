@@ -78,6 +78,7 @@ public class PipeliningTaskQueueTest {
             this.completed = completed;
         }
 
+        @Override
         public void run() {
             Random r = new Random();
             int x = r.nextInt(10) + 1;

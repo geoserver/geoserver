@@ -38,6 +38,7 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
         super(workspaceName, storeName, coverageName, coverageInfo);
     }
 
+    @Override
     protected void onSave() {
         try {
             if (name.equalsIgnoreCase(COVERAGE_VIEW_NAME)) {
@@ -65,6 +66,7 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
         }
     }
 
+    @Override
     protected void onCancel() {
         doReturn(LayerPage.class);
     }

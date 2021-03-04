@@ -84,6 +84,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
             this.list = list;
         }
 
+        @Override
         public int compare(MetadataTemplate obj1, MetadataTemplate obj2) {
             int priority1 = Integer.MAX_VALUE;
             if (obj1 != null) {

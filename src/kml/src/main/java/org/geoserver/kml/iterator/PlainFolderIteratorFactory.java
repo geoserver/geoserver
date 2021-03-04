@@ -43,6 +43,7 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
 
     public class PlainFolderGenerator extends AbstractFolderGenerator {
 
+        @Override
         protected void encodeFolderContents(Layer layer, Folder folder) {
             // now encode the contents (dynamic bit, it may use the Iterator construct)
             if (layer instanceof FeatureLayer) {

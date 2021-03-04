@@ -37,10 +37,12 @@ public class CoverageAccessPage extends ServerAdminPage {
 
         private static final long serialVersionUID = -3435198454570572665L;
 
+        @Override
         public FormComponent<?>[] getDependentFormComponents() {
             return null;
         }
 
+        @Override
         public void validate(Form<?> form) {
             // only validate on final submit
             if (form.findSubmittingButton() != form.get("submit")) {
@@ -179,10 +181,12 @@ public class CoverageAccessPage extends ServerAdminPage {
     private class QueueTypeRenderer extends ChoiceRenderer<QueueType> {
         private static final long serialVersionUID = -702911785346928083L;
 
+        @Override
         public String getDisplayValue(QueueType type) {
             return new StringResourceModel(type.name(), CoverageAccessPage.this, null).getString();
         }
 
+        @Override
         public String getIdValue(QueueType type, int index) {
             return type.name();
         }

@@ -151,10 +151,12 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
         private static final long serialVersionUID = -7146780173551842734L;
 
+        @Override
         public Object getDisplayValue(AdminGrantType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(AdminGrantType object, int index) {
             return object.name();
         }

@@ -82,6 +82,7 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         return super.getDatabaseName(cfg) + "_" + MapLayerInfo.getRegionateAttribute(cfg);
     }
 
+    @Override
     public FeatureIterator getSortedFeatures(
             GeometryDescriptor geom,
             ReferencedEnvelope latLongEnv,

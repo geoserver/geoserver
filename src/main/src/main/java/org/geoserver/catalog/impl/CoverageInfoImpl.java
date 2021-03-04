@@ -65,54 +65,67 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         super(catalog, id);
     }
 
+    @Override
     public CoverageStoreInfo getStore() {
         return (CoverageStoreInfo) super.getStore();
     }
 
+    @Override
     public GridGeometry getGrid() {
         return grid;
     }
 
+    @Override
     public void setGrid(GridGeometry grid) {
         this.grid = grid;
     }
 
+    @Override
     public String getNativeFormat() {
         return nativeFormat;
     }
 
+    @Override
     public void setNativeFormat(String nativeFormat) {
         this.nativeFormat = nativeFormat;
     }
 
+    @Override
     public List<String> getSupportedFormats() {
         return supportedFormats;
     }
 
+    @Override
     public List<String> getInterpolationMethods() {
         return interpolationMethods;
     }
 
+    @Override
     public String getDefaultInterpolationMethod() {
         return defaultInterpolationMethod;
     }
 
+    @Override
     public void setDefaultInterpolationMethod(String defaultInterpolationMethod) {
         this.defaultInterpolationMethod = defaultInterpolationMethod;
     }
 
+    @Override
     public List<CoverageDimensionInfo> getDimensions() {
         return dimensions;
     }
 
+    @Override
     public List<String> getRequestSRS() {
         return requestSRS;
     }
 
+    @Override
     public List<String> getResponseSRS() {
         return responseSRS;
     }
 
+    @Override
     public Map<String, Serializable> getParameters() {
         return parameters;
     }
@@ -121,6 +134,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         this.parameters = parameters;
     }
 
+    @Override
     public GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException {
 
         // manage projection policy
@@ -133,6 +147,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return catalog.getResourcePool().getGridCoverage(this, null, hints);
     }
 
+    @Override
     public GridCoverage getGridCoverage(
             ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException {
@@ -146,6 +161,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return catalog.getResourcePool().getGridCoverage(this, envelope, hints);
     }
 
+    @Override
     public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
             throws IOException {
         // manage projection policy
@@ -178,10 +194,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         this.responseSRS = responseSRS;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -205,6 +223,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof CoverageInfo)) {
             return false;
@@ -248,10 +267,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return true;
     }
 
+    @Override
     public String getNativeCoverageName() {
         return nativeCoverageName;
     }
 
+    @Override
     public void setNativeCoverageName(String nativeCoverageName) {
         this.nativeCoverageName = nativeCoverageName;
     }

@@ -131,6 +131,7 @@ public class CogRemoteHarvestOnlineTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("2", "count(//gf:emptycog)", dom);
     }
 
+    @Override
     @Before
     public void login() throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");

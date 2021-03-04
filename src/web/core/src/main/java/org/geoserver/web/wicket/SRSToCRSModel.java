@@ -25,6 +25,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
         this.srsModel = srsModel;
     }
 
+    @Override
     public CoordinateReferenceSystem getObject() {
         String srs = srsModel.getObject();
         if (srs == null || "UNKNOWN".equals(srs)) return null;
@@ -35,6 +36,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
         }
     }
 
+    @Override
     public void setObject(CoordinateReferenceSystem object) {
         CoordinateReferenceSystem crs = object;
         try {
@@ -47,6 +49,7 @@ public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
         }
     }
 
+    @Override
     public void detach() {
         srsModel.detach();
     }

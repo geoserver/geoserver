@@ -43,6 +43,7 @@ public class OseoGeoJSONCollectionConverter extends BaseMessageConverter<Object>
         return new FeatureJSON().readFeatureCollection(inputMessage.getBody());
     }
 
+    @Override
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
     }

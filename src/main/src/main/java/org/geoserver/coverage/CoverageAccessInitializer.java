@@ -32,6 +32,7 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
 
     GeoServer gs;
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         this.gs = geoServer;
         final GeoServerInfo geoserverInfo = geoServer.getGlobal();
@@ -45,6 +46,7 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
         geoServer.addListener(
                 new ConfigurationListenerAdapter() {
 
+                    @Override
                     public void handleGlobalChange(
                             GeoServerInfo global,
                             List<String> propertyNames,
@@ -137,6 +139,7 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
         }
     }
 
+    @Override
     public int getPriority() {
         return 0;
     }

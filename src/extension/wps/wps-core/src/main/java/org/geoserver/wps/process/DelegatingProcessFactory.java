@@ -33,47 +33,58 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
         this.delegate = delegate;
     }
 
+    @Override
     public Process create(Name name) {
         return delegate.create(name);
     }
 
+    @Override
     public InternationalString getDescription(Name name) {
         return delegate.getDescription(name);
     }
 
+    @Override
     public Map<Key, ?> getImplementationHints() {
         return delegate.getImplementationHints();
     }
 
+    @Override
     public Set<Name> getNames() {
         return delegate.getNames();
     }
 
+    @Override
     public Map<String, Parameter<?>> getParameterInfo(Name name) {
         return delegate.getParameterInfo(name);
     }
 
+    @Override
     public Map<String, Parameter<?>> getResultInfo(Name name, Map<String, Object> parameters)
             throws IllegalArgumentException {
         return delegate.getResultInfo(name, parameters);
     }
 
+    @Override
     public InternationalString getTitle() {
         return delegate.getTitle();
     }
 
+    @Override
     public InternationalString getTitle(Name name) {
         return delegate.getTitle(name);
     }
 
+    @Override
     public String getVersion(Name name) {
         return delegate.getVersion(name);
     }
 
+    @Override
     public boolean isAvailable() {
         return delegate.isAvailable();
     }
 
+    @Override
     public boolean supportsProgress(Name name) {
         return delegate.supportsProgress(name);
     }

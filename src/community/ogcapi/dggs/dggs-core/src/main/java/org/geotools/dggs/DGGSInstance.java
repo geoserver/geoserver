@@ -45,6 +45,7 @@ public interface DGGSInstance extends AutoCloseable {
     public String getIdentifier();
 
     /** Closes the {@link DGGSInstance} and the resources it is using */
+    @Override
     void close();
 
     /** Returns the list of resolution levels for this DGGS */

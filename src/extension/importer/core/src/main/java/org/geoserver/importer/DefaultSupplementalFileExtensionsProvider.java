@@ -29,11 +29,13 @@ public class DefaultSupplementalFileExtensionsProvider
         return extension != null && acceptedInputExtensions.contains(extension.toLowerCase());
     }
 
+    @Override
     public boolean canHandle(String baseExtension) {
         return baseExtension != null
                 && acceptedInputExtensions.contains(baseExtension.toLowerCase());
     }
 
+    @Override
     public Set<String> getExtensions(String baseExtension) {
         if (!isSupportedInputExtension(baseExtension)) return Collections.emptySet();
         // some data providers produce tiff files being stored as .TIF

@@ -60,10 +60,12 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         super(service);
     }
 
+    @Override
     protected Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;
     }
 
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
         // max features
@@ -82,6 +84,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         IModel gml2Model =
                 new LoadableDetachableModel() {
+                    @Override
                     public Object load() {
                         return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
                     }
@@ -89,6 +92,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         IModel gml3Model =
                 new LoadableDetachableModel() {
+                    @Override
                     public Object load() {
                         return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
                     }
@@ -246,6 +250,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         }
     }
 
+    @Override
     protected String getServiceName() {
         return "WFS";
     }

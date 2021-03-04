@@ -21,6 +21,7 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
+    @Override
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
 
         ((CommonJSONWriter) writer)

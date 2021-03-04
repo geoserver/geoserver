@@ -40,26 +40,32 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
         }
     }
 
+    @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         incrementSequence();
     }
 
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         incrementSequence();
     }
 
+    @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         // never mind: we need the Post event
     }
 
+    @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
         incrementSequence();
     }
 
+    @Override
     public void reloaded() {
         // never mind
     }
 
+    @Override
     public void handleGlobalChange(
             GeoServerInfo global,
             List<String> propertyNames,
@@ -93,6 +99,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
         incrementSequence();
     }
 
+    @Override
     public void handleLoggingChange(
             LoggingInfo logging,
             List<String> propertyNames,
@@ -101,18 +108,22 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
         // we don't update the sequence for a logging change, the client cannot notice it
     }
 
+    @Override
     public void handlePostGlobalChange(GeoServerInfo global) {
         incrementSequence();
     }
 
+    @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
         // we don't update the sequence for a logging change, the client cannot notice it
     }
 
+    @Override
     public void handlePostServiceChange(ServiceInfo service) {
         incrementSequence();
     }
 
+    @Override
     public void handleServiceChange(
             ServiceInfo service,
             List<String> propertyNames,

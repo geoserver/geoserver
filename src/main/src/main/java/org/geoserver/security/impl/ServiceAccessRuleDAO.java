@@ -56,6 +56,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     }
 
     /** Parses the rules contained in the property file */
+    @Override
     protected void loadRules(Properties props) {
         TreeSet<ServiceAccessRule> result = new TreeSet<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -121,6 +122,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     }
 
     /** Turns the rules list into a property bag */
+    @Override
     protected Properties toProperties() {
         Properties props = new Properties();
         for (ServiceAccessRule rule : rules) {

@@ -16,6 +16,7 @@ public abstract class PanelListPanel<T> extends Panel {
                 new ListView<T>("listview", list) {
                     private static final long serialVersionUID = -4770841274788269473L;
 
+                    @Override
                     protected void populateItem(ListItem<T> item) {
                         item.add(PanelListPanel.this.populateItem("panel", item.getModel()));
                     }

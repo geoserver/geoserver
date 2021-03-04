@@ -25,6 +25,7 @@ public class UserDetailsPasswordWrapper extends UserDetailsWrapper {
 
     private String password;
 
+    @Override
     public String getPassword() {
         return password;
     }

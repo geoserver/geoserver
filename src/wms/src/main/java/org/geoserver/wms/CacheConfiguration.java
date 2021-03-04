@@ -78,6 +78,7 @@ public class CacheConfiguration implements Cloneable, Serializable {
         return Objects.hash(enabled, maxEntries, maxEntrySize);
     }
 
+    @Override
     public Object clone() {
         return new CacheConfiguration(enabled, maxEntries, maxEntrySize);
     }

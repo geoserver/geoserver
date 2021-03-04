@@ -22,38 +22,48 @@ class DummyMonitorDAO implements MonitorDAO {
     @Override
     public void init(MonitorConfig config) {}
 
+    @Override
     public RequestData init(RequestData data) {
         request = data;
         return data;
     }
 
+    @Override
     public void add(RequestData data) {}
 
+    @Override
     public void update(RequestData data) {}
 
+    @Override
     public void save(RequestData data) {
         last = request;
         request = null;
     }
 
+    @Override
     public List<RequestData> getRequests() {
         return Arrays.asList(request);
     }
 
+    @Override
     public List<RequestData> getRequests(Query query) {
         return null;
     }
 
+    @Override
     public void getRequests(Query query, RequestDataVisitor visitor) {}
 
+    @Override
     public RequestData getRequest(long id) {
         return null;
     }
 
+    @Override
     public long getCount(Query query) {
         return 0;
     }
 
+    @Override
     public Iterator<RequestData> getIterator(Query query) {
         // TODO Auto-generated method stub
         return null;
@@ -85,15 +95,19 @@ class DummyMonitorDAO implements MonitorDAO {
         return last;
     }
 
+    @Override
     public List<RequestData> getOwsRequests() {
         return null;
     }
 
+    @Override
     public List<RequestData> getOwsRequests(String service, String operation, String version) {
         return null;
     }
 
+    @Override
     public void clear() {}
 
+    @Override
     public void dispose() {}
 }

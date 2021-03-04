@@ -120,6 +120,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                             IModel<String> pm = (IModel<String>) property.getModel(itemModel);
                             TextArea<String> roles =
                                     new TextArea<String>("roles", pm) {
+                                        @Override
                                         @SuppressWarnings("unchecked")
                                         public <C extends Object> IConverter<C> getConverter(
                                                 java.lang.Class<C> type) {
@@ -194,6 +195,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(submit);
         Button apply =
                 new Button("apply") {
+                    @Override
                     public void onSubmit() {
                         saveProcessFactories(false);
                     }
@@ -201,6 +203,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(apply);
         Button cancel =
                 new Button("cancel") {
+                    @Override
                     public void onSubmit() {
                         doReturn();
                     }
@@ -236,10 +239,12 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
 
     class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
+        @Override
         public Object getDisplayValue(CatalogMode object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(CatalogMode object, int index) {
             return object.name();
         }

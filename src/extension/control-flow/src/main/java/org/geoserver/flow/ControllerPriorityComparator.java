@@ -14,6 +14,7 @@ import java.util.Comparator;
  */
 public class ControllerPriorityComparator implements Comparator<FlowController> {
 
+    @Override
     public int compare(FlowController o1, FlowController o2) {
         return o1.getPriority() - o2.getPriority();
     }

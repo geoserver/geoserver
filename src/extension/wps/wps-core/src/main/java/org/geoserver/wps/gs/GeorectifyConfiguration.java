@@ -93,6 +93,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
             run();
         }
 
+        @Override
         public void run() {
             long newLastModified = configFile.lastmodified();
             if (lastModified == null || newLastModified != lastModified) {
@@ -325,6 +326,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
     }
 
     /** Kill all threads on web app context shutdown to avoid permgen leaks */
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextClosedEvent) {
             timer.cancel();

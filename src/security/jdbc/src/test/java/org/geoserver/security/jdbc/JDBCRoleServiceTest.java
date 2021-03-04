@@ -38,6 +38,7 @@ public abstract class JDBCRoleServiceTest extends AbstractRoleServiceTest {
         }
     }
 
+    @Override
     @Before
     public void init() throws IOException {
         Assume.assumeTrue(getTestData().isTestDataAvailable());
@@ -46,6 +47,7 @@ public abstract class JDBCRoleServiceTest extends AbstractRoleServiceTest {
         store = createStore(service);
     }
 
+    @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
         return JDBCTestSupport.createRoleService(
                 getFixtureId(), (LiveDbmsDataSecurity) getTestData(), getSecurityManager());

@@ -34,10 +34,12 @@ public class KeyAuthenticationToken extends AbstractAuthenticationToken {
         setAuthenticated(true);
     }
 
+    @Override
     public Object getCredentials() {
         return key;
     }
 
+    @Override
     public Object getPrincipal() {
         return ((UserDetails) getDetails()).getUsername();
     }

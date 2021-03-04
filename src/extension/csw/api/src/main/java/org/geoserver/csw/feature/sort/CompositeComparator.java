@@ -22,6 +22,7 @@ class CompositeComparator<T> implements Comparator<T> {
         this.comparators = comparators;
     }
 
+    @Override
     public int compare(T f1, T f2) {
         for (Comparator<T> comp : comparators) {
             int result = comp.compare(f1, f2);

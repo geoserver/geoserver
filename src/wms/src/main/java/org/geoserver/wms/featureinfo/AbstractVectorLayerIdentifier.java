@@ -23,6 +23,7 @@ abstract class AbstractVectorLayerIdentifier
 
     private static final double TOLERANCE = 1e-6;
 
+    @Override
     public boolean canHandle(MapLayerInfo layer) {
         int type = layer.getType();
         return type == MapLayerInfo.TYPE_VECTOR || type == MapLayerInfo.TYPE_REMOTE_VECTOR;
@@ -45,6 +46,7 @@ abstract class AbstractVectorLayerIdentifier
         return result;
     }
 
+    @Override
     public FeatureSource<? extends FeatureType, ? extends Feature> handleClipParam(
             FeatureInfoRequestParameters params,
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {

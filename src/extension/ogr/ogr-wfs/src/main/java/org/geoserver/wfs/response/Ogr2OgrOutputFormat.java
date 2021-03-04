@@ -135,6 +135,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     /** @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation) */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();

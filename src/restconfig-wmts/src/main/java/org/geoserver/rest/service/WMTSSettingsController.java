@@ -45,6 +45,7 @@ public class WMTSSettingsController extends ServiceSettingsController<WMTSInfo> 
         super(geoServer, WMTSInfo.class);
     }
 
+    @Override
     @PutMapping(
         value = {"/settings", "/workspaces/{workspaceName}/settings"},
         consumes = {

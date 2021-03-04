@@ -68,10 +68,12 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         this.filterFactory = filterFactory;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
 
+    @Override
     public WFSInfo getServiceInfo() {
         return geoServer.getService(WFSInfo.class);
     }
@@ -87,6 +89,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
                 geoServer.getGlobal().isAllowStoredQueriesPerWorkspace());
     }
 
+    @Override
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
         return new GetCapabilities(
                         getServiceInfo(),
@@ -95,12 +98,14 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
                 .run(new GetCapabilitiesRequest.WFS20(request));
     }
 
+    @Override
     public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request)
             throws WFSException {
         return new DescribeFeatureType(getServiceInfo(), getCatalog())
                 .run(new DescribeFeatureTypeRequest.WFS20(request));
     }
 
+    @Override
     public FeatureCollectionResponse getFeature(GetFeatureType request) throws WFSException {
         GetFeature gf = new GetFeature(getServiceInfo(), getCatalog());
         gf.setFilterFactory(filterFactory);
@@ -109,6 +114,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         return gf.run(new GetFeatureRequest.WFS20(request));
     }
 
+    @Override
     public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
             throws WFSException {
         return getFeature(request);
@@ -119,6 +125,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         return new GetPropertyValue(getServiceInfo(), getCatalog(), filterFactory).run(request);
     }
 
+    @Override
     public LockFeatureResponseType lockFeature(LockFeatureType request) throws WFSException {
         LockFeature lockFeature = new LockFeature(getServiceInfo(), getCatalog(), filterFactory);
         LockFeatureRequest.WFS20 requestWrapper = new LockFeatureRequest.WFS20(request);
@@ -172,6 +179,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         }
     }
 
+    @Override
     public TransactionResponseType transaction(TransactionType request) throws WFSException {
         Transaction tx = new Transaction(getServiceInfo(), getCatalog(), context);
         tx.setFilterFactory(filterFactory);
@@ -180,26 +188,31 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
                 tx.transaction(new TransactionRequest.WFS20(request)).getAdaptee();
     }
 
+    @Override
     public ListStoredQueriesResponseType listStoredQueries(ListStoredQueriesType request)
             throws WFSException {
         return new ListStoredQueries(getCatalog(), getStoredQueryProvider()).run(request);
     }
 
+    @Override
     public DescribeStoredQueriesResponseType describeStoredQueries(
             DescribeStoredQueriesType request) throws WFSException {
         return new DescribeStoredQueries(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
 
+    @Override
     public CreateStoredQueryResponseType createStoredQuery(CreateStoredQueryType request)
             throws WFSException {
         return new CreateStoredQuery(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
 
+    @Override
     public ExecutionStatusType dropStoredQuery(DropStoredQueryType request) throws WFSException {
         return new DropStoredQuery(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
 
     // the following operations are not part of the spec
+    @Override
     public void releaseLock(String lockId) throws WFSException {
         new LockFeature(getServiceInfo(), getCatalog()).release(lockId);
     }

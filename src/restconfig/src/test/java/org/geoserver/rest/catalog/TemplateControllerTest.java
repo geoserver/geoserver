@@ -20,12 +20,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TemplateControllerTest extends CatalogRESTTestSupport {
 
+    @Override
     public void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
 
         testData.setUpDefaultRasterLayers();
     }
 
+    @Override
     @Before
     public void login() throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");

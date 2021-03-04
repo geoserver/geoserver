@@ -64,6 +64,7 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
 
         ListFeatureCollection visitorCollection =
                 new ListFeatureCollection(ft) {
+                    @Override
                     public void accepts(FeatureVisitor visitor, ProgressListener progress) {
                         lastVisitor = visitor;
                     };

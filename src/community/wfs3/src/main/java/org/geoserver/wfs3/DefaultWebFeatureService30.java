@@ -227,6 +227,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return new TilingSchemeDescriptionDocument(request.getGridSet());
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         extensions = GeoServerExtensions.extensions(WFS3Extension.class, context);
     }

@@ -38,6 +38,7 @@ import org.opengis.filter.sort.SortBy;
 class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
     private final class ResourceFilterVisitor extends DuplicatingFilterVisitor {
+        @Override
         public Object visit(PropertyName expression, Object extraData) {
             return getFactory(extraData)
                     .property(

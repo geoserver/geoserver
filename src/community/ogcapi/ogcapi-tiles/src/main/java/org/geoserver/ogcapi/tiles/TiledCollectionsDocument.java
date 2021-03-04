@@ -43,6 +43,7 @@ public class TiledCollectionsDocument extends AbstractDocument {
         addSelfLinks("ogc/tiles/collections/");
     }
 
+    @Override
     public List<Link> getLinks() {
         return links;
     }

@@ -56,6 +56,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
+    @Override
     public void handlePostServiceChange(ServiceInfo service) {
         XStreamServiceLoader<ServiceInfo> loader = findServiceLoader(service);
 
@@ -71,6 +72,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
+    @Override
     public void handleServiceRemove(ServiceInfo service) {
         XStreamServiceLoader loader = findServiceLoader(service);
         try {

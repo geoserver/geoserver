@@ -13,10 +13,12 @@ public class ReleaseLockKvpRequestReader extends KvpRequestReader {
         super(String.class);
     }
 
+    @Override
     public Object createRequest() throws Exception {
         return "";
     }
 
+    @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         return kvp.get("lockId");
     }

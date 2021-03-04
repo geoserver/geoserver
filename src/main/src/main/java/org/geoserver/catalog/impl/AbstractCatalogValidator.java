@@ -22,17 +22,24 @@ import org.geoserver.catalog.WorkspaceInfo;
  */
 public abstract class AbstractCatalogValidator implements CatalogValidator {
 
+    @Override
     public void validate(ResourceInfo resource, boolean isNew) {}
 
+    @Override
     public void validate(StoreInfo store, boolean isNew) {}
 
+    @Override
     public void validate(WorkspaceInfo workspace, boolean isNew) {}
 
+    @Override
     public void validate(LayerInfo layer, boolean isNew) {}
 
+    @Override
     public void validate(StyleInfo style, boolean isNew) {}
 
+    @Override
     public void validate(LayerGroupInfo layerGroup, boolean isNew) {}
 
+    @Override
     public void validate(NamespaceInfo namespace, boolean isNew) {}
 }

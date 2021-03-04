@@ -50,6 +50,7 @@ public class QNameKvpParser extends FlatKvpParser {
      * <p>If the latter form is supplied the QName is given the default namespace as specified in
      * the catalog.
      */
+    @Override
     protected Object parseToken(String token) throws Exception {
         int i = token.indexOf(':');
 

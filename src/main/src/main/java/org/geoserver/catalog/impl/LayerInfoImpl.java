@@ -172,6 +172,7 @@ public class LayerInfoImpl implements LayerInfo {
         this.defaultStyle = defaultStyle;
     }
 
+    @Override
     public Set<StyleInfo> getStyles() {
         if (getResource() instanceof WMSLayerInfo) {
             Set<StyleInfo> remoteStyles = ((WMSLayerInfo) getResource()).getStyles();

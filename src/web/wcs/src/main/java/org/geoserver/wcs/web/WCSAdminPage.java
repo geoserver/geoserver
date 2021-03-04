@@ -38,10 +38,12 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         super(service);
     }
 
+    @Override
     protected Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }
 
+    @Override
     protected void build(IModel info, Form form) {
         // overview policy
         form.add(
@@ -74,16 +76,19 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         form.add(new CheckBox("latLon"));
     }
 
+    @Override
     protected String getServiceName() {
         return "WCS";
     }
 
     private class OverviewPolicyRenderer extends ChoiceRenderer<OverviewPolicy> {
 
+        @Override
         public Object getDisplayValue(OverviewPolicy object) {
             return new StringResourceModel(object.name(), WCSAdminPage.this, null).getString();
         }
 
+        @Override
         public String getIdValue(OverviewPolicy object, int index) {
             return object.name();
         }

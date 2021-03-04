@@ -1259,6 +1259,7 @@ public class GeofenceAccessManager
             super(WMS.get());
         }
 
+        @Override
         public List<Object> parseLayers(
                 List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
             try {

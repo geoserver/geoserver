@@ -21,10 +21,12 @@ public class CyclicalList<T> extends java.util.ArrayList<T> {
         return index;
     }
 
+    @Override
     public T get(int index) {
         return super.get(wrapIndex(index));
     }
 
+    @Override
     public T set(int index, T value) {
         return super.set(wrapIndex(index), value);
     }

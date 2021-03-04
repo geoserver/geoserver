@@ -216,10 +216,12 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
     /** Makes sure we see translated text, by the raw name is used for the model */
     class AccessModeRenderer extends ChoiceRenderer<AccessMode> {
 
+        @Override
         public Object getDisplayValue(AccessMode object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(AccessMode object, int index) {
             return object.name();
         }

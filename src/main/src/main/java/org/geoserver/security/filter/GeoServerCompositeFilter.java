@@ -37,6 +37,7 @@ public class GeoServerCompositeFilter extends GeoServerSecurityFilter {
             this.originalChain = chain;
         }
 
+        @Override
         public void doFilter(final ServletRequest request, final ServletResponse response)
                 throws IOException, ServletException {
 

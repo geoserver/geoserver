@@ -38,11 +38,13 @@ public class GeoServerLoaderProxy
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.loader = lookupGeoServerLoader(applicationContext);
         loader.setApplicationContext(applicationContext);
     }
 
+    @Override
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
         if (loader != null) {
@@ -51,6 +53,7 @@ public class GeoServerLoaderProxy
         return bean;
     }
 
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName)
             throws BeansException {
         if (loader != null) {
@@ -65,6 +68,7 @@ public class GeoServerLoaderProxy
         }
     }
 
+    @Override
     public void destroy() throws Exception {
         if (loader != null) {
             loader.destroy();

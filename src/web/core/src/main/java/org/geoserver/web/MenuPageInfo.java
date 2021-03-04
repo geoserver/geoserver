@@ -61,6 +61,7 @@ public class MenuPageInfo<T extends GeoServerBasePage> extends ComponentInfo<T>
         return order;
     }
 
+    @Override
     public int compareTo(MenuPageInfo<T> other) {
         return getOrder() - other.getOrder();
     }

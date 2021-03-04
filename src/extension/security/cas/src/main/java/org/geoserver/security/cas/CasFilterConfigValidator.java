@@ -70,6 +70,7 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
         }
     }
 
+    @Override
     protected CasFilterConfigException createFilterException(String errorid, Object... args) {
         return new CasFilterConfigException(errorid, args);
     }

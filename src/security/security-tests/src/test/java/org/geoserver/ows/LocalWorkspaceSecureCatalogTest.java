@@ -37,6 +37,7 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     @Rule
     public PropertyRule inheritance = PropertyRule.system("GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT");
 
+    @Override
     @Before
     public void setUp() throws Exception {
         LocalWorkspaceCatalogFilter.groupInherit = null;

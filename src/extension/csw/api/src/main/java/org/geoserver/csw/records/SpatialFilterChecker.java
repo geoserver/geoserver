@@ -58,56 +58,67 @@ public class SpatialFilterChecker extends DefaultFilterVisitor {
         }
     }
 
+    @Override
     public Object visit(final BBOX filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Beyond filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Contains filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Crosses filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Disjoint filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(DWithin filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Equals filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Intersects filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Overlaps filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Touches filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
+    @Override
     public Object visit(Within filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;

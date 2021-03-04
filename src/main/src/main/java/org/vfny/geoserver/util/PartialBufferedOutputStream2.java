@@ -114,6 +114,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * Remember that b is treated as a byte, the 8 low-order bits are read,
      * and the 24 remaining high-order bits of b are ignored.
      */
+    @Override
     public synchronized void write(int b) throws IOException {
         if (closed) {
             return;
@@ -123,6 +124,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
         currentStream.write(b);
     }
 
+    @Override
     public void write(byte[] b) throws IOException {
         if (closed) {
             return;
@@ -132,6 +134,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
         currentStream.write(b);
     }
 
+    @Override
     public void write(byte[] b, int off, int len) throws IOException {
         if (closed) {
             return;
@@ -160,6 +163,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * If the buffer is not maxed yet, it won't flush. If this is really needed,
      * call forceFlush
      */
+    @Override
     public synchronized void flush() throws IOException {
         if (closed) {
             return;
@@ -181,6 +185,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * Closes the stream. If we're still working against the in memory buffer that will be written
      * out before close occurs
      */
+    @Override
     public void close() throws IOException {
         if (closed) {
             return;

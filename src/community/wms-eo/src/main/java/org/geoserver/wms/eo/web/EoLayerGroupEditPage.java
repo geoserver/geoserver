@@ -61,6 +61,7 @@ public class EoLayerGroupEditPage extends EoLayerGroupAbstractPage {
         }
     }
 
+    @Override
     protected void onSubmit(LayerGroupInfo lg) {
         getCatalog().save(lg);
         doReturn();

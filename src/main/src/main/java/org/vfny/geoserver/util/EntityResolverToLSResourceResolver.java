@@ -25,42 +25,52 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
             this.delegate = is;
         }
 
+        @Override
         public void setPublicId(String publicId) {
             delegate.setPublicId(publicId);
         }
 
+        @Override
         public String getPublicId() {
             return delegate.getPublicId();
         }
 
+        @Override
         public void setSystemId(String systemId) {
             delegate.setSystemId(systemId);
         }
 
+        @Override
         public String getSystemId() {
             return delegate.getSystemId();
         }
 
+        @Override
         public void setByteStream(InputStream byteStream) {
             delegate.setByteStream(byteStream);
         }
 
+        @Override
         public InputStream getByteStream() {
             return delegate.getByteStream();
         }
 
+        @Override
         public void setEncoding(String encoding) {
             delegate.setEncoding(encoding);
         }
 
+        @Override
         public String getEncoding() {
             return delegate.getEncoding();
         }
 
+        @Override
         public void setCharacterStream(Reader characterStream) {
             delegate.setCharacterStream(characterStream);
         }
 
+        @Override
         public Reader getCharacterStream() {
             return delegate.getCharacterStream();
         }

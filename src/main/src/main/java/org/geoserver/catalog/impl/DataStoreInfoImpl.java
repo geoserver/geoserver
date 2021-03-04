@@ -28,15 +28,18 @@ public class DataStoreInfoImpl extends StoreInfoImpl implements DataStoreInfo {
         super(catalog, id);
     }
 
+    @Override
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
             ProgressListener listener) throws IOException {
         return catalog.getResourcePool().getDataStore(this);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
     public boolean equals(Object obj) {
         if (!(obj instanceof DataStoreInfo)) {

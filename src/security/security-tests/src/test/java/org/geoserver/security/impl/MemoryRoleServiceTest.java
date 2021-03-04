@@ -38,6 +38,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         return service;
     }
 
+    @Override
     @Before
     public void init() throws IOException {
         service = createRoleService("test");
@@ -48,6 +49,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
     //        store.clear();
     //    }
 
+    @Override
     @Test
     public void testInsert() throws Exception {
         super.testInsert();

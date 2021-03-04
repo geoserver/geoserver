@@ -19,6 +19,7 @@ public class ColorKvpParser extends KvpParser {
         super(key, Color.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         try {
             return Color.decode(value);

@@ -23,6 +23,7 @@ import org.junit.Test;
 public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserGroup> {
     protected boolean withRoles = false;
 
+    @Override
     protected AbstractSecurityPage listPage(String serviceName) {
 
         AbstractSecurityPage result = initializeForUGServiceNamed(serviceName);
@@ -30,12 +31,14 @@ public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserG
         return result;
     }
 
+    @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0)
             return new NewGroupPage(getUserGroupServiceName()).setReturnPage(page);
         else return new NewGroupPage((String) params[0]).setReturnPage(page);
     }
 
+    @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
             return new EditGroupPage(

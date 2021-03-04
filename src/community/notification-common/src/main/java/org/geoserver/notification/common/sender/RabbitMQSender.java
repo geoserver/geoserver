@@ -104,6 +104,7 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
     }
 
     // Prepare Connection Channel
+    @Override
     public void send(byte[] payload) throws Exception {
         try {
             this.initialize();

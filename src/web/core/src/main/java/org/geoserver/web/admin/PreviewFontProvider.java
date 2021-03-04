@@ -23,6 +23,7 @@ public class PreviewFontProvider extends GeoServerDataProvider<PreviewFont> {
 
     public static final Property<PreviewFont> PREVIEW_IMAGE =
             new BeanProperty<PreviewFont>("previewImage", "previewImage") {
+                @Override
                 public boolean isSearchable() {
                     return false;
                 }

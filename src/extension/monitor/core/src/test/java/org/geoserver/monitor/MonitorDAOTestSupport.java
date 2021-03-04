@@ -73,6 +73,7 @@ public abstract class MonitorDAOTestSupport {
                 new Query().filter("path", "/seven", Comparison.EQ),
                 new RequestDataVisitor() {
 
+                    @Override
                     public void visit(RequestData data, Object... aggregates) {
                         datas.add(data);
                     }

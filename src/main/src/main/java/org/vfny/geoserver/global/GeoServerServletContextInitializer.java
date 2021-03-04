@@ -35,6 +35,7 @@ public class GeoServerServletContextInitializer implements ApplicationContextAwa
         this.object = object;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         if (context instanceof WebApplicationContext) {
             WebApplicationContext webContext = (WebApplicationContext) context;

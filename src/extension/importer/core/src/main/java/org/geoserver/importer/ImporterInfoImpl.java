@@ -21,10 +21,12 @@ public class ImporterInfoImpl implements ImporterInfo {
         this.maxAsynchronousImports = configuration.getMaxAsynchronousImports();
     }
 
+    @Override
     public int getMaxSynchronousImports() {
         return maxSynchronousImports;
     }
 
+    @Override
     public void setMaxSynchronousImports(int maxSynchronousImports) {
         this.maxSynchronousImports = maxSynchronousImports;
     }
@@ -34,6 +36,7 @@ public class ImporterInfoImpl implements ImporterInfo {
         return maxAsynchronousImports;
     }
 
+    @Override
     public void setMaxAsynchronousImports(int maxAsynchronousImports) {
         this.maxAsynchronousImports = maxAsynchronousImports;
     }
@@ -43,6 +46,7 @@ public class ImporterInfoImpl implements ImporterInfo {
         return uploadRoot;
     }
 
+    @Override
     public void setUploadRoot(String uploadRoot) {
         this.uploadRoot = uploadRoot;
     }

@@ -34,6 +34,7 @@ public class GZIPFilter implements Filter {
 
     private Set<Pattern> myCompressedTypes;
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         if (req instanceof HttpServletRequest) {
@@ -53,6 +54,7 @@ public class GZIPFilter implements Filter {
         chain.doFilter(req, res);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
         try {
             String compressedTypes = filterConfig.getInitParameter("compressed-types");
@@ -68,5 +70,6 @@ public class GZIPFilter implements Filter {
         }
     }
 
+    @Override
     public void destroy() {}
 }

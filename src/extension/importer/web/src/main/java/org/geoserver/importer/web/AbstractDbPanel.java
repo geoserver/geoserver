@@ -83,6 +83,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
         form.add(advancedParamPanel = buildAdvancedPanel("advancedPanel"));
     }
 
+    @Override
     public ImportData createImportSource() {
         // build up the store connection param map
         Map<String, Serializable> params = new HashMap<>();
@@ -101,10 +102,12 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
                         new Model<>(connectionTypeList),
                         new ChoiceRenderer<String>() {
 
+                            @Override
                             public String getIdValue(String object, int index) {
                                 return object;
                             }
 
+                            @Override
                             public Object getDisplayValue(String object) {
                                 return new ParamResourceModel("ConnectionType." + object, null)
                                         .getString();

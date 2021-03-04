@@ -34,6 +34,7 @@ public class CheckExistingResourcesInWorkspaceValidator implements IValidator<Wo
         this.wsId = workspaceId;
     }
 
+    @Override
     public void validate(final IValidatable<WorkspaceInfo> validatable) {
 
         final Catalog catalog = GeoServerApplication.get().getCatalog();

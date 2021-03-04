@@ -256,15 +256,18 @@ public class ControlFlowCallbackTest {
         long timeout;
         boolean stale = true;
 
+        @Override
         public Collection<FlowController> buildFlowControllers() throws Exception {
             stale = false;
             return controllers;
         }
 
+        @Override
         public long getTimeout() {
             return timeout;
         }
 
+        @Override
         public boolean isStale() {
             return stale;
         }
@@ -283,14 +286,17 @@ public class ControlFlowCallbackTest {
             this.delay = delay;
         }
 
+        @Override
         public int getPriority() {
             return priority;
         }
 
+        @Override
         public void requestComplete(Request request) {
             requestCompleteCalls++;
         }
 
+        @Override
         public boolean requestIncoming(Request request, long timeout) {
             requestIncomingCalls++;
             if (delay > 0)

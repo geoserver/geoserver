@@ -93,6 +93,7 @@ public class BDBImportStore implements ImportStore {
         return bindingType;
     }
 
+    @Override
     public void init() {
         if ("serial".equalsIgnoreCase(System.getProperty("org.geoserver.importer.bdb.binding"))) {
             bindingType = BindingType.SERIAL;
@@ -187,6 +188,7 @@ public class BDBImportStore implements ImportStore {
         return id;
     }
 
+    @Override
     public ImportContext get(long id) {
         DatabaseEntry val = new DatabaseEntry();
         OperationStatus op = db.get(null, key(id), val, LockMode.DEFAULT);
@@ -208,16 +210,19 @@ public class BDBImportStore implements ImportStore {
         return context;
     }
 
+    @Override
     public synchronized void add(ImportContext context) {
         context.setId(importIdSeq.get(null, 1));
 
         put(context);
     }
 
+    @Override
     public void remove(ImportContext importContext) {
         db.delete(null, key(importContext));
     }
 
+    @Override
     public void removeAll() {
 
         Transaction tx = db.getEnvironment().beginTransaction(null, null);
@@ -242,6 +247,7 @@ public class BDBImportStore implements ImportStore {
         tx.commit();
     }
 
+    @Override
     public void save(ImportContext context) {
         dettach(context);
         if (context.getId() == null) {
@@ -251,12 +257,14 @@ public class BDBImportStore implements ImportStore {
         }
     }
 
+    @Override
     public Iterator<ImportContext> iterator() {
         return new StoredMap<Long, ImportContext>(db, new LongBinding(), importBinding, false)
                 .values()
                 .iterator();
     }
 
+    @Override
     public Iterator<ImportContext> iterator(String sortBy) {
         if (sortBy == null) {
             return iterator();
@@ -265,30 +273,35 @@ public class BDBImportStore implements ImportStore {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Iterator<ImportContext> allNonCompleteImports() {
         // if this becomes too slow a secondary database could be used for indexing
         return new FilterIterator(
                 iterator(),
                 new Predicate() {
 
+                    @Override
                     public boolean evaluate(Object o) {
                         return ((ImportContext) o).getState() != ImportContext.State.COMPLETE;
                     }
                 });
     }
 
+    @Override
     public Iterator<ImportContext> importsByUser(final String user) {
         // if this becomes too slow a secondary database could be used for indexing
         return new FilterIterator(
                 allNonCompleteImports(),
                 new Predicate() {
 
+                    @Override
                     public boolean evaluate(Object o) {
                         return user.equals(((ImportContext) o).getUser());
                     }
                 });
     }
 
+    @Override
     public void query(ImportVisitor visitor) {
         Cursor c = db.openCursor(null, null);
         try {
@@ -335,6 +348,7 @@ public class BDBImportStore implements ImportStore {
         return b;
     }
 
+    @Override
     public void destroy() {
         // destroy the db environment
         Environment env = db.getEnvironment();

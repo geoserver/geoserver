@@ -16,16 +16,19 @@ import org.locationtech.jts.geom.Geometry;
  */
 public abstract class GML2ComplexTransmuter extends ComplexTransmuter {
     /** @see ComplexTransmuter#getXMLConfiguration() */
+    @Override
     public Class<?> getXMLConfiguration() {
         return GMLConfiguration.class;
     }
 
     /** @see ComplexTransmuter#getMimeType() */
+    @Override
     public String getMimeType() {
         return "text/xml; subtype=gml/2.1.2";
     }
 
     /** @see Transmuter#getType() */
+    @Override
     public Class<?> getType() {
         return Geometry.class;
     }

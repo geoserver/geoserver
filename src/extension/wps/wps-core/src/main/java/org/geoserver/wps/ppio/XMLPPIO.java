@@ -56,6 +56,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
     public abstract void encode(Object object, ContentHandler handler) throws Exception;
 
     /** Encodes the internal object representation of a parameter as a string. */
+    @Override
     public void encode(Object value, OutputStream os) throws Exception {
         // create the document serializer
         TransformerHandler serializer =

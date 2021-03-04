@@ -28,6 +28,7 @@ public class AggregateProcessPPIO extends XStreamPPIO {
     protected SecureXStream buildXStream() {
         SecureXStream xstream =
                 new SecureXStream() {
+                    @Override
                     protected MapperWrapper wrapMapper(MapperWrapper next) {
                         return new UppercaseTagMapper(next);
                     };

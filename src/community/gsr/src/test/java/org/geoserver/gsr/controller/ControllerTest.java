@@ -39,6 +39,7 @@ public class ControllerTest extends GeoServerSystemTestSupport {
         testData.setUpDefault();
     }
 
+    @Override
     public void onSetUp(SystemTestData testData) throws Exception {
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();

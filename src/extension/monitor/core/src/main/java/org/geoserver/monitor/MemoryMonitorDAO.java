@@ -36,17 +36,21 @@ public class MemoryMonitorDAO implements MonitorDAO {
     @Override
     public void init(MonitorConfig config) {}
 
+    @Override
     public RequestData init(RequestData data) {
         data.setId(REQUEST_ID_GEN.getAndIncrement());
         return data;
     }
 
+    @Override
     public void add(RequestData data) {
         live.add(data);
     }
 
+    @Override
     public void update(RequestData data) {}
 
+    @Override
     public void save(RequestData data) {
         live.remove(data);
         history.add(data);
@@ -56,6 +60,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
         }
     }
 
+    @Override
     public RequestData getRequest(long id) {
         for (RequestData r : getRequests()) {
             if (r.getId() == id) {
@@ -65,6 +70,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
         return null;
     }
 
+    @Override
     public List<RequestData> getRequests() {
         List<RequestData> requests = new LinkedList<>();
         requests.addAll(live);
@@ -72,6 +78,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
         return requests;
     }
 
+    @Override
     public List<RequestData> getRequests(Query q) {
         List<RequestData> requests = getRequests();
 
@@ -115,16 +122,19 @@ public class MemoryMonitorDAO implements MonitorDAO {
         return requests;
     }
 
+    @Override
     public void getRequests(Query query, RequestDataVisitor visitor) {
         for (RequestData r : getRequests(query)) {
             visitor.visit(r);
         }
     }
 
+    @Override
     public long getCount(Query query) {
         return getRequests(query).size();
     }
 
+    @Override
     public Iterator<RequestData> getIterator(Query query) {
         return getRequests(query).iterator();
     }
@@ -149,20 +159,24 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
     }
 
+    @Override
     public List<RequestData> getOwsRequests() {
         return null;
     }
 
+    @Override
     public java.util.List<RequestData> getOwsRequests(
             String service, String operation, String version) {
         return null;
     };
 
+    @Override
     public void clear() {
         live.clear();
         history.clear();
     }
 
+    @Override
     public void dispose() {
         live.clear();
         history.clear();
@@ -183,6 +197,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.to = to;
         }
 
+        @Override
         public boolean matches(RequestData data) {
             Date time = data.getStartTime();
             if (time == null) {
@@ -216,6 +231,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.compare = compare;
         }
 
+        @Override
         public boolean matches(RequestData data) {
             String property = null;
             Object value = null;
@@ -288,6 +304,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.order = order;
         }
 
+        @Override
         public int compare(RequestData r1, RequestData r2) {
             int c = compareInternal(r1, r2);
             return order == SortOrder.ASC ? c : -1 * c;

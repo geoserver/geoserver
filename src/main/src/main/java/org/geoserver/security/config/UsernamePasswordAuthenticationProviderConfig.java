@@ -27,10 +27,12 @@ public class UsernamePasswordAuthenticationProviderConfig extends BaseSecurityNa
         userGroupServiceName = other.getUserGroupServiceName();
     }
 
+    @Override
     public String getUserGroupServiceName() {
         return userGroupServiceName;
     }
 
+    @Override
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }

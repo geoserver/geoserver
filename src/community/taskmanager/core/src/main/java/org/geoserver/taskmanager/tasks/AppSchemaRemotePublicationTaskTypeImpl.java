@@ -206,6 +206,7 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         return resources;
     }
 
+    @Override
     protected boolean isSimpleUpload() {
         return false;
     }

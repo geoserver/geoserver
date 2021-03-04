@@ -30,6 +30,7 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         filter = new HashSet<>(Arrays.asList("service", "version", "identifiers"));
     }
 
+    @Override
     @SuppressWarnings("unchecked") // EMF model without generics
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // let super do its thing

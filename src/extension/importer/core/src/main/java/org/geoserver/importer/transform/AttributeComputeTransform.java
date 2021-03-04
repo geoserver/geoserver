@@ -68,6 +68,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         return expression;
     }
 
+    @Override
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // validate the target attribute is not already there
@@ -87,6 +88,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         return builder.buildFeatureType();
     }
 
+    @Override
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {

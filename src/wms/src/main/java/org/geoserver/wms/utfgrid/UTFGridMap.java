@@ -34,6 +34,7 @@ public class UTFGridMap extends RawMap {
         this.image = image;
     }
 
+    @Override
     public void writeTo(java.io.OutputStream out) throws java.io.IOException {
         UTFGridEntries entries = getEntries();
 

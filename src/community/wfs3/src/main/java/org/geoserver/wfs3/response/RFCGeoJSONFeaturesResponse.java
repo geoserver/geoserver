@@ -60,6 +60,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         return MIME;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // was it a single feature request?
         String requestFeatureId = getWFS3FeatureId();
@@ -192,6 +193,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
+    @Override
     protected void writeCollectionCounts(
             BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
@@ -211,6 +213,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** capabilities output format string. */
+    @Override
     public String getCapabilitiesElementName() {
         return "GeoJSON-RFC";
     }

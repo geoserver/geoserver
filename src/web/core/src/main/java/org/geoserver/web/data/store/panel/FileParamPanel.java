@@ -54,6 +54,7 @@ public class FileParamPanel extends Panel implements ParamPanel<String> {
     }
 
     /** The text field stored inside the panel. */
+    @Override
     public FormComponent<String> getFormComponent() {
         return fileInput.getFormComponent();
     }

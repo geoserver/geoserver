@@ -59,6 +59,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     }
 
     /** @return The global wfs instance from the application context. */
+    @Override
     protected WCSInfo getWCS() {
         return getGeoServer().getService(WCSInfo.class);
     }

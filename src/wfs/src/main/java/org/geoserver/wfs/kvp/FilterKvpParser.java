@@ -56,6 +56,7 @@ public abstract class FilterKvpParser extends KvpParser {
      */
     protected abstract Configuration getParserConfiguration();
 
+    @Override
     public Object parse(String value) throws Exception {
         // create the parser
         final Configuration configuration = getParserConfiguration();

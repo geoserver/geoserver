@@ -43,16 +43,19 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
 
     /** @see GetMapOutputFormat#getOutputFormatNames() */
+    @Override
     public Set<String> getOutputFormatNames() {
         return FORMAT_NAMES;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public XMLTransformerMap produceMap(WMSMapContent mapContent)
             throws ServiceException, IOException {
 
@@ -75,6 +78,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
         return result;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return ATOM_CAPABILITIES;
     }

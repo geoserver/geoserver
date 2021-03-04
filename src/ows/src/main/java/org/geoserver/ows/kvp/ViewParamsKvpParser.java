@@ -29,10 +29,12 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
         super("viewparams", List.class);
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         List<Object> ret = new ArrayList<>();
         List<KvpParser> parsers =

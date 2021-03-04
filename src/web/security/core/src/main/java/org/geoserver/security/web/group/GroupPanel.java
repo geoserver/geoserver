@@ -162,6 +162,7 @@ public class GroupPanel extends Panel {
         };
     }
 
+    @Override
     protected void onBeforeRender() {
         groups.clearSelection();
         removal.setEnabled(false);

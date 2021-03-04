@@ -654,11 +654,13 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         }
     }
 
+    @Override
     public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
         return new org.geoserver.opensearch.eo.store.JDBCProductFeatureStore(
                 this, productFeatureType);
     }
 
+    @Override
     public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {
         return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
                 this, collectionFeatureType);
@@ -732,6 +734,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         try {
             return new org.geoserver.opensearch.eo.store.WritableDataView(
                     granulesStore, granulesQuery) {
+                @Override
                 public java.util.List<org.opengis.filter.identity.FeatureId> addFeatures(
                         org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature>
                                 featureCollection)

@@ -101,6 +101,7 @@ public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Seriali
      * Comparison implemented so that generic rules get first, specific one are compared by service
      * and method
      */
+    @Override
     public int compareTo(ServiceAccessRule other) {
         int compareService = compareServiceItems(service, other.service);
         if (compareService != 0) return compareService;

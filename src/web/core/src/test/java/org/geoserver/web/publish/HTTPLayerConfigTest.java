@@ -33,6 +33,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new HTTPLayerConfig(id, new Model<>(polygons));
                             }
@@ -61,6 +62,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new HTTPLayerConfig(id, new Model<>(polygons));
                             }

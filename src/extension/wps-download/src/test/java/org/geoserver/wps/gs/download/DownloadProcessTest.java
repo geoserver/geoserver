@@ -487,6 +487,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 zipFile.getParentFile()
                         .listFiles(
                                 new FilenameFilter() {
+                                    @Override
                                     public boolean accept(File dir, String name) {
                                         String ext = FilenameUtils.getExtension(name);
                                         for (String extension : extensions) {
@@ -3076,6 +3077,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @return the task
          */
+        @Override
         public InternationalString getTask() {
             return task;
         }
@@ -3085,6 +3087,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @param task the new task
          */
+        @Override
         public void setTask(InternationalString task) {
             this.task = task;
         }
@@ -3108,6 +3111,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
 
         /** Started. */
+        @Override
         public void started() {
             status.setPhase(ProcessState.RUNNING);
         }
@@ -3117,6 +3121,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @param percent the percent
          */
+        @Override
         public void progress(float percent) {
             status.setProgress(percent);
         }
@@ -3126,16 +3131,19 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @return the progress
          */
+        @Override
         public float getProgress() {
             return status.getProgress();
         }
 
         /** Complete. */
+        @Override
         public void complete() {
             // nothing to do
         }
 
         /** Dispose. */
+        @Override
         public void dispose() {
             // nothing to do
         }
@@ -3145,6 +3153,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @return true, if is canceled
          */
+        @Override
         public boolean isCanceled() {
             return status.getPhase() == ProcessState.DISMISSING;
         }
@@ -3154,6 +3163,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @param cancel the new canceled
          */
+        @Override
         public void setCanceled(boolean cancel) {
             if (cancel == true) {
                 status.setPhase(ProcessState.DISMISSING);
@@ -3167,6 +3177,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          * @param location the location
          * @param warning the warning
          */
+        @Override
         public void warningOccurred(String source, String location, String warning) {
             LOGGER.log(
                     Level.WARNING,
@@ -3181,6 +3192,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          *
          * @param exception the exception
          */
+        @Override
         public void exceptionOccurred(Throwable exception) {
             this.exception = exception;
         }

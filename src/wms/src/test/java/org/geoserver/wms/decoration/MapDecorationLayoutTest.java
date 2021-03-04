@@ -32,12 +32,15 @@ public class MapDecorationLayoutTest {
             this.expect = toExpect;
         }
 
+        @Override
         public void loadOptions(Map<String, String> options) {}
 
+        @Override
         public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
             return this.request;
         }
 
+        @Override
         public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
                 throws Exception {
             assertEquals("Calculated width matches expected", expect.width, paintArea.width);

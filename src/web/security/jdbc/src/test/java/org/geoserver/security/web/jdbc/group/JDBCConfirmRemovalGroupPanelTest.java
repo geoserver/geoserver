@@ -14,6 +14,7 @@ public class JDBCConfirmRemovalGroupPanelTest extends ConfirmRemovalGroupPanelTe
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     @Test
     public void testRemoveGroup() throws Exception {
         disassociateRoles = false;
@@ -21,6 +22,7 @@ public class JDBCConfirmRemovalGroupPanelTest extends ConfirmRemovalGroupPanelTe
         removeObject();
     }
 
+    @Override
     @Test
     public void testRemoveGroupWithRoles() throws Exception {
         disassociateRoles = true;

@@ -75,6 +75,7 @@ public class GSRDispatcher extends APIDispatcher {
         private static class FormatContentNegotiationStrategy
                 implements ContentNegotiationStrategy {
 
+            @Override
             public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
                 String f = webRequest.getParameter("f");
                 if ("json".equals(f) || "pjson".equals(f)) {

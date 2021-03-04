@@ -132,6 +132,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         this.workspace = workspace;
     }
 
+    @Override
     public Object findTemplateSource(String path) throws IOException {
         File template = null;
 
@@ -243,6 +244,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         return null;
     }
 
+    @Override
     public long getLastModified(Object source) {
         if (source instanceof File) {
             // loaded from file
@@ -255,6 +257,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         }
     }
 
+    @Override
     public Reader getReader(Object source, String encoding) throws IOException {
         if (source instanceof File) {
             // loaded from file
@@ -267,6 +270,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         }
     }
 
+    @Override
     public void closeTemplateSource(Object source) throws IOException {
         if (source instanceof File) {
             fileTemplateLoader.closeTemplateSource(source);

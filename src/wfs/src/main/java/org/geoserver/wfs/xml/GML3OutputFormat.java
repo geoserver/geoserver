@@ -114,14 +114,17 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         this.configuration = configuration;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return "text/xml; subtype=gml/3.1.1";
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "GML3";
     }
 
+    @Override
     protected void write(
             FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException, UnsupportedEncodingException {
@@ -456,14 +459,17 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
     // is used which reports all warnings and errors to System.err and does not throw any Exceptions
     private class TransformerErrorListener implements ErrorListener {
 
+        @Override
         public void error(TransformerException exception) throws TransformerException {
             throw exception;
         }
 
+        @Override
         public void fatalError(TransformerException exception) throws TransformerException {
             throw exception;
         }
 
+        @Override
         public void warning(TransformerException exception) throws TransformerException {
             throw exception;
         }

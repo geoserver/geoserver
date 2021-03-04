@@ -41,6 +41,7 @@ public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
     }
 
     /** Encodes a ogc:ServiceExceptionReport to output. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
 
         boolean verbose = gs.getSettings().isVerboseExceptions();

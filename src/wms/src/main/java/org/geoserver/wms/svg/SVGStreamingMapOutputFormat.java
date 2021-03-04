@@ -45,6 +45,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
      * @return {@code ["image/svg+xml", "image/svg xml", "image/svg"]}
      * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
      */
+    @Override
     public Set<String> getOutputFormatNames() {
         return SVG.OUTPUT_FORMATS;
     }
@@ -53,11 +54,13 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
      * @return {@code "image/svg+xml"}
      * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
      */
+    @Override
     public String getMimeType() {
         return SVG.MIME_TYPE;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public StreamingSVGMap produceMap(WMSMapContent mapContent)
             throws ServiceException, IOException {
         StreamingSVGMap svg = new StreamingSVGMap(mapContent);
@@ -65,6 +68,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
         return svg;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

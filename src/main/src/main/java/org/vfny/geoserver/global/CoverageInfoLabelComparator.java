@@ -17,6 +17,7 @@ import org.geoserver.catalog.CoverageInfo;
  */
 public class CoverageInfoLabelComparator implements Comparator<CoverageInfo> {
 
+    @Override
     public int compare(CoverageInfo c1, CoverageInfo c2) {
         // this will take care of null values as well
         return new CompareToBuilder().append(c1.getTitle(), c2.getTitle()).toComparison();

@@ -76,6 +76,7 @@ public class ScaleLineDecoration implements MapDecoration {
         }
     }
 
+    @Override
     public void loadOptions(Map<String, String> options) {
         if (options.get("fontsize") != null) {
             try {
@@ -122,6 +123,7 @@ public class ScaleLineDecoration implements MapDecoration {
         }
     }
 
+    @Override
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         return new Dimension(suggestedWidth, 8 + (metrics.getHeight() + metrics.getDescent()) * 2);
@@ -146,6 +148,7 @@ public class ScaleLineDecoration implements MapDecoration {
         return (int) (barLength * pow10);
     }
 
+    @Override
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
             throws Exception {
         Color oldColor = g2d.getColor();

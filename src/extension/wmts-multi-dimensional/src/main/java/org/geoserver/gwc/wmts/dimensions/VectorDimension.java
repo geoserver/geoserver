@@ -31,6 +31,7 @@ public abstract class VectorDimension extends Dimension {
      * Helper method used to get domain values from a vector type in the form of a feature
      * collection.
      */
+    @Override
     protected FeatureCollection getDomain(Query query) {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         FeatureSource source;

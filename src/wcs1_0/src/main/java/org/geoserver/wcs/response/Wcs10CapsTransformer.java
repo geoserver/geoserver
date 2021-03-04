@@ -89,6 +89,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         geoServer.getGlobal().getResourceErrorHandling());
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS100CapsTranslator(handler);
     }
@@ -110,6 +111,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(
@@ -567,6 +569,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                     finalArray,
                     new Comparator<String>() {
 
+                        @Override
                         public int compare(String o1, String o2) {
                             if (o1.equals(o2)) return 0;
 
@@ -596,6 +599,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                             "yyyy"
                         };
 
+                        @Override
                         public int compare(String o1, String o2) {
                             if (o1.equals(o2)) return 0;
 

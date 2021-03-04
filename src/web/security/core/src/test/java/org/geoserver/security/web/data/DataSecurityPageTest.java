@@ -27,14 +27,17 @@ import org.junit.Test;
 
 public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
 
+    @Override
     protected Page listPage(PageParameters params) {
         return new DataSecurityPage();
     }
 
+    @Override
     protected Page newPage(Object... params) {
         return new NewDataAccessRulePage();
     }
 
+    @Override
     protected Page editPage(Object... params) {
         if (params.length == 0)
             return new EditDataAccessRulePage(

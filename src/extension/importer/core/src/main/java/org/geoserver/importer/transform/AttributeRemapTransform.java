@@ -51,6 +51,7 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         this.type = type;
     }
 
+    @Override
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // remap the type
@@ -78,6 +79,7 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         return builder.buildFeatureType();
     }
 
+    @Override
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {

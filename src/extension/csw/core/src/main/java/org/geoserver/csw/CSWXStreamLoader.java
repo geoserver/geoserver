@@ -30,10 +30,12 @@ public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
         return "csw";
     }
 
+    @Override
     public Class<CSWInfo> getServiceClass() {
         return CSWInfo.class;
     }
 
+    @Override
     protected CSWInfo createServiceFromScratch(GeoServer gs) {
         CSWInfoImpl csw = new CSWInfoImpl();
         csw.setName("CSW");

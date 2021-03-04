@@ -54,6 +54,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
                         (MaxLengthPanel) new MaxLengthPanel("maxLength").setVisible(!unlimited));
     }
 
+    @Override
     public void doSave(PasswordPolicyConfig config) throws Exception {
         getSecurityManager().savePasswordPolicy(config);
     }

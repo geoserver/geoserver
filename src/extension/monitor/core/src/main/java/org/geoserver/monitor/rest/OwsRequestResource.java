@@ -26,6 +26,7 @@ public class OwsRequestResource extends MonitorRequestController {
         super(monitor);
     }
 
+    @Override
     @GetMapping(produces = {CSV_MEDIATYPE_VALUE, EXCEL_MEDIATYPE_VALUE, ZIP_MEDIATYPE_VALUE})
     @ResponseBody
     protected RestWrapper handleObjectGetRestWrapper(
@@ -43,6 +44,7 @@ public class OwsRequestResource extends MonitorRequestController {
                 req, from, to, filter, order, offset, count, live, fieldsSpec);
     }
 
+    @Override
     @GetMapping(
         produces = {
             MediaType.TEXT_HTML_VALUE,

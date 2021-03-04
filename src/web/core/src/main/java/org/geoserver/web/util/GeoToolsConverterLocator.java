@@ -26,6 +26,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
     private static final long serialVersionUID = -8704868281264763254L;
     static final Logger LOGGER = Logging.getLogger(GeoToolsConverterLocator.class);
 
+    @Override
     public <C> IConverter<C> getConverter(Class<C> type) {
         Set<ConverterFactory> factories = Converters.getConverterFactories(String.class, type);
         if (!factories.isEmpty()) {
@@ -46,6 +47,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
             this.target = target;
         }
 
+        @Override
         public T convertToObject(String value, Locale locale) {
             for (ConverterFactory factory : factories) {
                 try {
@@ -67,6 +69,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
             return null;
         }
 
+        @Override
         public String convertToString(Object value, Locale locale) {
             Set<ConverterFactory> rconverters =
                     Converters.getConverterFactories(target, String.class);

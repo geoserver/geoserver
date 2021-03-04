@@ -165,11 +165,13 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Style) */
+    @Override
     public void visit(Style style) {
         style.featureTypeStyles().forEach(ft -> ft.accept(this));
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Rule) */
+    @Override
     public void visit(Rule rule) {
         Filter filter = rule.getFilter();
 
@@ -181,10 +183,12 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.FeatureTypeStyle) */
+    @Override
     public void visit(FeatureTypeStyle fts) {
         fts.rules().forEach(r -> r.accept(this));
     }
 
+    @Override
     public void visit(StyledLayerDescriptor sld) {
         StyledLayer[] layers = sld.getStyledLayers();
 
@@ -197,6 +201,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         }
     }
 
+    @Override
     public void visit(NamedLayer layer) {
         Style[] styles = layer.getStyles();
 
@@ -205,6 +210,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         }
     }
 
+    @Override
     public void visit(UserLayer layer) {
         Style[] styles = layer.getUserStyles();
 
@@ -213,11 +219,13 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         }
     }
 
+    @Override
     public void visit(FeatureTypeConstraint ftc) {
         // nothing to do
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Symbolizer) */
+    @Override
     public void visit(Symbolizer sym) {
         if (sym instanceof PointSymbolizer) {
             visit((PointSymbolizer) sym);
@@ -241,6 +249,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Fill) */
+    @Override
     public void visit(Fill fill) {
         handleColor(fill.getColor());
 
@@ -250,6 +259,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Stroke) */
+    @Override
     public void visit(Stroke stroke) {
         handleColor(stroke.getColor());
 
@@ -264,11 +274,13 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         handleOpacity(stroke.getOpacity());
     }
 
+    @Override
     public void visit(RasterSymbolizer rs) {
         rasterUsed = true;
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.PointSymbolizer) */
+    @Override
     public void visit(PointSymbolizer ps) {
         if (ps.getGraphic() != null) {
             ps.getGraphic().accept(this);
@@ -276,6 +288,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.LineSymbolizer) */
+    @Override
     public void visit(LineSymbolizer line) {
         if (line.getStroke() != null) {
             line.getStroke().accept(this);
@@ -283,6 +296,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.PolygonSymbolizer) */
+    @Override
     public void visit(PolygonSymbolizer poly) {
         if (poly.getStroke() != null) {
             poly.getStroke().accept(this);
@@ -294,6 +308,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.TextSymbolizer) */
+    @Override
     public void visit(TextSymbolizer text) {
         if (text instanceof TextSymbolizer2) {
             if (((TextSymbolizer2) text).getGraphic() != null)
@@ -310,6 +325,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Graphic) */
+    @Override
     public void visit(Graphic gr) {
         for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
             if (symbol instanceof Symbol) {
@@ -323,6 +339,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Mark) */
+    @Override
     public void visit(Mark mark) {
         if (mark.getFill() != null) {
             mark.getFill().accept(this);
@@ -334,66 +351,80 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.ExternalGraphic) */
+    @Override
     public void visit(ExternalGraphic exgr) {
         externalGraphicsSymbolizers = true;
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.PointPlacement) */
+    @Override
     public void visit(PointPlacement pp) {
         // nothing to do
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.AnchorPoint) */
+    @Override
     public void visit(AnchorPoint ap) {
         // nothing to do
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Displacement) */
+    @Override
     public void visit(Displacement dis) {
         // nothing to do
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.LinePlacement) */
+    @Override
     public void visit(LinePlacement lp) {
         // nothing to do
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Halo) */
+    @Override
     public void visit(Halo halo) {
         if (halo.getFill() != null) {
             halo.getFill().accept(this);
         }
     }
 
+    @Override
     public void visit(ColorMap map) {
         // for the moment we don't do anything
         unknownColors = true;
     }
 
+    @Override
     public void visit(ColorMapEntry entry) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(ContrastEnhancement contrastEnhancement) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(ImageOutline outline) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(ChannelSelection cs) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(OverlapBehavior ob) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(SelectedChannelType sct) {
         unknownColors = true;
     }
 
+    @Override
     public void visit(ShadedRelief sr) {
         unknownColors = true;
     }

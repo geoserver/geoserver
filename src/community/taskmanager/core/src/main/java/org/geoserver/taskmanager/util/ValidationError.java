@@ -46,6 +46,7 @@ public class ValidationError {
         return taskType;
     }
 
+    @Override
     public String toString() {
         switch (type) {
             case MISSING:

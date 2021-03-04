@@ -13,6 +13,7 @@ package org.geoserver.wps.transmute;
  */
 public class GML2MultiLineStringTransmuter extends GML2ComplexTransmuter {
     /** @see ComplexTransmuter#getSchema(String) */
+    @Override
     public String getSchema(String urlBase) {
         return urlBase + "ows?service=WPS&request=GetSchema&Identifier=gml2multilinestring.xsd";
     }

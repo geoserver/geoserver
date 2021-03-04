@@ -58,6 +58,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
         return new CompositeIterator();
     }
 
+    @Override
     public T getSchema() {
         return schema;
     }
@@ -91,6 +92,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
         throw new UnsupportedOperationException("Cannot perform sorting on complex features");
     }
 
+    @Override
     public ReferencedEnvelope getBounds() {
         // crazy, this same mapper inlined in the stream does not compile...
         Function<FeatureCollection<T, F>, ReferencedEnvelope> mapper =
@@ -163,6 +165,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
 
         public void remove() {}
 
+        @Override
         public boolean hasNext() {
             // is there a current iterator that has another element
             if ((iterator != null) && iterator.hasNext()) {
@@ -193,6 +196,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
             return false;
         }
 
+        @Override
         public F next() {
             return iterator.next();
         }
@@ -210,6 +214,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
         return toArray(new Object[0]);
     }
 
+    @Override
     public <O> O[] toArray(O[] array) {
         List<SimpleFeature> list = new ArrayList<>();
 

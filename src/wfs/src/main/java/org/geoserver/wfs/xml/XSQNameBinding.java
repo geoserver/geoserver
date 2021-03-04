@@ -35,6 +35,7 @@ public class XSQNameBinding extends org.geotools.xs.bindings.XSQNameBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
 
         //        QName qName = null;

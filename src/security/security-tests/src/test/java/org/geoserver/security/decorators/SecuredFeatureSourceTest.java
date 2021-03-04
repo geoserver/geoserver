@@ -141,6 +141,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         class LogHandler extends Handler {
             List<String> messages = new ArrayList<>();
 
+            @Override
             public void publish(LogRecord record) {
                 messages.add(record.getMessage());
             }

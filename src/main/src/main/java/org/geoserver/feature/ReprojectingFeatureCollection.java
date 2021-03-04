@@ -116,6 +116,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         this.defaultSource = defaultSource;
     }
 
+    @Override
     public SimpleFeatureIterator features() {
         return new ReprojectingFeatureIterator(delegate.features());
     }
@@ -124,10 +125,12 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return schema;
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return schema;
     }
 
+    @Override
     public SimpleFeatureCollection subCollection(Filter filter) {
         // reproject the filter to the delegate native crs
         CoordinateReferenceSystem crs = getSchema().getCoordinateReferenceSystem();
@@ -159,6 +162,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return null;
     }
 
+    @Override
     public Object[] toArray() {
         Object[] array = delegate.toArray();
 
@@ -173,6 +177,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return array;
     }
 
+    @Override
     public <F> F[] toArray(F[] a) {
         F[] array = delegate.toArray(a);
 
@@ -189,6 +194,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return array;
     }
 
+    @Override
     public ReferencedEnvelope getBounds() {
         ReferencedEnvelope bounds = null;
 
@@ -296,10 +302,12 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             return delegate;
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() throws NoSuchElementException {
             SimpleFeature feature = delegate.next();
 
@@ -310,6 +318,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             }
         }
 
+        @Override
         public void close() {
             if (delegate != null) delegate.close();
             delegate = null;
@@ -327,14 +336,17 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             return delegate;
         }
 
+        @Override
         public void remove() {
             delegate.remove();
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() {
             SimpleFeature feature = delegate.next();
 

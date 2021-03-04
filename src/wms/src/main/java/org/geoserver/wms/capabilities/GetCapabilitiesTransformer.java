@@ -312,6 +312,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * @param o the {@link GetCapabilitiesRequest}
          * @throws IllegalArgumentException if {@code o} is not of the expected type
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesRequest)) {
                 throw new IllegalArgumentException();
@@ -635,18 +636,22 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 try {
                     cp.encode(
                             new ExtendedCapabilitiesProvider.Translator() {
+                                @Override
                                 public void start(String element) {
                                     CapabilitiesTranslator.this.start(element);
                                 }
 
+                                @Override
                                 public void start(String element, Attributes attributes) {
                                     CapabilitiesTranslator.this.start(element, attributes);
                                 }
 
+                                @Override
                                 public void chars(String text) {
                                     CapabilitiesTranslator.this.chars(text);
                                 }
 
+                                @Override
                                 public void end(String element) {
                                     CapabilitiesTranslator.this.end(element);
                                 }
@@ -932,6 +937,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Collections.sort(
                     data,
                     new Comparator<LayerInfo>() {
+                        @Override
                         public int compare(LayerInfo o1, LayerInfo o2) {
                             return o1.getName().compareTo(o2.getName());
                         }

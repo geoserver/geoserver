@@ -40,6 +40,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         this.geoServer = geoServer;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
@@ -56,6 +57,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         return ((WebApplicationContext) context).getServletContext();
     }
 
+    @Override
     public ServiceStrategy createOutputStrategy(HttpServletResponse response) {
         // If verbose exceptions is on then lets make sure they actually get the
         // exception by using the file strategy.

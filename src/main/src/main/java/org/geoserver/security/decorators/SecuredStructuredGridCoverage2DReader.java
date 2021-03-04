@@ -29,6 +29,7 @@ public class SecuredStructuredGridCoverage2DReader
         this.policy = policy;
     }
 
+    @Override
     public Format getFormat() {
         Format format = delegate.getFormat();
         if (format == null) {
@@ -38,6 +39,7 @@ public class SecuredStructuredGridCoverage2DReader
         }
     }
 
+    @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         return SecuredGridCoverage2DReader.read(delegate, policy, parameters);

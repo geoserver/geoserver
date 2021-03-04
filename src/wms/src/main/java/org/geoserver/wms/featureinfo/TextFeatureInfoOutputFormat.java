@@ -49,6 +49,7 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      *
      * @see GetFeatureInfoOutputFormat#write
      */
+    @Override
     @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)

@@ -32,6 +32,7 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
         this.catalog = catalog;
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         PropertyName propertyName = (PropertyName) super.parse(instance, node, value);
 

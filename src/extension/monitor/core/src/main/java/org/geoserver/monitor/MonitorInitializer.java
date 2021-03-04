@@ -20,6 +20,7 @@ public class MonitorInitializer implements GeoServerInitializer {
         this.monitor = monitor;
     }
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         monitor.setServer(geoServer);
     }

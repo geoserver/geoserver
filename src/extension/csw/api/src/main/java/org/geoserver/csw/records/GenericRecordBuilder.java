@@ -59,6 +59,7 @@ public class GenericRecordBuilder implements RecordBuilder {
     protected abstract static class TreeNode {
         AttributeDescriptor descriptor = null;
 
+        @Override
         public abstract TreeNode clone();
 
         public boolean cleanUp() {
@@ -313,6 +314,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
+    @Override
     public void addElement(String name, Object... values) {
         addElement(name, Arrays.asList(values), null, new int[0]);
     }
@@ -323,6 +325,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
+    @Override
     public void addElement(String name, int[] splitIndex, Object... values) {
         addElement(name, Arrays.asList(values), null, splitIndex);
     }
@@ -332,6 +335,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      *
      * @param env the bbox
      */
+    @Override
     public void addBoundingBox(ReferencedEnvelope env) {
         boxes.add(env);
     }
@@ -342,6 +346,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param id record id
      * @return the Feature
      */
+    @Override
     public Feature build(String id) {
         // gather all the bounding boxes in a single geometry
         Geometry geom = null;

@@ -29,25 +29,30 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         className = other.getClassName();
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
     /** @return the name of the service */
+    @Override
     public String getName() {
         return name;
     }
 
     /** sets the name for a service */
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
     /** @return the service class name */
+    @Override
     public String getClassName() {
         return className;
     }
@@ -56,6 +61,7 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
      * The class name of the service to be constructed The class must have a constructor with a
      * string argument, specifying the name of the service
      */
+    @Override
     public void setClassName(String className) {
         this.className = className;
     }

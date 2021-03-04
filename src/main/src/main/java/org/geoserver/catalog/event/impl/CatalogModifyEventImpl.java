@@ -15,6 +15,7 @@ public class CatalogModifyEventImpl extends CatalogEventImpl implements CatalogM
     List<Object> oldValues = new ArrayList<>();
     List<Object> newValues = new ArrayList<>();
 
+    @Override
     public List<String> getPropertyNames() {
         return propertyNames;
     }
@@ -23,6 +24,7 @@ public class CatalogModifyEventImpl extends CatalogEventImpl implements CatalogM
         this.propertyNames = propertyNames;
     }
 
+    @Override
     public List<Object> getNewValues() {
         return newValues;
     }
@@ -31,6 +33,7 @@ public class CatalogModifyEventImpl extends CatalogEventImpl implements CatalogM
         this.newValues = newValues;
     }
 
+    @Override
     public List<Object> getOldValues() {
         return oldValues;
     }

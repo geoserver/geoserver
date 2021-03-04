@@ -80,6 +80,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
         this.catalog = catalog;
     }
 
+    @Override
     public Function function(String name, List<Expression> args, Literal fallback) {
         return function(new NameImpl(name), args, fallback);
     }
@@ -102,6 +103,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
         }
     }
 
+    @Override
     public List<FunctionName> getFunctionNames() {
         if (isInitialized()) {
             return functionNames;

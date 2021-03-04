@@ -29,6 +29,7 @@ public class NamespacesModel extends LoadableDetachableModel {
         Collections.sort(
                 namespaces,
                 new Comparator<NamespaceInfo>() {
+                    @Override
                     public int compare(NamespaceInfo o1, NamespaceInfo o2) {
                         return o1.getPrefix().compareTo(o2.getPrefix());
                     }

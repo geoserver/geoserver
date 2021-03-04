@@ -39,6 +39,7 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         enabled = ReadOnlyConfiguration.isReadOnly(config);
     }
 
+    @Override
     protected synchronized void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
         if (enabled) {
             catalog.setResourceLoader(resourceLoader);
@@ -48,6 +49,7 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         }
     }
 
+    @Override
     protected synchronized void loadGeoServer(final GeoServer geoServer, XStreamPersister xp)
             throws Exception {
         if (enabled) {

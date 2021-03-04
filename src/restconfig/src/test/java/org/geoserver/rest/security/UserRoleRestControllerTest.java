@@ -26,6 +26,7 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
 
     protected RolesRestController rolesController;
 
+    @Override
     @Before
     public void oneTimeSetUp() throws Exception {
         setValidating(true);

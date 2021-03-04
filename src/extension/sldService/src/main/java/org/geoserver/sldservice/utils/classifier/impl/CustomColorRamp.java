@@ -35,19 +35,23 @@ public class CustomColorRamp implements ColorRamp {
 
     private List<Color> inputColors = null;
 
+    @Override
     public int getNumClasses() {
         return classNum;
     }
 
+    @Override
     public List<Color> getRamp() throws Exception {
         if (colors == null) throw new Exception("Class num not setted, color ramp null");
         return colors;
     }
 
+    @Override
     public void revert() {
         Collections.reverse(colors);
     }
 
+    @Override
     public void setNumClasses(int numClass) {
         classNum = numClass + 1; // +1 for transparent
         try {

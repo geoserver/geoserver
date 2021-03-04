@@ -62,6 +62,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {
+        @Override
         public Component getPageBodyComponent(final String id) {
             return new Label(id, "MockHomePageContentProvider");
         }

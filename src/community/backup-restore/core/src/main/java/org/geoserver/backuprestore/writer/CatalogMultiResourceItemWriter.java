@@ -77,6 +77,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
         super(clazz, backupFacade);
     }
 
+    @Override
     protected void initialize(StepExecution stepExecution) {
         delegate.retrieveInterstepData(stepExecution);
     }
@@ -129,6 +130,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
      * use the same name as this prototype with appended suffix (according to {@link
      * #setResourceSuffixCreator(ResourceSuffixCreator)}.
      */
+    @Override
     public void setResource(Resource resource) {
         this.resource = resource;
     }

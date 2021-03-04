@@ -793,6 +793,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         Catalog cat = new CatalogImpl();
         ResourcePool rp =
                 new ResourcePool(cat) {
+                    @Override
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;

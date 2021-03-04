@@ -77,6 +77,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
     }
 
     /** Writes out an OWS ExceptionReport document. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         LOGGER.warning("OWS20SEH: handling " + exception);
 

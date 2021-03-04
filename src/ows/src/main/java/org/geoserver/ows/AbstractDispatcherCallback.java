@@ -17,27 +17,33 @@ import org.geoserver.platform.ServiceException;
  */
 public class AbstractDispatcherCallback implements DispatcherCallback {
 
+    @Override
     public void finished(Request request) {
         // nothing to do here
     }
 
+    @Override
     public Request init(Request request) {
         return request;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         return operation;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return result;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return response;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return service;
     }

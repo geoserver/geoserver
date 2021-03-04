@@ -62,6 +62,7 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
         }
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

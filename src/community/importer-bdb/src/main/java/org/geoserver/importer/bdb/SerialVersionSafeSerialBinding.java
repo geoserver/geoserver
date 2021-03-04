@@ -52,6 +52,7 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
             super(in);
         }
 
+        @Override
         protected ObjectStreamClass readClassDescriptor()
                 throws IOException, ClassNotFoundException {
             ObjectStreamClass resultClassDescriptor =

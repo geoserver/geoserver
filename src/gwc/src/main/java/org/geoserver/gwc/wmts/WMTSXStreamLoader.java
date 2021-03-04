@@ -16,10 +16,12 @@ public class WMTSXStreamLoader extends XStreamServiceLoader<WMTSInfo> {
         super(resourceLoader, "wmts");
     }
 
+    @Override
     public Class<WMTSInfo> getServiceClass() {
         return WMTSInfo.class;
     }
 
+    @Override
     protected WMTSInfo createServiceFromScratch(GeoServer gs) {
         WMTSInfoImpl wmts = new WMTSInfoImpl();
         wmts.setName("WMTS");

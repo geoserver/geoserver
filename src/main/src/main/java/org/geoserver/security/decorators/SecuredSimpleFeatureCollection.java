@@ -60,6 +60,7 @@ public class SecuredSimpleFeatureCollection
         }
     }
 
+    @Override
     public SimpleFeatureCollection sort(SortBy order) {
         return (SimpleFeatureCollection) super.sort(order);
     }
@@ -74,6 +75,7 @@ public class SecuredSimpleFeatureCollection
         return (SimpleFeatureIterator) super.features();
     }
 
+    @Override
     public void accepts(
             org.opengis.feature.FeatureVisitor visitor, org.opengis.util.ProgressListener progress)
             throws IOException {
@@ -84,6 +86,7 @@ public class SecuredSimpleFeatureCollection
         }
     }
 
+    @Override
     protected boolean canDelegate(FeatureVisitor visitor) {
         return ReTypingFeatureCollection.isTypeCompatible(visitor, readSchema);
     }

@@ -11,6 +11,7 @@ public class CountingVisitor implements ImportVisitor {
 
     int count = 0;
 
+    @Override
     public void visit(ImportContext context) {
         count++;
     }

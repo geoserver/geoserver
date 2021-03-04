@@ -129,6 +129,7 @@ public abstract class CopyFromLayerPanel extends Panel {
                         });
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 target.add(getFeedbackPanel());
             }

@@ -21,6 +21,7 @@ public class H2UserGroupServiceTest extends JDBCUserGroupServiceTest {
         return JDBCTestSupport.createConfigObjectH2(serviceName, getSecurityManager());
     }
 
+    @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
         return JDBCTestSupport.createH2UserGroupService(getFixtureId(), getSecurityManager());
     }

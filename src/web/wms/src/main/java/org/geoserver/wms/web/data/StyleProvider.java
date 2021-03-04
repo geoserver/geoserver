@@ -68,6 +68,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         return modifiedPropertiesList;
     }
 
+    @Override
     public IModel<StyleInfo> newModel(StyleInfo object) {
         return new StyleDetachableModel(object);
     }

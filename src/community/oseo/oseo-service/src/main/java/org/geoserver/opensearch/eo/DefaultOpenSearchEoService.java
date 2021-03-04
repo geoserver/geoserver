@@ -79,6 +79,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return new OSEODescription(request, service, geoServer.getGlobal(), searchParameters);
     }
 
+    @Override
     public List<Parameter<?>> getProductSearchParameters(final String parentId) throws IOException {
         OSEOInfo service = getService();
         List<Parameter<?>> searchParameters = new ArrayList<>();
@@ -154,6 +155,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return result;
     }
 
+    @Override
     public List<Parameter<?>> getCollectionSearchParameters() throws IOException {
         OSEOInfo service = getService();
         List<Parameter<?>> searchParameters = new ArrayList<>();

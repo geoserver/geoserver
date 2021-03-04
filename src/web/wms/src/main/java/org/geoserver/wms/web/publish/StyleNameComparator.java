@@ -11,6 +11,7 @@ import org.geoserver.catalog.StyleInfo;
 /** Compares two {@link StyleInfo} by name */
 class StyleNameComparator implements Comparator<StyleInfo> {
 
+    @Override
     public int compare(StyleInfo o1, StyleInfo o2) {
         return o1.prefixedName().compareToIgnoreCase(o2.prefixedName());
     }

@@ -41,6 +41,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
     PropertyFileWatcher fileWatcher;
     Properties authKeyProps;
 
+    @Override
     public boolean supportsReadOnlyUserGroupService() {
         return true;
     }

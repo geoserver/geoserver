@@ -26,6 +26,7 @@ public class PrintingServletWrappingController extends ServletWrappingController
 
     private Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.printing");
 
+    @Override
     public void setInitParameters(Properties initParameters) {
         // find the config parameter and update it so it points to
         // $GEOSERVER_DATA_DIR/printing/$CONFIG

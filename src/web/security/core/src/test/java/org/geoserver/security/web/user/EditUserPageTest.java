@@ -148,6 +148,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
                         gaService.getRoleByName(GeoServerRole.ADMIN_ROLE.getAuthority())));
     }
 
+    @Override
     @Test
     public void testReadOnlyRoleService() throws Exception {
         doTestReadOnlyRoleService();

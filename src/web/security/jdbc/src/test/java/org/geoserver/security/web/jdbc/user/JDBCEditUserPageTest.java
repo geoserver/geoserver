@@ -12,20 +12,24 @@ import org.junit.Test;
 
 public class JDBCEditUserPageTest extends EditUserPageTest {
 
+    @Override
     protected void doInitialize() throws Exception {
         initializeForJDBC();
     };
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();
     }
 
+    @Override
     @Test
     public void testReadOnlyUserGroupService() throws Exception {
         doTestReadOnlyUserGroupService();
     }
 
+    @Override
     @Test
     public void testReadOnlyRoleService() throws Exception {
         doTestReadOnlyRoleService();

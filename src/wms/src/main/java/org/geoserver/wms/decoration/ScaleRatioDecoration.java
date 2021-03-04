@@ -24,6 +24,7 @@ public class ScaleRatioDecoration implements MapDecoration {
     String format = null;
     String formatLanguage = null;
 
+    @Override
     public void loadOptions(Map<String, String> options) {
         String format = options.get("format");
         if (format != null) {
@@ -35,6 +36,7 @@ public class ScaleRatioDecoration implements MapDecoration {
         }
     }
 
+    @Override
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
@@ -59,6 +61,7 @@ public class ScaleRatioDecoration implements MapDecoration {
         }
     }
 
+    @Override
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
             throws Exception {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());

@@ -19,6 +19,7 @@ public class TransactionListenerTester implements TransactionListener {
         features.clear();
     }
 
+    @Override
     public void dataStoreChange(TransactionEvent event) throws WFSException {
         events.add(event);
         features.addAll(DataUtilities.list(event.getAffectedFeatures()));

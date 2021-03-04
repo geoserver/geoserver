@@ -31,18 +31,22 @@ public class KvpMap<K extends String, V> extends HashMap<K, V> {
         }
     }
 
+    @Override
     public boolean containsKey(Object key) {
         return super.containsKey(upper(key));
     }
 
+    @Override
     public V get(Object key) {
         return super.get(upper(key));
     }
 
+    @Override
     public V getOrDefault(Object key, V defaultValue) {
         return super.getOrDefault(upper(key), defaultValue);
     }
 
+    @Override
     public V put(K key, V value) {
         return super.put(upper(key), value);
     }

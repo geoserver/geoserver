@@ -131,6 +131,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         return true;
     }
 
+    @Override
     public NamespaceSupport getNamespaces() {
         return namespaces;
     }

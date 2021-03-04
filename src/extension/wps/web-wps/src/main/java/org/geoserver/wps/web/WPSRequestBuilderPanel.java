@@ -205,6 +205,7 @@ public class WPSRequestBuilderPanel extends Panel {
         responseWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         DemoRequest request = new DemoRequest(null);
                         HttpServletRequest http =

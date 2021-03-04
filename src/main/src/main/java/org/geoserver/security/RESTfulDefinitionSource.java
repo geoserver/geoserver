@@ -35,6 +35,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     private RESTAccessRuleDAO dao;
 
     /** Override the method in FilterInvocationSecurityMetadataSource */
+    @Override
     public Collection<ConfigAttribute> getAttributes(Object object)
             throws IllegalArgumentException {
 
@@ -58,10 +59,12 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
         return delegate().lookupAttributes(cleanURL(url), method);
     }
 
+    @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         return delegate().getAllConfigAttributes();
     }
 
+    @Override
     public boolean supports(Class clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
     }

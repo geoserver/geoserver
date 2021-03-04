@@ -10,10 +10,12 @@ public class ImagesServiceInfoImpl extends ServiceInfoImpl implements ImagesServ
 
     int maxImages = 1000;
 
+    @Override
     public int getMaxImages() {
         return maxImages;
     }
 
+    @Override
     public void setMaxImages(int maxImages) {
         this.maxImages = maxImages;
     }

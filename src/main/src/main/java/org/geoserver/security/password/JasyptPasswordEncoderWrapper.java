@@ -63,6 +63,7 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
      * @param rawPass The password to be encoded.
      * @param salt The salt, which will be ignored. It can be null.
      */
+    @Override
     public String encodePassword(final String rawPass, final Object salt) {
         checkInitialization();
         if (this.useEncryptor.booleanValue()) {
@@ -80,6 +81,7 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
      * @param rawPass The password to be checked.
      * @param salt The salt, which will be ignored. It can be null.
      */
+    @Override
     public boolean isPasswordValid(final String encPass, final String rawPass, final Object salt) {
         checkInitialization();
         if (this.useEncryptor.booleanValue()) {
@@ -138,6 +140,7 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
         return PasswordEncodingType.PLAIN;
     }
 
+    @Override
     public String decode(String encPass) throws UnsupportedOperationException {
         return removePrefix(encPass);
     }

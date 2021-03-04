@@ -96,10 +96,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         this.responseFactory = responseFactory;
     }
 
+    @Override
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
 
+    @Override
     @SuppressWarnings("unchecked") // EMF objects without generics
     public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
@@ -124,6 +126,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         throw new WcsException("Could not understand version:" + version);
     }
 
+    @Override
     public DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
         final String version = request.getVersion();
         if ("1.1.0".equals(version) || "1.1.1".equals(version)) {
@@ -138,6 +141,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         throw new WcsException("Could not understand version:" + version);
     }
 
+    @Override
     @SuppressWarnings({"deprecation", "unchecked"})
     public GridCoverage[] getCoverage(GetCoverageType request) {
         if (LOGGER.isLoggable(Level.FINEST)) {

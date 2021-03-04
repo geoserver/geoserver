@@ -163,10 +163,12 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     static class BindingChoiceRenderer extends ChoiceRenderer<Class<?>> {
 
+        @Override
         public Object getDisplayValue(Class<?> object) {
             return AttributeDescription.getLocalizedName(object);
         }
 
+        @Override
         public String getIdValue(Class<?> object, int index) {
             return object.getName();
         }

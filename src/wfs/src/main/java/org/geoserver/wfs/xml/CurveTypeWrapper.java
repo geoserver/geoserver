@@ -33,10 +33,12 @@ public class CurveTypeWrapper implements FeatureType {
         this.delegate = delegate;
     }
 
+    @Override
     public boolean isIdentified() {
         return delegate.isIdentified();
     }
 
+    @Override
     public GeometryDescriptor getGeometryDescriptor() {
         GeometryDescriptor gd = delegate.getGeometryDescriptor();
         return wrapGeometryDescriptor(gd);
@@ -86,18 +88,22 @@ public class CurveTypeWrapper implements FeatureType {
         }
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return delegate.getCoordinateReferenceSystem();
     }
 
+    @Override
     public AttributeType getSuper() {
         return delegate.getSuper();
     }
 
+    @Override
     public Class<Collection<Property>> getBinding() {
         return delegate.getBinding();
     }
 
+    @Override
     public Collection<PropertyDescriptor> getDescriptors() {
         List<PropertyDescriptor> result = new ArrayList<>();
         Collection<PropertyDescriptor> descriptors = delegate.getDescriptors();
@@ -111,34 +117,42 @@ public class CurveTypeWrapper implements FeatureType {
         return result;
     }
 
+    @Override
     public PropertyDescriptor getDescriptor(Name name) {
         return delegate.getDescriptor(name);
     }
 
+    @Override
     public PropertyDescriptor getDescriptor(String name) {
         return delegate.getDescriptor(name);
     }
 
+    @Override
     public Name getName() {
         return delegate.getName();
     }
 
+    @Override
     public boolean isInline() {
         return delegate.isInline();
     }
 
+    @Override
     public boolean isAbstract() {
         return delegate.isAbstract();
     }
 
+    @Override
     public List<Filter> getRestrictions() {
         return delegate.getRestrictions();
     }
 
+    @Override
     public InternationalString getDescription() {
         return delegate.getDescription();
     }
 
+    @Override
     public Map<Object, Object> getUserData() {
         return delegate.getUserData();
     }

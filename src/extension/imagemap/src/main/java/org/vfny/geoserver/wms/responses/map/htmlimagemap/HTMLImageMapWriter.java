@@ -609,6 +609,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         public PointWriter() {}
 
         /** The shape for points is a circle. */
+        @Override
         protected String getShape() throws IOException {
             return "circle";
         }
@@ -618,6 +619,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Mark (circle is the only value correctly rendered by now). It also uses the Size
          * parameter to define circle radius.
          */
+        @Override
         protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer)
                 throws IOException {
             super.processSymbolizer(ft, rule, symbolizer);
@@ -637,6 +639,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param geom point to encode
          * @throws IOException if an error occures during encoding
          */
+        @Override
         protected void writeGeometry(Geometry geom, StringBuffer buf) throws IOException {
             if (geom instanceof Point) {
                 Point p = (Point) geom;
@@ -655,6 +658,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         public MultiPointWriter() {}
 
         /** Uses writeMultiFeature. */
+        @Override
         protected void writeFeature(SimpleFeature ft, FeatureTypeStyle[] fts) throws IOException {
             writeMultiFeature(ft, fts);
         }
@@ -673,6 +677,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         public LineStringWriter() {}
 
         /** The shape for lines is a poly. */
+        @Override
         protected String getShape() throws IOException {
             return "poly";
         }
@@ -681,6 +686,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Uses the supplied style to define line rendering. Currently it gets stroke-width to
          * define the buffer around the linestring.
          */
+        @Override
         protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer)
                 throws IOException {
             super.processSymbolizer(ft, rule, symbolizer);
@@ -695,6 +701,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param geom line to encode
          * @throws IOException if an error occures during encoding
          */
+        @Override
         protected void writeGeometry(Geometry geom, StringBuffer buf) throws IOException {
             if (geom instanceof LineString) {
                 LineString l = (LineString) geom;
@@ -731,6 +738,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         public MultiLineStringWriter() {}
 
         /** Uses writeMultiFeature. */
+        @Override
         protected void writeFeature(SimpleFeature ft, FeatureTypeStyle[] fts) throws IOException {
             writeMultiFeature(ft, fts);
         }
@@ -741,6 +749,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         /** Creates a new PolygonWriter object. */
         public PolygonWriter() {}
         /** The shape for polygons is a poly. */
+        @Override
         protected String getShape() throws IOException {
             return "poly";
         }
@@ -751,6 +760,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param geom the polygon to encode
          * @throws IOException if an error occures during encoding
          */
+        @Override
         protected void writeGeometry(Geometry geom, StringBuffer buf) throws IOException {
             Polygon poly = null;
             if (geom instanceof Polygon) {
@@ -778,6 +788,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         public MultiPolygonWriter() {}
 
         /** Uses writeMultiFeature. */
+        @Override
         protected void writeFeature(SimpleFeature ft, FeatureTypeStyle[] fts) throws IOException {
             writeMultiFeature(ft, fts);
         }
@@ -805,6 +816,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param fts "cached" ftss matching the FeatureType of the feature
          * @throws IOException if an error occurs during encoding
          */
+        @Override
         protected void writeFeature(SimpleFeature ft, FeatureTypeStyle[] fts) throws IOException {
             reset(ft);
 
@@ -843,6 +855,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             }
         }
 
+        @Override
         protected String getShape() throws IOException {
             return delegateWriter.getShape();
         }
@@ -855,6 +868,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @return true if the style filters "accept" the feature
          * @throws IOException if an error occurs during the process
          */
+        @Override
         protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList)
                 throws IOException {
             if (delegateWriter.processStyle(ft, ftsList)) {
@@ -868,6 +882,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /** Actually write the geometry (through the delegate). */
+        @Override
         protected void writeGeometry(Geometry geom, StringBuffer buf) throws IOException {
             if (geom != null) delegateWriter.writeGeometry(geom, buf);
             else throw new IOException("null geometry");

@@ -308,10 +308,12 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     // not supported
+    @Override
     @Test
     public void testAddIsolatedWorkspace() {}
 
     // not supported
+    @Override
     @Test
     public void testAddIsolatedNamespace() {}
 

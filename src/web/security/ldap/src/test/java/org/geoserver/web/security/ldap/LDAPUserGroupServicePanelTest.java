@@ -104,6 +104,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
 
                                 return current =

@@ -261,6 +261,7 @@ class FeatureCountProcessor {
         // run and count
         GetMap getMap =
                 new GetMap(wms) {
+                    @Override
                     protected org.geoserver.wms.GetMapOutputFormat getDelegate(String outputFormat)
                             throws ServiceException {
                         return new FeatureRenderSpyFormat(

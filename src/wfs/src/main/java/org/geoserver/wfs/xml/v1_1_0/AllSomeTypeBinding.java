@@ -38,6 +38,7 @@ public class AllSomeTypeBinding extends AbstractSimpleBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.ALLSOMETYPE;
     }
@@ -49,6 +50,7 @@ public class AllSomeTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return AllSomeType.class;
     }
@@ -60,6 +62,7 @@ public class AllSomeTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         if ("ALL".equals(value)) {
             return AllSomeType.ALL_LITERAL;

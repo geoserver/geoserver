@@ -352,6 +352,7 @@ public class FeatureTemplate {
             this.template = template;
         }
 
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -360,6 +361,7 @@ public class FeatureTemplate {
             return result;
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null) return false;

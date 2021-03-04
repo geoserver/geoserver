@@ -39,16 +39,19 @@ public class Vertex {
         this.index = index;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vertex)) return false;
         Vertex v = (Vertex) obj;
         return v.position.equals(position) && v.index == index;
     }
 
+    @Override
     public int hashCode() {
         return (position.hashCode() * 397) ^ index;
     }
 
+    @Override
     public String toString() {
         return ((position == null) ? "" : position.toString()) + " (" + index + ")";
     }

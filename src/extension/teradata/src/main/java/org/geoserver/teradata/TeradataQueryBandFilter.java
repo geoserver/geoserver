@@ -17,8 +17,10 @@ import org.geotools.data.teradata.QueryBand;
 
 public class TeradataQueryBandFilter implements Filter {
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -39,5 +41,6 @@ public class TeradataQueryBandFilter implements Filter {
         }
     }
 
+    @Override
     public void destroy() {}
 }

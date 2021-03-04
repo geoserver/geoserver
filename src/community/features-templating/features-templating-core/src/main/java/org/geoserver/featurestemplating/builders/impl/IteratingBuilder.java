@@ -17,17 +17,16 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class IteratingBuilder extends SourceBuilder {
 
-    protected boolean isFeaturesField;
+    protected boolean rootCollection;
 
     public IteratingBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
-        this.isFeaturesField = key != null && key.equalsIgnoreCase("features");
     }
 
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (!isFeaturesField) {
+        if (!rootCollection) {
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
                 evaluateNonFeaturesField(writer, context);
@@ -114,5 +113,13 @@ public class IteratingBuilder extends SourceBuilder {
         childContext.setParent(context.getParent());
         if (evaluateFilter(childContext)) return true;
         return false;
+    }
+
+    public boolean isRootCollection() {
+        return rootCollection;
+    }
+
+    public void setRootCollection(boolean rootCollection) {
+        this.rootCollection = rootCollection;
     }
 }

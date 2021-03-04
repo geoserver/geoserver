@@ -16,6 +16,8 @@ drop table if exists collection;
 create table collection (
   "id" serial primary key,
   "name" varchar,
+  "title" varchar,
+  "description" varchar,
   "primary" boolean,
   "htmlDescription" text,
   "footprint" geometry(Polygon, 4326),
@@ -36,7 +38,8 @@ create table collection (
   "eoWavelength" int,
   "eoSecurityConstraints" boolean,
   "eoDissemination" varchar,
-  "eoAcquisitionStation" varchar
+  "eoAcquisitionStation" varchar,
+  "license" varchar
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes

@@ -38,7 +38,7 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
         // collections
         addLinksFor(
                 basePath + "/collections",
-                CollectionsDocument.class,
+                CollectionsResponse.class,
                 "Collections Metadata as ",
                 "collections",
                 null,

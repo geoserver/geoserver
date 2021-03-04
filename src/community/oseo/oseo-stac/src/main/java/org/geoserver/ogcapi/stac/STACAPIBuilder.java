@@ -56,8 +56,8 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         declareGetResponseFormats(api, "/", OpenAPI.class);
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
         // TODO: these needs to be adjusted once we have
-        declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
-        declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
+        declareGetResponseFormats(api, "/collections", CollectionsResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}", CollectionResponse.class);
         declareGetResponseFormats(
                 api, "/collections/{collectionId}/items", FeatureCollectionType.class);
         declareGetResponseFormats(

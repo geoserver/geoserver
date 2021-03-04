@@ -28,7 +28,9 @@ public class LandingPageTest extends STACTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
-                        /*"getCollections", */ "getApi",
+                        "getCollections",
+                        "getCollection",
+                        "getApi",
                         "getLandingPage",
                         "getConformanceDeclaration"));
     }

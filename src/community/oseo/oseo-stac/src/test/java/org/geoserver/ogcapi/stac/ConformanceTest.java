@@ -18,7 +18,6 @@ public class ConformanceTest extends STACTestSupport {
     }
 
     public static void checkConformance(DocumentContext json) {
-        assertEquals(1, (int) json.read("$.length()", Integer.class));
         assertEquals(8, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(STACService.FEATURE_CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(STACService.FEATURE_OAS30, json.read("$.conformsTo[1]", String.class));

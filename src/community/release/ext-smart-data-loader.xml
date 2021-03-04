@@ -1,0 +1,16 @@
+<assembly>
+  <id>smart-data-loader-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-smart-data-loader*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

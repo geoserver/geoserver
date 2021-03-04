@@ -1,4 +1,4 @@
-.. 参与: 
+.. gettinginvolved: 
 
 参与
 ================
@@ -15,7 +15,7 @@
 　　您可以在GitHub上找到GeoServer项目。作为托管在 `GitHub <https://www.github.com/geoserver/>`_ 上的项目，任何人可以使用PullRequest向GeoServer提交补丁，GeoServer团队会对您的提交进行评估。要了解更多有关贡献代码的信息，我们强烈建议您加入GeoServer开发人员邮件列表。邮件列表详情见后文。
 
 文档
--------------
+----
 
 　　参与文档的建设也是一种关键的参与方式。无论是添加教程还是修复错误，每一种贡献都对GeoServer项目的健康成长大有裨益。参与文档贡献最好的一点是，你不需要是一个开发人员。
 
@@ -24,7 +24,7 @@
 　　如果想要了解更多关于向GeoServer代码库提交代码的事宜，我们强烈建议您加入GeoServer开发者官方邮件列表（详情见后文）。语法错误或其他细微的修改，可以参考 `快速修复 <http://docs.geoserver.org/latest/en/docguide/quickfix.html>`_ 。
 
 邮件列表
--------------
+----------
 
 　　GeoServer官方维护着两个邮件列表：
 
@@ -37,20 +37,20 @@
 
 
 在线聊天频道
----
+-------------
 
 　　如果想要实时交流，用户可以加入位于 `Freenode <http://freenode.net>`_的 `GeoServer <irc://irc.freenode.net/geoserver>`_ 聊天频道。GeoServer的开发者有时也会出现在这里。
 
 Bug跟踪
-------------
+----------
 
-　　如果您在使用GeoServer的过程中遇到问题，请通过邮件列表告知我们。`JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ 是一个bug追踪网站，我们也使用它来管理事务报告。`创建账号 <https://osgeo-org.atlassian.net/admin/users/sign-up>`_后，您就可以开始创建事务，进行讨论。
+　　如果您在使用GeoServer的过程中遇到问题，请通过邮件列表告知我们。`JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ 是一个bug追踪网站，我们也使用它来管理事务报告。`创建账号 <https://osgeo-org.atlassian.net/admin/users/sign-up>`_ 后，您就可以开始创建事务，进行讨论。
 
 　　无论是谁提交补丁————可以的话修复几个问题，我们都很欢迎。不管是通过JIRA提交补丁还是在GitHub上提交pull requests，都是受鼓励的行为。
 
-须知
+　　须知
 
-.. 警告::
+.. warning::
 
   如果您在使用过程中，发现GeoServer存在易受攻击的安全漏洞，请遵循以下几点建议进行报告：
 
@@ -62,21 +62,21 @@ Bug跟踪
 　　如果您的问题不宜公开交流，请考虑联系项目筹划指导委员会成员，或向开源地理空间组织发送邮件（info@osgeo.org）寻求商业支持。
 
 翻译
------------
+----------
 
 　　我们希望能够为GeoServer提供尽可能多的语言支持。需要翻译的文本有两处，一处是GeoServer的:ref:`管理界面`，另一处则是您现在正在阅读的这份文档。如果您有意参与翻译工作，请通过邮件告知我们。
 
 建议
---------------------
+----------
 
 　　我们乐意倾听对于GeoServer的建议，您可以通过邮件列表或JIRA联系我们。
 
 推荐
----------------
+----------
 
 　　另一种帮助GeoServer项目的做法是向其他人推荐GeoServer项目，您的推荐将比任何市场营销都更有效。GeoServer项目也会因为用户的增多而变得更好。
 
 资助
------------------
+----------
 
 　　最后一种帮助方式是在您的组织中推动对GeoServer的使用。有很多`商业组织 <http://geoserver.org/support/>`_ 为GeoServer的使用提供支持。对这些商业公司的有偿咨询同样会使整个GeoServer社区受益。

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>gs-docs</artifactId>
+  <groupId>org.geoserver.en</groupId>
+  <version>2.20-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>GeoServer Chinese Simplified Documentation</name>
+  <description>GeoServer Chinese Simplified documentation</description>
+
+  <licenses>
+    <license>
+      <name>Creative Commmons Attribution 4.0 International</name>
+      <url>https://creativecommons.org/licenses/by/4.0/</url>
+    </license>
+  </licenses>
+  
+  <dependencies>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- documentation build -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+          </dependency>
+        </dependencies>
+        <executions>
+           <execution>
+            <id>version</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                 <copy file="../en/release/VERSION.txt" todir="target" filtering="true">
+                  <filterset begintoken="$${" endtoken="}">
+                    <filter token="project.version" value="${project.version}"/>
+                    <filter token="build.revision" value="${build.commit.id}"/>
+                    <filter token="build.branch" value="${build.branch}"/>
+                    <filter token="build.timestamp" value="${build.timestamp}"/>
+                    <filter token="build.hudsonId" value="${build.hudsonId}"/>
+                  </filterset>
+                 </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>sphinx</id>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <ant antfile="build.xml" dir="${basedir}" target="${target}">
+                  <property name="build.directory" value="${project.build.directory}"/>
+                  <property name="project.version" value="${project.version}"/>
+                </ant>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <finalName>geoserver-${project.version}</finalName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>user</id>
+            <phase>package</phase>
+            <configuration>
+              <descriptors>
+                <descriptor>release/user.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+          
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <!-- sphinx build targets - default to full -->
+  <properties>
+     <target>full</target>
+  </properties>
+  <profiles>
+    <profile>
+      <id>user</id>
+      <properties>
+        <target>user</target>
+      </properties>
+    </profile>
+    <profile>
+      <id>user-pdf</id>
+      <properties>
+        <target>user-pdf</target>
+      </properties>
+    </profile>
+  </profiles>
+  
+</project>

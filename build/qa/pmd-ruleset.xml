@@ -34,6 +34,8 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap" />
   <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList" />
   <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
+  <rule ref="category/java/bestpractices.xml/MissingOverride" />
+
   <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector" />
 
   <rule ref="category/java/codestyle.xml/DontImportJavaLang"/>

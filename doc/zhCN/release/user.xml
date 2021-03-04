@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>userguide</id>
+  <baseDirectory>geoserver-${project.version}-userguide</baseDirectory>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory></directory>
+      <includes>
+        <include>LICENSE.md</include> <!-- CC -->
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>VERSION*</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/user/html</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/api</directory>
+      <outputDirectory>api</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>release/rest.html</source>
+      <outputDirectory>api</outputDirectory>
+      <destName>index.html</destName>
+    </file>
+  </files>
+</assembly>

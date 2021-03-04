@@ -6,12 +6,11 @@ package org.geoserver.featurestemplating.writers;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
@@ -132,8 +131,8 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
             writeValue(result);
         } else if (result instanceof Date) {
             Date timeStamp = (Date) result;
-            DateFormat df = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
-            writeElementNameAndValue(df.format(timeStamp), key);
+            String formatted = new StdDateFormat().withColonInTimeZone(true).format(timeStamp);
+            writeElementNameAndValue(formatted, key);
         } else if (result instanceof Geometry) {
             if (flatOutput) writeElementName(key);
             writeGeometry(result);

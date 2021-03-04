@@ -4,12 +4,7 @@
  */
 package org.geoserver.featurestemplating.ogcapi;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.geoserver.api.features.FeaturesResponse;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -20,6 +15,8 @@ import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.request.JSONPathVisitor;
+import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.features.FeatureService;
 import org.geoserver.ogcapi.features.FeaturesResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -38,6 +35,12 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.http.HttpHeaders;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This {@link DispatcherCallback} implementation OGCAPI compliant that checks on operation
  * dispatched event if a json-ld path has been provided to cql_filter and evaluate it against the
@@ -53,12 +56,18 @@ public class JSONTemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private GeoServer gs;
 
+    private final String FEATURES_SERVICE;
+
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public JSONTemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
         this.gs = gs;
+
+        // get the names of the methods that are related to features
+        APIService annotation = FeatureService.class.getAnnotation(APIService.class);
+        FEATURES_SERVICE = annotation.service();
     }
 
     @Override
@@ -191,7 +200,11 @@ public class JSONTemplateCallBackOGC extends AbstractDispatcherCallback {
         boolean isJson = format != null && format.equals(TemplateIdentifier.JSON.getOutputFormat());
         boolean isGeoJson =
                 format != null && format.equals(TemplateIdentifier.GEOJSON.getOutputFormat());
-        if (isJson || isGeoJson) {
+        // we want to override Features API method that are returning a list of features, and
+        // when the output format is JSON os GeoJSON
+        if ((isJson || isGeoJson)
+                && request.getService().equals(FEATURES_SERVICE)
+                && result instanceof FeaturesResponse) {
             FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
             if (typeInfo != null) {
                 try {

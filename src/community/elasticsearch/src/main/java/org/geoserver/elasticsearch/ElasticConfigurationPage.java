@@ -129,6 +129,7 @@ abstract class ElasticConfigurationPage extends Panel {
 
         elastic_form.add(
                 new AjaxButton("es_save") {
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         onSave(target);
                     }
@@ -398,10 +399,12 @@ abstract class ElasticConfigurationPage extends Panel {
      */
     private static class GeometryTypeRenderer implements IChoiceRenderer<Object> {
 
+        @Override
         public Object getDisplayValue(Object object) {
             return ((Class<?>) object).getSimpleName();
         }
 
+        @Override
         public String getIdValue(Object object, int index) {
             return (String) getDisplayValue(object);
         }

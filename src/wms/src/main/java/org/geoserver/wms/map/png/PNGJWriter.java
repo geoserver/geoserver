@@ -85,6 +85,7 @@ public class PNGJWriter {
 
         boolean highChangeRasterSymbolizer;
 
+        @Override
         public void visit(org.geotools.styling.RasterSymbolizer raster) {
             if (raster.getColorMap() == null) {
                 highChangeRasterSymbolizer = true;

@@ -78,6 +78,7 @@ public class DataStoreFormat extends VectorFormat {
         }
     }
 
+    @Override
     public DataStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
             throws IOException {
         Map<String, Serializable> params = createConnectionParameters(data, catalog);

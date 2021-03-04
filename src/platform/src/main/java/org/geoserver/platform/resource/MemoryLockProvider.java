@@ -32,6 +32,7 @@ public class MemoryLockProvider implements LockProvider {
         }
     }
 
+    @Override
     public Resource.Lock acquire(String lockKey) {
         final int idx = getIndex(lockKey);
         locks[idx].lock();
@@ -39,6 +40,7 @@ public class MemoryLockProvider implements LockProvider {
 
             boolean released = false;
 
+            @Override
             public void release() {
                 if (!released) {
                     released = true;
@@ -46,6 +48,7 @@ public class MemoryLockProvider implements LockProvider {
                 }
             }
 
+            @Override
             public String toString() {
                 return "MemoryLock " + idx;
             }

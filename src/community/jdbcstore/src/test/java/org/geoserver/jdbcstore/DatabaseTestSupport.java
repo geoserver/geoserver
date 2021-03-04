@@ -47,6 +47,7 @@ public interface DatabaseTestSupport extends AutoCloseable {
     public Connection getConnection() throws SQLException;
 
     /** Close any open resources */
+    @Override
     public void close() throws SQLException;
 
     /**

@@ -267,6 +267,7 @@ public class BatchPage extends GeoServerSecuredPage {
                 addFeedbackPanels(target);
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 addFeedbackPanels(target);
             }
@@ -436,6 +437,7 @@ public class BatchPage extends GeoServerSecuredPage {
         };
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

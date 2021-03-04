@@ -67,6 +67,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         return name;
     }
 
+    @Override
     public void setSecurityManager(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }

@@ -24,6 +24,7 @@ import org.junit.Test;
 
 public class NewUserPageTest extends AbstractUserPageTest {
 
+    @Override
     protected void initializeTester() {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(
@@ -39,6 +40,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
         clearServices();
     }
 
+    @Override
     protected void doInitialize() throws Exception {
         initializeForXML();
     }

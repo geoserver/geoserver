@@ -71,6 +71,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
      * Reads the commons elements to GetFeature, GetFeatureWithLock, LockFeature (typenames,
      * filters, namespaces)
      */
+    @Override
     public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
         request = super.read(request, kvp, rawKvp);

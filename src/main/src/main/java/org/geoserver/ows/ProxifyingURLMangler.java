@@ -80,6 +80,7 @@ public class ProxifyingURLMangler implements URLMangler {
         this.geoServer = geoServer;
     }
 
+    @Override
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
 

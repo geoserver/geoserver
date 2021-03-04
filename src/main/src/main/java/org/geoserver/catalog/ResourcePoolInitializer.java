@@ -26,6 +26,7 @@ public class ResourcePoolInitializer implements GeoServerReinitializer {
         this.resolverProvider = resolverProvider;
     }
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         this.gs = geoServer;
 

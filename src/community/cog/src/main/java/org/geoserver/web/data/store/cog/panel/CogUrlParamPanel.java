@@ -46,6 +46,7 @@ public class CogUrlParamPanel extends Panel implements ParamPanel {
     }
 
     /** The text field stored inside the panel. */
+    @Override
     public FormComponent<String> getFormComponent() {
         return cogInput.getFormComponent();
     }

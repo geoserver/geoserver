@@ -43,6 +43,7 @@ public class CoveragesTransformer extends TransformerBase {
         setNamespaceDeclarationEnabled(false);
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new CoveragesTranslator(handler);
     }
@@ -59,6 +60,7 @@ public class CoveragesTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             try {
                 if (!(o instanceof CoverageInfo)) {

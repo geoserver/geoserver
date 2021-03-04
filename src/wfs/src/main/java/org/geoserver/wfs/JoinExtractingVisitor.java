@@ -84,22 +84,27 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         this.aliases = new ArrayList<>(aliases);
     }
 
+    @Override
     public Object visitNullFilter(Object extraData) {
         return null;
     }
 
+    @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(IncludeFilter filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(Id filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(Not filter, Object extraData) {
         if (isJoinFilter(filter.getFilter(), extraData)) {
             checkValidJoinFilter(filter);
@@ -122,6 +127,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         }
     }
 
+    @Override
     public Object visit(PropertyIsBetween filter, Object extraData) {
         return handle(
                 filter,
@@ -131,14 +137,17 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
                 filter.getUpperBoundary());
     }
 
+    @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(PropertyIsNull filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
         return handleOther(filter, extraData);
     }

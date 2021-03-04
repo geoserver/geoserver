@@ -182,6 +182,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                             types,
                                             new ChoiceRenderer<Class>() {
 
+                                                @Override
                                                 public Object getDisplayValue(Class object) {
                                                     return object.getSimpleName();
                                                 }

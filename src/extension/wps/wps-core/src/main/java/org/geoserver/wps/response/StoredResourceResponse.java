@@ -39,6 +39,7 @@ public class StoredResourceResponse extends Response {
                 && operation.getService().getId().equals("wps");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         Object request = operation.getParameters()[0];
         if (request instanceof GetExecutionStatusType) {
@@ -78,6 +79,7 @@ public class StoredResourceResponse extends Response {
         }
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         Resource resource = (Resource) value;
         try (InputStream is = resource.in()) {

@@ -147,6 +147,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         return configDirectory.get(configFileName);
     }
 
+    @Override
     public String getLocation() throws IOException {
         return findConfigFile().path();
     }
@@ -184,6 +185,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
                 Resources.list(
                         parentFile,
                         new Filter<Resource>() {
+                            @Override
                             public boolean accept(Resource res) {
                                 if (configFileName.equals(res.name())) {
                                     return false;

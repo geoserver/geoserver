@@ -320,11 +320,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /** @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet() */
+    @Override
     public void afterPropertiesSet() throws Exception {
         GWC.set(this);
     }
 
     /** @see org.springframework.beans.factory.DisposableBean#destroy() */
+    @Override
     public void destroy() throws Exception {
         Catalog catalog = getCatalog();
         if (this.catalogLayerEventListener != null) {

@@ -30,11 +30,13 @@ class ReferenceConverter implements Converter {
         this.clazz = clazz;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean canConvert(Class type) {
         return clazz.isAssignableFrom(type);
     }
 
+    @Override
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         // could be a proxy, unwrap it
@@ -47,6 +49,7 @@ class ReferenceConverter implements Converter {
         writer.endNode();
     }
 
+    @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         String ref = null;
         if (reader.hasMoreChildren()) {

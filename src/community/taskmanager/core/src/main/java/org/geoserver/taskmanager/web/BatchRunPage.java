@@ -98,6 +98,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
         };
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

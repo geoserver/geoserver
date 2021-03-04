@@ -29,6 +29,7 @@ public abstract class AjaxRadio<T> extends Radio<T> {
                 new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     protected void onEvent(final AjaxRequestTarget target) {
                         RadioGroup<T> radioGroup = getEnclosingRadioGroup();
                         radioGroup.processInput();

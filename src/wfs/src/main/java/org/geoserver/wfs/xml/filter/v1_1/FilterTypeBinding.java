@@ -19,6 +19,7 @@ public class FilterTypeBinding extends org.geotools.filter.v1_1.FilterTypeBindin
         super(filterFactory);
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         Filter filter = (Filter) super.parse(instance, node, value);
 

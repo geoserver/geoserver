@@ -127,6 +127,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
             super(id);
         }
 
+        @Override
         protected ListView<ResourceConfigurationPanelInfo> createList(String id) {
             List<ResourceConfigurationPanelInfo> dataPanels =
                     filterResourcePanels(

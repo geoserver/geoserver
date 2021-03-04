@@ -311,6 +311,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         referenceValue.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
 
+                    @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         refValueValidationMessage.setDefaultModelObject(null);
                         refValueValidationMessage.setVisible(false);
@@ -488,6 +489,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         return true;
     }
 
+    @Override
     public void convertInput() {
         // Keep the original attributes
         if (resetDimensionDataOnDisabled() && !enabled.getModelObject()) {
@@ -667,10 +669,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             super();
         }
 
+        @Override
         public Object getDisplayValue(DimensionPresentation object) {
             return new ParamResourceModel(object.name(), DimensionEditorBase.this).getString();
         }
 
+        @Override
         public String getIdValue(DimensionPresentation object, int index) {
             return String.valueOf(object.ordinal());
         }
@@ -688,10 +692,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             super();
         }
 
+        @Override
         public Object getDisplayValue(DimensionDefaultValueSetting.Strategy object) {
             return new ParamResourceModel(object.name(), DimensionEditorBase.this).getString();
         }
 
+        @Override
         public String getIdValue(DimensionDefaultValueSetting.Strategy object, int index) {
             return String.valueOf(object.ordinal());
         }

@@ -122,6 +122,7 @@ public class LiveDbmsData extends LiveSystemTestData {
         return fixtureFile;
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return fixture != null;
     }

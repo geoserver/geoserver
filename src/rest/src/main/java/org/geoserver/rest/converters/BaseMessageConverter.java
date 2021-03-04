@@ -69,6 +69,7 @@ public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConvert
     }
 
     /** Returns the priority of the {@link BaseMessageConverter}. */
+    @Override
     public int getPriority() {
         return ExtensionPriority.LOWEST;
     }

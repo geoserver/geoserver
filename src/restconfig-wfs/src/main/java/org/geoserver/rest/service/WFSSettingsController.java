@@ -45,6 +45,7 @@ public class WFSSettingsController extends ServiceSettingsController<WFSInfo> {
         super(geoServer, WFSInfo.class);
     }
 
+    @Override
     @PutMapping(
         value = {"/settings", "/workspaces/{workspaceName}/settings"},
         consumes = {

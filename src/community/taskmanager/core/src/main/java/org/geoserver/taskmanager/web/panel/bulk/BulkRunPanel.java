@@ -149,6 +149,7 @@ public class BulkRunPanel extends Panel {
                         }
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                     }

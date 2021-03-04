@@ -59,6 +59,7 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
                         new GeoServerDialog.DialogDelegate() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             protected Component getContents(String id) {
                                 // show a confirmation panel for all the objects we have to remove
                                 return removePanel =
@@ -73,6 +74,7 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
                                         };
                             }
 
+                            @Override
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection

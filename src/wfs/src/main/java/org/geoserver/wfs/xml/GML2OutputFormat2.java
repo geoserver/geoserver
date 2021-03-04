@@ -51,14 +51,17 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
         this.resourceLoader = catalog.getResourceLoader();
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return "text/xml; subtype=gml/2.1.2";
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "GML2";
     }
 
+    @Override
     protected void write(
             FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException {

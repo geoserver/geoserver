@@ -69,6 +69,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         return config;
     }
 
+    @Override
     @Test
     public void testRoleConfig() throws IOException {
 
@@ -257,6 +258,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
     }
 
+    @Override
     @Test
     public void testUserGroupConfig() throws IOException {
         super.testUserGroupConfig();

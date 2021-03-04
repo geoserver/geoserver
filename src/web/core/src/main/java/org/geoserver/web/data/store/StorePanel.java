@@ -162,6 +162,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
         SimpleAjaxLink<Object> linkPanel =
                 new ConfirmationAjaxLink<Object>(id, null, resRemove, confirmRemove) {
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         getCatalog().remove((StoreInfo) itemModel.getObject());
                         target.add(StorePanel.this);

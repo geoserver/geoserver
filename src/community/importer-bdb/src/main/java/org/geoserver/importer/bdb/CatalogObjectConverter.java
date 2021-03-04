@@ -14,13 +14,16 @@ import org.geoserver.catalog.Info;
 
 public class CatalogObjectConverter implements Converter {
 
+    @Override
     public boolean canConvert(Class type) {
         return Info.class.isAssignableFrom(type);
     }
 
+    @Override
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {}
 
+    @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 
         return null;

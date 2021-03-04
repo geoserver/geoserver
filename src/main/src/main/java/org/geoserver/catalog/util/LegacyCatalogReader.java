@@ -296,14 +296,17 @@ public class LegacyCatalogReader {
         final String uri = namespaceElement.getAttribute("uri");
 
         return new Map.Entry<String, String>() {
+            @Override
             public String getKey() {
                 return pre;
             }
 
+            @Override
             public String getValue() {
                 return uri;
             }
 
+            @Override
             public String setValue(String value) {
                 throw new UnsupportedOperationException();
             }

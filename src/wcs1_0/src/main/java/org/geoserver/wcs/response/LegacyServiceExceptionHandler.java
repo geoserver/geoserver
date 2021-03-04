@@ -99,6 +99,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
         this.contentType = contentType;
     }
 
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         String tab = "   ";
         StringBuffer sb = new StringBuffer();

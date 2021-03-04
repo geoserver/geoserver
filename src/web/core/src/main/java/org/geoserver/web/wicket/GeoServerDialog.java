@@ -105,6 +105,7 @@ public class GeoServerDialog extends Panel {
         window.setCloseButtonCallback(
                 new ModalWindow.CloseButtonCallback() {
 
+                    @Override
                     public boolean onCloseButtonClicked(AjaxRequestTarget target) {
                         return delegate.onCancel(target);
                     }
@@ -112,6 +113,7 @@ public class GeoServerDialog extends Panel {
         window.setWindowClosedCallback(
                 new ModalWindow.WindowClosedCallback() {
 
+                    @Override
                     public void onClose(AjaxRequestTarget target) {
                         delegate.onClose(target);
                     }
@@ -136,6 +138,7 @@ public class GeoServerDialog extends Panel {
             final IModel<String>... messages) {
         window.setPageCreator(
                 new ModalWindow.PageCreator() {
+                    @Override
                     public Page createPage() {
                         return new InfoPage(heading, messages);
                     }

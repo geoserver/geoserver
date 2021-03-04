@@ -41,6 +41,7 @@ public interface TypeInfoCollectionWrapper {
             this.featureTypeInfo = featureTypeInfo;
         }
 
+        @Override
         public FeatureTypeInfo getFeatureTypeInfo() {
             return featureTypeInfo;
         }
@@ -60,6 +61,7 @@ public interface TypeInfoCollectionWrapper {
             this.featureTypeInfo = featureTypeInfo;
         }
 
+        @Override
         public FeatureTypeInfo getFeatureTypeInfo() {
             return featureTypeInfo;
         }

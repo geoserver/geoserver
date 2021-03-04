@@ -33,6 +33,7 @@ public class GdalWcsTest extends WCSKVPTestSupport {
                 PALETTED, "paletted.tif", "tif", null, GdalWcsTest.class, getCatalog());
     }
 
+    @Override
     @Before
     public void setup() {
         assumeTrue(GdalTestUtil.isGdalAvailable());

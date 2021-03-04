@@ -121,6 +121,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.UPDATEELEMENTTYPE;
     }
@@ -132,10 +133,12 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return null;
     }
 
+    @Override
     public void initializeChildContext(
             ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
@@ -159,6 +162,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         UpdateElementType updateElement = wfsfactory.createUpdateElementType();
@@ -191,6 +195,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
         return updateElement;
     }
 
+    @Override
     public Object getProperty(Object arg0, QName arg1) throws Exception {
         Object result = super.getProperty(arg0, arg1);
 

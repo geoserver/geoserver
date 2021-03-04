@@ -35,6 +35,7 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
                 PARAM_DEFINITION, new ParameterInfo(PARAM_DEFINITION, ParameterType.SQL, true));
     }
 
+    @Override
     public String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency)
             throws TaskException {
         String definition = (String) ctx.getParameterValues().get(PARAM_DEFINITION);

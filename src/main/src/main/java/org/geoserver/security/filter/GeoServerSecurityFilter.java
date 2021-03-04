@@ -49,6 +49,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         return beanName;
     }
 
+    @Override
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }

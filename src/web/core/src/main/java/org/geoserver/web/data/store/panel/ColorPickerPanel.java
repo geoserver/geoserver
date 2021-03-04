@@ -58,6 +58,7 @@ public class ColorPickerPanel extends Panel {
                                         private static final long serialVersionUID =
                                                 4343895199315509104L;
 
+                                        @Override
                                         public String convertToString(String input, Locale locale) {
                                             if (input.startsWith("#")) {
                                                 return input.substring(1);
@@ -66,6 +67,7 @@ public class ColorPickerPanel extends Panel {
                                             }
                                         }
 
+                                        @Override
                                         public String convertToObject(String value, Locale locale) {
                                             if (value.equals("")) return value;
                                             return "#" + value;

@@ -15,10 +15,12 @@ import org.geoserver.catalog.StoreInfo;
  */
 public class StoreListChoiceRenderer extends ChoiceRenderer<StoreInfo> {
 
+    @Override
     public Object getDisplayValue(StoreInfo info) {
         return new StringBuilder(info.getWorkspace().getName()).append(':').append(info.getName());
     }
 
+    @Override
     public String getIdValue(StoreInfo store, int arg1) {
         return store.getId();
     }

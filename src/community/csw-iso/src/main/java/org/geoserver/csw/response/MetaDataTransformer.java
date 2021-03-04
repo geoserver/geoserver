@@ -57,6 +57,7 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             getNamespaceSupport().declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         }
 
+        @Override
         public void encode(CSWRecordsResult response, Feature f) {
             encodeProperty(f, f);
         }

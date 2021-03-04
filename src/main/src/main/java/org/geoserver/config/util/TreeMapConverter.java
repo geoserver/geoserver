@@ -44,6 +44,7 @@ public class TreeMapConverter extends MapConverter {
 
     @SuppressWarnings("unchecked")
     private static final class NullComparator extends Mapper.Null implements Comparator {
+        @Override
         public int compare(Object o1, Object o2) {
             Comparable c1 = (Comparable) o1;
             return c1.compareTo(o2);
@@ -56,6 +57,7 @@ public class TreeMapConverter extends MapConverter {
         super(mapper, TreeMap.class);
     }
 
+    @Override
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         SortedMap sortedMap = (SortedMap) source;
@@ -78,6 +80,7 @@ public class TreeMapConverter extends MapConverter {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         TreeMap result = null;

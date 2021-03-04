@@ -16,6 +16,7 @@ public class JDBCUserListPageTest extends UserListPageTest {
         initializeForJDBC();
     }
 
+    @Override
     @Test
     public void testRemoveWithRoles() throws Exception {
         withRoles = true;

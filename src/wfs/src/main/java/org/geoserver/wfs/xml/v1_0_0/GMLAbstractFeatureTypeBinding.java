@@ -39,6 +39,7 @@ public final class GMLAbstractFeatureTypeBinding
         this.catalog = catalog;
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // pre process parsee tree to make sure types match up
         FeatureTypeInfo meta =

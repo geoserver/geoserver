@@ -52,6 +52,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         reset();
     }
 
+    @Override
     public void visit(Catalog catalog) {}
 
     /** Resets the visitor so that it can be reused for another search */
@@ -109,6 +110,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         }
     }
 
+    @Override
     public void visit(WorkspaceInfo workspace) {
         // drill down on stores
         List<StoreInfo> stores = catalog.getStoresByWorkspace(workspace, StoreInfo.class);
@@ -132,18 +134,22 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         add(workspace, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(NamespaceInfo namespace) {
         add(namespace, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(DataStoreInfo dataStore) {
         visitStore(dataStore);
     }
 
+    @Override
     public void visit(CoverageStoreInfo coverageStore) {
         visitStore(coverageStore);
     }
 
+    @Override
     public void visit(WMSStoreInfo store) {
         visitStore(store);
     }
@@ -170,14 +176,17 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         add(dataStore, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(FeatureTypeInfo featureType) {
         add(featureType, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(CoverageInfo coverage) {
         add(coverage, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(WMSLayerInfo wmsLayer) {
         add(wmsLayer, ModificationType.DELETE);
     }
@@ -187,6 +196,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         add(wmtsLayer, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(LayerInfo layer) {
         // mark layer and resource as removed
         add(layer.getResource(), ModificationType.DELETE);
@@ -219,6 +229,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         }
     }
 
+    @Override
     public void visit(StyleInfo style) {
         // find the layers having this style as primary or secondary
         Filter anyStyle = Predicates.equal("styles", style, MatchAction.ANY);
@@ -254,6 +265,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         add(style, ModificationType.DELETE);
     }
 
+    @Override
     public void visit(LayerGroupInfo layerGroupToRemove) {
         Filter associatedTo = Predicates.equal("layers", layerGroupToRemove, MatchAction.ANY);
         try (CloseableIterator<LayerGroupInfo> it =

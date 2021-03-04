@@ -27,6 +27,7 @@ public class CRSModel implements IModel<CoordinateReferenceSystem> {
         setObject(crs);
     }
 
+    @Override
     public CoordinateReferenceSystem getObject() {
         if (crs != null) {
             return crs;
@@ -44,11 +45,13 @@ public class CRSModel implements IModel<CoordinateReferenceSystem> {
         }
     }
 
+    @Override
     public void setObject(CoordinateReferenceSystem object) {
         this.crs = object;
         this.wkt = crs != null ? crs.toWKT() : null;
     }
 
+    @Override
     public void detach() {
         crs = null;
     }

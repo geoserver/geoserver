@@ -58,6 +58,7 @@ public interface NamespaceInfo extends CatalogInfo {
     MetadataMap getMetadata();
 
     /** Two namespace objects are considred equal if they have the same "prefix" and "uri". */
+    @Override
     boolean equals(Object obj);
 
     // /**

@@ -44,6 +44,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -5907648151984337786L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerAccessDataRulePanel(id, layerModel, own);
                             }
@@ -81,6 +82,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                             new ComponentBuilder() {
                                 private static final long serialVersionUID = -5907648151984337786L;
 
+                                @Override
                                 public Component buildComponent(final String id) {
                                     return new LayerAccessDataRulePanel(id, layerModel, own);
                                 }
@@ -121,6 +123,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                             new ComponentBuilder() {
                                 private static final long serialVersionUID = -5907648151984337786L;
 
+                                @Override
                                 public Component buildComponent(final String id) {
                                     return new LayerAccessDataRulePanel(id, layerModel, own);
                                 }

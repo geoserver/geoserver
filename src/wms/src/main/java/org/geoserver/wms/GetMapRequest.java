@@ -737,6 +737,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      *
      * @return a String representation of this request.
      */
+    @Override
     public String toString() {
         StringBuffer returnString = new StringBuffer("\nGetMap Request");
         returnString.append("\n version: " + version);

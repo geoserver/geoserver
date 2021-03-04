@@ -107,6 +107,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
                 GeoServerExtensions.bean(GeoServer.class).getGlobal().getSettings().getCharset());
     }
 
+    @Override
     public int getPriority() {
         // If no extension or content-type provided, return HTML;
         return ExtensionPriority.LOWEST - 1;

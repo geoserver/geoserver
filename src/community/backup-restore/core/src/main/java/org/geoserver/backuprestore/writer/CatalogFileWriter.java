@@ -68,6 +68,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
         super(clazz, backupFacade);
     }
 
+    @Override
     protected String getItemName(XStreamPersister xp) {
         return xp.getClassAliasingMapper().serializedClass(clazz);
     }

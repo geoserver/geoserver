@@ -61,6 +61,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * @see
      *     org.geoserver.catalog.event.CatalogListener#handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent)
      */
+    @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         // no need to handle style additions, they are added before being attached to a layerinfo
     }
@@ -86,6 +87,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * @see
      *     org.geoserver.catalog.event.CatalogListener#handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent)
      */
+    @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         CatalogInfo source = event.getSource();
         if (source instanceof StyleInfo) {
@@ -164,6 +166,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      *
      * @see org.geoserver.catalog.event.CatalogListener#handlePostModifyEvent
      */
+    @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
         Object source = event.getSource();
         if (source instanceof StyleInfo) {
@@ -249,11 +252,13 @@ public class CatalogStyleChangeListener implements CatalogListener {
      *
      * @see org.geoserver.catalog.event.CatalogListener#handleRemoveEvent
      */
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         //
     }
 
     /** */
+    @Override
     public void reloaded() {
         //
     }

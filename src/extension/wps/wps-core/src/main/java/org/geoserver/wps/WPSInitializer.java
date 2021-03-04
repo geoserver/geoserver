@@ -61,6 +61,7 @@ public class WPSInitializer implements GeoServerInitializer {
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void initialize(final GeoServer geoServer) throws Exception {
         initWPS(geoServer.getService(WPSInfo.class), geoServer);
 

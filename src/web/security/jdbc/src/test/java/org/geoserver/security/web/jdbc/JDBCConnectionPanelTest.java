@@ -57,6 +57,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return current = new JDBCConnectionPanel<>(id, new Model<>(config));
                             };

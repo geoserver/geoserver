@@ -12,10 +12,12 @@ import org.geoserver.catalog.StyleInfo;
 @SuppressWarnings("serial")
 public class StyleNameRenderer extends ChoiceRenderer<StyleInfo> {
 
+    @Override
     public Object getDisplayValue(StyleInfo object) {
         return object.prefixedName();
     }
 
+    @Override
     public String getIdValue(StyleInfo object, int index) {
         return object.getId();
     }

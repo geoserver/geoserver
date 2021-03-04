@@ -115,6 +115,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     public abstract void init() throws Exception;
 
     /** Destroy method */
+    @Override
     public abstract void destroy() throws Exception;
 
     /** @return the remoteFactoryListeners */
@@ -159,6 +160,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     }
 
     /** @return the priority */
+    @Override
     public int getPriority() {
         return priority;
     }

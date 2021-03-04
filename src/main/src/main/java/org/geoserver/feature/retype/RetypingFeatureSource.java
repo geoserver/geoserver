@@ -122,16 +122,19 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
      * @since 1.7
      * @see FeatureSource#getName()
      */
+    @Override
     public Name getName() {
         return getSchema().getName();
     }
 
+    @Override
     public void addFeatureListener(FeatureListener listener) {
         FeatureListener wrapper = new WrappingFeatureListener(this, listener);
         listeners.put(listener, wrapper);
         wrapped.addFeatureListener(wrapper);
     }
 
+    @Override
     public void removeFeatureListener(FeatureListener listener) {
         FeatureListener wrapper = listeners.get(listener);
         if (wrapper != null) {
@@ -140,30 +143,36 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
         }
     }
 
+    @Override
     public ReferencedEnvelope getBounds() throws IOException {
         // not fully correct if we use this to shave attributes too, but this is
         // not in the scope now
         return wrapped.getBounds();
     }
 
+    @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         // not fully correct if we use this to shave attributes too, but this is
         // not in the scope now
         return wrapped.getBounds(store.retypeQuery(query, typeMap));
     }
 
+    @Override
     public int getCount(Query query) throws IOException {
         return wrapped.getCount(store.retypeQuery(query, typeMap));
     }
 
+    @Override
     public DataStore getDataStore() {
         return store;
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         return getFeatures(Query.ALL);
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         if (query.getTypeName() == null) {
             query = new Query(query);
@@ -183,22 +192,27 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                 wrapped.getFeatures(store.retypeQuery(query, typeMap)), target);
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return getFeatures(new Query(typeMap.getName(), filter));
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return typeMap.getFeatureType();
     }
 
+    @Override
     public Set<RenderingHints.Key> getSupportedHints() {
         return wrapped.getSupportedHints();
     }
 
+    @Override
     public ResourceInfo getInfo() {
         return wrapped.getInfo();
     }
 
+    @Override
     public QueryCapabilities getQueryCapabilities() {
         return wrapped.getQueryCapabilities();
     }

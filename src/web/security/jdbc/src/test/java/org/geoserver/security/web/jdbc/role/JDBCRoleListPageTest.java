@@ -12,6 +12,7 @@ import org.junit.Test;
 
 public class JDBCRoleListPageTest extends RoleListPageTest {
 
+    @Override
     @Test
     public void testRemove() throws Exception {
         // insertValues();

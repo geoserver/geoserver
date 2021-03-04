@@ -25,10 +25,12 @@ public class WCS20DescribeEOCoverageSetResponse extends Response {
         super(DescribeEOCoverageSetTransformer.class);
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return MIME_TYPE;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

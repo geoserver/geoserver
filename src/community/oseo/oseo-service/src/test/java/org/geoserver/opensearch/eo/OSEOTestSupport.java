@@ -89,6 +89,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         return ATOM_SCHEMA;
     }
 
+    @Override
     protected List<Filter> getFilters() {
         return Collections.singletonList(new OSEOFilter());
     }

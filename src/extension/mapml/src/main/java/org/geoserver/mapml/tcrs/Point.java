@@ -90,6 +90,7 @@ public class Point implements Cloneable {
         return this;
     }
     /** @return a cloned copy of this Point */
+    @Override
     protected Point clone() {
         return new Point(this.x, this.y);
     }

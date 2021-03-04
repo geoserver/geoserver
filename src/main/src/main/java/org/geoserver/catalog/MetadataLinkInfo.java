@@ -13,6 +13,7 @@ package org.geoserver.catalog;
 public interface MetadataLinkInfo extends Info {
 
     /** Identifier. */
+    @Override
     String getId();
 
     /** @uml.property name="about" */

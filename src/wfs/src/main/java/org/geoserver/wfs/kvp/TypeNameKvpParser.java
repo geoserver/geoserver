@@ -29,6 +29,7 @@ public class TypeNameKvpParser extends QNameKvpParser {
         this.geoserver = geoserver;
     }
 
+    @Override
     protected Object parseToken(String token) throws Exception {
         int i = token.indexOf(':');
 

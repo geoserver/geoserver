@@ -39,6 +39,7 @@ public class BindingLdapTemplate extends SpringSecurityLdapTemplate {
             DirContext ctx = getContextSource().getContext(username, password);
             ContextExecutor ce =
                     new ContextExecutor() {
+                        @Override
                         public Object executeWithContext(DirContext ctx)
                                 throws javax.naming.NamingException {
                             callback.executeWithContext(ctx, null);

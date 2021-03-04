@@ -179,6 +179,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
         }
     }
 
+    @Override
     protected void doReturn() {
         ((AuthenticationPage) returnPage).updateChainComponents();
         super.doReturn();

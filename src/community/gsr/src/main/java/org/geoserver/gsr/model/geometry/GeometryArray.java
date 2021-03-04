@@ -18,10 +18,12 @@ public class GeometryArray extends Geometry {
 
     private SpatialReference spatialReference;
 
+    @Override
     public GeometryTypeEnum getGeometryType() {
         return geometryType;
     }
 
+    @Override
     public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
@@ -34,10 +36,12 @@ public class GeometryArray extends Geometry {
         this.geometries = geometries;
     }
 
+    @Override
     public SpatialReference getSpatialReference() {
         return spatialReference;
     }
 
+    @Override
     public void setSpatialReference(SpatialReference spatialReference) {
         this.spatialReference = spatialReference;
     }

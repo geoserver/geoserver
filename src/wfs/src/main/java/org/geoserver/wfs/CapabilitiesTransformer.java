@@ -175,6 +175,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         SortedSet<FunctionName> sortedFunctions =
                 new TreeSet<>(
                         new Comparator<FunctionName>() {
+                            @Override
                             public int compare(FunctionName fn1, FunctionName fn2) {
                                 String n1 = fn1.getName();
                                 String n2 = fn2.getName();
@@ -252,14 +253,17 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
     protected Map.Entry parameter(final String name, final Object value) {
         return new Map.Entry() {
+            @Override
             public Object getKey() {
                 return name;
             }
 
+            @Override
             public Object getValue() {
                 return value;
             }
 
+            @Override
             public Object setValue(Object value) {
                 return null;
             }
@@ -303,6 +307,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             wfs.getGeoServer().getGlobal().getResourceErrorHandling());
         }
 
+        @Override
         public Translator createTranslator(ContentHandler handler) {
             return new CapabilitiesTranslator1_0(handler);
         }
@@ -314,6 +319,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 super(handler, null, null);
             }
 
+            @Override
             public void encode(Object object) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(object);
 
@@ -960,6 +966,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             this.baseUrl = baseUrl;
         }
 
+        @Override
         public Translator createTranslator(ContentHandler handler) {
             return new CapabilitiesTranslator1_1(handler, baseUrl, wfs, extCapsProviders);
         }
@@ -987,6 +994,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
             }
 
+            @Override
             public void encode(Object object) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(object);
 
@@ -1439,18 +1447,22 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     try {
                         cp.encode(
                                 new WFSExtendedCapabilitiesProvider.Translator() {
+                                    @Override
                                     public void start(String element) {
                                         CapabilitiesTranslator1_1.this.start(element);
                                     }
 
+                                    @Override
                                     public void start(String element, Attributes attributes) {
                                         CapabilitiesTranslator1_1.this.start(element, attributes);
                                     }
 
+                                    @Override
                                     public void chars(String text) {
                                         CapabilitiesTranslator1_1.this.chars(text);
                                     }
 
+                                    @Override
                                     public void end(String element) {
                                         CapabilitiesTranslator1_1.this.end(element);
                                     }
@@ -2182,6 +2194,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 delegate = (CapabilitiesTranslator1_1) wfs1_1.createTranslator(handler);
             }
 
+            @Override
             public void encode(Object o) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(o);
                 delegate.request = request;

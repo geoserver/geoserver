@@ -29,6 +29,7 @@ public class AuthenticationCacheKey {
         return cacheKey;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) return true;
         if (!(other instanceof AuthenticationCacheKey)) return false;
@@ -38,11 +39,13 @@ public class AuthenticationCacheKey {
                 && (Objects.equals(cacheKey, otherKey.cacheKey));
     }
 
+    @Override
     public int hashCode() {
         return ((filterName == null) ? 0 : filterName.hashCode())
                 ^ ((cacheKey == null) ? 0 : cacheKey.hashCode());
     }
 
+    @Override
     public String toString() {
         return filterName + ":" + cacheKey;
     }

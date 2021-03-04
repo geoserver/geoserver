@@ -35,6 +35,7 @@ public class DDSMapResponse extends RenderedImageMapResponse {
         super(MIME_TYPE, wms);
     }
 
+    @Override
     public void formatImageOutputStream(
             RenderedImage img, OutputStream os, WMSMapContent mapContent)
             throws ServiceException, IOException {

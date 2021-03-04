@@ -65,6 +65,7 @@ public class GeoStyler extends Panel implements IHeaderContributor {
      *
      * @param header
      */
+    @Override
     public void renderHead(IHeaderResponse header) {
         super.renderHead(header);
         try {

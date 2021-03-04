@@ -165,6 +165,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         add(reloadWarningDialog = new ModalWindow("reloadWarningDialog"));
         reloadWarningDialog.setPageCreator(
                 new ModalWindow.PageCreator() {
+                    @Override
                     public Page createPage() {
                         return new ReloadWarningDialog(
                                 new StringResourceModel(

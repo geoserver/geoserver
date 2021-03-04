@@ -69,6 +69,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     static final Property<LayerInfo> ENABLED =
             new AbstractProperty<LayerInfo>("enabled") {
 
+                @Override
                 public Boolean getPropertyValue(LayerInfo item) {
                     return Boolean.valueOf(item.enabled());
                 }
@@ -80,9 +81,11 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
                 /**
                  * We roll a custom comparator that treats the numeric part of the code as a number
                  */
+                @Override
                 public java.util.Comparator<LayerInfo> getComparator() {
                     return new Comparator<LayerInfo>() {
 
+                        @Override
                         public int compare(LayerInfo o1, LayerInfo o2) {
                             // split out authority and code
                             String[] srs1 = o1.getResource().getSRS().split(":");

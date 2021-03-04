@@ -754,6 +754,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /** Destroy the connection */
+    @Override
     public void destroy() throws Exception {
         if (connection != null && connection.isConnected()) {
             stopPingTask();
@@ -795,6 +796,7 @@ public class XMPPClient extends RemoteProcessClient {
 
             MessageListener listener =
                     new MessageListener() {
+                        @Override
                         public void processMessage(Chat chat, Message message) {
                             // TODO: Fix this so that this actually does something!
                         }
@@ -1165,6 +1167,7 @@ public class XMPPClient extends RemoteProcessClient {
         private boolean sendPing() throws NotConnectedException {
             IQ req =
                     new IQ() {
+                        @Override
                         public String getChildElementXML() {
                             return "<ping xmlns='urn:xmpp:ping'/>";
                         }
@@ -1185,6 +1188,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
 
         /** */
+        @Override
         public void run() {
             try {
                 // Sleep before sending first heartbeat. This will give time to

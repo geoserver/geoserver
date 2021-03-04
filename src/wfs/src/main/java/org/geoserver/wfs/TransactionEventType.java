@@ -50,6 +50,7 @@ public class TransactionEventType extends CodeList<TransactionEventType> {
         super(name, VALUES);
     }
 
+    @Override
     public TransactionEventType[] family() {
         synchronized (VALUES) {
             return VALUES.toArray(new TransactionEventType[VALUES.size()]);

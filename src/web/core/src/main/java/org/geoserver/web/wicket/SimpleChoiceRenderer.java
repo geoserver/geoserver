@@ -11,10 +11,12 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 @SuppressWarnings("serial")
 public class SimpleChoiceRenderer<T> extends ChoiceRenderer<T> {
 
+    @Override
     public Object getDisplayValue(T object) {
         return object;
     }
 
+    @Override
     public String getIdValue(T object, int index) {
         return object.toString();
     }

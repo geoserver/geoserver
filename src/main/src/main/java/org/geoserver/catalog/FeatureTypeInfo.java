@@ -38,6 +38,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
      *
      * <p>
      */
+    @Override
     DataStoreInfo getStore();
 
     /**

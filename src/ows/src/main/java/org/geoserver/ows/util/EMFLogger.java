@@ -27,6 +27,7 @@ public class EMFLogger extends RequestObjectLogger {
         return obj instanceof EObject;
     }
 
+    @Override
     protected void log(Object obj, int level, StringBuffer log) {
         EObject object = (EObject) obj;
         List properties = object.eClass().getEAllStructuralFeatures();

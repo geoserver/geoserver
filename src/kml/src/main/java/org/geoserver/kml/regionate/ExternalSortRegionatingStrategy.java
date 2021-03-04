@@ -300,11 +300,13 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
             gf = new GeometryFactory();
         }
 
+        @Override
         public void close() {
             JDBCUtils.close(rs);
             JDBCUtils.close(st);
         }
 
+        @Override
         public boolean hasNext() {
             // the contract of the iterator does not say this will be
             // called just once, we have to guard against multiple calls
@@ -320,6 +322,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
             return next;
         }
 
+        @Override
         public Feature next() throws NoSuchElementException {
             if (!nextCalled) hasNext();
             nextCalled = false;

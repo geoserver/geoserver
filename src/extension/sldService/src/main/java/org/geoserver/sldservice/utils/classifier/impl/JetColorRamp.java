@@ -15,6 +15,7 @@ import java.awt.Color;
  */
 public class JetColorRamp extends CustomColorRamp {
 
+    @Override
     protected void createRamp() throws Exception {
         setEndColor(new Color(255, 0, 0));
         setMid(new Color(255, 255, 0)); // Yellow color as Mid Color

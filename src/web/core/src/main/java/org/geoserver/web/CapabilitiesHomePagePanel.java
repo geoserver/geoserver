@@ -60,6 +60,7 @@ public class CapabilitiesHomePagePanel extends Panel {
             return capsLink;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof CapsInfo)) {
                 return false;

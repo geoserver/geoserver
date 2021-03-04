@@ -199,14 +199,17 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
@@ -262,26 +265,32 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
 
+                        @Override
                         @SuppressWarnings("PMD.CloseResource")
                         public ServletInputStream getInputStream() {
                             final ServletInputStream stream = super.getInputStream();
                             return new ServletInputStream() {
+                                @Override
                                 public int read() throws IOException {
                                     return stream.read();
                                 }
 
+                                @Override
                                 public int available() {
                                     return body.length();
                                 }
@@ -321,26 +330,32 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
 
+                        @Override
                         @SuppressWarnings("PMD.CloseResource")
                         public ServletInputStream getInputStream() {
                             final ServletInputStream stream = super.getInputStream();
                             return new ServletInputStream() {
+                                @Override
                                 public int read() throws IOException {
                                     return stream.read();
                                 }
 
+                                @Override
                                 public int available() {
                                     return body.length();
                                 }
@@ -401,14 +416,17 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
@@ -503,14 +521,17 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
@@ -548,14 +569,17 @@ public class DispatcherTest {
                 new MockHttpServletRequest() {
                     String encoding;
 
+                    @Override
                     public int getServerPort() {
                         return 8080;
                     }
 
+                    @Override
                     public String getCharacterEncoding() {
                         return encoding;
                     }
 
+                    @Override
                     public void setCharacterEncoding(String encoding) {
                         this.encoding = encoding;
                     }
@@ -913,14 +937,17 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }
@@ -963,14 +990,17 @@ public class DispatcherTest {
                     new MockHttpServletRequest() {
                         String encoding;
 
+                        @Override
                         public int getServerPort() {
                             return 8080;
                         }
 
+                        @Override
                         public String getCharacterEncoding() {
                             return encoding;
                         }
 
+                        @Override
                         public void setCharacterEncoding(String encoding) {
                             this.encoding = encoding;
                         }

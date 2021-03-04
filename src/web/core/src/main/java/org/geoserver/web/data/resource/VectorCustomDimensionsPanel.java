@@ -214,6 +214,7 @@ public class VectorCustomDimensionsPanel extends Panel {
             key = VECTOR_CUSTOM_DIMENSION_PREFIX + expression;
         }
 
+        @Override
         public VectorCustomDimensionEntry getObject() {
             final DimensionInfo dim =
                     (DimensionInfo)
@@ -228,6 +229,7 @@ public class VectorCustomDimensionsPanel extends Panel {
             return entry;
         }
 
+        @Override
         public void setObject(VectorCustomDimensionEntry object) {
             // check if is a renamed dimension
             if (object.hasModifiedKey()) {

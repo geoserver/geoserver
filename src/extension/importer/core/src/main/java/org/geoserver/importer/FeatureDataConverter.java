@@ -231,6 +231,7 @@ public class FeatureDataConverter {
 
     public static final FeatureDataConverter TO_ORACLE =
             new FeatureDataConverter() {
+                @Override
                 public void convert(SimpleFeature from, SimpleFeature to) {
                     // for oracle the target names are always uppercase
                     Set<String> fromAttrNames = attributeNames(from);
@@ -243,6 +244,7 @@ public class FeatureDataConverter {
                     }
                 };
 
+                @Override
                 public SimpleFeatureType convertType(
                         SimpleFeatureType featureType,
                         VectorFormat format,

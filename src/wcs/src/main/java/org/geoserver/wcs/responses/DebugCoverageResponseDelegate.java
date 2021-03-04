@@ -47,6 +47,7 @@ public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 });
     }
 
+    @Override
     public void encode(
             GridCoverage2D coverage,
             String outputFormat,

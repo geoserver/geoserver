@@ -36,6 +36,7 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         geoServer.addListener(
                 new ConfigurationListenerAdapter() {
@@ -90,6 +91,7 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
                 });
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         String strValue =
                 GeoServerExtensions.getProperty(

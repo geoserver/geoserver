@@ -26,6 +26,7 @@ public class H2DataStoreFactoryInitializer extends DataStoreFactoryInitializer<H
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void initialize(H2DataStoreFactory factory) {
         factory.setBaseDirectory(resourceLoader.getBaseDirectory());
     }

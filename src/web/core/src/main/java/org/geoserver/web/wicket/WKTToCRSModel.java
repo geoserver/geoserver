@@ -25,6 +25,7 @@ public class WKTToCRSModel implements IModel<CoordinateReferenceSystem> {
         this.srsModel = srsModel;
     }
 
+    @Override
     public CoordinateReferenceSystem getObject() {
         String wkt = srsModel.getObject();
         try {
@@ -34,6 +35,7 @@ public class WKTToCRSModel implements IModel<CoordinateReferenceSystem> {
         }
     }
 
+    @Override
     public void setObject(CoordinateReferenceSystem object) {
         CoordinateReferenceSystem crs = object;
         try {
@@ -44,6 +46,7 @@ public class WKTToCRSModel implements IModel<CoordinateReferenceSystem> {
         }
     }
 
+    @Override
     public void detach() {
         srsModel.detach();
     }

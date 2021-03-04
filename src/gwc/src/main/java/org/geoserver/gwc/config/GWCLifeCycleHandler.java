@@ -15,6 +15,7 @@ public class GWCLifeCycleHandler implements GeoServerLifecycleHandler {
         // nothing to do
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }

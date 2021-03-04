@@ -155,6 +155,7 @@ public abstract class ActivityChartBasePanel extends Panel {
 
         HashMap<RegularTimePeriod, Integer> data = new HashMap<>();
 
+        @Override
         public void visit(RequestData r, Object... aggregates) {
             RegularTimePeriod period = getTimePeriod(r.getStartTime());
             Integer count = data.get(period);

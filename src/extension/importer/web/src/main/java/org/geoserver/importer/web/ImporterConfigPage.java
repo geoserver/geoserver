@@ -83,6 +83,7 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
 
         Button cancel =
                 new Button("cancel") {
+                    @Override
                     public void onSubmit() {
                         doReturn();
                     }

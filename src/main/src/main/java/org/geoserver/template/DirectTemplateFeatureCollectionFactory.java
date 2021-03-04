@@ -53,6 +53,7 @@ public class DirectTemplateFeatureCollectionFactory
 
     public DirectTemplateFeatureCollectionFactory() {}
 
+    @Override
     public TemplateCollectionModel createTemplateFeatureCollection(
             FeatureCollection collection, BeansWrapper wrapper) {
         return new TemplateFeatureCollection(collection, wrapper);
@@ -75,6 +76,7 @@ public class DirectTemplateFeatureCollectionFactory
             this.wrapper = wrapper;
         }
 
+        @Override
         public TemplateModelIterator iterator() throws TemplateModelException {
             TemplateFeatureIterator it =
                     new TemplateFeatureIterator(collection.features(), wrapper);
@@ -131,10 +133,12 @@ public class DirectTemplateFeatureCollectionFactory
             this.wrapper = wrapper;
         }
 
+        @Override
         public TemplateModel next() throws TemplateModelException {
             return wrapper.wrap(iterator.next());
         }
 
+        @Override
         public boolean hasNext() throws TemplateModelException {
             return iterator.hasNext();
         }

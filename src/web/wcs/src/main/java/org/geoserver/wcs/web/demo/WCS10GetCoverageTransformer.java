@@ -56,6 +56,7 @@ class WCS10GetCoverageTransformer extends TransformerBase {
             super(ch, null, null);
         }
 
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             GetCoverageRequest request = (GetCoverageRequest) o;
             encode(request);

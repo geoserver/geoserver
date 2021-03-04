@@ -26,6 +26,7 @@ public class SortByKvpParser extends NestedKvpParser {
     }
 
     /** Parses a token of the form 'Field1 {A|D}' into an instnace of {@link SortBy}. */
+    @Override
     protected Object parseToken(String token) throws Exception {
         String[] nameOrder = token.trim().split(" ");
         String propertyName = nameOrder[0];

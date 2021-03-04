@@ -403,22 +403,27 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         return wrap(super.getLayerGroupsByWorkspace(workspace));
     }
 
+    @Override
     public void add(LayerGroupInfo layerGroup) {
         super.add(unwrap(layerGroup));
     }
 
+    @Override
     public void save(LayerGroupInfo layerGroup) {
         super.save(unwrap(layerGroup));
     }
 
+    @Override
     public void remove(LayerGroupInfo layerGroup) {
         super.remove(unwrap(layerGroup));
     }
 
+    @Override
     public LayerGroupInfo detach(LayerGroupInfo layerGroup) {
         return super.detach(unwrap(layerGroup));
     }
 
+    @Override
     public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return super.validate(unwrap(layerGroup), isNew);
     }
@@ -456,6 +461,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             this.object = object;
         }
 
+        @Override
         public Object getProxyObject() {
             return object;
         }
@@ -539,6 +545,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         return iterator;
     }
 
+    @Override
     public void removeListeners(Class<?> listenerClass) {
         delegate.removeListeners(listenerClass);
     }

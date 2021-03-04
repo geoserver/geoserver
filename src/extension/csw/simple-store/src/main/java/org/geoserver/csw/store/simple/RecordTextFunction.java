@@ -31,6 +31,7 @@ public class RecordTextFunction extends FunctionExpressionImpl implements Intern
         super(NAME);
     }
 
+    @Override
     public Object evaluate(Object object) {
         Feature feature = (Feature) object;
 

@@ -158,6 +158,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
 
                         GeoServerFileChooser chooser =
                                 new GeoServerFileChooser(id, new Model<File>(file)) {
+                                    @Override
                                     protected void fileClicked(
                                             File file, AjaxRequestTarget target) {
                                         // clear the raw input of the field

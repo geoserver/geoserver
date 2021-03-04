@@ -215,6 +215,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                     public void onClick() {
                         IResourceStream stream =
                                 new FileResourceStream(backupFile) {
+                                    @Override
                                     public String getContentType() {
                                         return "application/zip";
                                     }

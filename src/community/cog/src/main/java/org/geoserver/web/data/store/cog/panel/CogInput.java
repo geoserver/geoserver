@@ -116,6 +116,7 @@ public class CogInput extends Panel {
                                     private static final long serialVersionUID =
                                             -7096642192491726498L;
 
+                                    @Override
                                     protected void fileClicked(
                                             File file, AjaxRequestTarget target) {
                                         // clear the raw input of the field won't show the new model

@@ -34,6 +34,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
             return Arrays.asList(NAME);
         }
 
+        @Override
         public IModel<StyleInfo> newModel(StyleInfo object) {
             return new StyleDetachableModel(object);
         }

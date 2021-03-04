@@ -94,6 +94,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Initialize the NetCDF variables on this writer */
+    @Override
     protected void initializeVariables() {
 
         // group the dimensions to be added to the variable
@@ -319,6 +320,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Set the variables values */
+    @Override
     protected void writeDataValues() throws IOException, InvalidRangeException {
         // Initialize dimensions sizes
         final int numDimensions = dimensionsManager.getNumDimensions();

@@ -125,6 +125,7 @@ public abstract class SolrConfigurationPage extends Panel {
                     /** */
                     private static final long serialVersionUID = 819555072210390051L;
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         onSave(target);
                     }
@@ -343,10 +344,12 @@ public abstract class SolrConfigurationPage extends Panel {
 
         private static final long serialVersionUID = -6371918467884222834L;
 
+        @Override
         public Object getDisplayValue(Class<?> object) {
             return object.getSimpleName();
         }
 
+        @Override
         public String getIdValue(Class<?> object, int index) {
             return (String) getDisplayValue(object);
         }

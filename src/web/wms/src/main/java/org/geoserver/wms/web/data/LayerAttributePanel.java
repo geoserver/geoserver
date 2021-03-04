@@ -38,6 +38,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
                 new SimpleAjaxLink<String>("changeLayer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         ModalWindow popup = parent.getPopup();
 

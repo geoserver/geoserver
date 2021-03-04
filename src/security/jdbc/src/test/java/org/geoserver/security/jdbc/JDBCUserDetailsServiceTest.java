@@ -111,6 +111,7 @@ public abstract class JDBCUserDetailsServiceTest extends AbstractUserDetailsServ
         return new LiveDbmsDataSecurity(getFixtureId());
     }
 
+    @Override
     @Test
     public void testConfiguration() throws Exception {
         setServices("config");

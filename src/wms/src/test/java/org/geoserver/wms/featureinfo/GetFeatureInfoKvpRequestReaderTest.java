@@ -70,6 +70,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         GeoServerLoader.setLegacy(false);
     }
 
+    @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 

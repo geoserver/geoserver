@@ -30,6 +30,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new EnvelopePanel(id, e);
                             }
@@ -67,6 +68,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 EnvelopePanel panel = new EnvelopePanel(id, e);
                                 panel.setCRSFieldVisible(true);
@@ -107,6 +109,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new EnvelopePanel(id, e);
                             }

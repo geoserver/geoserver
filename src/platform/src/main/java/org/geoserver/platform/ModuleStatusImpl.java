@@ -83,6 +83,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the machine readable name */
+    @Override
     public String getModule() {
         return module;
     }
@@ -92,6 +93,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.module = module;
     }
 
+    @Override
     public Optional<String> getComponent() {
         return Optional.ofNullable(component);
     }
@@ -102,6 +104,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the name */
+    @Override
     public String getName() {
         return name;
     }
@@ -112,6 +115,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the version */
+    @Override
     public Optional<String> getVersion() {
         return Optional.ofNullable(version);
     }

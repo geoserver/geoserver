@@ -29,6 +29,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
      *
      * @param wfs The WFS configuration
      */
+    @Override
     public OpenAPI build(WFSInfo wfs) throws IOException {
         OpenAPI api = super.build(wfs);
 

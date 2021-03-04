@@ -243,6 +243,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 new PanelCachingTab(
                         new AbstractTab(new Model<>("Data")) {
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new StyleAdminPanel(id, AbstractStylePage.this);
                             }
@@ -253,6 +254,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         new AbstractTab(new Model<>("Publishing")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new LayerAssociationPanel(id, AbstractStylePage.this);
                             };
@@ -262,6 +264,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 new PanelCachingTab(
                         new AbstractTab(new Model<>("Layer Preview")) {
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
                             }
@@ -272,6 +275,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         new AbstractTab(new Model<>("Layer Attributes")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 try {
                                     return new LayerAttributePanel(id, AbstractStylePage.this);
@@ -297,6 +301,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         Collections.sort(
                 tabPanels,
                 new Comparator<StyleEditTabPanelInfo>() {
+                    @Override
                     public int compare(StyleEditTabPanelInfo o1, StyleEditTabPanelInfo o2) {
                         Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
                         Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
@@ -341,6 +346,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         tabbedPanel =
                 new AjaxTabbedPanel<ITab>("context", tabs) {
+                    @Override
                     protected String getTabContainerCssClass() {
                         return "tab-row tab-row-compact";
                     }

@@ -67,6 +67,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
     private IModel<Configuration> configModel;
     private Scheduler scheduler;
 
+    @Override
     protected boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addWcs11Coverages();
         return true;
@@ -108,6 +109,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         return configModel.getObject().getBatches().values();
     }
 
+    @Override
     @Before
     public void before() {
         super.before();
@@ -127,6 +129,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         }
     }
 
+    @Override
     @After
     public void after() {
         // clean-up

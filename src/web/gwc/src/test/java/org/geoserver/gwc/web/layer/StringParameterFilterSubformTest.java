@@ -128,6 +128,7 @@ public class StringParameterFilterSubformTest extends GeoServerWicketTestSupport
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new StringParameterFilterSubform(id, model);
                             }

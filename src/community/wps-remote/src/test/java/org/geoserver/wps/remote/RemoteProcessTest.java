@@ -375,6 +375,7 @@ public class RemoteProcessTest extends WPSTestSupport {
             GeoTools.addFactoryIteratorProvider(
                     new FactoryIteratorProvider() {
 
+                        @Override
                         public <T> Iterator<T> iterator(Class<T> category) {
                             if (ProcessFactory.class.isAssignableFrom(category)) {
                                 return (Iterator<T>) Collections.singletonList(factory).iterator();

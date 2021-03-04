@@ -66,6 +66,7 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
         if (simplified != null) {
             simplified.accept(
                     new AbstractStyleVisitor() {
+                        @Override
                         public void visit(org.geotools.styling.Rule rule) {
                             rulesFound.set(true);
                             // no need to scan inside rules

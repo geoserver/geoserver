@@ -51,6 +51,7 @@ public class GdalTranslateTransform extends AbstractCommandLinePreTransform
         return getExecutableFromPath("gdal_translate");
     }
 
+    @Override
     protected List<String> getAvailabilityTestOptions() {
         return Collections.singletonList("--version");
     }

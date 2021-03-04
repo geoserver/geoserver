@@ -125,10 +125,12 @@ public class DemoRequestsPage extends GeoServerBasePage {
                         reqFileNameModel,
                         demoList,
                         new ChoiceRenderer<String>() {
+                            @Override
                             public String getIdValue(String obj, int index) {
                                 return obj;
                             }
 
+                            @Override
                             public Object getDisplayValue(String obj) {
                                 return obj;
                             }
@@ -233,6 +235,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         responseWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         return new DemoRequestResponse(requestModel);
                     }

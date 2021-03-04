@@ -88,6 +88,7 @@ public class DescribeLayerRequest extends WMSRequest {
         this.outputFormat = outputFormat;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("DescribeLayerRequest[layers=");
 

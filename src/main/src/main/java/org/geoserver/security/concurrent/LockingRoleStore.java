@@ -35,6 +35,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleStore#addRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public void addRole(GeoServerRole role) throws IOException {
         writeLock();
         try {
@@ -50,6 +51,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleStore#updateRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public void updateRole(GeoServerRole role) throws IOException {
         writeLock();
         try {
@@ -65,6 +67,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleStore#removeRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public boolean removeRole(GeoServerRole role) throws IOException {
         writeLock();
         try {
@@ -81,6 +84,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *     org.geoserver.security.GeoServerRoleStore#associateRoleToGroup(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
+    @Override
     public void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException {
         writeLock();
         try {
@@ -97,6 +101,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *     org.geoserver.security.GeoServerRoleStore#disAssociateRoleFromGroup(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
+    @Override
     public void disAssociateRoleFromGroup(GeoServerRole role, String groupname) throws IOException {
         writeLock();
         try {
@@ -113,6 +118,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *     org.geoserver.security.GeoServerRoleStore#associateRoleToUser(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
+    @Override
     public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
         writeLock();
         try {
@@ -129,6 +135,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *     org.geoserver.security.GeoServerRoleStore#disAssociateRoleFromUser(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
+    @Override
     public void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException {
         writeLock();
         try {
@@ -143,6 +150,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *
      * @see org.geoserver.security.GeoServerRoleStore#store()
      */
+    @Override
     public void store() throws IOException {
         writeLock();
         try {
@@ -157,6 +165,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *
      * @see org.geoserver.security.GeoServerRoleStore#isModified()
      */
+    @Override
     public boolean isModified() {
         readLock();
         try {
@@ -173,6 +182,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *     org.geoserver.security.GeoServerRoleStore#setParentRole(org.geoserver.security.impl.GeoServerRole,
      *     org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
         writeLock();
         try {
@@ -187,6 +197,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      *
      * @see org.geoserver.security.GeoServerRoleStore#clear()
      */
+    @Override
     public void clear() throws IOException {
         writeLock();
         try {
@@ -202,6 +213,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleStore#initializeFromService(org.geoserver.security.GeoServerRoleService)
      */
+    @Override
     public void initializeFromService(GeoServerRoleService service) throws IOException {
         writeLock();
         try {

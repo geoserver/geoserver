@@ -52,6 +52,7 @@ import org.opengis.filter.expression.Expression;
  */
 public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
+    @Override
     public KmlDecorator getDecorator(
             Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS

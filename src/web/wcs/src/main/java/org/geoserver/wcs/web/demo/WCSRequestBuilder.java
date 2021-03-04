@@ -55,6 +55,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         xmlWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
                     }
@@ -69,6 +70,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         responseWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         DemoRequest request = new DemoRequest(null);
                         HttpServletRequest http = GeoServerApplication.get().servletRequest();

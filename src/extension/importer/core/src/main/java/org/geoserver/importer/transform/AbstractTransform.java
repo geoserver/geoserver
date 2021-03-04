@@ -14,6 +14,7 @@ public abstract class AbstractTransform implements ImportTransform {
 
     final transient Logger LOGGER = Logging.getLogger(getClass());
 
+    @Override
     public boolean stopOnError(Exception e) {
         return true;
     }
@@ -22,6 +23,7 @@ public abstract class AbstractTransform implements ImportTransform {
      * Make subclassing less onerous. If an implementation has temporary or transient state, this
      * method allows a hook to create that.
      */
+    @Override
     public void init() {
         // do nothing
     }

@@ -93,6 +93,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         return MIME_TYPE;
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "GML2";
     }
@@ -247,6 +248,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         }
     }
 
+    @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {

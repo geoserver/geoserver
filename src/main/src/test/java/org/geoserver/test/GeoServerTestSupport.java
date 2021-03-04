@@ -32,6 +32,7 @@ public abstract class GeoServerTestSupport extends GeoServerAbstractTestSupport 
         return dataDirectory;
     }
 
+    @Override
     public MockData getTestData() {
         return (MockData) super.getTestData();
     }

@@ -71,6 +71,7 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
         super(NAME);
     }
 
+    @Override
     public Object evaluate(Object feature) {
         String colorMap = getParameters().get(0).evaluate(feature, String.class);
         double min = getParameters().get(1).evaluate(feature, Double.class).doubleValue();

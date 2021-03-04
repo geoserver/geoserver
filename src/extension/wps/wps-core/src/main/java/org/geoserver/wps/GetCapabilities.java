@@ -156,6 +156,7 @@ public class GetCapabilities {
                 po.getProcess(),
                 new Comparator() {
 
+                    @Override
                     public int compare(Object o1, Object o2) {
                         ProcessBriefType pb1 = (ProcessBriefType) o1;
                         ProcessBriefType pb2 = (ProcessBriefType) o2;

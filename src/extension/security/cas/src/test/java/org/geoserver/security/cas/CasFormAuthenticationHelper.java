@@ -36,6 +36,7 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         this.password = password;
     }
 
+    @Override
     public boolean ssoLogin() throws IOException {
         URL loginUrl = createURLFromCasURI("/login");
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();

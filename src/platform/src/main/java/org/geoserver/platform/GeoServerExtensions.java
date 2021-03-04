@@ -90,6 +90,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      *
      * @param context ApplicationContext used to lookup extensions
      */
+    @Override
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         isSpringContext = true;
@@ -325,6 +326,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             extensionsCache.clear();

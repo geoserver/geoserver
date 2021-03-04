@@ -143,6 +143,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @see
      *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
@@ -151,6 +152,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @see
      *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
     }

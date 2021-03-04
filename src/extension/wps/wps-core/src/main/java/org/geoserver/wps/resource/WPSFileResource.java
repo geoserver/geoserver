@@ -31,12 +31,14 @@ public class WPSFileResource implements WPSResource {
         this(Files.asResource(file));
     }
 
+    @Override
     public void delete() throws Exception {
         for (Resource file : files) {
             file.delete();
         }
     }
 
+    @Override
     public String getName() {
         if (files.size() == 1) {
             return files.get(0).path();

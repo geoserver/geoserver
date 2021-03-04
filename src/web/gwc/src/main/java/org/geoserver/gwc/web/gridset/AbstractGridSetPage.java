@@ -362,6 +362,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             add(metersPerUnit);
         }
 
+        @Override
         protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
             target.add(units);
             target.add(metersPerUnit);

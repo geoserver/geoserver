@@ -37,10 +37,12 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         super(resourceLoader, "wms");
     }
 
+    @Override
     public Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
     }
 
+    @Override
     protected WMSInfo createServiceFromScratch(GeoServer gs) {
         WMSInfo wms = new WMSInfoImpl();
         wms.setName("WMS");

@@ -25,6 +25,7 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     protected Date dateModified;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -41,14 +42,17 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
         this._default = _default;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -57,10 +61,12 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
         this.metadata = metadata;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -69,6 +75,7 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
@@ -98,6 +105,7 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
         return isolated;
     }
 
+    @Override
     public void setIsolated(boolean isolated) {
         this.isolated = isolated;
     }

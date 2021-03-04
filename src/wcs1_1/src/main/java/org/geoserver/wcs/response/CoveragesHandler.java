@@ -23,21 +23,25 @@ import org.geoserver.catalog.CoverageInfo;
  */
 public class CoveragesHandler implements DataContentHandler {
 
+    @Override
     public Object getContent(DataSource source) throws IOException {
         throw new UnsupportedOperationException(
                 "This handler is not able to work on the parsing side");
     }
 
+    @Override
     public Object getTransferData(DataFlavor flavor, DataSource source)
             throws UnsupportedFlavorException, IOException {
         throw new UnsupportedOperationException(
                 "This handler is not able to work on the parsing side");
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return null;
     }
 
+    @Override
     public void writeTo(Object value, String mimeType, OutputStream os) throws IOException {
         CoveragesData data = (CoveragesData) value;
         CoveragesTransformer ct = new CoveragesTransformer(data.request);

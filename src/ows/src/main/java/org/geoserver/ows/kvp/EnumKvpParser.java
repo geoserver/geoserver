@@ -20,6 +20,7 @@ public class EnumKvpParser extends KvpParser {
         Assert.isTrue(enumClass.isEnum(), enumClass.getName() + " is not an enum class");
     }
 
+    @Override
     public Object parse(final String value) throws Exception {
         final Class<?> enumClass = getBinding();
         Object[] enumConstants = enumClass.getEnumConstants();

@@ -76,6 +76,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         docBuilder.setEntityResolver(
                 new EntityResolver() {
 
+                    @Override
                     public InputSource resolveEntity(String publicId, String systemId)
                             throws SAXException, IOException {
                         StringReader reader =

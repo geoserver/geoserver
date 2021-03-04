@@ -40,6 +40,7 @@ public class RetypingFeatureCollectionTest {
 
         collection =
                 new ListFeatureCollection(originalSchema) {
+                    @Override
                     public void accepts(FeatureVisitor visitor, ProgressListener progress)
                             throws java.io.IOException {
                         lastVisitor = visitor;

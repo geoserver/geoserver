@@ -38,10 +38,12 @@ public class GML3GeometryTranslator extends GeometryTranslator {
         super(handler, numDecimals, padWithZeros, forceDecimalEncoding);
     }
 
+    @Override
     protected String boxName() {
         return "Envelope";
     }
 
+    @Override
     protected void encodeNullBounds() {
         element("Null", null);
     }

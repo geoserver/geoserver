@@ -109,6 +109,7 @@ public class EncodingInfo {
     }
 
     /** Returns current state of this instance in human-readable form. */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append((null == fEncoding) ? "[NULL]" : fEncoding);

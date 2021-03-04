@@ -112,6 +112,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#registerRoleLoadedListener(org.geoserver.security.event.RoleLoadedListener)
      */
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
@@ -119,6 +120,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#unregisterRoleLoadedListener(org.geoserver.security.event.RoleLoadedListener)
      */
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
     }
@@ -126,6 +128,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getRoles()
      */
+    @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
         if (roleSet != null) return roleSet;
         return emptySet;
@@ -134,6 +137,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#load()
      */
+    @Override
     public synchronized void load() throws IOException {
         LOGGER.info("Start reloading roles for service named " + getName());
 
@@ -161,6 +165,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getRolesForUser(java.lang.String)
      */
+    @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
         return emptySet;
     }
@@ -168,6 +173,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getRolesForGroup(java.lang.String)
      */
+    @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
         return emptySet;
     }
@@ -175,6 +181,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#createRoleObject(java.lang.String)
      */
+    @Override
     public GeoServerRole createRoleObject(String role) throws IOException {
         return new GeoServerRole(role);
     }
@@ -182,6 +189,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getParentRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public GeoServerRole getParentRole(GeoServerRole role) throws IOException {
         return null;
     }
@@ -189,6 +197,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getRoleByName(java.lang.String)
      */
+    @Override
     public GeoServerRole getRoleByName(String role) throws IOException {
         if (roleMap != null) return roleMap.get(role);
         return null;
@@ -205,6 +214,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getGroupNamesForRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
         return emptyStringSet;
     }
@@ -212,6 +222,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getUserNamesForRole(org.geoserver.security.impl.GeoserverRole)
      */
+    @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
         return emptyStringSet;
     }
@@ -219,6 +230,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverRoleService#getParentMappings()
      */
+    @Override
     public Map<String, String> getParentMappings() throws IOException {
         return parentMappings;
     }
@@ -228,6 +240,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
      * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String,
      * java.util.Properties, java.lang.String, java.util.Properties)
      */
+    @Override
     public Properties personalizeRoleParams(
             String roleName, Properties roleParams, String userName, Properties userProps)
             throws IOException {
@@ -239,6 +252,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
         return getSecurityManager().role().get(getName());
     }
 
+    @Override
     public int getRoleCount() throws IOException {
         if (roleSet != null) return roleSet.size();
         return 0;

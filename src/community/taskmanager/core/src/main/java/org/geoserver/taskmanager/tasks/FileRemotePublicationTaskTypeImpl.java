@@ -53,6 +53,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     private static final String REMOTE_DIR = "uploaded-stores/store_";
     private static final SimpleDateFormat TIME_FMT = new SimpleDateFormat("yyMMddhhmmssMs");
 
+    @Override
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();

@@ -38,6 +38,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
         this.matchSubclasses = matchSubclasses;
     }
 
+    @Override
     public boolean exclude(String beanId, Object bean) {
         if (this.beanClass != null && bean != null) {
             if (matchSubclasses) return this.beanClass.isAssignableFrom(bean.getClass());

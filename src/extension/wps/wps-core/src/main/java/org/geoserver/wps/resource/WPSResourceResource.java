@@ -18,10 +18,12 @@ public class WPSResourceResource implements WPSResource {
         this.resource = resource;
     }
 
+    @Override
     public void delete() throws Exception {
         resource.delete();
     }
 
+    @Override
     public String getName() {
         return resource.path();
     }

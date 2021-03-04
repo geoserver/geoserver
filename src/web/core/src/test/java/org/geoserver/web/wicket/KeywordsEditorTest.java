@@ -37,6 +37,7 @@ public class KeywordsEditorTest {
         tester.startPage(
                 new FormTestPage(
                         new ComponentBuilder() {
+                            @Override
                             public Component buildComponent(String id) {
                                 return new KeywordsEditor(id, new ListModel<>(keywords));
                             }

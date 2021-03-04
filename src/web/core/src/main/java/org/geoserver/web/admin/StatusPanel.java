@@ -121,6 +121,7 @@ public class StatusPanel extends Panel {
                 new Link("free.locks") {
                     private static final long serialVersionUID = -2889353495319211391L;
 
+                    @Override
                     public void onClick() {
                         // TODO: see GEOS-2130
                         updateModel();
@@ -130,6 +131,7 @@ public class StatusPanel extends Panel {
                 new Link("free.memory") {
                     private static final long serialVersionUID = 3695369177295089346L;
 
+                    @Override
                     public void onClick() {
                         System.gc();
                         System.runFinalization();
@@ -141,6 +143,7 @@ public class StatusPanel extends Panel {
                 new Link("free.memory.jai") {
                     private static final long serialVersionUID = -3556725607958589003L;
 
+                    @Override
                     public void onClick() {
                         TileCache jaiCache =
                                 parent.getGeoServer().getGlobal().getJAI().getTileCache();

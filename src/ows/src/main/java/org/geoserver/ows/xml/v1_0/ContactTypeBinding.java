@@ -65,6 +65,7 @@ public class ContactTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.CONTACTTYPE;
     }
@@ -76,6 +77,7 @@ public class ContactTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return null;
     }
@@ -87,6 +89,7 @@ public class ContactTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

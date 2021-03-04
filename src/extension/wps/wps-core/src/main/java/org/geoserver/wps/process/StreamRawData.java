@@ -26,14 +26,17 @@ public class StreamRawData extends AbstractRawData {
         this.inputStream = inputStream;
     }
 
+    @Override
     public String getMimeType() {
         return mimeType;
     }
 
+    @Override
     public InputStream getInputStream() {
         return inputStream;
     }
 
+    @Override
     public String getFileExtension() {
         return extension;
     }

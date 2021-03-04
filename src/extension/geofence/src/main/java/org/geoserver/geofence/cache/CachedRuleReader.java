@@ -194,6 +194,7 @@ public class CachedRuleReader implements RuleReaderService {
      *
      * @deprecated Use {@link #getAccessInfo(RuleFilter filter) }
      */
+    @Deprecated
     @Override
     public AccessInfo getAccessInfo(
             String userName,
@@ -259,6 +260,7 @@ public class CachedRuleReader implements RuleReaderService {
      *
      * @deprecated Use {@link #getMatchingRules(RuleFilter filter) }
      */
+    @Deprecated
     @Override
     public List<ShortRule> getMatchingRules(
             String userName,

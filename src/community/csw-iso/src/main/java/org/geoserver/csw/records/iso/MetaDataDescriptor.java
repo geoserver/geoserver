@@ -336,6 +336,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         return QUERYABLE_MAPPING.get(name.getLocalPart());
     }
 
+    @Override
     public void verifySpatialFilters(Filter filter) {
         filter.accept(new SpatialFilterChecker(getFeatureType()), null);
     }

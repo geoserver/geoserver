@@ -225,6 +225,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Only setup coverages */
+    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();

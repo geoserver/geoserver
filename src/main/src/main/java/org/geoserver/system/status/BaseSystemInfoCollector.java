@@ -21,6 +21,7 @@ public class BaseSystemInfoCollector implements SystemInfoCollector, Serializabl
 
     public static String DEFAULT_VALUE = "NOT AVAILABLE";
 
+    @Override
     public final Metrics retrieveAllSystemInfo() {
         Metrics metrics = new Metrics();
         for (MetricInfo sip : MetricInfo.values()) {

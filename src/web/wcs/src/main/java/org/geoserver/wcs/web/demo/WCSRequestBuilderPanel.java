@@ -220,6 +220,7 @@ public class WCSRequestBuilderPanel extends Panel {
         responseWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         DemoRequest request = new DemoRequest(null);
                         HttpServletRequest http =
@@ -457,12 +458,14 @@ public class WCSRequestBuilderPanel extends Panel {
 
     class TargetLayoutRenderer extends ChoiceRenderer<TargetLayout> {
 
+        @Override
         public Object getDisplayValue(TargetLayout object) {
             final String name = object.name();
             return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null)
                     .getString();
         }
 
+        @Override
         public String getIdValue(TargetLayout object, int index) {
             return object.name();
         }

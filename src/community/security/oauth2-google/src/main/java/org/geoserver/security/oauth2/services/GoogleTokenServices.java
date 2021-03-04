@@ -23,6 +23,7 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         super(new GoogleAccessTokenConverter());
     }
 
+    @Override
     protected Map<String, Object> checkToken(String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("token", accessToken);
@@ -36,6 +37,7 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         return postForMap(accessTokenUrl, formData, headers);
     }
 
+    @Override
     protected void transformNonStandardValuesToStandardValues(Map<String, Object> map) {
         LOGGER.debug("Original map = " + map);
         map.put("client_id", map.get("issued_to")); // Google sends 'client_id' as 'issued_to'
@@ -43,6 +45,7 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         LOGGER.debug("Transformed = " + map);
     }
 
+    @Override
     protected String getAuthorizationHeader(String accessToken) {
         String creds = String.format("%s:%s", clientId, clientSecret);
         try {

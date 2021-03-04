@@ -56,6 +56,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
         }
     }
 
+    @Override
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
         return openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
     }

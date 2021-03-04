@@ -83,6 +83,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
         this.metadataTemplateModel = metadataTemplateModel;
     }
 
+    @Override
     public void onInitialize() {
         super.onInitialize();
 
@@ -127,6 +128,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("editMetadata")) {
                     private static final long serialVersionUID = 4375160438369461475L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new MetadataPanel(panelId, metadataModel, null, null);
                     }
@@ -135,6 +137,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("linkedLayers")) {
                     private static final long serialVersionUID = 871647379377450152L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new LinkedLayersPanel(panelId, metadataTemplateModel);
                     }
@@ -144,6 +147,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
         this.add(form);
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

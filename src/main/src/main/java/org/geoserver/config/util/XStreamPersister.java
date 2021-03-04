@@ -772,6 +772,7 @@ public class XStreamPersister {
                 this.wrapped = wrapped;
             }
 
+            @Override
             public void visit(String name, Class type, Class definedIn, Object value) {
 
                 // skip empty collections + maps
@@ -944,6 +945,7 @@ public class XStreamPersister {
                 if (matches.size() > 1) {
                     Comparator<Class<?>> comparator =
                             new Comparator<Class<?>>() {
+                                @Override
                                 public int compare(Class<?> c1, Class<?> c2) {
                                     if (c2.isAssignableFrom(c1)) {
                                         return -1;
@@ -1016,6 +1018,7 @@ public class XStreamPersister {
             writer.endNode();
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         protected void putCurrentEntryIntoMap(
                 HierarchicalStreamReader reader,
@@ -1083,10 +1086,12 @@ public class XStreamPersister {
             super(mapper);
         }
 
+        @Override
         public boolean canConvert(Class clazz) {
             return Multimap.class.isAssignableFrom(clazz);
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public void marshal(
                 Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
@@ -1104,6 +1109,7 @@ public class XStreamPersister {
             }
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             ArrayListMultimap<Object, Object> map = ArrayListMultimap.create();
             while (reader.hasMoreChildren()) {
@@ -1136,10 +1142,12 @@ public class XStreamPersister {
             this.clazz = clazz;
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return clazz.isAssignableFrom(type);
         }
 
+        @Override
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             // could be a proxy, unwrap it
@@ -1191,6 +1199,7 @@ public class XStreamPersister {
             }
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 
             String ref = null;
@@ -1337,6 +1346,7 @@ public class XStreamPersister {
     /** Converter for coordinate reference system objects that converts by SRS code. */
     public static class SRSConverter extends AbstractSingleValueConverter {
 
+        @Override
         public boolean canConvert(Class type) {
             return CoordinateReferenceSystem.class.isAssignableFrom(type);
         }
@@ -1810,10 +1820,12 @@ public class XStreamPersister {
 
     /** Converter for multi hash maps containing coverage stores and data stores. */
     static class StoreMultiValueMapConverter implements Converter {
+        @Override
         public boolean canConvert(Class type) {
             return MultiValuedMap.class.equals(type);
         }
 
+        @Override
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             MultiValuedMap map = (MultiValuedMap) source;
@@ -1831,6 +1843,7 @@ public class XStreamPersister {
             }
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             MultiValuedMap<Class, Object> map = new HashSetValuedHashMap<>();
 
@@ -1861,10 +1874,12 @@ public class XStreamPersister {
             this.name = name;
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return Map.class.isAssignableFrom(type);
         }
 
+        @Override
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
@@ -1885,6 +1900,7 @@ public class XStreamPersister {
             }
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             Map<String, CatalogInfo> map = new HashMap<>();
 
@@ -1932,6 +1948,7 @@ public class XStreamPersister {
             super(clazz);
         }
 
+        @Override
         public Object doUnmarshal(
                 Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             ResourceInfo obj = (ResourceInfo) super.doUnmarshal(result, reader, context);
@@ -2165,6 +2182,7 @@ public class XStreamPersister {
 
     class VirtualTableConverter implements Converter {
 
+        @Override
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             VirtualTable vt = (VirtualTable) source;
@@ -2231,6 +2249,7 @@ public class XStreamPersister {
             }
         }
 
+        @Override
         @SuppressWarnings("rawtypes")
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = null;
@@ -2314,6 +2333,7 @@ public class XStreamPersister {
             return vt;
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return VirtualTable.class.isAssignableFrom(type);
         }
@@ -2423,6 +2443,7 @@ public class XStreamPersister {
             super(SettingsInfo.class);
         }
 
+        @Override
         public Object doUnmarshal(
                 Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             SettingsInfoImpl obj = (SettingsInfoImpl) super.doUnmarshal(result, reader, context);
@@ -2460,6 +2481,7 @@ public class XStreamPersister {
             super(clazz);
         }
 
+        @Override
         public Object doUnmarshal(
                 Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             ServiceInfoImpl obj = (ServiceInfoImpl) super.doUnmarshal(result, reader, context);
@@ -2538,6 +2560,7 @@ public class XStreamPersister {
             super(WMSLayerInfoImpl.class);
         }
 
+        @Override
         public Object doUnmarshal(
                 Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             WMSLayerInfoImpl obj = (WMSLayerInfoImpl) super.doUnmarshal(result, reader, context);

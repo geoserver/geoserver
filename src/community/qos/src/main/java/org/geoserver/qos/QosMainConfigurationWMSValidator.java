@@ -18,6 +18,7 @@ public class QosMainConfigurationWMSValidator extends QosMainConfigurationValida
 
     public QosMainConfigurationWMSValidator() {}
 
+    @Override
     public void validate(QosMainConfiguration config) {
         if (config.getWmsQosMetadata() != null) valid(config.getWmsQosMetadata());
     }

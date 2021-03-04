@@ -29,6 +29,7 @@ public class ElevationKvpParser extends org.geoserver.ows.kvp.ElevationKvpParser
         this.geoServer = geoServer;
     }
 
+    @Override
     protected ElevationParser getElevationParser() {
         WCSInfo info = geoServer.getService(WCSInfo.class);
         int maxRequestedDimensionValues = info.getMaxRequestedDimensionValues();

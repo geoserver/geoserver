@@ -15,6 +15,7 @@ package org.geoserver.monitor;
  */
 public class FilterVisitorSupport implements FilterVisitor {
 
+    @Override
     public void visit(Filter f) {
         if (f instanceof And) {
             handleComposite((And) f, "AND");

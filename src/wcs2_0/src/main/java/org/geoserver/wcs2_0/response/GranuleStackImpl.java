@@ -100,6 +100,7 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
+    @Override
     public RenderedImage getRenderedImage() {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(

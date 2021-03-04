@@ -31,6 +31,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, Wfs20Factory.eINSTANCE, geoServer, filterFactory);
     }
 
+    @Override
     protected <T> void querySet(EObject request, String property, List<T> values)
             throws WFSException {
         // no values specified, do nothing
@@ -93,6 +94,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         EMFUtils.set(query, property, values);
     }
 
+    @Override
     protected void buildStoredQueries(
             EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         LockFeatureRequest req = LockFeatureRequest.adapt(request);
@@ -141,6 +143,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         }
     }
 
+    @Override
     protected List<Query> getQueries(EObject eObject) {
         return LockFeatureRequest.adapt(eObject).getQueries();
     }

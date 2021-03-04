@@ -109,11 +109,13 @@ public class GenericUnWrapper implements UnWrapper {
         // this space is intentionally left blank
     }
 
+    @Override
     public boolean canUnwrap(Connection conn) {
         Connection unwrapped = unwrapInternal(Connection.class, conn, CONNECTION_METHODS);
         return unwrapped != null;
     }
 
+    @Override
     public Connection unwrap(Connection conn) {
         Connection unwrapped = unwrapInternal(Connection.class, conn, CONNECTION_METHODS);
         if (unwrapped != null) {
@@ -125,11 +127,13 @@ public class GenericUnWrapper implements UnWrapper {
         }
     }
 
+    @Override
     public boolean canUnwrap(Statement statement) {
         Statement unwrapped = unwrapInternal(Statement.class, statement, STATEMENT_METHODS);
         return unwrapped != null;
     }
 
+    @Override
     public Statement unwrap(Statement statement) {
         Statement unwrapped = unwrapInternal(Statement.class, statement, STATEMENT_METHODS);
         if (unwrapped != null) {

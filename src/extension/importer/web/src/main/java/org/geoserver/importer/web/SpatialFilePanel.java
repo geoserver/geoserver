@@ -43,6 +43,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
         form.add(chooserButton(form));
     }
 
+    @Override
     public ImportData createImportSource() throws IOException {
         File file = new File(this.file);
         return FileData.createFromFile(file);

@@ -32,6 +32,7 @@ public class XStreamUtil {
     public static XStream xs() {
         final SecureXStream xs =
                 new SecureXStream(new PureJavaReflectionProvider()) {
+                    @Override
                     protected MapperWrapper wrapMapper(final MapperWrapper next) {
                         return new HibernateMapper(next);
                     }

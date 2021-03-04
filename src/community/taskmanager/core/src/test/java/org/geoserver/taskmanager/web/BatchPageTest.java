@@ -42,6 +42,7 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
     private TaskManagerTaskUtil tutil;
     private Scheduler scheduler;
 
+    @Override
     protected boolean setupDataDirectory() throws Exception {
         return true;
     }

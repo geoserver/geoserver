@@ -63,6 +63,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
      * @see
      *     org.geoserver.security.GeoServerUserGroupStore#initializeFromServer(org.geoserver.security.GeoServerUserGroupService)
      */
+    @Override
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
         jdbcService = (JDBCUserGroupService) service;
         setSecurityManager(service.getSecurityManager());
@@ -84,6 +85,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
      *
      * @see org.geoserver.security.jdbc.JDBCUserGroupService#load()
      */
+    @Override
     public void load() throws IOException {
         // Simply roll back the transaction
         try {
@@ -143,6 +145,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#addUser(org.geoserver.security.impl.GeoserverUser)
      */
+    @Override
     public void addUser(GeoServerUser user) throws IOException, PasswordPolicyException {
 
         preparePassword(user);
@@ -174,6 +177,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#updateUser(org.geoserver.security.impl.GeoserverUser)
      */
+    @Override
     public void updateUser(GeoServerUser user) throws IOException, PasswordPolicyException {
 
         preparePassword(user);
@@ -205,6 +209,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#removeUser(org.geoserver.security.impl.GeoserverUser)
      */
+    @Override
     public boolean removeUser(GeoServerUser user) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -238,6 +243,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#addGroup(org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public void addGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -258,6 +264,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#updateGroup(org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public void updateGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -278,6 +285,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#removeGroup(org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -308,6 +316,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
      *
      * @see org.geoserver.security.GeoServerUserGroupStore#store()
      */
+    @Override
     public void store() throws IOException {
         // Simply commit the transaction
         try {
@@ -323,6 +332,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#associateUserToGroup(org.geoserver.security.impl.GeoserverUser, org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
 
@@ -345,6 +355,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#disAssociateUserFromGroup(org.geoserver.security.impl.GeoserverUser, org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
 
@@ -364,6 +375,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         setModified(true);
     }
 
+    @Override
     public boolean isModified() {
         return modified;
     }
@@ -375,6 +387,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#clear()
      */
+    @Override
     public void clear() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;

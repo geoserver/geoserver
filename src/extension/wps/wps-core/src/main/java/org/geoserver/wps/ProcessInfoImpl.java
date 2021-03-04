@@ -58,6 +58,7 @@ public class ProcessInfoImpl implements ProcessInfo {
         this.enabled = enabled;
     }
 
+    @Override
     public Multimap<String, WPSInputValidator> getValidators() {
         return validators;
     }

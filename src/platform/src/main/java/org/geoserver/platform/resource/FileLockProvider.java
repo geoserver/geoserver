@@ -48,6 +48,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         this.root = basePath;
     }
 
+    @Override
     @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
     // complex but apparently correct handling
     public Resource.Lock acquire(final String lockKey) {
@@ -113,6 +114,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
 
                     boolean released;
 
+                    @Override
                     public void release() {
                         if (released) {
                             return;

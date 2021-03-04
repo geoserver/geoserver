@@ -244,10 +244,12 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     private class CompositionTypeRenderer extends ChoiceRenderer<CompositionType> {
 
+        @Override
         public Object getDisplayValue(CompositionType object) {
             return object.displayValue();
         }
 
+        @Override
         public String getIdValue(CompositionType object, int index) {
             return object.toValue();
         }

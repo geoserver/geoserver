@@ -63,6 +63,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         assertEquals("duplicated value: " + value, arrayWithDynamic.getString(2));
     }
 
+    @Override
     @After
     public void cleanup() {
         Resource res =

@@ -772,6 +772,7 @@ public class ClassifierController extends BaseSLDServiceController {
         /**
          * @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class)
          */
+        @Override
         public boolean canConvert(Class clazz) {
             return RulesList.class.isAssignableFrom(clazz)
                     || JSONObject.class.isAssignableFrom(clazz);
@@ -782,6 +783,7 @@ public class ClassifierController extends BaseSLDServiceController {
          *     com.thoughtworks.xstream.io.HierarchicalStreamWriter,
          *     com.thoughtworks.xstream.converters.MarshallingContext)
          */
+        @Override
         public void marshal(
                 Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
 
@@ -858,6 +860,7 @@ public class ClassifierController extends BaseSLDServiceController {
          * @see
          *     com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io.HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
          */
+        @Override
         public Object unmarshal(HierarchicalStreamReader arg0, UnmarshallingContext arg1) {
             // TODO Auto-generated method stub
             return null;

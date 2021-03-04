@@ -41,10 +41,12 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         super(geoServer);
     }
 
+    @Override
     public Class getElementClass() {
         return Replace.class;
     }
 
+    @Override
     public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
             throws WFSTransactionException {
         Replace replace = (Replace) element;
@@ -66,6 +68,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         return typeNames.toArray(new QName[typeNames.size()]);
     }
 
+    @Override
     public void checkValidity(TransactionElement element, Map featureTypeInfos)
             throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_REPLACE)) {
@@ -80,6 +83,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
+    @Override
     public void execute(
             TransactionElement element,
             TransactionRequest request,

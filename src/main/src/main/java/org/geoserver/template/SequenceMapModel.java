@@ -26,10 +26,12 @@ public class SequenceMapModel extends MapModel implements TemplateSequenceModel 
         this.list = new ArrayList<>(map.values());
     }
 
+    @Override
     public TemplateModel get(int index) throws TemplateModelException {
         return wrap(list.get(index));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected Set keySet() {
         // override, just return the map contents

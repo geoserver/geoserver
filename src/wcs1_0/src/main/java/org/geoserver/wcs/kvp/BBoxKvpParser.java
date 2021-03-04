@@ -25,6 +25,7 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         super("bbox", GeneralEnvelope.class);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public GeneralEnvelope parse(String value) throws Exception {
         List unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);

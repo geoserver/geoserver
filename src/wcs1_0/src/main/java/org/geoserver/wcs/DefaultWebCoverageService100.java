@@ -105,11 +105,13 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
 
     /** */
+    @Override
     public Wcs10CapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
         List<String> provided = new ArrayList<>();
@@ -132,6 +134,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public Wcs10DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
         final String version = request.getVersion();
         if ("1.0.0".equals(version)) {
@@ -147,6 +150,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public GridCoverage[] getCoverage(final GetCoverageType request) {
         WCSInfo wcs = getServiceInfo();
 

@@ -115,10 +115,12 @@ public final class CascadedLegendRequest extends LegendRequest {
             setProperty(VERSION, version);
         }
 
+        @Override
         protected void initVersion() {
             setProperty(VERSION, "1.3.0");
         }
 
+        @Override
         public Response createResponse(HTTPResponse httpResponse)
                 throws ServiceException, IOException {
             return new GetLegendGraphicResponse(httpResponse);

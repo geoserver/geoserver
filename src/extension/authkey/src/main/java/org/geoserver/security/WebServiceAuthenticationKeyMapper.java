@@ -159,6 +159,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
         }
     }
 
+    @Override
     public boolean supportsReadOnlyUserGroupService() {
         return true;
     }
@@ -308,6 +309,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
         return super.getDefaultParamValue(paramName);
     }
 
+    @Override
     public void validateParameter(String paramName, String value) throws FilterConfigException {
         if (value == null) {
             value = "";

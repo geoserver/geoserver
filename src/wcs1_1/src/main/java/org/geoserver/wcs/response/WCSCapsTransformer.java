@@ -79,6 +79,7 @@ public class WCSCapsTransformer extends TransformerBase {
         setNamespaceDeclarationEnabled(false);
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS111CapsTranslator(handler);
     }
@@ -101,6 +102,7 @@ public class WCSCapsTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(

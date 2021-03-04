@@ -34,6 +34,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     public static Property<LayerGroupInfo> ENABLED =
             new AbstractProperty<LayerGroupInfo>("Enabled") {
 
+                @Override
                 public Boolean getPropertyValue(LayerGroupInfo item) {
                     return Boolean.valueOf(item.isEnabled());
                 }
@@ -82,6 +83,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
         return modifiedPropertiesList;
     }
 
+    @Override
     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
         return new LayerGroupDetachableModel(object);
     }

@@ -70,6 +70,7 @@ abstract class LimitedOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs.
      * @see java.io.FilterInputStream#in
      */
+    @Override
     public void write(int b) throws IOException {
         out.write(b);
         count++;
@@ -89,6 +90,7 @@ abstract class LimitedOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs.
      * @see java.io.FilterInputStream#in
      */
+    @Override
     public void write(byte[] b, int off, int len) throws IOException {
         out.write(b, off, len);
         if (len > 0) {
@@ -114,6 +116,7 @@ abstract class LimitedOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs.
      * @see java.io.FilterInputStream#in
      */
+    @Override
     public void close() throws IOException {
         closed = true;
         super.close();

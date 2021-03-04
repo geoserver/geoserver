@@ -23,14 +23,17 @@ public class SecuredFeatureIterator implements FeatureIterator {
         this.wrapped = wrapped;
     }
 
+    @Override
     public void close() {
         wrapped.close();
     }
 
+    @Override
     public boolean hasNext() {
         return wrapped.hasNext();
     }
 
+    @Override
     public Feature next() throws NoSuchElementException {
         return wrapped.next();
     }

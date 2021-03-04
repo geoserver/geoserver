@@ -70,6 +70,7 @@ public class VerticalCRSConfigurationPanel extends ResourceConfigurationPanel {
                 new CRSPanel(
                         "verticalCRS",
                         new SRSToCRSModel(new PropertyModel<>(this, "verticalCRS"))) {
+                    @Override
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         verticalCRS = srs;
                         if (verticalCRS != null) {

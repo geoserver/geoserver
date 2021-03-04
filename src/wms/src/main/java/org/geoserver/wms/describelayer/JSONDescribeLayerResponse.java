@@ -52,6 +52,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
     }
 
     /** Actually write the passed DescribeLayerModel on the OutputStream */
+    @Override
     @SuppressWarnings("PMD.CloseResource") // just creates wrappers, actual out managed by servlet
     public void write(DescribeLayerModel layers, DescribeLayerRequest request, OutputStream output)
             throws ServiceException, IOException {

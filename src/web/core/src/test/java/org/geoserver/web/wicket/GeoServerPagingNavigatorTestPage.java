@@ -30,6 +30,7 @@ public class GeoServerPagingNavigatorTestPage extends WebPage {
                         });
         PageableListView<String> list =
                 new PageableListView<String>("list", animals, 2) {
+                    @Override
                     protected void populateItem(ListItem item) {
                         item.add(new Label("label", item.getModel()));
                     }

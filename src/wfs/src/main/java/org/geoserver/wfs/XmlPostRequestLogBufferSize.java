@@ -21,6 +21,7 @@ public class XmlPostRequestLogBufferSize implements HandlerInterceptor {
         this.gs = gs;
     }
 
+    @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -36,6 +37,7 @@ public class XmlPostRequestLogBufferSize implements HandlerInterceptor {
         return true;
     }
 
+    @Override
     public void postHandle(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -45,6 +47,7 @@ public class XmlPostRequestLogBufferSize implements HandlerInterceptor {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void afterCompletion(
             HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {

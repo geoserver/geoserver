@@ -195,6 +195,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
+    @Override
     protected void writeCollectionCounts(
             BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
@@ -214,6 +215,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** capabilities output format string. */
+    @Override
     public String getCapabilitiesElementName() {
         return "GeoJSON-RFC";
     }

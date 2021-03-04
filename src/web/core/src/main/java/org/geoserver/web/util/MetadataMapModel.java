@@ -47,6 +47,7 @@ public class MetadataMapModel<T> implements IModel<T> {
         this.target = target;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getObject() {
         if (value == null) {
@@ -55,11 +56,13 @@ public class MetadataMapModel<T> implements IModel<T> {
         return (T) value;
     }
 
+    @Override
     public void setObject(T object) {
         value = (Serializable) object;
         model.getObject().put(expression, (Serializable) object);
     }
 
+    @Override
     public void detach() {
         model.detach();
     }
@@ -76,12 +79,15 @@ public class MetadataMapModel<T> implements IModel<T> {
             map = m;
         }
 
+        @Override
         public MetadataMap getObject() {
             return map;
         }
 
+        @Override
         public void setObject(MetadataMap arg0) {}
 
+        @Override
         public void detach() {}
     }
 }

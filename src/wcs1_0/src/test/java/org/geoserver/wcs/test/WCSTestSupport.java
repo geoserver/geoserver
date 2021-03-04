@@ -109,6 +109,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         return IS_WINDOWS;
     }
 
+    @Override
     protected String checkOws11Exception(Document dom) throws Exception {
         assertEquals("ServiceExceptionReport", dom.getFirstChild().getNodeName());
 

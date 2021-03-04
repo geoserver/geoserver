@@ -64,6 +64,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new NetCDFOutTabPanel(id, layerModel, resourceModel);
                             }

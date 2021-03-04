@@ -44,11 +44,13 @@ public class SecuredWebMapServer extends WebMapServer {
         this.delegate = delegate;
     }
 
+    @Override
     public GetFeatureInfoRequest createGetFeatureInfoRequest(GetMapRequest getMapRequest) {
         return new SecuredGetFeatureInfoRequest(
                 delegate.createGetFeatureInfoRequest(getMapRequest), getMapRequest);
     }
 
+    @Override
     public GetMapRequest createGetMapRequest() {
         return new SecuredGetMapRequest(delegate.createGetMapRequest());
     }
@@ -59,86 +61,105 @@ public class SecuredWebMapServer extends WebMapServer {
     //
     // -------------------------------------------------------------------------------------------
 
+    @Override
     public GetStylesResponse issueRequest(GetStylesRequest request)
             throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public PutStylesResponse issueRequest(PutStylesRequest request)
             throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public GetLegendGraphicResponse issueRequest(GetLegendGraphicRequest request)
             throws IOException, ServiceException {
 
         return delegate.issueRequest(request);
     }
 
+    @Override
     public DescribeLayerResponse issueRequest(DescribeLayerRequest request)
             throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request)
             throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public GetFeatureInfoResponse issueRequest(GetFeatureInfoRequest request)
             throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public GetMapResponse issueRequest(GetMapRequest request) throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
+    @Override
     public DescribeLayerRequest createDescribeLayerRequest() throws UnsupportedOperationException {
         return delegate.createDescribeLayerRequest();
     }
 
+    @Override
     public GetLegendGraphicRequest createGetLegendGraphicRequest()
             throws UnsupportedOperationException {
         return delegate.createGetLegendGraphicRequest();
     }
 
+    @Override
     public GetStylesRequest createGetStylesRequest() throws UnsupportedOperationException {
         return delegate.createGetStylesRequest();
     }
 
+    @Override
     public PutStylesRequest createPutStylesRequest() throws UnsupportedOperationException {
         return delegate.createPutStylesRequest();
     }
 
+    @Override
     public boolean equals(Object obj) {
         return delegate.equals(obj);
     }
 
+    @Override
     public WMSCapabilities getCapabilities() {
         return delegate.getCapabilities();
     }
 
+    @Override
     public GeneralEnvelope getEnvelope(Layer layer, CoordinateReferenceSystem crs) {
         return delegate.getEnvelope(layer, crs);
     }
 
+    @Override
     public ServiceInfo getInfo() {
         return delegate.getInfo();
     }
 
+    @Override
     public ResourceInfo getInfo(Layer resource) {
         return delegate.getInfo(resource);
     }
 
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public void setLoggingLevel(Level newLevel) {
         delegate.setLoggingLevel(newLevel);
     }
 
+    @Override
     public String toString() {
         return "SecuredWebMapServer " + delegate.toString();
     }

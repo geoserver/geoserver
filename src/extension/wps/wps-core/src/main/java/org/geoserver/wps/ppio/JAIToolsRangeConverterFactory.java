@@ -35,11 +35,13 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
             "(" + RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE + ")+"; // "\\z";
     private static final Pattern RANGELIST_PATTERN = Pattern.compile(RANGELIST_REGEX);
 
+    @Override
     @SuppressWarnings("unchecked")
     public Converter createConverter(Class source, Class target, Hints hints) {
         if (target.equals(Range.class) && source.equals(String.class)) {
             return new Converter() {
 
+                @Override
                 public <T> T convert(Object source, Class<T> target) throws Exception {
                     String sRange = (String) source;
                     Matcher m = RANGE_PATTERN.matcher(sRange);

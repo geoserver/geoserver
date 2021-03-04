@@ -84,6 +84,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
      * @see
      *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
@@ -92,6 +93,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
      * @see
      *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
     }

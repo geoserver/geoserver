@@ -220,15 +220,18 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         }
     }
 
+    @Override
     protected GeoServerDigestPasswordEncoder getDigestPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
     }
 
+    @Override
     protected GeoServerPBEPasswordEncoder getPBEPasswordEncoder() {
         return getSecurityManager()
                 .loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
     }
 
+    @Override
     protected GeoServerPlainTextPasswordEncoder getPlainTextPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerPlainTextPasswordEncoder.class);
     }

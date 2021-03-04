@@ -40,11 +40,13 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
+    @Override
     public Set<String> getOutputFormatNames() {
         return OUTPUT_FORMATS;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
@@ -55,6 +57,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         if (isOL3Enabled(mapContent) && ol3Format.browserSupportsOL3(mapContent)) {
             return ol3Format.produceMap(mapContent);

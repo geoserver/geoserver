@@ -46,6 +46,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     /** @see org.geoserver.wms.ExtendedCapabilitiesProvider#getSchemaLocations(String) */
+    @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
         return new String[0];
     }
@@ -54,6 +55,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @return {@code TileSet*}
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesRoots(final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
             return Collections.singletonList("TileSet*");
@@ -70,6 +72,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @see
      *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesChildDecls(
             final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
@@ -92,6 +95,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @see
      *     org.geoserver.wms.ExtendedCapabilitiesProvider#registerNamespaces(org.xml.sax.helpers.NamespaceSupport)
      */
+    @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
         // nothing to do
     }
@@ -99,6 +103,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     /**
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(Translator, ServiceInfo, Object)
      */
+    @Override
     public void encode(final Translator tx, final WMSInfo wms, final GetCapabilitiesRequest request)
             throws IOException {
         if (!gwc.getConfig().isDirectWMSIntegrationEnabled()) {

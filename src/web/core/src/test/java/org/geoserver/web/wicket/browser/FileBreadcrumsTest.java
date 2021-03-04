@@ -35,6 +35,7 @@ public class FileBreadcrumsTest {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new FileBreadcrumbs(
                                         id, new Model<>(root), new Model<>(leaf)) {

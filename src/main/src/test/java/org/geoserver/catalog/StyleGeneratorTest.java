@@ -126,6 +126,7 @@ public class StyleGeneratorTest {
 
         StyleGenerator gen =
                 new StyleGenerator(cat) {
+                    @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
                     };
@@ -194,6 +195,7 @@ public class StyleGeneratorTest {
 
         StyleGenerator gen =
                 new StyleGenerator(cat) {
+                    @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
                     };

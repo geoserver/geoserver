@@ -63,6 +63,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         return MIME;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // was it a single feature request?
         if (getImageId() != null) {
@@ -255,6 +256,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
+    @Override
     protected void writeCollectionCounts(
             BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
@@ -274,6 +276,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** capabilities output format string. */
+    @Override
     public String getCapabilitiesElementName() {
         throw new UnsupportedOperationException();
     }

@@ -262,6 +262,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     // DispatcherCallback methods
     // -----------------------------------------------------------------
 
+    @Override
     public void finished(Request request) {
         // if we did not generate any process id, no resources have been added
         if (executionId.get() == null) {
@@ -319,23 +320,28 @@ public class WPSResourceManager extends ProcessListenerAdapter
         }
     }
 
+    @Override
     public Request init(Request request) {
         return null;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         return null;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return null;
     }
@@ -344,6 +350,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     // ApplicationListener methods
     // -----------------------------------------------------------------
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
             // we are shutting down, remove all temp resources!

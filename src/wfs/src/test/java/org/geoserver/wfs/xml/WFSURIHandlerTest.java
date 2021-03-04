@@ -54,6 +54,7 @@ public class WFSURIHandlerTest {
         // Suppress the network interface interrogation so it doesn't interfere with other tests
         strategy =
                 new InitStrategy() {
+                    @Override
                     public Collection<NetworkInterface> getNetworkInterfaces() {
                         return Collections.emptyList();
                     }

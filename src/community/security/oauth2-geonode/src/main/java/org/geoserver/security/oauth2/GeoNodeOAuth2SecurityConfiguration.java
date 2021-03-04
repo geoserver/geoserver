@@ -51,6 +51,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableOAuth2Client
 class GeoNodeOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
+    @Override
     @Bean(name = "geoNodeOAuth2Resource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
         return super.geoServerOAuth2Resource();
@@ -62,6 +63,7 @@ class GeoNodeOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfigur
     }
 
     /** Must have "session" scope */
+    @Override
     @Bean(name = "geoNodeOauth2RestTemplate")
     @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {

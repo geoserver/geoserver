@@ -122,26 +122,31 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
     public ConcurrentTileFactory() {}
 
     /** Returns <code>true</code>. */
+    @Override
     public boolean canReclaimMemory() {
         return true;
     }
 
     /** Returns <code>true</code>. */
+    @Override
     public boolean isMemoryCache() {
         return true;
     }
 
     /** Always returns -1, does not do used memory accounting */
+    @Override
     public long getMemoryUsed() {
         return -1;
     }
 
     /** Clean up the cache */
+    @Override
     public void flush() {
         recycledArrays.clear();
     }
 
     /** Builds a new tile, eventually recycling the data array backing it */
+    @Override
     public WritableRaster createTile(SampleModel sampleModel, Point location) {
         // sanity checks
         if (sampleModel == null) {
@@ -274,6 +279,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
     }
 
     /** Recycle the given tile. */
+    @Override
     public void recycleTile(Raster tile) {
         if (tile.getWidth() != tile.getHeight() || tile.getWidth() > 512) {
             return;

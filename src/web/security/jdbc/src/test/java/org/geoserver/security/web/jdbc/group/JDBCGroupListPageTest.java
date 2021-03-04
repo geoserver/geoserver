@@ -16,6 +16,7 @@ public class JDBCGroupListPageTest extends GroupListPageTest {
         initializeForJDBC();
     }
 
+    @Override
     @Test
     public void testRemoveWithRoles() throws Exception {
         withRoles = true;

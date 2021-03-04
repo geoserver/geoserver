@@ -25,6 +25,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     public static final String ITEMS_PATH = "table:listContainer:items";
     public static final String FIRST_COLUM_PATH = "itemProperties:0:component:link";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         login();

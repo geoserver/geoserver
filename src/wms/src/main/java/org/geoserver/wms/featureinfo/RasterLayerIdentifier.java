@@ -91,11 +91,13 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         this.wms = wms;
     }
 
+    @Override
     public boolean canHandle(MapLayerInfo layer) {
         int type = layer.getType();
         return type == MapLayerInfo.TYPE_RASTER;
     }
 
+    @Override
     public List<FeatureCollection> identify(
             FeatureInfoRequestParameters requestParams, int maxFeatures) throws Exception {
         final MapLayerInfo layer = requestParams.getLayer();

@@ -142,6 +142,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             if (!Double.isNaN(height) && height != 0) {
                 geom.apply(
                         new CoordinateFilter() {
+                            @Override
                             public void filter(Coordinate c) {
                                 c.setCoordinate(new Coordinate(c.x, c.y, height));
                             }

@@ -49,6 +49,7 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
         super.setStatus(sc, sm);
     }
 
+    @Override
     public int getStatus() {
         return status;
     }

@@ -32,6 +32,7 @@ public class NumericKvpParser extends KvpParser {
     }
 
     /** Parses the string into a numberic value. */
+    @Override
     public Object parse(String value) throws Exception {
         return Converters.convert(value, getBinding());
     }

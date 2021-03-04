@@ -37,10 +37,12 @@ public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
         adminRoleName = name;
     }
 
+    @Override
     public String getGroupAdminRoleName() {
         return groupAdminRoleName;
     }
 
+    @Override
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }

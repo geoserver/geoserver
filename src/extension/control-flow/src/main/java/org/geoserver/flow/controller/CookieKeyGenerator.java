@@ -21,6 +21,7 @@ public class CookieKeyGenerator implements KeyGenerator {
     static String COOKIE_PREFIX = "GS_CFLOW_";
 
     /** Returns an id that can be associated uniquely to this user */
+    @Override
     public String getUserKey(Request request) {
         // check if this client already made other connections
         Cookie idCookie = null;

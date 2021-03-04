@@ -468,6 +468,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     /** Write the NetCDF file */
+    @Override
     public void write() throws IOException, ucar.ma2.InvalidRangeException {
         // end of define mode
         writer.create();
@@ -490,6 +491,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected abstract void writeDataValues() throws IOException, InvalidRangeException;
 
     /** Release resources */
+    @Override
     public void close() {
         // release resources
         for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper :

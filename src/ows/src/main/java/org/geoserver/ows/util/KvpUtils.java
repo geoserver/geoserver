@@ -61,6 +61,7 @@ public class KvpUtils {
             return regExp;
         }
 
+        @Override
         public String toString() {
             return getRegExp();
         }
@@ -86,6 +87,7 @@ public class KvpUtils {
     /** Delimeter for outer value lists in the KVPs */
     public static final Tokenizer OUTER_DELIMETER =
             new Tokenizer("\\)\\(") {
+                @Override
                 public List<String> readFlat(final String rawList) {
                     List<String> list = new ArrayList<>(super.readFlat(rawList));
                     final int len = list.size();

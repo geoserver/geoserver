@@ -61,6 +61,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected Map<Object, Object> clientProperties = new HashMap<>();
 
+    @Override
     public String getId() {
         return id;
     }
@@ -79,70 +80,87 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.workspace = workspace;
     }
 
+    @Override
     public GeoServer getGeoServer() {
         return geoServer;
     }
 
+    @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getMaintainer() {
         return maintainer;
     }
 
+    @Override
     public void setMaintainer(String maintainer) {
         this.maintainer = maintainer;
     }
 
+    @Override
     public String getAbstract() {
         return abstrct;
     }
 
+    @Override
     public void setAbstract(String abstrct) {
         this.abstrct = abstrct;
     }
 
+    @Override
     public String getAccessConstraints() {
         return accessConstraints;
     }
 
+    @Override
     public void setAccessConstraints(String accessConstraints) {
         this.accessConstraints = accessConstraints;
     }
 
+    @Override
     public String getFees() {
         return fees;
     }
 
+    @Override
     public void setFees(String fees) {
         this.fees = fees;
     }
 
+    @Override
     public List<KeywordInfo> getKeywords() {
         return keywords;
     }
@@ -151,6 +169,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.keywords = keywords;
     }
 
+    @Override
     public List<String> keywordValues() {
         List<String> values = new ArrayList<>();
         if (keywords != null) {
@@ -161,6 +180,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         return values;
     }
 
+    @Override
     public List<Version> getVersions() {
         return versions;
     }
@@ -169,6 +189,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.versions = versions;
     }
 
+    @Override
     public List<String> getExceptionFormats() {
         return exceptionFormats;
     }
@@ -177,30 +198,37 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.exceptionFormats = exceptionFormats;
     }
 
+    @Override
     public MetadataLinkInfo getMetadataLink() {
         return metadataLink;
     }
 
+    @Override
     public void setMetadataLink(MetadataLinkInfo metadataLink) {
         this.metadataLink = metadataLink;
     }
 
+    @Override
     public boolean isCiteCompliant() {
         return citeCompliant;
     }
 
+    @Override
     public void setCiteCompliant(boolean citeCompliant) {
         this.citeCompliant = citeCompliant;
     }
 
+    @Override
     public String getOnlineResource() {
         return onlineResource;
     }
 
+    @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         if (metadata == null) {
             metadata = new MetadataMap();
@@ -212,6 +240,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.metadata = metadata;
     }
 
+    @Override
     public Map<Object, Object> getClientProperties() {
         return clientProperties;
     }
@@ -220,30 +249,37 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.clientProperties = clientProperties;
     }
 
+    @Override
     public String getOutputStrategy() {
         return outputStrategy;
     }
 
+    @Override
     public void setOutputStrategy(String outputStrategy) {
         this.outputStrategy = outputStrategy;
     }
 
+    @Override
     public String getSchemaBaseURL() {
         return schemaBaseURL;
     }
 
+    @Override
     public void setSchemaBaseURL(String schemaBaseURL) {
         this.schemaBaseURL = schemaBaseURL;
     }
 
+    @Override
     public boolean isVerbose() {
         return verbose;
     }
 
+    @Override
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -267,6 +303,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

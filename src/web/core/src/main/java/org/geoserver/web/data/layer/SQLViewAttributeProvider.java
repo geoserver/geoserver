@@ -29,6 +29,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
     static final Property<SQLViewAttribute> TYPE =
             new AbstractProperty<SQLViewAttribute>("type") {
 
+                @Override
                 public Object getPropertyValue(SQLViewAttribute item) {
                     if (item.getType() != null) {
                         return item.getType().getSimpleName();

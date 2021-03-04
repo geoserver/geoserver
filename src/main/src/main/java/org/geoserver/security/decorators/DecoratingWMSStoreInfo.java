@@ -31,86 +31,107 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
         super(delegate);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
     }
 
+    @Override
     public String getCapabilitiesURL() {
         return delegate.getCapabilitiesURL();
     }
 
+    @Override
     public Catalog getCatalog() {
         return delegate.getCatalog();
     }
 
+    @Override
     public Map<String, Serializable> getConnectionParameters() {
         return delegate.getConnectionParameters();
     }
 
+    @Override
     public String getDescription() {
         return delegate.getDescription();
     }
 
+    @Override
     public Throwable getError() {
         return delegate.getError();
     }
 
+    @Override
     public String getId() {
         return delegate.getId();
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return delegate.getMetadata();
     }
 
+    @Override
     public String getName() {
         return delegate.getName();
     }
 
+    @Override
     public String getType() {
         return delegate.getType();
     }
 
+    @Override
     public WebMapServer getWebMapServer(ProgressListener listener) throws IOException {
         return delegate.getWebMapServer(listener);
     }
 
+    @Override
     public WorkspaceInfo getWorkspace() {
         return delegate.getWorkspace();
     }
 
+    @Override
     public boolean isEnabled() {
         return delegate.isEnabled();
     }
 
+    @Override
     public void setCapabilitiesURL(String url) {
         delegate.setCapabilitiesURL(url);
     }
 
+    @Override
     public void setDescription(String description) {
         delegate.setDescription(description);
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         delegate.setEnabled(enabled);
     }
 
+    @Override
     public void setError(Throwable t) {
         delegate.setError(t);
     }
 
+    @Override
     public void setName(String name) {
         delegate.setName(name);
     }
 
+    @Override
     public void setType(String type) {
         delegate.setType(type);
     }
 
+    @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         delegate.setWorkspace(workspace);
     }
@@ -145,26 +166,32 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
         delegate.setMaxConnections(maxConcurrentConnections);
     }
 
+    @Override
     public int getReadTimeout() {
         return delegate.getReadTimeout();
     }
 
+    @Override
     public void setReadTimeout(int timeoutSeconds) {
         delegate.setReadTimeout(timeoutSeconds);
     }
 
+    @Override
     public int getConnectTimeout() {
         return delegate.getConnectTimeout();
     }
 
+    @Override
     public void setConnectTimeout(int timeoutSeconds) {
         delegate.setConnectTimeout(timeoutSeconds);
     }
 
+    @Override
     public boolean isUseConnectionPooling() {
         return delegate.isUseConnectionPooling();
     }
 
+    @Override
     public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
         delegate.setUseConnectionPooling(useHttpConnectionPooling);
     }

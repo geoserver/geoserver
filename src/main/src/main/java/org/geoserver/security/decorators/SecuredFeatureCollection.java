@@ -40,6 +40,7 @@ public class SecuredFeatureCollection<T extends FeatureType, F extends Feature>
         return SecuredObjects.secure(delegate.features(), policy);
     }
 
+    @Override
     public FeatureCollection<T, F> sort(SortBy order) {
         // attributes should have been shaved already
         final FeatureCollection<T, F> fc = delegate.sort(order);
@@ -47,6 +48,7 @@ public class SecuredFeatureCollection<T extends FeatureType, F extends Feature>
         else return SecuredObjects.secure(fc, policy);
     }
 
+    @Override
     public FeatureCollection<T, F> subCollection(Filter filter) {
         final FeatureCollection<T, F> fc = delegate.subCollection(filter);
         if (fc == null) return null;

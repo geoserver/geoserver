@@ -167,6 +167,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 target.add(nativeBBox);
             }
 
+            @Override
             public boolean getDefaultFormProcessing() {
                 // disable the default processing or the link won't trigger
                 // when any validation fails
@@ -256,11 +257,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         private static final long serialVersionUID = -6593748590058977418L;
 
+        @Override
         public Object getDisplayValue(ProjectionPolicy object) {
             return new StringResourceModel(object.name(), BasicResourceConfig.this, null)
                     .getString();
         }
 
+        @Override
         public String getIdValue(ProjectionPolicy object, int index) {
             return object.name();
         }
@@ -304,10 +307,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     new FormComponent[] {nativeCRS, declaredCRS, projectionPolicy};
         }
 
+        @Override
         public FormComponent<?>[] getDependentFormComponents() {
             return dependentFormComponents;
         }
 
+        @Override
         public void validate(final Form<?> form) {
             CoordinateReferenceSystem nativeCrs;
             CoordinateReferenceSystem declaredCrs;

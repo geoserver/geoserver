@@ -611,22 +611,26 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
     }
 
     /** Accessor for plain text password encoder. */
+    @Override
     protected GeoServerPlainTextPasswordEncoder getPlainTextPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerPlainTextPasswordEncoder.class);
     }
 
     /** Accessor for digest password encoder. */
+    @Override
     protected GeoServerDigestPasswordEncoder getDigestPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
     }
 
     /** Accessor for regular (weak encryption) pbe password encoder. */
+    @Override
     protected GeoServerPBEPasswordEncoder getPBEPasswordEncoder() {
         return getSecurityManager()
                 .loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
     }
 
     /** Accessor for strong encryption pbe password encoder. */
+    @Override
     protected GeoServerPBEPasswordEncoder getStrongPBEPasswordEncoder() {
         return getSecurityManager()
                 .loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, true);

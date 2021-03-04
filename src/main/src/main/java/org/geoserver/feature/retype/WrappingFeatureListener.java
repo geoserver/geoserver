@@ -21,6 +21,7 @@ public class WrappingFeatureListener implements FeatureListener {
         this.listener = listener;
     }
 
+    @Override
     public void changed(FeatureEvent featureEvent) {
         FeatureEvent retyped =
                 new FeatureEvent(source, featureEvent.getType(), featureEvent.getBounds());

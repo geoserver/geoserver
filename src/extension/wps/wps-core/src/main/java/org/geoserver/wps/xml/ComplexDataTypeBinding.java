@@ -52,6 +52,7 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
     }
 
     /** Override to handle plain text contents */
+    @Override
     public Element encode(Object object, Document document, Element value) throws Exception {
         ComplexDataType complex = (ComplexDataType) object;
         if (!complex.getData().isEmpty() && complex.getData().get(0) instanceof String) {

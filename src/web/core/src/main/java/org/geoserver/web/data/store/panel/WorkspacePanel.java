@@ -56,6 +56,7 @@ public class WorkspacePanel extends Panel implements ParamPanel<WorkspaceInfo> {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      */
+    @Override
     public FormComponent<WorkspaceInfo> getFormComponent() {
         return choice;
     }

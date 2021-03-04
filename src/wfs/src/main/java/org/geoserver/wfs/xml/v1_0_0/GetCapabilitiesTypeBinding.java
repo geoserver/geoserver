@@ -49,6 +49,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETCAPABILITIESTYPE;
     }
@@ -60,6 +61,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return GetCapabilitiesType.class;
     }
@@ -71,6 +73,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities = wfsFactory.createGetCapabilitiesType();
         getCapabilities.setAcceptVersions(owsFactory.createAcceptVersionsType());

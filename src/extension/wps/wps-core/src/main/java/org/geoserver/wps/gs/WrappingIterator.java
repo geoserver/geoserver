@@ -22,14 +22,17 @@ class WrappingIterator implements Iterator<SimpleFeature> {
         this.delegate = delegate;
     }
 
+    @Override
     public boolean hasNext() {
         return delegate.hasNext();
     }
 
+    @Override
     public SimpleFeature next() {
         return delegate.next();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

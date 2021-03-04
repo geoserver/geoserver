@@ -31,6 +31,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
 
+    @Override
     protected void registerBindings(Map<QName, Object> bindings) {
         super.registerBindings(bindings);
 

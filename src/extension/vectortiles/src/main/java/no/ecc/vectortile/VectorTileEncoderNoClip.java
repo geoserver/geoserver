@@ -19,6 +19,7 @@ public class VectorTileEncoderNoClip extends VectorTileEncoder {
     /*
      * returns original geometry - no clipping. Assume upstream has already clipped!
      */
+    @Override
     protected Geometry clipGeometry(Geometry geometry) {
         return geometry;
     }

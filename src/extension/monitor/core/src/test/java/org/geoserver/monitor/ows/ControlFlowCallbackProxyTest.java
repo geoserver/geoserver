@@ -41,11 +41,13 @@ public class ControlFlowCallbackProxyTest {
         DispatcherCallback callback =
                 new DispatcherCallback() {
 
+                    @Override
                     public Service serviceDispatched(Request request, Service service)
                             throws ServiceException {
                         return null;
                     }
 
+                    @Override
                     public Response responseDispatched(
                             Request request,
                             Operation operation,
@@ -54,20 +56,24 @@ public class ControlFlowCallbackProxyTest {
                         return null;
                     }
 
+                    @Override
                     public Object operationExecuted(
                             Request request, Operation operation, Object result) {
                         return null;
                     }
 
+                    @Override
                     public Operation operationDispatched(Request request, Operation operation) {
                         assertEquals(Status.WAITING, data.getStatus());
                         return operation;
                     }
 
+                    @Override
                     public Request init(Request request) {
                         return null;
                     }
 
+                    @Override
                     public void finished(Request request) {}
                 };
 
@@ -107,27 +113,33 @@ public class ControlFlowCallbackProxyTest {
             return 2;
         }
 
+        @Override
         public Service serviceDispatched(Request request, Service service) throws ServiceException {
             return null;
         }
 
+        @Override
         public Response responseDispatched(
                 Request request, Operation operation, Object result, Response response) {
             return null;
         }
 
+        @Override
         public Object operationExecuted(Request request, Operation operation, Object result) {
             return null;
         }
 
+        @Override
         public Operation operationDispatched(Request request, Operation operation) {
             return null;
         }
 
+        @Override
         public Request init(Request request) {
             return null;
         }
 
+        @Override
         public void finished(Request request) {}
     }
 }

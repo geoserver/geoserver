@@ -106,6 +106,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.TRANSACTIONTYPE;
     }
@@ -117,6 +118,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return TransactionType.class;
     }
@@ -128,6 +130,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         TransactionType transaction = wfsfactory.createTransactionType();

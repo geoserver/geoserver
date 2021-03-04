@@ -77,11 +77,13 @@ public class VerticalGridTransform extends AbstractMathTransform {
     }
 
     /** Gets the dimension of input points. */
+    @Override
     public final int getSourceDimensions() {
         return 3;
     }
 
     /** Gets the dimension of output points. */
+    @Override
     public final int getTargetDimensions() {
         return 3;
     }
@@ -252,6 +254,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
          * @throws ParameterNotFoundException if a required parameter was not found.
          * @throws FactoryException if there is a problem creating this math transform.
          */
+        @Override
         protected MathTransform createMathTransform(final ParameterValueGroup values)
                 throws ParameterNotFoundException, FactoryException {
             return new VerticalGridTransform(

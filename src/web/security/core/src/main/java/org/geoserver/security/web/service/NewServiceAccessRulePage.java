@@ -39,6 +39,7 @@ public class NewServiceAccessRulePage extends AbstractServiceAccessRulePage {
     /** Checks the same rule has not been entered before */
     class DuplicateRuleValidator extends AbstractFormValidator {
 
+        @Override
         public void validate(Form<?> form) {
             // only validate on final submit
             if (form.findSubmittingButton() != form.get("save")) {
@@ -54,6 +55,7 @@ public class NewServiceAccessRulePage extends AbstractServiceAccessRulePage {
             }
         }
 
+        @Override
         public FormComponent<?>[] getDependentFormComponents() {
             return new FormComponent[] {serviceChoice, methodChoice, rolesFormComponent};
         }

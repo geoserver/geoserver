@@ -55,24 +55,29 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             this.targetSchema = targetSchema;
         }
 
+        @Override
         public void close() {
             wrapped.close();
         }
 
+        @Override
         public boolean hasNext() {
             return wrapped.hasNext();
         }
 
+        @Override
         public SimpleFeature next() throws NoSuchElementException {
             SimpleFeature base = wrapped.next();
             return new BoundedFeature(base, targetSchema);
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("Removal is not supported");
         }
     }
 
+    @Override
     protected Iterator<SimpleFeature> openIterator() {
         return new BoundsIterator(wrapped.features(), schema);
     }
@@ -81,6 +86,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         ((BoundsIterator) close).close();
     }
 
+    @Override
     public int size() {
         return wrapped.size();
     }
@@ -106,6 +112,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             this.type = type;
         }
 
+        @Override
         public Object getAttribute(int index) {
             return delegate.getAttribute(type.getDescriptor(index).getName());
         }
@@ -115,6 +122,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             return type.getAttributeCount();
         }
 
+        @Override
         public Object getAttribute(String path) {
             if (type.getDescriptor(path) == null) return null;
             return delegate.getAttribute(path);
@@ -139,12 +147,14 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             return retval;
         }
 
+        @Override
         public ReferencedEnvelope getBounds() {
             // we may not have the default geometry around in the reduced feature type,
             // so let's output a referenced envelope if possible
             return new ReferencedEnvelope(delegate.getBounds());
         }
 
+        @Override
         public Geometry getDefaultGeometry() {
             return getPrimaryGeometry();
         }
@@ -155,6 +165,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             return (Geometry) delegate.getAttribute(defaultGeometry.getName());
         }
 
+        @Override
         public SimpleFeatureType getFeatureType() {
             return type;
         }
@@ -164,6 +175,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             return type;
         }
 
+        @Override
         public String getID() {
             return delegate.getID();
         }
@@ -172,15 +184,18 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
             return type.getAttributeCount();
         }
 
+        @Override
         public void setAttribute(int position, Object val)
                 throws IllegalAttributeException, ArrayIndexOutOfBoundsException {
             throw new UnsupportedOperationException("This feature wrapper is read only");
         }
 
+        @Override
         public void setAttribute(String path, Object attribute) throws IllegalAttributeException {
             throw new UnsupportedOperationException("This feature wrapper is read only");
         }
 
+        @Override
         public void setDefaultGeometry(Geometry geometry) throws IllegalAttributeException {
             setPrimaryGeometry(geometry);
         }

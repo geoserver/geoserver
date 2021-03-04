@@ -38,6 +38,7 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
 
     @Autowired private Catalog catalog;
 
+    @Override
     protected boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addWcs11Coverages();
         // add coverage with default namespace

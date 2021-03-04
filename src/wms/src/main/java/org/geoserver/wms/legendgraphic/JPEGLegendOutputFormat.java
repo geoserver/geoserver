@@ -33,6 +33,7 @@ public class JPEGLegendOutputFormat implements GetLegendGraphicOutputFormat {
      *     as JPEG
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      */
+    @Override
     public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
 
@@ -48,6 +49,7 @@ public class JPEGLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @return {@code image/jpeg}
      * @see GetLegendGraphicOutputFormat#getContentType()
      */
+    @Override
     public String getContentType() throws IllegalStateException {
         return MIME_TYPE;
     }

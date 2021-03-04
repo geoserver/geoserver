@@ -30,6 +30,7 @@ public class DirectoryResourceLoader extends DefaultResourceLoader {
             super(new File(root, path).getAbsolutePath());
         }
 
+        @Override
         public String getPathWithinContext() {
             return getPath();
         }

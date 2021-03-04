@@ -24,6 +24,7 @@ public class TimeKvpParser extends org.geoserver.ows.kvp.TimeKvpParser {
         this.wms = wms;
     }
 
+    @Override
     protected TimeParser getTimeParser() {
         int maxRequestedDimensionValues = wms.getMaxRequestedDimensionValues();
         return new TimeParser(maxRequestedDimensionValues);

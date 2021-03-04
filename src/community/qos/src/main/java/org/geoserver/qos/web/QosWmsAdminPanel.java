@@ -30,6 +30,7 @@ public class QosWmsAdminPanel extends QosAdminPanel {
         getLoader().setConfiguration((WMSInfo) serviceInfo, config);
     }
 
+    @Override
     protected RepresentativeOperationPanel buildRepOperationPanel(
             String id, IModel<QosRepresentativeOperation> model) {
         return new WmsRepresentativeOperationPanel("repOperationPanel", model);

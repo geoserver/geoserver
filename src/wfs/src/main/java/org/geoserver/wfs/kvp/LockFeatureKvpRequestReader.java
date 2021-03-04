@@ -28,6 +28,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
+    @Override
     protected <T> void querySet(EObject request, String property, List<T> values)
             throws WFSException {
         // no values specified, do nothing
@@ -96,15 +97,18 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         return values;
     }
 
+    @Override
     protected void buildStoredQueries(
             EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         throw new UnsupportedOperationException("No stored queries in WFS 1.0 or 1.1");
     }
 
+    @Override
     protected List<Query> getQueries(EObject eObject) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     protected void handleBBOX(Map kvp, EObject eObject) throws Exception {
         // set filter from bbox
         Envelope bbox = (Envelope) kvp.get("bbox");

@@ -87,6 +87,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
 
     static final ThreadLocal<Map<String, Map<String, Object>>> DYNAMIC_DEFAULTS =
             new ThreadLocal<Map<String, Map<String, Object>>>() {
+                @Override
                 protected java.util.Map<String, java.util.Map<String, Object>> initialValue() {
                     return new HashMap<String, Map<String, Object>>();
                 };

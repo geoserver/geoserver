@@ -53,6 +53,7 @@ public class GeoServerUserDao implements UserDetailsService {
         return GeoServerExtensions.bean(GeoServerUserDao.class);
     }
 
+    @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException, DataAccessException {
         checkUserMap();

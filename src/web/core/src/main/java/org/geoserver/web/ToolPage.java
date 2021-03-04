@@ -31,6 +31,7 @@ public class ToolPage extends GeoServerSecuredPage {
 
         add(
                 new ListView<ComponentInfo>("toolList", links) {
+                    @Override
                     public void populateItem(ListItem<ComponentInfo> item) {
                         final ComponentInfo info = item.getModelObject();
 

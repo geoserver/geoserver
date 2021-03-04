@@ -46,6 +46,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         this.gs = gs;
     }
 
+    @Override
     public CSWInfo getServiceInfo() {
         return gs.getService(CSWInfo.class);
     }

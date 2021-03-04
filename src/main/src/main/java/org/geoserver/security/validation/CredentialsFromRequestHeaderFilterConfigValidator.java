@@ -21,6 +21,7 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
         super(securityManager);
     }
 
+    @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config)
             throws FilterConfigException {
 

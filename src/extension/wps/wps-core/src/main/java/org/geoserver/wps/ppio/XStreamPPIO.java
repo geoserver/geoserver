@@ -46,6 +46,7 @@ public class XStreamPPIO extends XMLPPIO {
     protected SecureXStream buildXStream() {
         SecureXStream stream =
                 new SecureXStream() {
+                    @Override
                     protected MapperWrapper wrapMapper(MapperWrapper next) {
                         return new UppercaseTagMapper(new PackageStrippingMapper(next));
                     };
@@ -65,6 +66,7 @@ public class XStreamPPIO extends XMLPPIO {
             super(wrapped);
         }
 
+        @Override
         public String serializedClass(Class type) {
             return type.getName().replaceFirst(".*\\.", "");
         }
@@ -76,6 +78,7 @@ public class XStreamPPIO extends XMLPPIO {
             super(wrapped);
         }
 
+        @Override
         public String serializedMember(Class type, String memberName) {
             char startChar = memberName.charAt(0);
             if (Character.isLowerCase(startChar)) {
@@ -89,6 +92,7 @@ public class XStreamPPIO extends XMLPPIO {
             }
         }
 
+        @Override
         public String realMember(Class type, String serialized) {
             String fieldName = super.realMember(type, serialized);
             try {

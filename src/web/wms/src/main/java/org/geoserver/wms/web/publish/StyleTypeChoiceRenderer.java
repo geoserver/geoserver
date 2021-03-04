@@ -10,10 +10,12 @@ import org.geoserver.catalog.StyleType;
 @SuppressWarnings("serial")
 public class StyleTypeChoiceRenderer extends ChoiceRenderer<StyleType> {
 
+    @Override
     public Object getDisplayValue(StyleType object) {
         return object.toString();
     }
 
+    @Override
     public String getIdValue(StyleType object, int index) {
         return object.toString();
     }

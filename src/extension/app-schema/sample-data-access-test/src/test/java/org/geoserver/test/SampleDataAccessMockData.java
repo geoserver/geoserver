@@ -82,6 +82,7 @@ public class SampleDataAccessMockData extends SystemTestData {
      *
      * @see org.geoserver.data.test.TestData#getDataDirectoryRoot()
      */
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
@@ -91,6 +92,7 @@ public class SampleDataAccessMockData extends SystemTestData {
      *
      * @see org.geoserver.data.test.TestData#isTestDataAvailable()
      */
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }
@@ -100,6 +102,7 @@ public class SampleDataAccessMockData extends SystemTestData {
      *
      * @see org.geoserver.data.test.TestData#setUp()
      */
+    @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         setUpCatalog();
@@ -116,6 +119,7 @@ public class SampleDataAccessMockData extends SystemTestData {
      *
      * @see org.geoserver.data.test.TestData#tearDown()
      */
+    @Override
     @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() throws Exception {
         IOUtils.delete(data);
@@ -160,6 +164,7 @@ public class SampleDataAccessMockData extends SystemTestData {
      * @param input source from which file content is copied
      * @param location path relative to mock data directory
      */
+    @Override
     public void copyTo(InputStream input, String location) throws IOException {
         IOUtils.copy(input, new File(getDataDirectoryRoot(), location));
     }

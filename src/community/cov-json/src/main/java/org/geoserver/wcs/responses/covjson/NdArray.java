@@ -91,6 +91,7 @@ public class NdArray extends CoverageJson {
             int minY = image.getMinY();
             Sampler sampler = getSampler();
 
+            @Override
             public boolean hasNext() {
                 if (currentColumn < numColumns) return true;
                 // start from next row
@@ -116,6 +117,7 @@ public class NdArray extends CoverageJson {
                 return Sampler.create(ri.getSampleModel().getDataType(), iterator);
             }
 
+            @Override
             public Number next() {
                 // TODO: think about coverages made of multiple bands/parameters
                 return sampler.getSample(minX + currentColumn++, minY + currentRow, 0);

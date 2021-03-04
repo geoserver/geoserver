@@ -80,6 +80,7 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
 
         public KeyboardBehavior() {}
 
+        @Override
         public void renderHead(Component component, IHeaderResponse response) {
             super.renderHead(component, response);
             response.render(JavaScriptHeaderItem.forReference(SELECT2_KEYBOARD_JS));

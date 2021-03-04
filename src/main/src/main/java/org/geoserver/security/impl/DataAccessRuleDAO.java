@@ -68,6 +68,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     }
 
     /** Parses the rules contained in the property file */
+    @Override
     protected void loadRules(Properties props) {
         TreeSet<DataAccessRule> result = new TreeSet<>();
         catalogMode = CatalogMode.HIDE;
@@ -196,6 +197,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     }
 
     /** Turns the rules list into a property bag */
+    @Override
     protected Properties toProperties() {
         Properties props = new Properties();
         props.put("mode", catalogMode.toString());

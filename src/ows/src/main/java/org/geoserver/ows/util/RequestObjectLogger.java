@@ -23,6 +23,7 @@ public class RequestObjectLogger implements MethodInterceptor {
         logger = org.geotools.util.logging.Logging.getLogger(logPackage);
     }
 
+    @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         if (!logger.isLoggable(Level.INFO)) {
             return invocation.proceed();

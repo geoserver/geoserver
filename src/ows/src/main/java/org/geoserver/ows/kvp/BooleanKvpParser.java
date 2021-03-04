@@ -23,6 +23,7 @@ public class BooleanKvpParser extends KvpParser {
         super(key, Boolean.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         return Boolean.valueOf(
                 DatatypeConverterImpl.getInstance().parseBoolean(value.toLowerCase()));

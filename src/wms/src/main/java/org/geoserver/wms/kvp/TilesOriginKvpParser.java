@@ -16,6 +16,7 @@ public class TilesOriginKvpParser extends KvpParser {
         super("tilesorigin", Point2D.Double.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         List coordValues = KvpUtils.readFlat(value);
 

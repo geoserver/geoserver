@@ -120,6 +120,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                 "ResourceConfigurationPage.Data")) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public Panel getPanel(String panelID) {
                         return createMainTab(panelID).setInputEnabled(inputEnabled);
                     }
@@ -131,6 +132,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                 "ResourceConfigurationPage.Publishing")) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public Panel getPanel(String panelID) {
                         return new PublishingEditTabPanel(panelID).setInputEnabled(inputEnabled);
                     }
@@ -234,6 +236,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         Collections.sort(
                 tabPanels,
                 new Comparator<PublishedEditTabPanelInfo>() {
+                    @Override
                     public int compare(PublishedEditTabPanelInfo o1, PublishedEditTabPanelInfo o2) {
                         Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
                         Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;

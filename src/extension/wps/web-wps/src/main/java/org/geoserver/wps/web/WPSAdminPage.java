@@ -37,10 +37,12 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         super(pageParams);
     }
 
+    @Override
     protected Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }
 
+    @Override
     protected String getServiceName() {
         return "WPS";
     }

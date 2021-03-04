@@ -46,12 +46,14 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
      * @author aaime
      */
     class DuplicateRuleValidator extends AbstractFormValidator {
+        @Override
         public FormComponent<?>[] getDependentFormComponents() {
             return new FormComponent[] {
                 rootChoice, layerChoice, accessModeChoice, rolesFormComponent
             };
         }
 
+        @Override
         public void validate(Form<?> form) {
             if (form.findSubmittingButton() != form.get("save")) { // only validate on final submit
                 return;

@@ -39,18 +39,22 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setBeanName(String beanName) {
         this.name = beanName;
     }
 
     /** Does nothing, subclases may override. */
+    @Override
     public void initialize(GeoServerSecurityManager securityManager) throws IOException {}
 
     /** Does nothing, subclases may override. */
+    @Override
     public void initializeFor(GeoServerUserGroupService service) throws IOException {}
 
     public AbstractGeoserverPasswordEncoder() {
@@ -143,11 +147,13 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     public abstract PasswordEncodingType getEncodingType();
 
     /** @return true if this encoder has encoded encPass */
+    @Override
     public boolean isResponsibleForEncoding(String encPass) {
         if (encPass == null) return false;
         return encPass.startsWith(getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER);
     }
 
+    @Override
     public String decode(String encPass) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("decoding passwords not supported");
     }
@@ -162,6 +168,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         return encPass.toCharArray();
     }
 
+    @Override
     public String getPrefix() {
         return prefix;
     }
@@ -170,6 +177,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         this.prefix = prefix;
     }
 
+    @Override
     public boolean isAvailableWithoutStrongCryptogaphy() {
         return availableWithoutStrongCryptogaphy;
     }
@@ -178,6 +186,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         this.availableWithoutStrongCryptogaphy = availableWithoutStrongCryptogaphy;
     }
 
+    @Override
     public boolean isReversible() {
         return reversible;
     }

@@ -67,6 +67,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -5907648151984337786L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -99,6 +100,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -5907648151984337786L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -117,6 +119,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -154,6 +157,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -202,6 +206,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -260,6 +265,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -291,6 +297,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -5907648151984337786L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);
@@ -324,6 +331,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerCacheOptionsTabPanel(
                                         id, layerModel, tileLayerModel);

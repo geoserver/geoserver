@@ -2297,6 +2297,7 @@ public class ResourcePool {
             super(maxSize);
         }
 
+        @Override
         protected void dispose(String key, FeatureType featureType) {
             String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
             FeatureTypeInfo info = catalog.getFeatureType(id);
@@ -2332,6 +2333,7 @@ public class ResourcePool {
          * @param id DataStore id, or null if not known
          * @param dataAccess DataAccess to dispose
          */
+        @Override
         protected void dispose(String id, final DataAccess dataAccess) {
             DataStoreInfo info = catalog.getDataStore(id);
             final String name;
@@ -2356,6 +2358,7 @@ public class ResourcePool {
 
     class CoverageReaderCache extends CatalogResourceCache<String, GridCoverageReader> {
 
+        @Override
         protected void dispose(String id, GridCoverageReader reader) {
             CoverageStoreInfo info = catalog.getCoverageStore(id);
             if (info != null) {
@@ -2376,6 +2379,7 @@ public class ResourcePool {
     class CoverageHintReaderCache
             extends CatalogResourceCache<CoverageHintReaderKey, GridCoverageReader> {
 
+        @Override
         protected void dispose(CoverageHintReaderKey key, GridCoverageReader reader) {
             CoverageStoreInfo info = catalog.getCoverageStore(key.id);
             if (info != null) {
@@ -2492,10 +2496,13 @@ public class ResourcePool {
     /** Listens to catalog events clearing cache entires when resources are modified. */
     public class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
 
+        @Override
         public void handleAddEvent(CatalogAddEvent event) {}
 
+        @Override
         public void handleModifyEvent(CatalogModifyEvent event) {}
 
+        @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             CatalogInfo source = event.getSource();
             source.accept(this);
@@ -2505,6 +2512,7 @@ public class ResourcePool {
             }
         }
 
+        @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             CatalogInfo source = event.getSource();
             source.accept(this);
@@ -2514,6 +2522,7 @@ public class ResourcePool {
             }
         }
 
+        @Override
         public void reloaded() {}
 
         @Override

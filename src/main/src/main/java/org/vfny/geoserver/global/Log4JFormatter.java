@@ -103,6 +103,7 @@ public class Log4JFormatter extends Formatter {
      * @return a formatted log record
      * @throws AssertionError Should never occur.
      */
+    @Override
     public synchronized String format(final LogRecord record) {
         final String recordLevel = record.getLevel().getLocalizedName();
 
@@ -312,6 +313,7 @@ public class Log4JFormatter extends Formatter {
          *
          * @param record the log record to publish.
          */
+        @Override
         public void publish(final LogRecord record) {
             super.publish(record);
             flush();
@@ -321,6 +323,7 @@ public class Log4JFormatter extends Formatter {
          * Override {@link StreamHandler#close} to do a flush but not to close the output stream.
          * That is, we do <b>not</b> close {@link System#out}.
          */
+        @Override
         public void close() {
             flush();
         }

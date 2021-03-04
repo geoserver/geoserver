@@ -58,86 +58,103 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     }
 
     /** @return the cliendId */
+    @Override
     public String getCliendId() {
         return cliendId;
     }
 
     /** @param cliendId the cliendId to set */
+    @Override
     public void setCliendId(String cliendId) {
         this.cliendId = cliendId;
     }
 
     /** @return the clientSecret */
+    @Override
     public String getClientSecret() {
         return clientSecret;
     }
 
     /** @param clientSecret the clientSecret to set */
+    @Override
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
     /** @return the accessTokenUri */
+    @Override
     public String getAccessTokenUri() {
         return accessTokenUri;
     }
 
     /** @param accessTokenUri the accessTokenUri to set */
+    @Override
     public void setAccessTokenUri(String accessTokenUri) {
         this.accessTokenUri = accessTokenUri;
     }
 
     /** @return the userAuthorizationUri */
+    @Override
     public String getUserAuthorizationUri() {
         return userAuthorizationUri;
     }
 
     /** @param userAuthorizationUri the userAuthorizationUri to set */
+    @Override
     public void setUserAuthorizationUri(String userAuthorizationUri) {
         this.userAuthorizationUri = userAuthorizationUri;
     }
 
     /** @return the redirectUri */
+    @Override
     public String getRedirectUri() {
         return redirectUri;
     }
 
     /** @param redirectUri the redirectUri to set */
+    @Override
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
     }
 
     /** @return the checkTokenEndpointUrl */
+    @Override
     public String getCheckTokenEndpointUrl() {
         return checkTokenEndpointUrl;
     }
 
     /** @param checkTokenEndpointUrl the checkTokenEndpointUrl to set */
+    @Override
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
         this.checkTokenEndpointUrl = checkTokenEndpointUrl;
     }
 
     /** @return the logoutUri */
+    @Override
     public String getLogoutUri() {
         return logoutUri;
     }
 
     /** @param logoutUri the logoutUri to set */
+    @Override
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
     }
 
     /** @return the scopes */
+    @Override
     public String getScopes() {
         return scopes;
     }
 
     /** @param scopes the scopes to set */
+    @Override
     public void setScopes(String scopes) {
         this.scopes = scopes;
     }
 
     /** @return the enableRedirectAuthenticationEntryPoint */
+    @Override
     public Boolean getEnableRedirectAuthenticationEntryPoint() {
         return enableRedirectAuthenticationEntryPoint;
     }
@@ -146,6 +163,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
      * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to
      *     set
      */
+    @Override
     public void setEnableRedirectAuthenticationEntryPoint(
             Boolean enableRedirectAuthenticationEntryPoint) {
         this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;

@@ -205,6 +205,7 @@ public class StoreExtensionPoints {
             Collections.sort(
                     fallbacks,
                     new Comparator<DataStorePanelInfo>() {
+                        @Override
                         public int compare(DataStorePanelInfo o1, DataStorePanelInfo o2) {
                             Class<?> c1 = o1.getFactoryClass();
                             Class<?> c2 = o2.getFactoryClass();

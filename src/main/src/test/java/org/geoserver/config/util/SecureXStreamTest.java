@@ -39,6 +39,7 @@ public class SecureXStreamTest {
         Assert.assertThrows(
                 ForbiddenClassExceptionEx.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />");
                     };
@@ -66,6 +67,7 @@ public class SecureXStreamTest {
         Assert.assertThrows(
                 ForbiddenClassExceptionEx.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />");
                     };

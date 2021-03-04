@@ -89,6 +89,7 @@ public class VFSWorker {
                          * @see
                          *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
                          */
+                        @Override
                         public boolean traverseDescendents(FileSelectInfo folderInfo)
                                 throws Exception {
                             return true;
@@ -98,6 +99,7 @@ public class VFSWorker {
                          * @see
                          *     org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
                          */
+                        @Override
                         public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
                             File folder = archiveFile.getParentFile();
                             String name = fileInfo.getFile().getName().getFriendlyURI();
@@ -206,10 +208,12 @@ public class VFSWorker {
         IOFileFilter fileFilter =
                 new IOFileFilter() {
 
+                    @Override
                     public boolean accept(File dir, String name) {
                         return fileNameFilter.accept(dir, name);
                     }
 
+                    @Override
                     public boolean accept(File file) {
                         return fileNameFilter.accept(file.getParentFile(), file.getName());
                     }

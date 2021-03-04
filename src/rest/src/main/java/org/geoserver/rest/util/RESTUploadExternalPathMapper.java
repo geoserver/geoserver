@@ -27,6 +27,7 @@ public class RESTUploadExternalPathMapper extends RESTUploadPathMapperImpl
         super(catalog);
     }
 
+    @Override
     public void mapStorePath(
             StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
             throws IOException {
@@ -56,6 +57,7 @@ public class RESTUploadExternalPathMapper extends RESTUploadPathMapperImpl
         }
     }
 
+    @Override
     public int getPriority() {
         return 0;
     }

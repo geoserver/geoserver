@@ -65,6 +65,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, new Model<>(layer));
                             }
@@ -91,6 +92,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, new Model<>(layer));
                             }
@@ -130,6 +132,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, new Model<>(layer));
                             }
@@ -161,6 +164,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, layerModel);
                             }
@@ -218,6 +222,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, layerModel);
                             }
@@ -357,6 +362,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WMSLayerConfig(id, layerModel);
                             }

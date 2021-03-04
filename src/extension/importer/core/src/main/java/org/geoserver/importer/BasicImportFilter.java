@@ -21,6 +21,7 @@ public class BasicImportFilter implements ImportFilter {
         set.add(task);
     }
 
+    @Override
     public boolean include(ImportTask task) {
         return set.contains(task);
     }

@@ -35,58 +35,72 @@ public abstract class DecoratingFeatureSource<T extends FeatureType, F extends F
         super(delegate);
     }
 
+    @Override
     public void addFeatureListener(FeatureListener listener) {
         delegate.addFeatureListener(listener);
     }
 
+    @Override
     public ReferencedEnvelope getBounds() throws IOException {
         return delegate.getBounds();
     }
 
+    @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         return delegate.getBounds(query);
     }
 
+    @Override
     public int getCount(Query query) throws IOException {
         return delegate.getCount(query);
     }
 
+    @Override
     public DataAccess<T, F> getDataStore() {
         return delegate.getDataStore();
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures() throws IOException {
         return delegate.getFeatures();
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures(Filter filter) throws IOException {
         return delegate.getFeatures(filter);
     }
 
+    @Override
     public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
         return delegate.getFeatures(query);
     }
 
+    @Override
     public ResourceInfo getInfo() {
         return delegate.getInfo();
     }
 
+    @Override
     public Name getName() {
         return delegate.getName();
     }
 
+    @Override
     public QueryCapabilities getQueryCapabilities() {
         return delegate.getQueryCapabilities();
     }
 
+    @Override
     public T getSchema() {
         return delegate.getSchema();
     }
 
+    @Override
     public Set<Key> getSupportedHints() {
         return delegate.getSupportedHints();
     }
 
+    @Override
     public void removeFeatureListener(FeatureListener listener) {
         delegate.removeFeatureListener(listener);
     }

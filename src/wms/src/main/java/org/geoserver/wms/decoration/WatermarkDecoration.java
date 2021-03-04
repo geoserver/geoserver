@@ -43,6 +43,7 @@ public class WatermarkDecoration implements MapDecoration {
     /** Transient cache to avoid reloading the same file over and over */
     private static final Map<URL, LogoCacheEntry> logoCache = new SoftValueHashMap<>();
 
+    @Override
     public void loadOptions(Map<String, String> options) {
         this.imageURL = options.get("url");
 
@@ -56,6 +57,7 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
+    @Override
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
         try {
             BufferedImage logo = getLogo();
@@ -66,6 +68,7 @@ public class WatermarkDecoration implements MapDecoration {
     }
 
     /** Print the WaterMarks into the graphic2D. */
+    @Override
     public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent)
             throws MalformedURLException, ClassCastException, IOException {
         BufferedImage logo = getLogo();

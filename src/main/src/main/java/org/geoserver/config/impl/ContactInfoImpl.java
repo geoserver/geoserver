@@ -39,6 +39,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     String onlineResource;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -47,26 +48,32 @@ public class ContactInfoImpl implements ContactInfo {
         this.id = id;
     }
 
+    @Override
     public String getAddress() {
         return address;
     }
 
+    @Override
     public void setAddress(String address) {
         this.address = address;
     }
 
+    @Override
     public String getAddressCity() {
         return addressCity;
     }
 
+    @Override
     public void setAddressCity(String addressCity) {
         this.addressCity = addressCity;
     }
 
+    @Override
     public String getAddressCountry() {
         return addressCountry;
     }
 
+    @Override
     public void setAddressCountry(String addressCountry) {
         this.addressCountry = addressCountry;
     }
@@ -81,82 +88,102 @@ public class ContactInfoImpl implements ContactInfo {
         this.addressDeliveryPoint = addressDeliveryPoint;
     }
 
+    @Override
     public String getAddressPostalCode() {
         return addressPostalCode;
     }
 
+    @Override
     public void setAddressPostalCode(String addressPostalCode) {
         this.addressPostalCode = addressPostalCode;
     }
 
+    @Override
     public String getAddressState() {
         return addressState;
     }
 
+    @Override
     public void setAddressState(String addressState) {
         this.addressState = addressState;
     }
 
+    @Override
     public String getAddressType() {
         return addressType;
     }
 
+    @Override
     public void setAddressType(String addressType) {
         this.addressType = addressType;
     }
 
+    @Override
     public String getContactEmail() {
         return contactEmail;
     }
 
+    @Override
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
     }
 
+    @Override
     public String getContactFacsimile() {
         return contactFacsimile;
     }
 
+    @Override
     public void setContactFacsimile(String contactFacsimile) {
         this.contactFacsimile = contactFacsimile;
     }
 
+    @Override
     public String getContactOrganization() {
         return contactOrganization;
     }
 
+    @Override
     public void setContactOrganization(String contactOrganization) {
         this.contactOrganization = contactOrganization;
     }
 
+    @Override
     public String getContactPerson() {
         return contactPerson;
     }
 
+    @Override
     public void setContactPerson(String contactPerson) {
         this.contactPerson = contactPerson;
     }
 
+    @Override
     public String getContactPosition() {
         return contactPosition;
     }
 
+    @Override
     public void setContactPosition(String contactPosition) {
         this.contactPosition = contactPosition;
     }
 
+    @Override
     public String getContactVoice() {
         return contactVoice;
     }
 
+    @Override
     public void setContactVoice(String contactVoice) {
         this.contactVoice = contactVoice;
     }
 
+    @Override
     public String getOnlineResource() {
         return onlineResource;
     }
 
+    @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
     }

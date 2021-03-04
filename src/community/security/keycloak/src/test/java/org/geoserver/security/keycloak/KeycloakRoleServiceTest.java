@@ -36,6 +36,7 @@ public class KeycloakRoleServiceTest extends TestCase {
     private static final Gson gson = new Gson();
     private KeycloakRoleService service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

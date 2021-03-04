@@ -158,6 +158,7 @@ public class TestWfsPostTest {
         } else {
             testWfsPost =
                     new TestWfsPost() {
+                        @Override
                         String getProxyBaseURL() {
                             return proxyBaseUrl;
                         }

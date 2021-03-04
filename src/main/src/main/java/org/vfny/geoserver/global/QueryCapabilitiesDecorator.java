@@ -21,26 +21,32 @@ abstract class QueryCapabilitiesDecorator extends QueryCapabilities {
         this.delegate = delegate;
     }
 
+    @Override
     public boolean isOffsetSupported() {
         return delegate.isOffsetSupported();
     }
 
+    @Override
     public boolean supportsSorting(SortBy[] sortAttributes) {
         return delegate.supportsSorting(sortAttributes);
     }
 
+    @Override
     public boolean isReliableFIDSupported() {
         return delegate.isReliableFIDSupported();
     }
 
+    @Override
     public boolean isUseProvidedFIDSupported() {
         return delegate.isUseProvidedFIDSupported();
     }
 
+    @Override
     public boolean isJoiningSupported() {
         return delegate.isJoiningSupported();
     }
 
+    @Override
     public boolean isVersionSupported() {
         return delegate.isVersionSupported();
     }

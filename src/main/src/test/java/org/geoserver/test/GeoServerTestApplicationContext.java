@@ -51,6 +51,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
         this.servletContext = servletContext;
     }
 
+    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }
@@ -68,6 +69,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
      * because we have not ported all the mock test data to a 2.x style configuration
      * directory, so we need to force the legacy data directory loader to engage.
      */
+    @Override
     protected void loadBeanDefinitions(XmlBeanDefinitionReader reader)
             throws BeansException, IOException {
         super.loadBeanDefinitions(reader);

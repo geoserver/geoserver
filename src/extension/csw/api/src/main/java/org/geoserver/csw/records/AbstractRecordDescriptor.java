@@ -47,6 +47,7 @@ public abstract class AbstractRecordDescriptor implements RecordDescriptor {
      *
      * @return the feature type
      */
+    @Override
     public FeatureType getFeatureType() {
         return (FeatureType) getFeatureDescriptor().getType();
     }

@@ -67,22 +67,27 @@ public class InfoObjectProxyTest {
         Integer bar;
         List<Object> scratch = new ArrayList<>();
 
+        @Override
         public String getFoo() {
             return foo;
         }
 
+        @Override
         public void setFoo(String foo) {
             this.foo = foo;
         }
 
+        @Override
         public Integer getBar() {
             return bar;
         }
 
+        @Override
         public void setBar(Integer bar) {
             this.bar = bar;
         }
 
+        @Override
         public List<Object> getScratch() {
             return scratch;
         }

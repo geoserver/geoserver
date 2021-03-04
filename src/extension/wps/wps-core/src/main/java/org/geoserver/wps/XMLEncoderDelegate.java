@@ -28,6 +28,7 @@ public class XMLEncoderDelegate implements EncoderDelegate {
         return ppio;
     }
 
+    @Override
     public void encode(ContentHandler handler) throws Exception {
         ppio.encode(object, handler);
     }

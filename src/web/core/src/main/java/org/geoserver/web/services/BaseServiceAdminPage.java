@@ -158,6 +158,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         Button cancel =
                 new Button("cancel") {
+                    @Override
                     public void onSubmit() {
                         doReturn();
                     }

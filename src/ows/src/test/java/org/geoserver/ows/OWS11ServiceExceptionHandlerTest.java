@@ -48,6 +48,7 @@ public class OWS11ServiceExceptionHandlerTest {
 
         request =
                 new MockHttpServletRequest() {
+                    @Override
                     public int getServerPort() {
                         return 8080;
                     }

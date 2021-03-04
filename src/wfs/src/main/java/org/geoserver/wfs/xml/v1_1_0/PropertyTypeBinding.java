@@ -55,6 +55,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.PROPERTYTYPE;
     }
@@ -66,6 +67,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return PropertyType.class;
     }
@@ -77,6 +79,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: much of this method is duplicated in the 1.1.0 binding, it
         // would be nice if we could sync them up somewhow....
@@ -116,6 +119,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      * This method does nothing, its functionality is implemented by {@link
      * PropertyTypePropertyExtractor}.
      */
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         return null;
     }

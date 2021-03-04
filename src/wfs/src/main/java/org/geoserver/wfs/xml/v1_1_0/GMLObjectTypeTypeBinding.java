@@ -68,6 +68,7 @@ public class GMLObjectTypeTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GMLOBJECTTYPETYPE;
     }
@@ -79,6 +80,7 @@ public class GMLObjectTypeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return null;
     }
@@ -90,6 +92,7 @@ public class GMLObjectTypeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

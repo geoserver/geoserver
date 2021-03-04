@@ -51,6 +51,7 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     //
     // -------------------------------------------------------------------------------------------
 
+    @Override
     public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request)
             throws IOException, ServiceException {
         if (delegate != null) {

@@ -20,12 +20,14 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     /** Makes sure this triggers only */
+    @Override
     public boolean canHandle(Operation operation) {
         // is this a wfs capabilities request?
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
                 && operation.getService().getId().equals("wfs");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         GetCapabilitiesRequest request = GetCapabilitiesRequest.adapt(operation.getParameters()[0]);
 
@@ -46,6 +48,7 @@ public class GetCapabilitiesResponse extends Response {
         return "application/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

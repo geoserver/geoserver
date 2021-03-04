@@ -25,6 +25,7 @@ public class ResultTypeKvpParser extends KvpParser {
         super("resultType", ResultTypeType.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         if ("hits".equalsIgnoreCase(value)) {
             return ResultTypeType.HITS_LITERAL;

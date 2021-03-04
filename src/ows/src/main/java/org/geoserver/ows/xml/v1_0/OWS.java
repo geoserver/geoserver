@@ -243,6 +243,7 @@ public class OWS extends XSD {
     private OWS() {}
 
     /** Adds a dependency on the xlink schema. */
+    @Override
     protected void addDependencies(Set<XSD> dependencies) {
         super.addDependencies(dependencies);
 
@@ -250,11 +251,13 @@ public class OWS extends XSD {
     }
 
     /** Returns 'http://www.opengis.net/ows' */
+    @Override
     public String getNamespaceURI() {
         return NAMESPACE;
     }
 
     /** Returns the location of 'owsAll.xsd' */
+    @Override
     public String getSchemaLocation() {
         return getClass().getResource("owsAll.xsd").toString();
     }

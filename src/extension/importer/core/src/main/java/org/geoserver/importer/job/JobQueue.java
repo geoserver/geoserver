@@ -41,6 +41,7 @@ public class JobQueue {
     ThreadPoolExecutor pool =
             new ThreadPoolExecutor(
                     0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
+                @Override
                 protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
                         return new Task<>((Job<T>) callable);
@@ -48,12 +49,14 @@ public class JobQueue {
                     return super.newTaskFor(callable);
                 };
 
+                @Override
                 protected void beforeExecute(Thread t, Runnable r) {
                     if (t != null && r instanceof Task) {
                         ((Task) r).started();
                     }
                 };
 
+                @Override
                 protected void afterExecute(Runnable r, Throwable t) {
                     if (t != null && r instanceof Task) {
                         ((Task) r).setError(t);
@@ -67,6 +70,7 @@ public class JobQueue {
     {
         cleaner.scheduleAtFixedRate(
                 new Runnable() {
+                    @Override
                     public void run() {
                         List<Long> toremove = new ArrayList<>();
                         for (Map.Entry<Long, Task<?>> e : jobs.entrySet()) {

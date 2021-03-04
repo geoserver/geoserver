@@ -12,10 +12,12 @@ import org.geotools.util.Version;
 
 public class CSWLegacyLoader extends LegacyServiceLoader<CSWInfo> {
 
+    @Override
     public Class<CSWInfo> getServiceClass() {
         return CSWInfo.class;
     }
 
+    @Override
     public CSWInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
 
         CSWInfoImpl csw = new CSWInfoImpl();

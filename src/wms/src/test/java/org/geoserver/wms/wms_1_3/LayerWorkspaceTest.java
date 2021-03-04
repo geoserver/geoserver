@@ -29,6 +29,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         return cat.getLayerByName(getLayerId(name));
     }
 
+    @Override
     protected void registerNamespaces(java.util.Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
     };

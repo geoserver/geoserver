@@ -41,6 +41,7 @@ public class CollectGeometriesFunction extends FunctionImpl {
         this.maxCoordinates = maxCoordinates;
     }
 
+    @Override
     public Object evaluate(Object object) {
         List geometries = getParameters().get(0).evaluate(object, List.class);
         if (geometries == null || geometries.isEmpty()) {

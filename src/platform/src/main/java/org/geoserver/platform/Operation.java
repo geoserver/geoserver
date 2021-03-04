@@ -71,6 +71,7 @@ public final class Operation {
         return parameters;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -93,10 +94,12 @@ public final class Operation {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return (id.hashCode() * 17) + service.hashCode();
     }
 
+    @Override
     public String toString() {
         return "Operation( " + id + ", " + service.getId() + " )";
     }

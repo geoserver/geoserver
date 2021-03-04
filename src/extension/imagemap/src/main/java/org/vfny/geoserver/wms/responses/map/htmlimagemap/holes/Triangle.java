@@ -57,12 +57,14 @@ public class Triangle {
         return false;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Triangle)) return false;
         Triangle t = (Triangle) obj;
         return t.A.equals(A) && t.B.equals(B) && t.C.equals(C);
     }
 
+    @Override
     public int hashCode() {
         int result = A.hashCode();
         result = (result * 397) ^ B.hashCode();

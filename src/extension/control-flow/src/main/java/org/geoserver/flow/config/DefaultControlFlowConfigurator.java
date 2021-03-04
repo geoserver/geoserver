@@ -105,6 +105,7 @@ public class DefaultControlFlowConfigurator
         this.configFile = watcher;
     }
 
+    @Override
     public List<FlowController> buildFlowControllers() throws Exception {
         timeout = -1;
 
@@ -265,10 +266,12 @@ public class DefaultControlFlowConfigurator
         }
     }
 
+    @Override
     public boolean isStale() {
         return configFile.isStale();
     }
 
+    @Override
     public long getTimeout() {
         return timeout;
     }

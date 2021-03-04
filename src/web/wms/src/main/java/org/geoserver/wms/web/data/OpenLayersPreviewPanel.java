@@ -89,6 +89,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                 new SimpleAjaxLink<String>("change.layer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         ModalWindow popup = parent.getPopup();
 
@@ -147,6 +148,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         }
     }
 
+    @Override
     public void renderHead(IHeaderResponse header) {
         super.renderHead(header);
         try {

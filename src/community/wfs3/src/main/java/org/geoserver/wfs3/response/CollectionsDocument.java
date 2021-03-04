@@ -76,6 +76,7 @@ public class CollectionsDocument extends AbstractDocument {
         }
     }
 
+    @Override
     @JacksonXmlProperty(localName = "Links")
     public List<Link> getLinks() {
         return links;

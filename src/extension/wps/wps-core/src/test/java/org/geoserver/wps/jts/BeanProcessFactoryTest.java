@@ -67,6 +67,7 @@ public class BeanProcessFactoryTest extends WPSTestSupport {
         GeoTools.addFactoryIteratorProvider(
                 new FactoryIteratorProvider() {
 
+                    @Override
                     @SuppressWarnings("unchecked")
                     public <T> Iterator<T> iterator(Class<T> category) {
                         if (ProcessFactory.class.isAssignableFrom(category)) {

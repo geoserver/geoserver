@@ -21,6 +21,7 @@ public class CQLFilterKvpParser extends KvpParser {
         super("cql_filter", List.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         try {
             return XCQL.toFilterList(value);

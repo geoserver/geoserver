@@ -2822,6 +2822,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     class UserGroupServiceHelper
             extends HelperBase<GeoServerUserGroupService, SecurityUserGroupServiceConfig> {
+        @Override
         public GeoServerUserGroupService load(String name) throws IOException {
 
             SecurityNamedServiceConfig config = loadConfig(name);
@@ -2889,6 +2890,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     class RoleServiceHelper extends HelperBase<GeoServerRoleService, SecurityRoleServiceConfig> {
 
         /** Loads the role service for the named config from persistence. */
+        @Override
         public GeoServerRoleService load(String name) throws IOException {
 
             SecurityNamedServiceConfig config = loadConfig(name);
@@ -2982,6 +2984,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     class PasswordValidatorHelper extends HelperBase<PasswordValidator, PasswordPolicyConfig> {
 
         /** Loads the password policy for the named config from persistence. */
+        @Override
         public PasswordValidator load(String name) throws IOException {
 
             PasswordPolicyConfig config = loadConfig(name);
@@ -3175,6 +3178,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             extends HelperBase<GeoServerAuthenticationProvider, SecurityAuthProviderConfig> {
 
         /** Loads the auth provider for the named config from persistence. */
+        @Override
         public GeoServerAuthenticationProvider load(String name) throws IOException {
 
             SecurityNamedServiceConfig config = loadConfig(name);
@@ -3215,6 +3219,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     class FilterHelper extends HelperBase<GeoServerSecurityFilter, SecurityFilterConfig> {
         /** Loads the filter for the named config from persistence. */
+        @Override
         public GeoServerSecurityFilter load(String name) throws IOException {
 
             SecurityNamedServiceConfig config = loadConfig(name);

@@ -83,6 +83,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                 new AjaxSubmitLink("verifyImage") {
                     private static final long serialVersionUID = 6814575194862084111L;
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         if (logo.getDefaultModelObjectAsString() != null) {
                             try {

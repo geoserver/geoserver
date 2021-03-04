@@ -23,6 +23,7 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
 
     public static final String FIRST_COLUM_PATH = "itemProperties:0:component:link";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         login();

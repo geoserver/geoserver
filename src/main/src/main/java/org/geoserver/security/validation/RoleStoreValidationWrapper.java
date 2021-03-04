@@ -46,14 +46,17 @@ public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper
         return (GeoServerRoleStore) service;
     }
 
+    @Override
     public void initializeFromService(GeoServerRoleService aService) throws IOException {
         getStore().initializeFromService(aService);
     }
 
+    @Override
     public void clear() throws IOException {
         getStore().clear();
     }
 
+    @Override
     public void addRole(GeoServerRole role) throws IOException {
         checkReservedNames(role.getAuthority());
         checkNotExistingRoleName(role.getAuthority());
@@ -61,49 +64,58 @@ public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper
         getStore().addRole(role);
     }
 
+    @Override
     public void updateRole(GeoServerRole role) throws IOException {
         checkExistingRoleName(role.getAuthority());
         getStore().updateRole(role);
     }
 
+    @Override
     public boolean removeRole(GeoServerRole role) throws IOException {
         checkRoleIsMapped(role);
         checkRoleIsUsed(role);
         return getStore().removeRole(role);
     }
 
+    @Override
     public void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException {
         checkExistingRoleName(role.getAuthority());
         checkValidGroupName(groupname);
         getStore().associateRoleToGroup(role, groupname);
     }
 
+    @Override
     public void disAssociateRoleFromGroup(GeoServerRole role, String groupname) throws IOException {
         checkExistingRoleName(role.getAuthority());
         checkValidGroupName(groupname);
         getStore().disAssociateRoleFromGroup(role, groupname);
     }
 
+    @Override
     public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
         checkExistingRoleName(role.getAuthority());
         checkValidUserName(username);
         getStore().associateRoleToUser(role, username);
     }
 
+    @Override
     public void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException {
         checkExistingRoleName(role.getAuthority());
         checkValidUserName(username);
         getStore().disAssociateRoleFromUser(role, username);
     }
 
+    @Override
     public void store() throws IOException {
         getStore().store();
     }
 
+    @Override
     public boolean isModified() {
         return getStore().isModified();
     }
 
+    @Override
     public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
         checkExistingRoleName(role.getAuthority());
         if (parentRole != null) checkExistingRoleName(parentRole.getAuthority());

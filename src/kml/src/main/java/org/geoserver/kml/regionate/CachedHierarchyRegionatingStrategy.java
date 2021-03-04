@@ -104,6 +104,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         this.gs = gs;
     }
 
+    @Override
     public Filter getFilter(WMSMapContent context, Layer layer) {
         Catalog catalog = gs.getCatalog();
         Set<String> featuresInTile = Collections.emptySet();
@@ -172,6 +173,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
+    @Override
     public void clearCache(FeatureTypeInfo cfg) {
         try {
             GeoServerResourceLoader loader = gs.getCatalog().getResourceLoader();
@@ -503,6 +505,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
          *
          * This code takes care of the first, whilst the second issue remains as a TODO
          */
+        @Override
         public boolean contains(double x, double y) {
             if (super.contains(x, y)) {
                 return true;
@@ -534,6 +537,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
          * Returns the parent of this tile, or null if this tile is (one of) the root of the current
          * dataset
          */
+        @Override
         public Tile getParent() {
             if (envelope.contains((BoundingBox) dataEnvelope)) {
                 return null;

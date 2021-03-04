@@ -197,18 +197,22 @@ public class ModificationProxyTest {
             this(value, Arrays.asList(listValues));
         }
 
+        @Override
         public String getValue() {
             return value;
         }
 
+        @Override
         public void setValue(String value) {
             this.value = value;
         }
 
+        @Override
         public List<String> getListValue() {
             return listValue;
         }
 
+        @Override
         public void setListValue(List<String> listValue) {
             this.listValue = listValue;
         }

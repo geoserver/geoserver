@@ -132,6 +132,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      * Comparison implemented so that generic rules get first, specific one are compared by name,
      * and if anything else is equal, read comes before write
      */
+    @Override
     public int compareTo(DataAccessRule other) {
         int compareRoot = compareCatalogItems(root, other.root);
         if (compareRoot != 0) return compareRoot;

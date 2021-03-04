@@ -41,6 +41,7 @@ public class RootBuilder implements TemplateBuilder {
         this.vendorOptions = new HashMap<>();
     }
 
+    @Override
     public void addChild(TemplateBuilder builder) {
         this.children.add(builder);
     }

@@ -60,6 +60,7 @@ public class IpBlacklistFilterTest {
 
         private boolean serviceCalled = false;
 
+        @Override
         public void service(ServletRequest request, ServletResponse response)
                 throws ServletException, IOException {
             serviceCalled = true;

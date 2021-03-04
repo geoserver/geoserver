@@ -50,6 +50,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
     }
 
     /** IGN : Do we still need to host this xsd ? */
+    @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
         if (!isEarthObservationEnabled()) {
             return new String[0];

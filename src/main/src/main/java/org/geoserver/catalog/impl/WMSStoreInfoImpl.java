@@ -34,10 +34,12 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
         super(catalog);
     }
 
+    @Override
     public String getCapabilitiesURL() {
         return capabilitiesURL;
     }
 
+    @Override
     public void setCapabilitiesURL(String capabilitiesURL) {
         this.capabilitiesURL = capabilitiesURL;
     }
@@ -92,10 +94,12 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
         this.connectTimeout = timeoutSeconds;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public WebMapServer getWebMapServer(ProgressListener listener) throws IOException {
         return getCatalog().getResourcePool().getWebMapServer(this);
     }

@@ -26,6 +26,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
             this.property = property;
         }
 
+        @Override
         public int compare(T o1, T o2) {
             Object p1 = property.getPropertyValue(o1);
             Object p2 = property.getPropertyValue(o2);

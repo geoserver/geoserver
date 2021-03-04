@@ -15,6 +15,7 @@ public class JDBCNewGroupPageTest extends NewGroupPageTest {
 
     NewGroupPage page;
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();

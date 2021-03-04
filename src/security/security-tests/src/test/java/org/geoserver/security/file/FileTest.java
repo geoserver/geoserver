@@ -30,6 +30,7 @@ public class FileTest {
     GeoServerRoleService gaService =
             new AbstractRoleService() {
 
+                @Override
                 public String getName() {
                     return "TestGAService";
                 };
@@ -49,6 +50,7 @@ public class FileTest {
     GeoServerUserGroupService ugService =
             new AbstractUserGroupService() {
 
+                @Override
                 public String getName() {
                     return "TestUGService";
                 };

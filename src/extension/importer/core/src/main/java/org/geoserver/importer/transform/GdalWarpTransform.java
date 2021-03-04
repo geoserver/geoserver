@@ -107,6 +107,7 @@ public class GdalWarpTransform extends AbstractCommandLinePreTransform implement
         return getExecutableFromPath("gdalwarp");
     }
 
+    @Override
     protected List<String> getAvailabilityTestOptions() {
         return Collections.singletonList("--version");
     }

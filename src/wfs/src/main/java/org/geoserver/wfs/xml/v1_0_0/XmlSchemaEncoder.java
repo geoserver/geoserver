@@ -65,10 +65,12 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         this.catalog = gs.getCatalog();
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
+    @Override
     protected void write(
             FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {

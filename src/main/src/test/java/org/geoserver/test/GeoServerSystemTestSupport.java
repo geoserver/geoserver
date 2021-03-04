@@ -189,6 +189,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         this.lastResponse = null;
     }
 
+    @Override
     protected SystemTestData createTestData() throws Exception {
         return new SystemTestData();
     }
@@ -248,6 +249,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 }
             };
 
+    @Override
     protected final void setUp(SystemTestData testData) throws Exception {
         // speed up xpath evaluations
         try {
@@ -328,6 +330,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
     }
 
+    @Override
     protected final void tearDown(SystemTestData testData) throws Exception {
         if (testData.isTestDataAvailable()) {
             onTearDown(testData);
@@ -1977,6 +1980,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @author Andrea Aime - TOPP
      */
     static class EmptyResolver implements org.xml.sax.EntityResolver {
+        @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws org.xml.sax.SAXException, IOException {
             StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -2006,14 +2010,17 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         validator.setErrorHandler(
                 new ErrorHandler() {
 
+                    @Override
                     public void warning(SAXParseException exception) throws SAXException {
                         LOGGER.warning(exception.getMessage());
                     }
 
+                    @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
 
+                    @Override
                     public void error(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
@@ -2355,6 +2362,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             return new BufferedReader(new StringReader(new String(myBody)));
         }
 
+        @Override
         public ServletInputStream getInputStream() {
             return new GeoServerDelegatingServletInputStream(myBody);
         }
@@ -2374,16 +2382,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myBody = body;
         }
 
+        @Override
         public int available() {
             return myBody.length - myOffset;
         }
 
+        @Override
         public void close() {}
 
+        @Override
         public void mark(int readLimit) {
             myMark = myOffset;
         }
 
+        @Override
         public void reset() {
 
             if (myBody == null || myMark < 0 || myMark >= myBody.length) {
@@ -2397,19 +2409,23 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myOffset = myMark;
         }
 
+        @Override
         public boolean markSupported() {
             return true;
         }
 
+        @Override
         public int read() {
             byte[] b = new byte[1];
             return read(b, 0, 1) == -1 ? -1 : b[0];
         }
 
+        @Override
         public int read(byte[] b) {
             return read(b, 0, b.length);
         }
 
+        @Override
         public int read(byte[] b, int offset, int length) {
             int realOffset = offset + myOffset;
             int i;
@@ -2426,6 +2442,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             return i;
         }
 
+        @Override
         public int readLine(byte[] b, int offset, int length) {
             int i = 0;
             for (i = 0; (i < length) && (i + myOffset < myBody.length); i++) {

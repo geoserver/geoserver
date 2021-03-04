@@ -125,6 +125,7 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#getServiceInfo() */
+    @Override
     public WMSInfo getServiceInfo() {
         return wms.getServiceInfo();
     }
@@ -160,6 +161,7 @@ public class DefaultWebMapService
     }
 
     /** @see ApplicationContextAware#setApplicationContext(ApplicationContext) */
+    @Override
     @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // method is not called by multiple threads
     public void setApplicationContext(ApplicationContext context) throws BeansException {
 
@@ -214,6 +216,7 @@ public class DefaultWebMapService
      * @see GetCapabilitiesTransformer
      * @see Capabilities_1_3_0_Transformer
      */
+    @Override
     public TransformerBase getCapabilities(GetCapabilitiesRequest request) {
         if (null == getCapabilities) {
             throw new UnsupportedOperationException(
@@ -223,6 +226,7 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#capabilities(GetCapabilitiesRequest) */
+    @Override
     public TransformerBase capabilities(GetCapabilitiesRequest request) {
         return getCapabilities(request);
     }
@@ -238,6 +242,7 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#getMap(GetMapRequest) */
+    @Override
     public WebMap getMap(GetMapRequest request) {
         if (null == getMap) {
             throw new UnsupportedOperationException(
@@ -247,11 +252,13 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#map(GetMapRequest) */
+    @Override
     public WebMap map(GetMapRequest request) {
         return getMap(request);
     }
 
     /** @see WebMapService#getFeatureInfo(GetFeatureInfoRequest) */
+    @Override
     public FeatureCollectionType getFeatureInfo(final GetFeatureInfoRequest request) {
         if (null == getFeatureInfo) {
             throw new UnsupportedOperationException(
@@ -261,6 +268,7 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#getLegendGraphic(GetLegendGraphicRequest) */
+    @Override
     public Object getLegendGraphic(GetLegendGraphicRequest request) {
         if (null == getLegendGraphic) {
             throw new UnsupportedOperationException(
@@ -269,6 +277,7 @@ public class DefaultWebMapService
         return getLegendGraphic.run(request);
     }
 
+    @Override
     public WebMap kml(GetMapRequest getMap) {
         throw new ServiceException(
                 "kml service is not available, please include a KML module in WEB-INF/lib");
@@ -280,6 +289,7 @@ public class DefaultWebMapService
      * @param getMap GetMapRequest
      * @return the <WebMap> output
      */
+    @Override
     public WebMap animate(GetMapRequest getMap) {
         try {
             return Animator.produce(getMap, this, wms);
@@ -289,11 +299,13 @@ public class DefaultWebMapService
     }
 
     /** @see WebMapService#reflect(GetMapRequest) */
+    @Override
     public WebMap reflect(GetMapRequest request) {
         return getMapReflect(request);
     }
 
     /** @see org.geoserver.wms.WebMapService#getStyles(org.geoserver.sld.GetStylesRequest) */
+    @Override
     public StyledLayerDescriptor getStyles(GetStylesRequest request) {
         return getStyles.run(request);
     }
@@ -303,6 +315,7 @@ public class DefaultWebMapService
      *
      * @see WebMapService#getMapReflect(GetMapRequest)
      */
+    @Override
     public WebMap getMapReflect(GetMapRequest request) {
 
         GetMapRequest getMap = autoSetMissingProperties(request);
@@ -350,6 +363,7 @@ public class DefaultWebMapService
         return RENDERING_POOL;
     }
 
+    @Override
     public void destroy() throws Exception {
         if (RENDERING_POOL != null) {
             RENDERING_POOL.shutdown();

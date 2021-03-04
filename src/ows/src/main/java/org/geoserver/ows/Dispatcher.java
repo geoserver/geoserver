@@ -217,6 +217,7 @@ public class Dispatcher extends AbstractController {
         request.setCharacterEncoding(charSet.name());
     }
 
+    @Override
     protected ModelAndView handleRequestInternal(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
         preprocessRequest(httpRequest);
@@ -956,6 +957,7 @@ public class Dispatcher extends AbstractController {
                 Collections.sort(
                         responses,
                         new Comparator<Response>() {
+                            @Override
                             public int compare(Response o1, Response o2) {
                                 Class<?> c1 = o1.getBinding();
                                 Class<?> c2 = o2.getBinding();
@@ -1216,6 +1218,7 @@ public class Dispatcher extends AbstractController {
                 // use highest version
                 Comparator<Service> comparator =
                         new Comparator<Service>() {
+                            @Override
                             public int compare(Service s1, Service s2) {
                                 return s1.getVersion().compareTo(s2.getVersion());
                             }
@@ -1264,6 +1267,7 @@ public class Dispatcher extends AbstractController {
             // sort by class hierarchy
             Comparator<KvpRequestReader> comparator =
                     new Comparator<KvpRequestReader>() {
+                        @Override
                         public int compare(KvpRequestReader kvp1, KvpRequestReader kvp2) {
                             if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
                                 return -1;
@@ -1418,6 +1422,7 @@ public class Dispatcher extends AbstractController {
                 // use highest version
                 Comparator<XmlRequestReader> comparator =
                         new Comparator<XmlRequestReader>() {
+                            @Override
                             public int compare(XmlRequestReader r1, XmlRequestReader r2) {
                                 Version v1 = r1.getVersion();
                                 Version v2 = r2.getVersion();

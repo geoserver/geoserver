@@ -61,46 +61,57 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
         return name;
     }
 
+    @Override
     public FeatureIterator<Feature> features() {
         return (FeatureIterator<Feature>) fc.features();
     }
 
+    @Override
     public FeatureType getSchema() {
         return fc.getSchema();
     }
 
+    @Override
     public String getID() {
         return fc.getID();
     }
 
+    @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
         fc.accepts(visitor, progress);
     }
 
+    @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
         return fc.subCollection(filter);
     }
 
+    @Override
     public FeatureCollection<FeatureType, Feature> sort(SortBy order) {
         return fc.sort(order);
     }
 
+    @Override
     public ReferencedEnvelope getBounds() {
         return fc.getBounds();
     }
 
+    @Override
     public boolean contains(Object o) {
         return fc.contains(o);
     }
 
+    @Override
     public boolean containsAll(Collection<?> o) {
         return fc.containsAll(o);
     }
 
+    @Override
     public boolean isEmpty() {
         return fc.isEmpty();
     }
 
+    @Override
     public int size() {
         // overriding size implementation
         // simply counting!
@@ -114,10 +125,12 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
         }
     }
 
+    @Override
     public Object[] toArray() {
         return fc.toArray();
     }
 
+    @Override
     public <O> O[] toArray(O[] a) {
         return (O[]) fc.toArray(a);
     }

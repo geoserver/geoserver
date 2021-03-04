@@ -12,10 +12,12 @@ import org.geoserver.catalog.StoreInfo;
 @SuppressWarnings("serial")
 public class StoreChoiceRenderer extends ChoiceRenderer<StoreInfo> {
 
+    @Override
     public Object getDisplayValue(StoreInfo object) {
         return object.getName();
     }
 
+    @Override
     public String getIdValue(StoreInfo object, int index) {
         return object.getId();
     }

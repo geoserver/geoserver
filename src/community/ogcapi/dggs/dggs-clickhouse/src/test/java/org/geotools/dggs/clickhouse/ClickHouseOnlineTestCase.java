@@ -46,6 +46,7 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
      * <p>If this method returns a value the first time a fixture is looked up and not found this
      * method will be called to create a fixture file with teh same id, but suffixed with .template.
      */
+    @Override
     protected Properties createExampleFixture() {
         Properties fixture = new Properties();
         fixture.put("driver", "ru.yandex.clickhouse.ClickHouseDriver");

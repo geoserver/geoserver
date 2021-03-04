@@ -68,6 +68,7 @@ public abstract class TransactionResponse extends RequestObject {
         return eGet(adaptee, "insertResults.feature", List.class);
     }
 
+    @Override
     public abstract void setHandle(String handle);
 
     public abstract void addInsertedFeature(String handle, FeatureId id);
@@ -89,6 +90,7 @@ public abstract class TransactionResponse extends RequestObject {
             eSet(adaptee, "transactionResults.handle", handle);
         }
 
+        @Override
         @SuppressWarnings("unchecked") // EMF model without generics
         public void addInsertedFeature(String handle, FeatureId featureId) {
             InsertedFeatureType insertedFeature =

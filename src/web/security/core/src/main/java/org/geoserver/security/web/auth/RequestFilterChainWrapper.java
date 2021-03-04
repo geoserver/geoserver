@@ -64,6 +64,7 @@ public class RequestFilterChainWrapper implements Serializable {
         chain.setFilterNames(filterNames);
     }
 
+    @Override
     public int hashCode() {
         return chain.hashCode();
     }

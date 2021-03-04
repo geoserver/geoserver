@@ -38,6 +38,7 @@ public abstract class AbstractLockingService implements GeoServerSecurityService
      *
      * @see org.geoserver.security.GeoServerRoleService#getName()
      */
+    @Override
     public String getName() {
         return getService().getName();
     }

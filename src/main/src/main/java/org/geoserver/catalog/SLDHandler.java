@@ -239,6 +239,7 @@ public class SLDHandler extends StyleHandler {
         if (locator != null) {
             sld =
                     new SLDConfiguration() {
+                        @Override
                         protected void configureContext(
                                 org.picocontainer.MutablePicoContainer container) {
                             container.registerComponentInstance(ResourceLocator.class, locator);

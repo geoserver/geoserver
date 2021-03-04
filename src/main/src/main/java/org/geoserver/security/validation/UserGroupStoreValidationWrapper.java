@@ -37,46 +37,56 @@ public class UserGroupStoreValidationWrapper extends UserGroupServiceValidationW
         return (GeoServerUserGroupStore) service;
     }
 
+    @Override
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
         getStore().initializeFromService(service);
     }
 
+    @Override
     public void clear() throws IOException {
         getStore().clear();
     }
 
+    @Override
     public void addUser(GeoServerUser user) throws IOException, PasswordPolicyException {
         checkNotExistingUserName(user.getUsername());
         getStore().addUser(user);
     }
 
+    @Override
     public void updateUser(GeoServerUser user) throws IOException, PasswordPolicyException {
         checkExistingUserName(user.getUsername());
         getStore().updateUser(user);
     }
 
+    @Override
     public boolean removeUser(GeoServerUser user) throws IOException {
         return getStore().removeUser(user);
     }
 
+    @Override
     public void addGroup(GeoServerUserGroup group) throws IOException {
         checkNotExistingGroupName(group.getGroupname());
         getStore().addGroup(group);
     }
 
+    @Override
     public void updateGroup(GeoServerUserGroup group) throws IOException {
         checkExistingGroupName(group.getGroupname());
         getStore().updateGroup(group);
     }
 
+    @Override
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
         return getStore().removeGroup(group);
     }
 
+    @Override
     public void store() throws IOException {
         getStore().store();
     }
 
+    @Override
     public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
         checkExistingUserName(user.getUsername());
@@ -84,6 +94,7 @@ public class UserGroupStoreValidationWrapper extends UserGroupServiceValidationW
         getStore().associateUserToGroup(user, group);
     }
 
+    @Override
     public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
         checkExistingUserName(user.getUsername());
@@ -91,6 +102,7 @@ public class UserGroupStoreValidationWrapper extends UserGroupServiceValidationW
         getStore().disAssociateUserFromGroup(user, group);
     }
 
+    @Override
     public boolean isModified() {
         return getStore().isModified();
     }

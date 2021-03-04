@@ -362,16 +362,19 @@ public class MockData implements TestData {
         layerStyles.put("Default", "Default.sld");
     }
 
+    @Override
     public void setUp() throws IOException {
         setUpCatalog();
         copyTo(MockData.class.getResourceAsStream("services.xml"), "services.xml");
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }
 
     /** @return The root of the data directory. */
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
@@ -929,6 +932,7 @@ public class MockData implements TestData {
     }
 
     /** Kills the data directory, deleting all the files. */
+    @Override
     public void tearDown() throws IOException {
         //        IOUtils.delete(templates);
         //        IOUtils.delete(validation);

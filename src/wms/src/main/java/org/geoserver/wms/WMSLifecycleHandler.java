@@ -45,20 +45,24 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         this.wmsConfig = wmsConfig;
     }
 
+    @Override
     public void onDispose() {
         // dispose the WMS Animator Executor Service
         shutdownAnimatorExecutorService();
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }
 
+    @Override
     public void onReload() {
         // clear the caches for good measure
         onReset();
     }
 
+    @Override
     public void onReset() {
         // kill the image caches
         Iterator<ExternalGraphicFactory> it =
@@ -134,6 +138,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         return result;
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             reloadFontCache();

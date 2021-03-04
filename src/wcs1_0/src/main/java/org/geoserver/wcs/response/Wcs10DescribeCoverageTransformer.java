@@ -97,6 +97,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         setNamespaceDeclarationEnabled(false);
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS100DescribeCoverageTranslator(handler);
     }
@@ -118,6 +119,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             // try {
             if (!(o instanceof DescribeCoverageType)) {

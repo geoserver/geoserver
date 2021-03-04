@@ -15,5 +15,6 @@ import org.geoserver.catalog.CatalogInfo;
 public interface CatalogAddEvent extends CatalogEvent {
 
     /** the object that was added. */
+    @Override
     CatalogInfo getSource();
 }

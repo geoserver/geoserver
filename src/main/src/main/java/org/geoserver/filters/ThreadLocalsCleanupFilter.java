@@ -16,10 +16,12 @@ import org.geotools.referencing.CRS;
 
 public class ThreadLocalsCleanupFilter implements Filter {
 
+    @Override
     public void destroy() {
         CRS.cleanupThreadLocals();
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
@@ -29,6 +31,7 @@ public class ThreadLocalsCleanupFilter implements Filter {
         }
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         CRS.cleanupThreadLocals();
     }

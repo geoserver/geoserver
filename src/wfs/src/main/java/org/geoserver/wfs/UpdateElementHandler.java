@@ -87,6 +87,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         super(gs);
     }
 
+    @Override
     public void checkValidity(TransactionElement element, Map<QName, FeatureTypeInfo> typeInfos)
             throws WFSTransactionException {
 
@@ -190,6 +191,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
+    @Override
     public void execute(
             TransactionElement element,
             TransactionRequest request,
@@ -394,6 +396,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
     }
 
     /** @see org.geoserver.wfs.TransactionElementHandler#getElementClass() */
+    @Override
     public Class getElementClass() {
         return Update.class;
     }
@@ -401,6 +404,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
      */
+    @Override
     public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
             throws WFSTransactionException {
         return new QName[] {element.getTypeName()};

@@ -117,6 +117,7 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
      * Write the result of an xpath or cql expression evaluation operated by the {@link
      * DynamicValueBuilder}
      */
+    @Override
     public void writeElementValue(Object result) throws IOException {
         writeElementNameAndValue(result, null);
     }

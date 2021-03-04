@@ -39,6 +39,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new UniqueResourceIdentifiersEditor(
                                         id, new Model<>(identifiers));

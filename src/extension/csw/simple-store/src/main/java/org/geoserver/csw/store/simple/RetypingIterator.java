@@ -120,6 +120,7 @@ class RetypingIterator<F extends Feature> implements Iterator<F>, Closeable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void close() {
         delegate.close();
     }

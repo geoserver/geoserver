@@ -101,6 +101,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 new DropTarget(Operation.MOVE) {
                     private static final long serialVersionUID = 543875667418965337L;
 
+                    @Override
                     public void onDrop(
                             AjaxRequestTarget target, Transfer transfer, Location location) {
                         if (location == null

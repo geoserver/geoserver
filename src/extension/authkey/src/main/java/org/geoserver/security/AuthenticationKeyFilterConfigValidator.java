@@ -22,6 +22,7 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
         super(securityManager);
     }
 
+    @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config)
             throws FilterConfigException {
 
@@ -80,6 +81,7 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
         }
     }
 
+    @Override
     protected AuthenticationKeyFilterConfigException createFilterException(
             String errorid, Object... args) {
         return new AuthenticationKeyFilterConfigException(errorid, args);

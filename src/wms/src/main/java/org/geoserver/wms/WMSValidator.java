@@ -21,6 +21,7 @@ import org.geotools.util.factory.GeoTools;
  */
 public class WMSValidator extends AbstractCatalogValidator {
 
+    @Override
     public void validate(LayerInfo lyr, boolean isNew) {
         if (lyr.isEnabled() == false) {
             // short-circuit - for disabled layers we don't need to validate

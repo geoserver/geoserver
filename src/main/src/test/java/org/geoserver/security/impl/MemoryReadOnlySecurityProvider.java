@@ -28,6 +28,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 
 public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
 
+    @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
         xp.getXStream().alias("memoryreadonlygroupservice", MemoryUserGroupServiceConfigImpl.class);

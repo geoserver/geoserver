@@ -49,6 +49,7 @@ public class GZIPResponseStreamTest {
     private static class CapturingByteOutputStream extends ServletOutputStream {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
+        @Override
         public void write(int b) {
             bos.write(b);
         }
@@ -57,10 +58,12 @@ public class GZIPResponseStreamTest {
             return bos.toByteArray();
         }
 
+        @Override
         public boolean isReady() {
             return true;
         }
 
+        @Override
         public void setWriteListener(WriteListener writeListener) {}
     }
 
@@ -71,6 +74,7 @@ public class GZIPResponseStreamTest {
             super(r);
         }
 
+        @Override
         public ServletOutputStream getOutputStream() throws IOException {
             if (myOutputStream == null) myOutputStream = new CapturingByteOutputStream();
             return myOutputStream;

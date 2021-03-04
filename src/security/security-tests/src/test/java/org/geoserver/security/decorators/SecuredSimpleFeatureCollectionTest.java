@@ -41,6 +41,7 @@ public class SecuredSimpleFeatureCollectionTest {
                         "BasicPolygons", "the_geom:MultiPolygon:srid=4326,ID:String,value:int");
         collection =
                 new ListFeatureCollection(originalSchema) {
+                    @Override
                     public void accepts(FeatureVisitor visitor, ProgressListener progress)
                             throws IOException {
                         lastVisitor = visitor;

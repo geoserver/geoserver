@@ -25,6 +25,7 @@ public abstract class ProxyList<T> extends AbstractList<T> {
         this.proxyInterface = proxyInterface;
     }
 
+    @Override
     public T get(int index) {
         T proxyObject = proxyList.get(index);
         return createProxy(proxyObject, proxyInterface);
@@ -36,6 +37,7 @@ public abstract class ProxyList<T> extends AbstractList<T> {
                 "Object is not a proxy, or not a proxy of the correct type");
     }
 
+    @Override
     public int size() {
         return proxyList.size();
     }

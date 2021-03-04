@@ -63,6 +63,7 @@ public class SpringBeanProcessFactory
         iterator =
                 new FactoryIteratorProvider() {
 
+                    @Override
                     public <T> Iterator<T> iterator(Class<T> category) {
                         if (ProcessFactory.class.isAssignableFrom(category)) {
                             return getFactoryIterator();
@@ -88,6 +89,7 @@ public class SpringBeanProcessFactory
         }
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
 
@@ -140,6 +142,7 @@ public class SpringBeanProcessFactory
         return lastExecute;
     }
 
+    @Override
     public Set<Name> getNames() {
         Set<Name> result = new LinkedHashSet<>();
         List<String> names = new ArrayList<>(classMap.keySet());
@@ -159,6 +162,7 @@ public class SpringBeanProcessFactory
         return applicationContext.getBean(beanName);
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         // add and remove the process factory as necessary
         if (event instanceof ContextRefreshedEvent) {

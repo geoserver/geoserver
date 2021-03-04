@@ -40,6 +40,7 @@ public class GWCServiceEnablementInterceptor implements MethodInterceptor {
      * @see
      *     org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
+    @Override
     public Object invoke(final MethodInvocation invocation) throws Throwable {
         final String methodName = invocation.getMethod().getName();
         if ("getConveyor".equals(methodName) || "handleRequest".equals(methodName)) {

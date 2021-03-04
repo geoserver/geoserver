@@ -1697,10 +1697,12 @@ public class ConfigDatabase implements ApplicationContextAware {
     // Copied from org.geoserver.catalog.ResourcePool
     public class CatalogClearingListener implements CatalogListener {
 
+        @Override
         public void handleAddEvent(CatalogAddEvent event) {
             updateCache(event.getSource());
         }
 
+        @Override
         public void handleModifyEvent(CatalogModifyEvent event) {
             // make sure that cache is not refilled before commit
             if (event.getSource() instanceof ResourceInfo) {
@@ -1713,6 +1715,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             clearCache(event.getSource());
         }
 
+        @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             updateCache(event.getSource());
             releaseWriteLock(event.getSource().getId());
@@ -1723,10 +1726,12 @@ public class ConfigDatabase implements ApplicationContextAware {
             }
         }
 
+        @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             clearCache(event.getSource());
         }
 
+        @Override
         public void reloaded() {}
     }
     /** Listens to configuration events clearing cache entires when resources are modified. */

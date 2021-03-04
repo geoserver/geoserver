@@ -25,6 +25,7 @@ public class Wcs10GetCapabilitiesRequestReader extends EMFKvpRequestReader {
         super(GetCapabilitiesType.class, Wcs10Factory.eINSTANCE);
     }
 
+    @Override
     @SuppressWarnings("unchecked") // putting data back into kvp... should be generified
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         request = super.read(request, kvp, rawKvp);

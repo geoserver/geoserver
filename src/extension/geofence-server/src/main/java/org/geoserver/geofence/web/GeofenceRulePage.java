@@ -173,6 +173,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("general")) {
                     private static final long serialVersionUID = 446471321863431295L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new GeneralPanel(panelId);
                     }
@@ -181,6 +182,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("details")) {
                     private static final long serialVersionUID = 446471321863431295L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new LayerDetailsPanel(panelId);
                     }
@@ -954,10 +956,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class LayerTypeRenderer extends ChoiceRenderer<LayerType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(LayerType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(LayerType object, int index) {
             return object.name();
         }
@@ -967,10 +971,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class GrantTypeRenderer extends ChoiceRenderer<GrantType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(GrantType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(GrantType object, int index) {
             return object.name();
         }
@@ -980,10 +986,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class AccessTypeRenderer extends ChoiceRenderer<AccessType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(AccessType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(AccessType object, int index) {
             return object.name();
         }
@@ -993,6 +1001,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class SpatialFilterTypeRendered extends ChoiceRenderer<SpatialFilterType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(SpatialFilterType object) {
             return (String) new ParamResourceModel(object.name(), getPage()).getObject();
         }
@@ -1006,10 +1015,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(CatalogMode object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(CatalogMode object, int index) {
             return object.name();
         }
@@ -1019,10 +1030,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class CaseConversionRenderer extends ChoiceRenderer<String> {
         private static final long serialVersionUID = 4238195087731806209L;
 
+        @Override
         public Object getDisplayValue(String object) {
             return object;
         }
 
+        @Override
         public String getIdValue(String object, int index) {
             return object.toUpperCase();
         }

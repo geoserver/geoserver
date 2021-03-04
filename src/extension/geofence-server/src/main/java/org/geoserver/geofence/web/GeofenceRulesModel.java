@@ -48,6 +48,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             return null;
         }
 
+        @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
         public IModel getModel(IModel<T> itemModel) { // replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {

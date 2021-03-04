@@ -12,6 +12,7 @@ import org.junit.Test;
 
 public class JDBCNewRolePageTest extends NewRolePageTest {
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();

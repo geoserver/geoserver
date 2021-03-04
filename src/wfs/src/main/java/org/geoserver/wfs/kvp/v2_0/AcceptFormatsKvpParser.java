@@ -22,6 +22,7 @@ public class AcceptFormatsKvpParser extends org.geoserver.ows.kvp.AcceptFormatsK
         setVersion(null);
     }
 
+    @Override
     protected EObject createObject() {
         return Ows11Factory.eINSTANCE.createAcceptFormatsType();
     }

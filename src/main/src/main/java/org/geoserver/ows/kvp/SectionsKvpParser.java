@@ -23,6 +23,7 @@ public abstract class SectionsKvpParser extends KvpParser {
         setService("wcs");
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         EObject sections = createObject();

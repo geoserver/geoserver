@@ -37,6 +37,7 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
         this.content = other.content;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -45,30 +46,37 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
         this.id = id;
     }
 
+    @Override
     public String getAbout() {
         return about;
     }
 
+    @Override
     public void setAbout(String about) {
         this.about = about;
     }
 
+    @Override
     public String getMetadataType() {
         return metadataType;
     }
 
+    @Override
     public void setMetadataType(String metadataType) {
         this.metadataType = metadataType;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public String getContent() {
         return content;
     }
@@ -109,6 +117,7 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
         }
     }
 
+    @Override
     public void setContent(String content) {
         validate(content);
         this.content = content;

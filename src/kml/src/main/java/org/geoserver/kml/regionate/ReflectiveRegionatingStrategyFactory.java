@@ -32,14 +32,17 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
         this.gs = gs;
     }
 
+    @Override
     public boolean canHandle(String strategyName) {
         return (myName != null) && myName.equalsIgnoreCase(strategyName);
     }
 
+    @Override
     public String getName() {
         return myName;
     }
 
+    @Override
     public RegionatingStrategy createStrategy() {
         try {
             Class<?> clazz = getStrategyClass();

@@ -249,6 +249,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                 || PRIMITIVE_NUMBERS.contains(param.getType());
     }
 
+    @Override
     protected String getTitle() {
         return new ParamResourceModel("title", this, process.getName().getURI()).getString();
     }

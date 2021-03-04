@@ -39,6 +39,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         service.initializeFromConfig(config);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

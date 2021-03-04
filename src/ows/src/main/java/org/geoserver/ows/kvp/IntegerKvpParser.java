@@ -22,6 +22,7 @@ public class IntegerKvpParser extends KvpParser {
         super(key, Integer.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         return Integer.valueOf(value);
     }

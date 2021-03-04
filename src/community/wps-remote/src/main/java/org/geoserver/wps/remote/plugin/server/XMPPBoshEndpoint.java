@@ -76,6 +76,7 @@ public class XMPPBoshEndpoint implements Endpoint {
 
     protected String contextPath = "/";
 
+    @Override
     public void setServerRuntimeContext(ServerRuntimeContext serverRuntimeContext) {
         this.serverRuntimeContext = serverRuntimeContext;
     }
@@ -245,6 +246,7 @@ public class XMPPBoshEndpoint implements Endpoint {
      * @throws RuntimeException a wrapper of the possible {@link java.lang.Exception} that Jetty can
      *     throw at start-up
      */
+    @Override
     public void start() throws IOException {
         server = createJettyServer();
         Handler handler = createHandler();
@@ -257,6 +259,7 @@ public class XMPPBoshEndpoint implements Endpoint {
         }
     }
 
+    @Override
     public void stop() {
         try {
             server.stop();

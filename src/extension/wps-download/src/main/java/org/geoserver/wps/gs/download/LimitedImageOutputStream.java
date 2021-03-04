@@ -74,6 +74,7 @@ abstract class LimitedImageOutputStream extends FilterImageOutputStream {
      * @throws IOException if an I/O error occurs.
      * @see java.io.FilterInputStream#in
      */
+    @Override
     public void close() throws IOException {
         closed = true;
         super.close();

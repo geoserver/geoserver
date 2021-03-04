@@ -63,10 +63,12 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         super(catalog);
     }
 
+    @Override
     public Layer getWMSLayer(ProgressListener listener) throws IOException {
         return catalog.getResourcePool().getWMSLayer(this);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -259,6 +261,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return gtStyle;
     }
 
+    @Override
     public boolean isSelectedRemoteStyles(String name) {
         if (name == null) return false;
         else if (name.isEmpty()) return true;
@@ -266,38 +269,47 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         else return selectedRemoteStyles.contains(name);
     }
 
+    @Override
     public List<String> getSelectedRemoteFormats() {
         return selectedRemoteFormats;
     }
 
+    @Override
     public void setSelectedRemoteFormats(List<String> selectedRemoteFormats) {
         this.selectedRemoteFormats = selectedRemoteFormats;
     }
 
+    @Override
     public List<String> getSelectedRemoteStyles() {
         return selectedRemoteStyles;
     }
 
+    @Override
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
+    @Override
     public Double getMinScale() {
         return minScale;
     }
 
+    @Override
     public void setMinScale(Double minScale) {
         this.minScale = minScale;
     }
 
+    @Override
     public Double getMaxScale() {
         return maxScale;
     }
 
+    @Override
     public void setMaxScale(Double maxScale) {
         this.maxScale = maxScale;
     }
 
+    @Override
     public List<StyleInfo> getAllAvailableRemoteStyles() {
         if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<>();
         return allAvailableRemoteStyles;
@@ -346,10 +358,12 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return true;
     }
 
+    @Override
     public boolean isMetadataBBoxRespected() {
         return metadataBBoxRespected;
     }
 
+    @Override
     public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
         this.metadataBBoxRespected = metadataBBoxRespected;
     }

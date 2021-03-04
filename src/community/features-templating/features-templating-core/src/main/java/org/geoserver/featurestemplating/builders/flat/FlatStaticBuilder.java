@@ -41,6 +41,7 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
                     nameHelper.getFinalAttributeName(), staticValue, nameHelper.getSeparator());
     }
 
+    @Override
     public void setParentKey(String parentKey) {
         this.nameHelper.setParentKey(parentKey);
     }

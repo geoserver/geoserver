@@ -38,6 +38,7 @@ public class MetadataLinkInfoImplTest {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         info.setContent("telnet:example.com");
                     };
@@ -79,6 +80,7 @@ public class MetadataLinkInfoImplTest {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         info.setContent("::^%/[*] FOO ::");
                     };
@@ -92,6 +94,7 @@ public class MetadataLinkInfoImplTest {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 new ThrowingRunnable() {
+                    @Override
                     public void run() throws Throwable {
                         info.setContent("https://example.com/::^%/[*] FOO ::");
                     };

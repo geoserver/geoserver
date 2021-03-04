@@ -53,10 +53,12 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         super(service);
     }
 
+    @Override
     protected Class<OSEOInfo> getServiceClass() {
         return OSEOInfo.class;
     }
 
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked", "serial"})
     protected void build(final IModel info, Form form) {
         this.model = info;
@@ -192,6 +194,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         return f;
     }
 
+    @Override
     protected String getServiceName() {
         return "OSEO";
     }

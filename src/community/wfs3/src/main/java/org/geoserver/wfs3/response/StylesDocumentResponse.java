@@ -14,6 +14,7 @@ public class StylesDocumentResponse extends JacksonResponse {
         super(gs, StylesDocument.class);
     }
 
+    @Override
     protected String getFileName(Object value, Operation operation) {
         return "styles";
     }

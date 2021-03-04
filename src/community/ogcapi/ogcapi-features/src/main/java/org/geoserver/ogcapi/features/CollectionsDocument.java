@@ -42,6 +42,7 @@ public class CollectionsDocument extends AbstractDocument {
         addSelfLinks(path);
     }
 
+    @Override
     @JacksonXmlProperty(localName = "Links")
     public List<Link> getLinks() {
         return links;

@@ -27,6 +27,7 @@ public class XYGeomMockData extends AbstractAppSchemaMockData {
     public static final String TEST_URI = "http://test";
 
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
+    @Override
     public void addContent() {
         putNamespace(TEST_PREFIX, TEST_URI);
         addFeatureType(

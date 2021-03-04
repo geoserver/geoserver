@@ -45,6 +45,7 @@ public class LayerChooser extends Panel {
                 new AbstractProperty<LayerInfo>("Workspace") {
                     private static final long serialVersionUID = -7055816211775541759L;
 
+                    @Override
                     public Object getPropertyValue(LayerInfo x) {
                         return x.getResource().getStore().getWorkspace().getName();
                     }
@@ -54,6 +55,7 @@ public class LayerChooser extends Panel {
                 new AbstractProperty<LayerInfo>("Store") {
                     private static final long serialVersionUID = -4021230907568644439L;
 
+                    @Override
                     public Object getPropertyValue(LayerInfo x) {
                         return x.getResource().getStore().getName();
                     }
@@ -63,6 +65,7 @@ public class LayerChooser extends Panel {
                 new AbstractProperty<LayerInfo>("Layer") {
                     private static final long serialVersionUID = 8913729089849537790L;
 
+                    @Override
                     public Object getPropertyValue(LayerInfo x) {
                         return x.getName();
                     }

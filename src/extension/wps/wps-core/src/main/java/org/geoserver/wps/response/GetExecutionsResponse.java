@@ -32,10 +32,12 @@ public class GetExecutionsResponse extends Response {
                 && operation.getService().getId().equals("wps");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return MIME_TYPE;
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         GetExecutionsTransformer tx = (GetExecutionsTransformer) value;
 

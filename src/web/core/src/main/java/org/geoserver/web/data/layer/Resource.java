@@ -71,6 +71,7 @@ public class Resource implements Comparable<Resource>, Serializable {
         return true;
     }
 
+    @Override
     public int compareTo(Resource o) {
         // unpublished resources first
         if (published && !o.published) return -1;

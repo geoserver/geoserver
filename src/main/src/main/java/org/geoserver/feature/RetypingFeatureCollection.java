@@ -37,10 +37,12 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
         this.target = target;
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return target;
     }
 
+    @Override
     public SimpleFeatureIterator features() {
         return new RetypingIterator(delegate.features(), target);
     }
@@ -105,10 +107,12 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
             this.builder = new SimpleFeatureBuilder(target);
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() {
             try {
                 return RetypingFeatureCollection.retype(delegate.next(), builder);
@@ -135,20 +139,24 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
             this.builder = new SimpleFeatureBuilder(target);
         }
 
+        @Override
         public void close() throws IOException {
             delegate.close();
             delegate = null;
             builder = null;
         }
 
+        @Override
         public SimpleFeatureType getFeatureType() {
             return builder.getFeatureType();
         }
 
+        @Override
         public boolean hasNext() throws IOException {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next()
                 throws IOException, IllegalAttributeException, NoSuchElementException {
             return RetypingFeatureCollection.retype(delegate.next(), builder);
@@ -172,20 +180,24 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
             this.builder = new SimpleFeatureBuilder(target);
         }
 
+        @Override
         public void close() throws IOException {
             delegate.close();
             delegate = null;
             builder = null;
         }
 
+        @Override
         public SimpleFeatureType getFeatureType() {
             return builder.getFeatureType();
         }
 
+        @Override
         public boolean hasNext() throws IOException {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() throws IOException {
             try {
                 current = delegate.next();
@@ -197,10 +209,12 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
             }
         }
 
+        @Override
         public void remove() throws IOException {
             delegate.write();
         }
 
+        @Override
         public void write() throws IOException {
             try {
                 SimpleFeatureType target = getFeatureType();

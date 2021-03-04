@@ -105,12 +105,15 @@ public class DynamicCrsMapResource extends AbstractResource {
             this.content = content;
         }
 
+        @Override
         public void setLocale(Locale arg0) {}
 
+        @Override
         public Bytes length() {
             return Bytes.bytes(content == null ? 0 : content.length);
         }
 
+        @Override
         public InputStream getInputStream() throws ResourceStreamNotFoundException {
             if (content == null) {
                 throw new ResourceStreamNotFoundException();
@@ -118,10 +121,12 @@ public class DynamicCrsMapResource extends AbstractResource {
             return new ByteArrayInputStream(content);
         }
 
+        @Override
         public String getContentType() {
             return "image/png";
         }
 
+        @Override
         public void close() throws IOException {}
     }
 }

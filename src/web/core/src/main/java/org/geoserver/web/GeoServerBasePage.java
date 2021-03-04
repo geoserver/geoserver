@@ -147,11 +147,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         add(
                 new ListView<LoginFormInfo>("loginforms", loginforms) {
+                    @Override
                     public void populateItem(ListItem<LoginFormInfo> item) {
                         LoginFormInfo info = item.getModelObject();
 
                         WebMarkupContainer loginForm =
                                 new WebMarkupContainer("loginform") {
+                                    @Override
                                     protected void onComponentTag(
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
@@ -223,6 +225,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         WebMarkupContainer logoutForm =
                 new WebMarkupContainer("logoutform") {
+                    @Override
                     protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
                         String logoutPath = getResourcePath("j_spring_security_logout");
                         tag.put("action", logoutPath);
@@ -267,6 +270,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         add(
                 new ListView<Category>("category", categories) {
+                    @Override
                     public void populateItem(ListItem<Category> item) {
                         Category category = item.getModelObject();
                         item.add(
@@ -277,6 +281,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         item.add(
                                 new ListView<MenuPageInfo<GeoServerBasePage>>(
                                         "category.links", links.get(category)) {
+                                    @Override
                                     public void populateItem(
                                             ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                                         MenuPageInfo<GeoServerBasePage> info =
@@ -339,6 +344,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         add(
                 new ListView<MenuPageInfo<GeoServerBasePage>>("standalone", standalone) {
+                    @Override
                     public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
                         BookmarkablePageLink<GeoServerBasePage> link =
@@ -559,6 +565,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      *
      * @see IAjaxIndicatorAware#getAjaxIndicatorMarkupId()
      */
+    @Override
     public String getAjaxIndicatorMarkupId() {
         return "ajaxFeedback";
     }

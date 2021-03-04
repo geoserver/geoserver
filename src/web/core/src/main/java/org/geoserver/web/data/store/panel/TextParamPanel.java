@@ -61,6 +61,7 @@ public class TextParamPanel<T> extends Panel implements ParamPanel<T> {
     }
 
     /** The text field stored inside the panel. */
+    @Override
     public FormComponent<T> getFormComponent() {
         return textField;
     }

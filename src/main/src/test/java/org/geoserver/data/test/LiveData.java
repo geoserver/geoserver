@@ -26,19 +26,23 @@ public class LiveData implements TestData {
      * Subclasses may override it in order to add extra behavior (like setting up an external
      * database)
      */
+    @Override
     public void setUp() throws Exception {
         data = IOUtils.createRandomDirectory("./target", "live", "data");
         IOUtils.deepCopy(source, data);
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (data != null) IOUtils.delete(data);
     }
 
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }

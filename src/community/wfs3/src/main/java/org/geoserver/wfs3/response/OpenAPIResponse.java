@@ -46,6 +46,7 @@ public class OpenAPIResponse extends JacksonResponse {
         return super.getMimeType(value, operation);
     }
 
+    @Override
     protected String getFileName(Object value, Operation operation) {
         return "api";
     }

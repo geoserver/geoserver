@@ -23,6 +23,7 @@ public class MapInfoImpl implements MapInfo {
         layers = new ArrayList<>();
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -31,22 +32,27 @@ public class MapInfoImpl implements MapInfo {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public List<LayerInfo> getLayers() {
         return layers;
     }
@@ -55,6 +61,7 @@ public class MapInfoImpl implements MapInfo {
         this.layers = layers;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         throw new UnsupportedOperationException();
     }

@@ -68,6 +68,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         this.defaultGeometryExpression = ff.property("");
     }
 
+    @Override
     public void visit(org.geotools.styling.TextSymbolizer ts) {
         pages.push(null);
         addGeometryExpression(ts.getGeometry(), geometriesOnTextSymbolizer);

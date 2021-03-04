@@ -29,6 +29,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
     // TODO: this should probably be handled as an update or extension to ExtractBoundsFilterVisitor
     ExtractBoundsFilterVisitor visitor =
             new ExtractBoundsFilterVisitor() {
+                @Override
                 public Object visit(BBOX filter, Object data) {
                     if (data == null) {
                         return null;

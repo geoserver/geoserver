@@ -72,6 +72,7 @@ public class PostgisDbSourceImpl extends SecuredImpl implements DbSource {
         this.ssl = ssl;
     }
 
+    @Override
     public String getSchema() {
         return schema;
     }

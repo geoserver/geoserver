@@ -51,6 +51,7 @@ public abstract class Query extends RequestObject {
 
     // public abstract boolean isTypeNamesUnset(List queries);
 
+    @Override
     public abstract List<QName> getTypeNames();
 
     public abstract List<String> getAliases();
@@ -59,6 +60,7 @@ public abstract class Query extends RequestObject {
 
     public abstract void setPropertyNames(List<String> names);
 
+    @Override
     public abstract Filter getFilter();
 
     public abstract List<SortBy> getSortBy();
@@ -123,6 +125,7 @@ public abstract class Query extends RequestObject {
             return eGet(adaptee, "typeNames", List.class);
         }
 
+        @Override
         public void setTypeNames(List<QName> typeNames) {
             @SuppressWarnings("unchecked")
             List<QName> l = eGet(adaptee, "typeNames", List.class);

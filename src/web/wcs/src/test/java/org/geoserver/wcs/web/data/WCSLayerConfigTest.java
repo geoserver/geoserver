@@ -24,6 +24,7 @@ public class WCSLayerConfigTest extends GeoServerWicketCoverageTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 CoverageInfo info =
                                         getCatalog().getResources(CoverageInfo.class).get(0);

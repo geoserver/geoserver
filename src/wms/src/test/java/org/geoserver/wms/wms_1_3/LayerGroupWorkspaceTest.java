@@ -96,6 +96,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         cat.remove(world);
     }
 
+    @Override
     protected void registerNamespaces(java.util.Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
     };

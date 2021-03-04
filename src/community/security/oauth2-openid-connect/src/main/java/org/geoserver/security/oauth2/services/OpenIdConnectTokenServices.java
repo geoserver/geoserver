@@ -32,6 +32,7 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
      * in the Authorization header. See
      * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
+    @Override
     protected Map<String, Object> checkToken(String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         HttpHeaders headers = new HttpHeaders();

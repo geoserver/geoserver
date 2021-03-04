@@ -26,6 +26,7 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
         super(new GeoServerAccessTokenConverter());
     }
 
+    @Override
     protected void transformNonStandardValuesToStandardValues(Map<String, Object> map) {
         LOGGER.debug("Original map = " + map);
         map.put("client_id", clientId); // GitHub does not send 'client_id'
@@ -33,6 +34,7 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
         LOGGER.debug("Transformed = " + map);
     }
 
+    @Override
     protected Map<String, Object> postForMap(
             String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
         if (headers.getContentType() == null) {

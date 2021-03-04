@@ -88,99 +88,122 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
 
     // start wrapper methods
 
+    @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         service.initializeFromConfig(config);
     }
 
+    @Override
     public boolean canCreateStore() {
         return service.canCreateStore();
     }
 
+    @Override
     public String getName() {
         return service.getName();
     }
 
+    @Override
     public void setName(String name) {
         service.setName(name);
     }
 
+    @Override
     public void setSecurityManager(GeoServerSecurityManager securityManager) {
         service.setSecurityManager(securityManager);
     }
 
+    @Override
     public GeoServerUserGroupStore createStore() throws IOException {
         return service.createStore();
     }
 
+    @Override
     public GeoServerSecurityManager getSecurityManager() {
         return service.getSecurityManager();
     }
 
+    @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException, DataAccessException {
         return service.loadUserByUsername(username);
     }
 
+    @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
         service.registerUserGroupLoadedListener(listener);
     }
 
+    @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {
         service.unregisterUserGroupLoadedListener(listener);
     }
 
+    @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException {
         return service.getGroupByGroupname(groupname);
     }
 
+    @Override
     public GeoServerUser getUserByUsername(String username) throws IOException {
         return service.getUserByUsername(username);
     }
 
+    @Override
     public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException {
         return service.createUserObject(username, password, isEnabled);
     }
 
+    @Override
     public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
             throws IOException {
         return service.createGroupObject(groupname, isEnabled);
     }
 
+    @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
         return service.getUsers();
     }
 
+    @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
         return service.getUserGroups();
     }
 
+    @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException {
         checkExistingGroupName(group.getGroupname());
         return service.getUsersForGroup(group);
     }
 
+    @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
         checkExistingUserName(user.getUsername());
         return service.getGroupsForUser(user);
     }
 
+    @Override
     public void load() throws IOException {
         service.load();
     }
 
+    @Override
     public String getPasswordEncoderName() {
         return service.getPasswordEncoderName();
     }
 
+    @Override
     public String getPasswordValidatorName() {
         return service.getPasswordValidatorName();
     }
 
+    @Override
     public int getUserCount() throws IOException {
         return service.getUserCount();
     }
 
+    @Override
     public int getGroupCount() throws IOException {
         return service.getGroupCount();
     }

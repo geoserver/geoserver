@@ -24,6 +24,7 @@ public abstract class AcceptVersionsKvpParser extends KvpParser {
         super("acceptversions", clazz);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         EObject acceptVersions = createObject();
         @SuppressWarnings("unchecked")

@@ -25,6 +25,7 @@ public class GeoserverCustomWKTFactory extends FactoryUsingWKT {
      *
      * @return The URL, or {@code null} if none.
      */
+    @Override
     protected URL getDefinitionsURL() {
         String cust_proj_file = System.getProperty(SYSTEM_DEFAULT_USER_PROJ_FILE);
         if (cust_proj_file == null) {

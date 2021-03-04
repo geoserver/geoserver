@@ -71,10 +71,12 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                     properties.store(out, "");
 
                     return new AbstractResourceStream() {
+                        @Override
                         public InputStream getInputStream() throws ResourceStreamNotFoundException {
                             return new ByteArrayInputStream(out.toByteArray());
                         }
 
+                        @Override
                         public void close() throws IOException {
                             out.close();
                         }

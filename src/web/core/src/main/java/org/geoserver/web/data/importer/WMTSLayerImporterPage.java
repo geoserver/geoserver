@@ -287,6 +287,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             this.layerResource = layerResource;
         }
 
+        @Override
         public String getObject() {
             LayerResource resource = layerResource.getObject();
             return new ParamResourceModel(
@@ -296,10 +297,12 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                     .getString();
         }
 
+        @Override
         public void setObject(String object) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }
@@ -314,6 +317,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             this.layerResource = layerResource;
         }
 
+        @Override
         public PackageResourceReference getObject() {
             LayerResource resource = layerResource.getObject();
             if (resource.getStatus() == LayerStatus.ERROR) {
@@ -334,10 +338,12 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             }
         }
 
+        @Override
         public void setObject(PackageResourceReference object) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }

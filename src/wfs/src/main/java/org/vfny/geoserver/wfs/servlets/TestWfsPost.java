@@ -47,11 +47,13 @@ public class TestWfsPost extends HttpServlet {
     static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
 
     /** Initializes the servlet. */
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
 
     /** Destroys the servlet. */
+    @Override
     public void destroy() {}
 
     /**
@@ -60,6 +62,7 @@ public class TestWfsPost extends HttpServlet {
      * @param request servlet request
      * @param response servlet response
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
@@ -71,12 +74,14 @@ public class TestWfsPost extends HttpServlet {
      * @param request servlet request
      * @param response servlet response
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
     /** Returns a short description of the servlet. */
+    @Override
     public String getServletInfo() {
         return "Tests a WFS post request using a form entry.";
     }

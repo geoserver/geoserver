@@ -305,12 +305,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         }
     }
 
+    @Override
     protected String getTitle() {
         return new ParamResourceModel(
                         configurationModel.getObject().isTemplate() ? "temp.title" : "title", this)
                 .getString();
     }
 
+    @Override
     protected String getDescription() {
         return new ParamResourceModel(
                         configurationModel.getObject().isTemplate()
@@ -975,6 +977,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 }
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 addFeedbackPanels(target);
             }
@@ -999,6 +1002,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         target.add(attributesPanel);
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

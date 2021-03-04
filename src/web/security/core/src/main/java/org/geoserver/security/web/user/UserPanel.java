@@ -127,6 +127,7 @@ public class UserPanel extends Panel {
                                 .canCreateStore());
     }
 
+    @Override
     protected void onBeforeRender() {
         users.clearSelection();
         removal.setEnabled(false);

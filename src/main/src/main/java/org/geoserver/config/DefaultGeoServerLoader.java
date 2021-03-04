@@ -30,6 +30,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
         super(resourceLoader);
     }
 
+    @Override
     protected void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
         catalog.setResourceLoader(resourceLoader);
 
@@ -43,6 +44,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
         executeListener(catalog, xp);
     }
 
+    @Override
     protected void loadGeoServer(final GeoServer geoServer, XStreamPersister xp) throws Exception {
         if (listener == null) {
             // add event listener which persists changes

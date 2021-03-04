@@ -32,6 +32,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
         this.wms = wms;
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new RSSGeoRSSTranslator(wms, handler);
     }
@@ -46,6 +47,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             nsSupport.declarePrefix("atom", "http://www.w3.org/2005/Atom");
         }
 
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             WMSMapContent map = (WMSMapContent) o;
 

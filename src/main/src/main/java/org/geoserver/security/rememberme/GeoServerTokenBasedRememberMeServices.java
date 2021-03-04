@@ -50,6 +50,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     }
 
     /** A proper {@link GeoServerWebAuthenticationDetails} object must be present */
+    @Override
     protected String retrieveUserName(Authentication authentication) {
         if (authentication.getDetails() instanceof GeoServerWebAuthenticationDetails) {
             String userGroupServiceName =

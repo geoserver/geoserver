@@ -102,6 +102,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
     }
 
     /** Sorts by name the Login extensions */
+    @Override
     public int compareTo(LoginFormInfo other) {
         return getName().compareTo(other.getName());
     }

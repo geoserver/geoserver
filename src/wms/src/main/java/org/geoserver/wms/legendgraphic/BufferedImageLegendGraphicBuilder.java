@@ -119,6 +119,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      * @throws ServiceException if there are problems creating a "sample" feature instance for the
      *     FeatureType <code>request</code> returns as the required layer (which should not occur).
      */
+    @Override
     public BufferedImage buildLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
         // list of images to be rendered for the layers (more than one if
@@ -417,6 +418,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         }
     }
 
+    @Override
     public Symbolizer rescaleSymbolizer(Symbolizer symbolizer, double size, double newSize) {
         // perform a unit-less rescale
         double scaleFactor = newSize / size;

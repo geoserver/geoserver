@@ -116,6 +116,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
         PROVIDERS.put("grib2", GRIB_PROVIDER);
     }
 
+    @Override
     public Set<String> getExtensions(String baseExtension) {
         if (canHandle(baseExtension)) {
             return PROVIDERS.get(baseExtension.toLowerCase()).getExtensions(baseExtension);
@@ -123,6 +124,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
         return Collections.emptySet();
     }
 
+    @Override
     public boolean canHandle(String baseExtension) {
         return baseExtension != null && PROVIDERS.containsKey(baseExtension.toLowerCase());
     }

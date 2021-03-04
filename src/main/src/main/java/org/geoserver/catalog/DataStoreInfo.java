@@ -44,6 +44,7 @@ public interface DataStoreInfo extends StoreInfo {
      *   <li>{@link DataStoreInfo#getConnectionParameters()}
      * </ul>
      */
+    @Override
     boolean equals(Object obj);
 
     /**

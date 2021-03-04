@@ -55,6 +55,7 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
             Thread configWriter =
                     new Thread("Config-writer") {
 
+                        @Override
                         public void run() {
                             // Acquiring Configuration Lock as another user
                             locker.lock(type);

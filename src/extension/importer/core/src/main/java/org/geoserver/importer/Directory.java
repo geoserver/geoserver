@@ -81,6 +81,7 @@ public class Directory extends FileData {
         return new Directory(dir);
     }
 
+    @Override
     public File getFile() {
         return file;
     }
@@ -146,6 +147,7 @@ public class Directory extends FileData {
             File[] fileList =
                     dir.listFiles(
                             new FilenameFilter() {
+                                @Override
                                 public boolean accept(File dir, String name) {
                                     return !new File(dir, name).isDirectory();
                                 }

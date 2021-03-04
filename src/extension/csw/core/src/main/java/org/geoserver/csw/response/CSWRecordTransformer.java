@@ -54,6 +54,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
             super(handler);
         }
 
+        @Override
         public void encode(CSWRecordsResult response, Feature f) {
             String element = "csw:" + getRecordElement(response);
             start(element);

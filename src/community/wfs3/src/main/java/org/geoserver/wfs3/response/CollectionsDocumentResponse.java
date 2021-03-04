@@ -14,6 +14,7 @@ public class CollectionsDocumentResponse extends JacksonResponse {
         super(gs, CollectionsDocument.class);
     }
 
+    @Override
     protected String getFileName(Object value, Operation operation) {
         return "collections";
     }

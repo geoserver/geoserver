@@ -59,10 +59,12 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         super(resourceLoader, "wps");
     }
 
+    @Override
     public Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }
 
+    @Override
     protected WPSInfo createServiceFromScratch(GeoServer gs) {
         WPSInfo wps = new WPSInfoImpl();
         wps.setName("WPS");

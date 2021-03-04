@@ -45,6 +45,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WCSEOLayerConfig(id, new Model<>(layer));
                             }
@@ -64,6 +65,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
                 new FormTestPage(
                         new ComponentBuilder() {
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new WCSEOLayerConfig(id, new Model<>(layer));
                             }

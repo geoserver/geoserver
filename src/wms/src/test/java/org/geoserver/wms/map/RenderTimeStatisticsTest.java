@@ -28,6 +28,7 @@ public class RenderTimeStatisticsTest {
         layers.add(
                 new Layer() {
 
+                    @Override
                     public ReferencedEnvelope getBounds() {
                         return null;
                     }
@@ -41,6 +42,7 @@ public class RenderTimeStatisticsTest {
         layers.add(
                 new Layer() {
 
+                    @Override
                     public ReferencedEnvelope getBounds() {
                         return null;
                     }

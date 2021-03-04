@@ -65,6 +65,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.GETCAPABILITIESTYPE;
     }
@@ -76,6 +77,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Class getType() {
         return GetCapabilitiesType.class;
     }
@@ -91,6 +93,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      *     <!-- end-user-doc -->
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities;
 

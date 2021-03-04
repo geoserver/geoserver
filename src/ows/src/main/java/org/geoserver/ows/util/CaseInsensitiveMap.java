@@ -26,46 +26,57 @@ public class CaseInsensitiveMap<K extends String, V> implements Map<K, V> {
         putAll(delegate);
     }
 
+    @Override
     public void clear() {
         delegate.clear();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         return delegate.containsKey(upper(key));
     }
 
+    @Override
     public boolean containsValue(Object value) {
         return delegate.containsValue(value);
     }
 
+    @Override
     public Set<Map.Entry<K, V>> entrySet() {
         return delegate.entrySet();
     }
 
+    @Override
     public boolean equals(Object o) {
         return delegate.equals(o);
     }
 
+    @Override
     public V get(Object key) {
         return delegate.get(upper(key));
     }
 
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public boolean isEmpty() {
         return delegate.isEmpty();
     }
 
+    @Override
     public Set<K> keySet() {
         return delegate.keySet();
     }
 
+    @Override
     public V put(K key, V value) {
         return delegate.put(upper(key), value);
     }
 
+    @Override
     public void putAll(Map<? extends K, ? extends V> t) {
         // make sure to upcase all keys
         for (Entry<? extends K, ? extends V> entry : t.entrySet()) {
@@ -75,14 +86,17 @@ public class CaseInsensitiveMap<K extends String, V> implements Map<K, V> {
         }
     }
 
+    @Override
     public V remove(Object key) {
         return delegate.remove(upper(key));
     }
 
+    @Override
     public int size() {
         return delegate.size();
     }
 
+    @Override
     public Collection<V> values() {
         return delegate.values();
     }

@@ -287,6 +287,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 new AjaxButton("cancel") {
                     private static final long serialVersionUID = 5767430648099432407L;
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         setResponsePage(ToolPage.class);
                     }

@@ -17,6 +17,7 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
     private String mapFormat = "image/dds";
     protected RenderedImageMapOutputFormat rasterMapProducer;
 
+    @Override
     protected RenderedImageMapOutputFormat getProducerInstance() {
         return new RenderedImageMapOutputFormat(this.mapFormat, getWMS());
     }
@@ -26,6 +27,7 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
         this.rasterMapProducer = this.getProducerInstance();
     }
 
+    @Override
     public String getMapFormat() {
         return this.mapFormat;
     }

@@ -42,14 +42,17 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         this.logging = geoServer.getFactory().createLogging();
     }
 
+    @Override
     public GeoServer getGeoServer() {
         return geoServer;
     }
 
+    @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
 
+    @Override
     public GeoServerInfo getGlobal() {
         if (global == null) {
             return null;
@@ -58,12 +61,14 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return ModificationProxy.create(global, GeoServerInfo.class);
     }
 
+    @Override
     public void setGlobal(GeoServerInfo global) {
         resolve(global);
         setId(global.getSettings());
         this.global = global;
     }
 
+    @Override
     public void save(GeoServerInfo global) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(global);
 
@@ -76,6 +81,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         proxy.commit();
     }
 
+    @Override
     public SettingsInfo getSettings(WorkspaceInfo workspace) {
         for (SettingsInfo s : settings) {
             if (s.getWorkspace().equals(workspace)) {
@@ -112,6 +118,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         settings.remove(s);
     }
 
+    @Override
     public LoggingInfo getLogging() {
         if (logging == null) {
             return null;
@@ -120,10 +127,12 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return ModificationProxy.create(logging, LoggingInfo.class);
     }
 
+    @Override
     public void setLogging(LoggingInfo logging) {
         this.logging = logging;
     }
 
+    @Override
     public void save(LoggingInfo logging) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(logging);
 
@@ -136,6 +145,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         proxy.commit();
     }
 
+    @Override
     public void add(ServiceInfo service) {
         // may be adding a proxy, need to unwrap
         service = unwrap(service);
@@ -145,6 +155,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         services.add(service);
     }
 
+    @Override
     public void save(ServiceInfo service) {
         ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(service);
 
@@ -157,10 +168,12 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         proxy.commit();
     }
 
+    @Override
     public void remove(ServiceInfo service) {
         services.remove(service);
     }
 
+    @Override
     public <T extends ServiceInfo> T getService(Class<T> clazz) {
         return find(clazz, null, services);
     }
@@ -170,6 +183,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return find(clazz, workspace, services);
     }
 
+    @Override
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
         for (ServiceInfo si : services) {
             if (id.equals(si.getId())) {
@@ -192,6 +206,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return null;
     }
 
+    @Override
     public <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz) {
         return findByName(name, null, clazz, services);
     }
@@ -202,6 +217,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return findByName(name, workspace, clazz, services);
     }
 
+    @Override
     public Collection<? extends ServiceInfo> getServices() {
         return ModificationProxy.createList(filter(services, null), ServiceInfo.class);
     }
@@ -211,6 +227,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         return ModificationProxy.createList(filter(services, workspace), ServiceInfo.class);
     }
 
+    @Override
     public void dispose() {
         if (global != null) global.dispose();
         if (settings != null) settings.clear();

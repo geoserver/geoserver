@@ -61,6 +61,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         return service;
     }
 
+    @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
 
         XMLRoleServiceConfig gaConfig = new XMLRoleServiceConfig();

@@ -66,6 +66,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("deleteSelectedRequestSRSs") {
                     private static final long serialVersionUID = 8363252127939759315L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getRequestSRS().removeAll(selectedRequestSRSs);
                         selectedRequestSRSs.clear();
@@ -76,6 +77,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("addNewRequestSRS") {
                     private static final long serialVersionUID = -3493317500980471055L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getRequestSRS().add(newRequestSRS);
                         newRequestSRS = "";
@@ -94,6 +96,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("deleteSelectedResponseSRSs") {
                     private static final long serialVersionUID = -8727831157546262491L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getResponseSRS().removeAll(selectedResponseSRSs);
                         selectedResponseSRSs.clear();
@@ -104,6 +107,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("addNewResponseSRS") {
                     private static final long serialVersionUID = -2888152896129259019L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getResponseSRS().add(newResponseSRS);
                         newResponseSRS = "";

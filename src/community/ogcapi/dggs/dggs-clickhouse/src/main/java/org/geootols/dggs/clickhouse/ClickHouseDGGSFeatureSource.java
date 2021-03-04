@@ -105,6 +105,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
                 words.add(ClickHouseDGGSFeatureSource.this.getSchema().getTypeName());
             }
 
+            @Override
             public ReferencedEnvelope getBounds() {
                 try {
                     return ClickHouseDGGSFeatureSource.this.getBounds();
@@ -113,22 +114,27 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
                 }
             }
 
+            @Override
             public CoordinateReferenceSystem getCRS() {
                 return ClickHouseDGGSFeatureSource.this.getSchema().getCoordinateReferenceSystem();
             }
 
+            @Override
             public String getDescription() {
                 return null;
             }
 
+            @Override
             public Set<String> getKeywords() {
                 return words;
             }
 
+            @Override
             public String getName() {
                 return ClickHouseDGGSFeatureSource.this.getSchema().getTypeName();
             }
 
+            @Override
             public URI getSchema() {
                 Name name = ClickHouseDGGSFeatureSource.this.getSchema().getName();
                 URI namespace;
@@ -140,6 +146,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
                 }
             }
 
+            @Override
             public String getTitle() {
                 Name name = ClickHouseDGGSFeatureSource.this.getSchema().getName();
                 return name.getLocalPart();

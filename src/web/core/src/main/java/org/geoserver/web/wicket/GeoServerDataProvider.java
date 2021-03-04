@@ -387,6 +387,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             this.visible = visible;
         }
 
+        @Override
         public Comparator<T> getComparator() {
             return new PropertyComparator<>(this);
         }
@@ -396,6 +397,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * editable tables, if you need to make one you'll have to roll your own getModel()
          * implementation ( {@link BeanProperty} provides a good example)
          */
+        @Override
         public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue(itemModel.getObject());
             if (value instanceof IModel) {
@@ -405,10 +407,12 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             }
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public boolean isVisible() {
             return visible;
         }
@@ -418,6 +422,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             return "Property[" + name + "]";
         }
 
+        @Override
         public boolean isSearchable() {
             return true;
         }
@@ -451,10 +456,12 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * property model against the bean so that writes will hit the bean instead of the possibly
          * immutable values contained in it (think a String property)
          */
+        @Override
         public IModel<T> getModel(IModel<T> itemModel) {
             return new PropertyModel<>(itemModel, propertyPath);
         }
 
+        @Override
         public Object getPropertyValue(T bean) {
             // allow rest of the code to assume bean != null
             if (bean == null) return null;
@@ -491,22 +498,27 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             this.name = name;
         }
 
+        @Override
         public Comparator<T> getComparator() {
             return null;
         }
 
+        @Override
         public IModel<T> getModel(IModel<T> itemModel) {
             return itemModel;
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public Object getPropertyValue(T item) {
             return item;
         }
 
+        @Override
         public boolean isVisible() {
             // the very reason for placeholder existence
             // is to show up in the table
@@ -518,6 +530,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             return "PropertyPlacehoder[" + name + "]";
         }
 
+        @Override
         public boolean isSearchable() {
             return false;
         }
@@ -536,6 +549,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             this.property = property;
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public int compare(T o1, T o2) {
             Comparable<Object> p1 = (Comparable<Object>) property.getPropertyValue(o1);
@@ -562,6 +576,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             this.comparator = comparator;
         }
 
+        @Override
         public int compare(T o1, T o2) {
             return comparator.compare(o1, o2) * -1;
         }

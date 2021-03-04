@@ -20,6 +20,7 @@ import org.junit.Test;
 
 public class AdvertisedCatalogTest extends AbstractAuthorizationTest {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

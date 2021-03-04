@@ -42,10 +42,12 @@ public class WFSHandlerFactory implements HandlerFactory {
         this.schemaBuilder = schemaBuilder;
     }
 
+    @Override
     public DocumentHandler createDocumentHandler(ParserHandler parser) {
         return null;
     }
 
+    @Override
     public ElementHandler createElementHandler(QName name, Handler parent, ParserHandler parser) {
         String namespaceURI = name.getNamespaceURI();
 
@@ -75,6 +77,7 @@ public class WFSHandlerFactory implements HandlerFactory {
         return null;
     }
 
+    @Override
     public ElementHandler createElementHandler(
             XSDElementDeclaration e, Handler parent, ParserHandler parser) {
         return null;

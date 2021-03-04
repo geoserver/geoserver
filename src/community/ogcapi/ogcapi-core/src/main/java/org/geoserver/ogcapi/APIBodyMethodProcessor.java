@@ -83,6 +83,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         Collections.sort(this.messageConverters, AnnotationAwareOrderComparator.INSTANCE);
     }
 
+    @Override
     protected <T> void writeWithMessageConverters(
             @Nullable T value,
             MethodParameter returnType,
@@ -287,6 +288,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         return selectedMediaType;
     }
 
+    @Override
     protected List<MediaType> getProducibleMediaTypes(
             HttpServletRequest request, Class<?> valueClass) {
         return getProducibleMediaTypes(request, valueClass, null);

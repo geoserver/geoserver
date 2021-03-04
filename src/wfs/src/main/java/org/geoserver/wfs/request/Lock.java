@@ -21,12 +21,15 @@ public abstract class Lock extends RequestObject {
         super(adaptee);
     }
 
+    @Override
     public abstract QName getTypeName();
 
+    @Override
     public Filter getFilter() {
         return eGet(adaptee, "filter", Filter.class);
     }
 
+    @Override
     public void setFilter(Filter filter) {
         eSet(adaptee, "filter", filter);
     }

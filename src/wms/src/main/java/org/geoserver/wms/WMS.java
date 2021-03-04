@@ -813,6 +813,7 @@ public class WMS implements ApplicationContextAware {
         return WMSExtensions.findExtendedCapabilitiesProviders(applicationContext);
     }
 
+    @Override
     @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // method is not called by multiple threads
     public void setApplicationContext(final ApplicationContext applicationContext)
             throws BeansException {

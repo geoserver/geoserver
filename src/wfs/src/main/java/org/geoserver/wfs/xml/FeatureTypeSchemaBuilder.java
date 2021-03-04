@@ -641,6 +641,7 @@ public abstract class FeatureTypeSchemaBuilder {
             List<XSDSchemaLocator> locators = new ArrayList<>();
             locators.add(
                     new XSDSchemaLocator() {
+                        @Override
                         public XSDSchema locateSchema(
                                 XSDSchema schema,
                                 String namespaceURI,
@@ -994,6 +995,7 @@ public abstract class FeatureTypeSchemaBuilder {
             xmlConfiguration = new GMLConfiguration();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml2Schema == null) {
                 XSDSchema result;
@@ -1038,6 +1040,7 @@ public abstract class FeatureTypeSchemaBuilder {
             return new GML3Profile();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml3Schema == null) {
                 gml3Schema = createGml3Schema();
@@ -1054,6 +1057,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
         }
 
+        @Override
         protected boolean filterAttributeType(AttributeDescriptor attribute) {
             return super.filterAttributeType(attribute)
                     || "metaDataProperty".equals(attribute.getLocalName())
@@ -1096,6 +1100,7 @@ public abstract class FeatureTypeSchemaBuilder {
             return GML.getInstance().getTypeMappingProfile();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml32Schema == null) {
                 synchronized (FeatureTypeSchemaBuilder.class) {
@@ -1145,6 +1150,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
         }
 
+        @Override
         protected boolean filterAttributeType(AttributeDescriptor attribute) {
             return super.filterAttributeType(attribute)
                     || "descriptionReference".equals(attribute.getLocalName())

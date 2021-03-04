@@ -49,6 +49,7 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
         this.target = target;
     }
 
+    @Override
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
 
@@ -63,6 +64,7 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
         return SimpleFeatureTypeBuilder.retype(featureType, target);
     }
 
+    @Override
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {

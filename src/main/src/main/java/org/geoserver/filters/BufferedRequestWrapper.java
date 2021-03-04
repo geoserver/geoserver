@@ -43,6 +43,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         this.charset = charset;
     }
 
+    @Override
     public ServletInputStream getInputStream() throws IOException {
         if (myStream == null) {
             if (myReader == null) {
@@ -55,6 +56,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         return myStream;
     }
 
+    @Override
     public BufferedReader getReader() throws IOException {
         if (myReader == null) {
             if (myStream == null) {
@@ -70,6 +72,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         return myReader;
     }
 
+    @Override
     public String getParameter(String name) {
         parseParameters();
         List<String> allValues = myParameterMap.get(name);
@@ -80,6 +83,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         }
     }
 
+    @Override
     public Map<String, String[]> getParameterMap() {
         parseParameters();
         Map<String, String[]> toArrays = new TreeMap<>();
@@ -91,11 +95,13 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
         return Collections.unmodifiableMap(toArrays);
     }
 
+    @Override
     public Enumeration<String> getParameterNames() {
         parseParameters();
         return new IteratorAsEnumeration<>(myParameterMap.keySet().iterator());
     }
 
+    @Override
     public String[] getParameterValues(String name) {
         parseParameters();
         List<String> allValues = myParameterMap.get(name);
@@ -181,10 +187,12 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
             this.it = it;
         }
 
+        @Override
         public boolean hasMoreElements() {
             return it.hasNext();
         }
 
+        @Override
         public T nextElement() {
             return it.next();
         }

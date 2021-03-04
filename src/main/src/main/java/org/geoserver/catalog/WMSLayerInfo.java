@@ -15,6 +15,7 @@ import org.opengis.util.ProgressListener;
 
 public interface WMSLayerInfo extends ResourceInfo {
 
+    @Override
     public WMSStoreInfo getStore();
 
     /** Returns the raw WMS layer associated to this resource */

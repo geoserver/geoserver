@@ -15,10 +15,12 @@ import org.geotools.styling.PointSymbolizer;
  */
 public class KMLStyleFilteringVisitor extends SymbolizerFilteringVisitor {
 
+    @Override
     public void visit(PointSymbolizer ps) {
         pages.push(null);
     }
 
+    @Override
     public void visit(org.geotools.styling.TextSymbolizer ts) {
         pages.push(null);
     }

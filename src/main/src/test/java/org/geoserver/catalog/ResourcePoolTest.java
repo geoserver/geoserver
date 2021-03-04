@@ -775,6 +775,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ResourcePool pool =
                 new ResourcePool(catalog) {
                     // cannot clone the mock objects
+                    @Override
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;

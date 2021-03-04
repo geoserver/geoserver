@@ -33,6 +33,7 @@ public class PostScriptTransformTest extends TransformTestSupport {
         script.setExecutable(true, true);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();

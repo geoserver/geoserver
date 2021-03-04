@@ -81,6 +81,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      *
      * <p>Subclasses should override this method to provide a diffent output format.
      */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
@@ -90,6 +91,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      *
      * <p>Subclasses may implement
      */
+    @Override
     public boolean canHandle(Operation operation) {
         // GetFeature operation?
         if ("GetFeature".equalsIgnoreCase(operation.getId())
@@ -187,6 +189,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     }
 
     /** Calls through to {@link #write(FeatureCollectionResponse, OutputStream, Operation)}. */
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         // for WFS 2.0 we changed the input object type to be the request object adapter, but there

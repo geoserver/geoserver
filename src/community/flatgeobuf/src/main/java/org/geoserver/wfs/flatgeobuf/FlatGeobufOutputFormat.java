@@ -34,11 +34,13 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     /** capabilities output format string. */
+    @Override
     public String getCapabilitiesElementName() {
         return "FlatGeobuf";
     }
 
     /** Returns the mime type */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "application/flatgeobuf";
     }

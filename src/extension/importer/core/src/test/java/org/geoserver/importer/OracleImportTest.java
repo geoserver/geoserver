@@ -32,6 +32,7 @@ public class OracleImportTest extends ImporterDbTestBase {
                 st);
     }
 
+    @Override
     protected void createWidgetsTable(Statement st) throws Exception {
         String sql =
                 "CREATE TABLE WIDGETS ("

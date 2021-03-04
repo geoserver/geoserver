@@ -45,6 +45,7 @@ public class MemoryUserGroupServiceTest extends AbstractUserGroupServiceTest {
         return config;
     }
 
+    @Override
     @Test
     public void testInsert() throws Exception {
         super.testInsert();

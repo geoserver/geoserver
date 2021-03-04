@@ -34,6 +34,7 @@ public class NotifierInitializer implements GeoServerInitializer {
         this.loader = loader;
     }
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
 
         XStream xs = new XStream();

@@ -32,30 +32,37 @@ class RetypingFeatureLocking extends RetypingFeatureStore implements SimpleFeatu
         return (SimpleFeatureLocking) wrapped;
     }
 
+    @Override
     public int lockFeatures() throws IOException {
         return featureLocking().lockFeatures();
     }
 
+    @Override
     public int lockFeatures(Query query) throws IOException {
         return featureLocking().lockFeatures(store.retypeQuery(query, typeMap));
     }
 
+    @Override
     public int lockFeatures(Filter filter) throws IOException {
         return featureLocking().lockFeatures(store.retypeFilter(filter, typeMap));
     }
 
+    @Override
     public void setFeatureLock(FeatureLock lock) {
         featureLocking().setFeatureLock(lock);
     }
 
+    @Override
     public void unLockFeatures() throws IOException {
         featureLocking().unLockFeatures();
     }
 
+    @Override
     public void unLockFeatures(Filter filter) throws IOException {
         featureLocking().unLockFeatures(store.retypeFilter(filter, typeMap));
     }
 
+    @Override
     public void unLockFeatures(Query query) throws IOException {
         featureLocking().unLockFeatures(store.retypeQuery(query, typeMap));
     }

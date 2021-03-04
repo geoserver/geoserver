@@ -40,6 +40,7 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
             writer.endObject();
     }
 
+    @Override
     public void setParentKey(String parentKey) {
         this.attributeNameHelper.setParentKey(parentKey);
     }

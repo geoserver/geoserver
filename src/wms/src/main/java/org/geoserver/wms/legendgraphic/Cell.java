@@ -792,6 +792,7 @@ public abstract class Cell {
                     (int) Math.ceil(bounds.getWidth()), (int) Math.ceil(bounds.getHeight()));
         }
 
+        @Override
         public void draw(
                 final Graphics2D graphics,
                 final Rectangle2D clipBox,
@@ -929,6 +930,7 @@ public abstract class Cell {
                     wrap);
         }
 
+        @Override
         public abstract void draw(
                 final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 

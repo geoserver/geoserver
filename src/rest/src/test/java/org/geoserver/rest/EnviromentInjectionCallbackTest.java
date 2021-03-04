@@ -22,6 +22,7 @@ public class EnviromentInjectionCallbackTest extends GeoServerSystemTestSupport 
         // no test data needed
     }
 
+    @Override
     @Before
     public void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);

@@ -166,6 +166,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
             return listeners;
         }
 
+        @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
@@ -446,6 +447,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         return null; // not found
     }
 
+    @Override
     public synchronized void addListener(String path, ResourceListener listener) {
         Objects.requireNonNull(path, "Path for notification is required");
         File file = fileExtractor.apply(path);
@@ -461,6 +463,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         watch.addListener(listener);
     }
 
+    @Override
     public synchronized boolean removeListener(String path, ResourceListener listener) {
         Objects.requireNonNull(path, "Path for notification is required");
         File file = fileExtractor.apply(path);

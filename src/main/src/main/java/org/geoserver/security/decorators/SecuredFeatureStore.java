@@ -51,6 +51,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         this.storeDelegate = delegate;
     }
 
+    @Override
     public List<FeatureId> addFeatures(FeatureCollection<T, F> collection) throws IOException {
         Query writeQuery = getWriteQuery(policy);
 
@@ -116,6 +117,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         modifyFeatures(names, values, filter);
     }
 
+    @Override
     public void modifyFeatures(Name[] names, Object[] values, Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);
@@ -156,11 +158,13 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         }
     }
 
+    @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
         modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
     }
 
+    @Override
     public void removeFeatures(Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);
@@ -177,15 +181,18 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         storeDelegate.removeFeatures(mixed.getFilter());
     }
 
+    @Override
     public void setFeatures(FeatureReader<T, F> reader) throws IOException {
         throw new UnsupportedOperationException(
                 "Unaware of any GS api using this, " + "so it has not been implemented");
     }
 
+    @Override
     public Transaction getTransaction() {
         return storeDelegate.getTransaction();
     }
 
+    @Override
     public void setTransaction(Transaction transaction) {
         storeDelegate.setTransaction(transaction);
     }

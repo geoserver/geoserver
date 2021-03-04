@@ -28,6 +28,7 @@ public class BinaryEncoderDelegate implements EncoderDelegate {
         this.object = object;
     }
 
+    @Override
     public void encode(ContentHandler output) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ppio.encode(object, bos);

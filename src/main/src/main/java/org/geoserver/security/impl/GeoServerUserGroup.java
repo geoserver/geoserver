@@ -58,6 +58,7 @@ public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Seria
         return getGroupname().hashCode();
     }
 
+    @Override
     public int compareTo(GeoServerUserGroup o) {
         if (o == null) return 1;
         return getGroupname().compareTo(o.getGroupname());

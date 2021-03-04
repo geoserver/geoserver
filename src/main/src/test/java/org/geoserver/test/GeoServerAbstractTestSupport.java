@@ -862,6 +862,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * @author Andrea Aime - TOPP
      */
     static class EmptyResolver implements org.xml.sax.EntityResolver {
+        @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws org.xml.sax.SAXException, IOException {
             StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -891,14 +892,17 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         validator.setErrorHandler(
                 new ErrorHandler() {
 
+                    @Override
                     public void warning(SAXParseException exception) throws SAXException {
                         LOGGER.warning(exception.getMessage());
                     }
 
+                    @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
 
+                    @Override
                     public void error(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
@@ -1069,6 +1073,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         if (charset == null) {
             response =
                     new MockHttpServletResponse() {
+                        @Override
                         public void setCharacterEncoding(String encoding) {}
                     };
         } else {
@@ -1249,6 +1254,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myBody = body;
         }
 
+        @Override
         public ServletInputStream getInputStream() {
             return new GeoServerDelegatingServletInputStream(myBody);
         }
@@ -1268,16 +1274,20 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myBody = body;
         }
 
+        @Override
         public int available() {
             return myBody.length - myOffset;
         }
 
+        @Override
         public void close() {}
 
+        @Override
         public void mark(int readLimit) {
             myMark = myOffset;
         }
 
+        @Override
         public void reset() {
             if (myMark < 0 || myMark >= myBody.length) {
                 throw new IllegalStateException("Can't reset when no mark was set.");
@@ -1286,19 +1296,23 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myOffset = myMark;
         }
 
+        @Override
         public boolean markSupported() {
             return true;
         }
 
+        @Override
         public int read() {
             byte[] b = new byte[1];
             return read(b, 0, 1) == -1 ? -1 : b[0];
         }
 
+        @Override
         public int read(byte[] b) {
             return read(b, 0, b.length);
         }
 
+        @Override
         public int read(byte[] b, int offset, int length) {
             int realOffset = offset + myOffset;
             int i;
@@ -1315,6 +1329,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             return i;
         }
 
+        @Override
         public int readLine(byte[] b, int offset, int length) {
             int i;
 

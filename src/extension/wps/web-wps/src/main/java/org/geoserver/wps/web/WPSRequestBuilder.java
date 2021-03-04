@@ -71,6 +71,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         xmlWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     public Page createPage() {
                         return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
                     }
@@ -86,6 +87,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         responseWindow.setPageCreator(
                 new ModalWindow.PageCreator() {
 
+                    @Override
                     @SuppressWarnings("unchecked")
                     public Page createPage() {
                         DemoRequest request = new DemoRequest(null);

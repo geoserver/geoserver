@@ -9,5 +9,6 @@ import org.geoserver.catalog.CatalogInfo;
 /** @author ImranR */
 public interface CatalogBeforeAddEvent extends CatalogEvent {
     /** the object that is going to be added. */
+    @Override
     CatalogInfo getSource();
 }

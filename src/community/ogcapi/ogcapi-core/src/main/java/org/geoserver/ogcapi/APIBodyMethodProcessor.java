@@ -108,7 +108,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 baseClass = returnType.getContainingClass();
             }
             converter =
-                    new SimpleHTTPMessageConverter(
+                    new SimpleHTMLMessageConverter(
                             value.getClass(),
                             getServiceClass(returnType),
                             baseClass,

@@ -14,11 +14,13 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
+import com.jayway.jsonpath.internal.JsonFormatter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import net.minidev.json.JSONAware;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
@@ -98,7 +100,10 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         return json;
     }
 
-    /** Returns a single element out of an array, checking that there is just one */
+    /**
+     * Returns a single element out of an array, checking that there is just one. Works around
+     * Workaround for https://github.com/json-path/JsonPath/issues/272
+     */
     protected <T> T readSingle(DocumentContext json, String path) {
         List<Object> items = json.read(path);
         assertEquals(
@@ -111,6 +116,58 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
                 1,
                 items.size());
         return (T) items.get(0);
+    }
+
+    /**
+     * Evaluates the path, which is supposed to return a JSON like object. Turns it into a string,
+     * and then turns it again into a {@link DocumentContext}.
+     *
+     * <p>Useful to create a sub-section of a JSON document for further analysis, allows to cut on
+     * JSONPath complexity.
+     *
+     * @param ctx The parent context
+     * @param path The JSON Path to be evaluated
+     * @return The context derived from the JSON Path evaluation
+     */
+    protected DocumentContext readContext(DocumentContext ctx, String path) {
+        JSONAware result = ctx.read(path);
+        return JsonPath.parse(result.toJSONString());
+    }
+
+    /**
+     * Similar to {@link #readSingle(DocumentContext, String)} but returns a {@link
+     * DocumentContext}. Workaround for https://github.com/json-path/JsonPath/issues/272.
+     *
+     * @param ctx The parent context
+     * @param path The JSON Path to be evaluated, assumes it's returning an array of one item
+     * @return The context derived from the JSON Path evaluation
+     */
+    protected DocumentContext readSingleContext(DocumentContext ctx, String path) {
+        List list = ctx.read(path, List.class);
+        if (list.size() != 1)
+            throw new RuntimeException(
+                    "Was expecting to get an array of one, but got "
+                            + list.size()
+                            + " elements instead");
+        // remove the array markers around the json we want (ugly!, could not find another way)
+        String array = ctx.read(path, JSONAware.class).toJSONString();
+        int opening = array.indexOf("[");
+        int closing = array.lastIndexOf("]");
+        String content = array.substring(opening + 1, closing);
+        return JsonPath.parse(content);
+    }
+
+    /**
+     * Prints the contents of a document on the standard output. Won't show up during Maven
+     * execution due to the quiet test setting, but will be executed when running tests directly
+     * (e.g., from an IDE)
+     */
+    @SuppressWarnings("PMD.SystemPrintln")
+    protected void print(DocumentContext json) {
+        if (isQuietTests()) {
+            return;
+        }
+        System.out.println(JsonFormatter.prettyPrint(json.jsonString()));
     }
 
     /** Checks the specified jsonpath exists in the document */

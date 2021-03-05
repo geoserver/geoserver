@@ -796,7 +796,7 @@ class GMLTransformer extends TransformerBase {
          *
          * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
-        public void handleRangeType(GridCoverage2D gc2d) {
+        private void handleRangeType(GridCoverage2D gc2d) {
             start("gml:rangeType");
             start("swe:DataRecord");
 

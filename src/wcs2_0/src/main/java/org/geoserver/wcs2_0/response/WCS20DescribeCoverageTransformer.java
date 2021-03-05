@@ -368,7 +368,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          * </gmlcov:rangeType>
          * }</pre>
          */
-        public void handleRangeType(final List<CoverageDimensionInfo> bands) {
+        private void handleRangeType(final List<CoverageDimensionInfo> bands) {
             start("gmlcov:rangeType");
             start("swe:DataRecord");
 

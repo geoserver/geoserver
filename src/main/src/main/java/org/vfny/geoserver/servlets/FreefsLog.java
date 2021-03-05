@@ -49,5 +49,4 @@ public class FreefsLog extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) {
         // BasicConfigurator.configure();
     }
-    @Override
 }

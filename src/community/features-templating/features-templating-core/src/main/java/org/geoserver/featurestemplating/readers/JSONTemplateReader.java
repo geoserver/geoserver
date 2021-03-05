@@ -138,7 +138,7 @@ public class JSONTemplateReader implements TemplateReader {
         TemplateBuilder iteratingBuilder =
                 factory.getIteratingBuilder(nodeName, configuration.getNamespaces());
         currentBuilder.addChild(iteratingBuilder);
-        if (!node.toString().contains(EXPRSTART)) {
+        if (!node.toString().contains(EXPRSTART) && !node.toString().contains(FILTERKEY)) {
             TemplateBuilder staticBuilder =
                     factory.getStaticBuilder(nodeName, node, configuration.getNamespaces());
             currentBuilder.addChild(staticBuilder);
@@ -147,14 +147,22 @@ public class JSONTemplateReader implements TemplateReader {
             while (arrayIterator.hasNext()) {
                 JsonNode childNode = arrayIterator.next();
                 if (childNode.isObject()) {
-                    if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
-                        // CompositeBuilder child of Iterating has no key
+                    String childJSON = childNode.toString();
+                    if (childNode.has(SOURCEKEY)) {
+                        // special object controlling array contents
+                        getBuilderFromJsonObject(childNode, iteratingBuilder, factory);
+                    } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
+                        // regular dynamic object/filtered object
                         TemplateBuilder compositeBuilder =
                                 factory.getCompositeBuilder(null, configuration.getNamespaces());
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder, factory);
                     } else {
-                        getBuilderFromJsonObject(childNode, iteratingBuilder, factory);
+                        // static node
+                        TemplateBuilder staticBuilder =
+                                factory.getStaticBuilder(
+                                        null, childNode, configuration.getNamespaces());
+                        iteratingBuilder.addChild(staticBuilder);
                     }
                 } else if (childNode.isArray()) {
                     getBuilderFromJsonArray(null, childNode, iteratingBuilder, factory);

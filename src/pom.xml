@@ -441,16 +441,6 @@
      <version>${gt.version}</version>
    </dependency>
    <dependency>
-     <groupId>org.geotools</groupId>
-     <artifactId>gt-arcsde-common</artifactId>
-     <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geotools</groupId>
-     <artifactId>gt-arcsde</artifactId>
-     <version>${gt.version}</version>
-   </dependency>
-   <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-charts</artifactId>
     <version>${gt.version}</version>
@@ -1107,12 +1097,6 @@
      <groupId>javax.activation</groupId>
      <artifactId>activation</artifactId>
      <version>1.1</version>
-   </dependency>
-   <dependency> 
-     <!-- needed by the arcsde plugin -->
-     <groupId>jsqlparser</groupId> 
-     <artifactId>jsqlparser</artifactId> 
-     <version>0.3.14</version> 
    </dependency>
      <dependency>
       <groupId>org.restlet</groupId>

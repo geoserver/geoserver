@@ -537,7 +537,6 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
         };
 
-        //        directory(new PackageResourceReference(GeoServerApplication.class,
         // "img/icons/silk/folder.png"),
         //                DirectoryPage.class,
         // "org.geotools.data.shapefile.ShapefileDataStoreFactory"), //
@@ -550,9 +549,6 @@ public class ImportDataPage extends GeoServerSecuredPage {
         //        sqlserver(new PackageResourceReference(GeoServerApplication.class,
         //                "img/icons/geosilk/database_vector.png"), SQLServerPage.class,
         //                "org.geotools.data.sqlserver.SQLServerDataStoreFactory"), //
-        //        arcsde(new PackageResourceReference(GeoServerApplication.class,
-        //                "img/icons/geosilk/database_vector.png"), ArcSDEPage.class,
-        //                "org.geotools.arcsde.data.ArcSDEDataStoreFactory");
 
         DataIcon icon;
 

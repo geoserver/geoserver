@@ -7,7 +7,7 @@ GeoServer logging subsystem is based on Java logging, which is in turn by defaul
 and controlled by the current logging configuration set in the :ref:`config_globalsettings`.
 
 The standard configuration can be overridden in a number of ways to create custom logging profiles
-or to force GeoServer to use another logging library altogheter.
+or to force GeoServer to use another logging library altogether.
 
 Custom logging profiles
 -----------------------

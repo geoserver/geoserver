@@ -25,7 +25,7 @@ Assuming that `origin` points to your GitHub repository then the workflow become
 1. Make the change.
 
 ```
-   git checkout -b my_bugfix master
+   git checkout -b my_bugfix main
    git add .
    git commit -m "fixed bug xyz"
 ```

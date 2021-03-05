@@ -177,7 +177,7 @@ compatible server.
 They do not need to be configured via the application context, but are
 taken from the properties file provided via the property
 ``s3.properties.location`` (see `S3
-DataStore <https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__).
+DataStore <https://github.com/geotools/geotools/tree/main/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__).
 
 A service will be created for each service and each bucket. We must add
 one line per alias to the ``s3.properties`` file:

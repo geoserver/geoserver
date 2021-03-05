@@ -166,7 +166,7 @@ As workaround you could use a `modified version <https://github.com/fernandor777
 
 You may also:
 
-#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/eclipse-java-google-style.xml
+#. Download https://github.com/geotools/geotools/blob/main/build/eclipse/eclipse-java-google-style.xml
 #. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
 #. Select the ``eclipse-java-google-style.xml`` file downloaded in step 1
 #. Click ``Apply``

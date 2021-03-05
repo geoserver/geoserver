@@ -37,7 +37,7 @@ Assuming that ``origin`` points to your github repo the the patch workflow then 
 
 #. Make the change.::
 
-     git checkout -b my_bugfix master
+     git checkout -b my_bugfix main
      git add .
      git commit-m "fixed bug xyz"
 

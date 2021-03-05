@@ -5,7 +5,7 @@ Tutorial: Styling data with CSS
 
 This tutorial will show using CSS to style a layer, along with the equivalent SLD code.
 
-To use this tutorial, you will need the :ref:`CSS extension <css_install>` as well as the ``states`` layer from the `default GeoServer configuration <https://github.com/geoserver/geoserver/tree/master/data/release/data/shapefiles>`_.
+To use this tutorial, you will need the :ref:`CSS extension <css_install>` as well as the ``states`` layer from the `default GeoServer configuration <https://github.com/geoserver/geoserver/tree/main/data/release/data/shapefiles>`_.
 
 Creating a style for the states layer
 -------------------------------------

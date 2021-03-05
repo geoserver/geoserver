@@ -75,7 +75,7 @@ When creating the first release candidate of a series, there are some extra step
 
 * Checkout the the main development branch and make sure it is up to date and that there are no changes in your local workspace::
 
-    git checkout master
+    git checkout main
     git pull
     git status
 
@@ -88,7 +88,7 @@ When creating the first release candidate of a series, there are some extra step
 
 * Checkout the the main development branch branch::
 
-    git checkout master
+    git checkout main
     
 * Update the version in all pom.xml files; for example, if changing the main development branch from ``2.17-SNAPSHOT`` to ``2.18-SNAPSHOT``.
   
@@ -138,7 +138,7 @@ When creating the first release candidate of a series, there are some extra step
 * Commit the changes and push to the the main development branch branch on GitHub::
 
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
-      git push geoserver master
+      git push geoserver main
       
 * Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
 
@@ -180,7 +180,7 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **GT_VERSION**
 
-  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "master@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
+  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GWC_VERSION**
 

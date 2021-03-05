@@ -20,7 +20,7 @@ Release branches
 At any given time GeoServer is undergoing two to three main branches of development.
 
 #. The *stable* branch in which only bug fixing, and smaller scale feature development occurs on
-#. The *unstable* (main development branch - master) branch in which more experimental and larger scale feature development occurs
+#. The *unstable* (main development branch - main) branch in which more experimental and larger scale feature development occurs
 #. The *maintenance* branch which was the previously stable branch that is nearing end of life and sees
    only the most stable development, typically mostly bug fixes.
 

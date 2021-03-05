@@ -7,7 +7,7 @@ For really quick fixes:
 
 #. Browse the documentation source code directly on the GitHub website:
 
-   *  https://github.com/geoserver/geoserver/tree/master/doc/en
+   *  https://github.com/geoserver/geoserver/tree/main/doc/en
 
 #. Navigate to the file you wish to change and click the **edit** icon
    

@@ -9,9 +9,9 @@
 
 For all pull requests:
 
-- [ ] Confirm you have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) 
+- [ ] Confirm you have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md) 
 - [ ] You have sent a Contribution Licence Agreement (CLA) as necessary (not required for small changes, e.g., fixing typos in documentation)
-- [ ] Make sure the first PR targets the master branch, eventual backports will be managed later. This can be ignored if the PR is fixing an issue that only happens in a specific branch, but not in newer ones.
+- [ ] Make sure the first PR targets the `main` branch, eventual backports will be managed later. This can be ignored if the PR is fixing an issue that only happens in a specific branch, but not in newer ones.
 
 The following are required only for core and extension modules (they are welcomed, but not required, for community modules):
 - [ ] There is a ticket in Jira describing the issue/improvement/feature (a notable exemptions is, changes not visible to end users)

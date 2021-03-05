@@ -61,7 +61,7 @@ The following outlines the steps to be taken in order to add a new community mod
    Once commit access is obtained the module can be added. All community 
    modules live under the directory ``community``, directly under the root of
    the source tree. The community modules on trunk can be found 
-   `here <https://github.com/geoserver/geoserver/tree/master/src/community>`_.
+   `here <https://github.com/geoserver/geoserver/tree/main/src/community>`_.
 
    For example, from the root of the GeoServer source tree::
 

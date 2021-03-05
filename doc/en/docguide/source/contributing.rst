@@ -27,7 +27,7 @@ File an issue and include a documentation patch
 
 GeoServer uses `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issue tracking.  New documentation is treated like part of the code, so those who want to submit content (patches etc) can use a pull request or file an issue with JIRA and attach the content to the issue.  If the content is deemed satisfactory, a contributor with commit rights will add the content to the documentation.
 
-For more information see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_ in GitHub.
+For more information see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`_ in GitHub.
 
 GitHub supports direct reviewing and editing of documentation pages, any edit you make will be automatically forked and submitted to the project team as a pull request.
 

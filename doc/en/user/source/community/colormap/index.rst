@@ -9,7 +9,7 @@ which applies a dynamic color map to a Raster on top of its statistics and a set
 Installing the dynamic colormap community extension
 ---------------------------------------------------
 
- #. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
+ #. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

@@ -24,7 +24,7 @@ This guide provides guidance to help pull requests be reviewed in a consistent f
 
 Before you start:
 
-* Double check the github [CONTRIBUTING](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) policy capturing requirements for submitted code.
+* Double check the github [CONTRIBUTING](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md) policy capturing requirements for submitted code.
 
   This document is shown to contributors each time a pull request is made.
   

@@ -72,7 +72,7 @@ GeoServer follows a time-boxed release model, this allows new features to be dev
 
 The community maintains three active branches:
 
-* main development branch (master): available for development of new functionality, documentation improvements and bug fixes
+* main development branch (main): available for development of new functionality, documentation improvements and bug fixes
 * stable: bug fixes and back-port of new functionality that do not affect the GeoServer API or significantly affect stability.
 * maintenance: bug fixes
 

@@ -17,7 +17,7 @@ PMD checks
 
 The `PMD <https://pmd.github.io/>`_ checks are based on the basic PMD validation, but limited to priority 2 checks:
 
-https://github.com/geoserver/geoserver/blob/master/src/pmd-ruleset.xml
+https://github.com/geoserver/geoserver/blob/main/src/pmd-ruleset.xml
 
 In order to activate the PMD checks, use the "-Ppmd" profile.
 

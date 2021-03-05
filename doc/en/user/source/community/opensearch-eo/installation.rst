@@ -14,7 +14,7 @@ Setting up the PostGIS database
 
 Create a PostgreSQL database and run the following SQL script::
 
-  https://raw.githubusercontent.com/geoserver/geoserver/master/src/community/oseo/oseo-core/src/test/resources/postgis.sql
+  https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql
 
 Downloading and installing the OpenSearch extension
 ---------------------------------------------------

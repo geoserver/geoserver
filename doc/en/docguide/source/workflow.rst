@@ -48,7 +48,7 @@ Within this repository are the various branches and tags associated with release
 
 For example, the path review the English docs is::
 
-   https://github.com/geoserver/geoserver/tree/master/doc/en
+   https://github.com/geoserver/geoserver/tree/main/doc/en
 
 Inside this directory, there are four directories::
 
@@ -149,4 +149,4 @@ When ready return to the GitHub website and submit a pull request:
 
 * https://help.github.com/articles/using-pull-requests
 
-The GitHub website provides a link to `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_ outlining how we can accept your patch. Small fixes may be contributed on your behalf, changes larger than a file (such as a tutorial) may require some paperwork.
+The GitHub website provides a link to `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`_ outlining how we can accept your patch. Small fixes may be contributed on your behalf, changes larger than a file (such as a tutorial) may require some paperwork.

@@ -14,7 +14,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -75,7 +74,7 @@ public class TemplateCQLManager {
 
         // clean the function to obtain a cql expression without xpath() syntax
         Expression cql = extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
-        DefaultFilterVisitor visitor = new TemplatingExpressionVisitor();
+        TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         cql.accept(visitor, null);
         return cql;
     }
@@ -94,8 +93,7 @@ public class TemplateCQLManager {
         String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
         Filter templateFilter = XCQL.toFilter(cleanedCql);
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
-        templateFilter.accept(visitor, null);
-        return templateFilter;
+        return (Filter) templateFilter.accept(visitor, null);
     }
 
     /**
@@ -236,7 +234,7 @@ public class TemplateCQLManager {
 
                 try {
                     Expression parsed = ECQL.toExpression(sb.toString());
-                    CQLNamespaceVisitor visitor = new CQLNamespaceVisitor();
+                    TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
                     Expression namespaced = (Expression) parsed.accept(visitor, null);
                     result.add(namespaced);
                     sb.setLength(0);
@@ -373,18 +371,8 @@ public class TemplateCQLManager {
         return xpath;
     }
 
-    private final class TemplatingExpressionVisitor extends DefaultFilterVisitor {
-        @Override
-        public Object visit(PropertyName expression, Object data) {
-            if (expression instanceof XpathFunction) {
-                ((XpathFunction) expression).setNamespaceContext(namespaces);
-            }
-            return super.visit(expression, data);
-        }
-    }
-
     /** Can be used to force namespace support into parsed CQL expressions */
-    private final class CQLNamespaceVisitor extends DuplicatingFilterVisitor {
+    private final class TemplatingExpressionVisitor extends DuplicatingFilterVisitor {
 
         @Override
         public Object visit(PropertyName expression, Object extraData) {

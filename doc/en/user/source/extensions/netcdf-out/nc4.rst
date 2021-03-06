@@ -6,12 +6,12 @@ Installing required NetCDF-4 Native libraries
 =============================================
 In order to write NetCDF-4 files, you must have the NetCDF-4 C library (version 4.3.1 or above) available on your system, along with all supporting libraries (HDF5, zlib, etc). 
 The following sections provide quick reference installation instructions.
-For more detailed info, please take a look at the `NetCDF-4 C Library Loading <http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html>`_ page.
+For more detailed info, please take a look at the `NetCDF-4 C Library Loading <https://docs.unidata.ucar.edu/netcdf-java/current/userguide/netcdf4_c_library.html>`_ page.
 
 
 Windows install
 ---------------
-#. Download the latest NetCDF4 installer from the `NetCDF-C Windows Libraries <http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html>`_ page.
+#. Download the latest NetCDF4 installer from the `NetCDF-C Windows Libraries <https://www.unidata.ucar.edu/software/netcdf/docs/winbin.html>`_ page.
 #. Install the executable
 #. Make sure to add the *bin* folder of the package you have extracted, to the ``PATH`` environment variable.
 

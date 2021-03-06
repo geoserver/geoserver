@@ -386,8 +386,7 @@ public class MultiDimDataStore extends ContentDataStore {
                     }
 
                 } catch (Exception e) {
-
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e);
                     throw new RuntimeException(e);
                 }
             }

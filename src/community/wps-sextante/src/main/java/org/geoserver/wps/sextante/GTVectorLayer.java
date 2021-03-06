@@ -15,6 +15,9 @@ import es.unex.sextante.outputs.FileOutputChannel;
 import es.unex.sextante.outputs.IOutputChannel;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -38,7 +41,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GTVectorLayer extends AbstractVectorLayer {
-
+    static final Logger LOGGER = Logging.getLogger(GTVectorLayer.class);
     private FeatureSource m_FeatureSource;
     private DefaultFeatureCollection m_FeatureCollection;
     private String m_sName;
@@ -257,7 +260,7 @@ public class GTVectorLayer extends AbstractVectorLayer {
                 create(featureSource);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 

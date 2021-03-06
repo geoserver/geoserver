@@ -19,6 +19,9 @@ import es.unex.sextante.outputs.OutputRasterLayer;
 import es.unex.sextante.parameters.Parameter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -28,7 +31,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.opengis.util.ProgressListener;
 
 public class SextanteProcess implements Process {
-
+    static final Logger LOGGER = Logging.getLogger(SextanteProcess.class);
     private GeoAlgorithm m_Algorithm;
 
     /**
@@ -65,7 +68,7 @@ public class SextanteProcess implements Process {
             }
 
         } catch (GeoAlgorithmExecutionException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             return null;
         }
     }

@@ -82,8 +82,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
             if (skipOnFailure) {
                 // disable the test
                 fixture = null;
-                // leave some trace of the swallowed exception
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "", e);
             } else {
                 // do not swallow the exception
                 throw e;

@@ -8,6 +8,9 @@ package org.vfny.geoserver.global.xml;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 /**
  * NameSpaceTranslatorFactory purpose.
@@ -20,6 +23,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class NameSpaceTranslatorFactory {
+    static final Logger LOGGER = Logging.getLogger(NameSpaceTranslatorFactory.class);
     /** map of namespace names as Strings -> Class representations of NameSpaceTranslators */
     private Map<String, Class> namespaceTranslators;
 
@@ -95,7 +99,7 @@ public class NameSpaceTranslatorFactory {
                                     });
             namespaceTranslatorInstances.put(prefix, nst);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 

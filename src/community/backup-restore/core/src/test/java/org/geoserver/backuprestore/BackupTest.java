@@ -93,7 +93,6 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
                 }
                 break;
             }
@@ -167,7 +166,6 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
                 }
                 break;
             }
@@ -233,7 +231,6 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
                 }
                 break;
             }
@@ -279,7 +276,6 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
                 }
                 break;
             }
@@ -305,7 +301,6 @@ public class BackupTest extends BackupRestoreTestSupport {
                     for (Throwable exception : backupExecution.getAllFailureExceptions()) {
                         LOGGER.log(
                                 Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                        exception.printStackTrace();
                     }
                     break;
                 }
@@ -361,7 +356,6 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
                 }
                 break;
             }
@@ -478,7 +472,6 @@ public class BackupTest extends BackupRestoreTestSupport {
                     for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
                         LOGGER.log(
                                 Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                        exception.printStackTrace();
                     }
                     break;
                 }
@@ -587,7 +580,6 @@ public class BackupTest extends BackupRestoreTestSupport {
                     for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
                         LOGGER.log(
                                 Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                        exception.printStackTrace();
                     }
                     break;
                 }

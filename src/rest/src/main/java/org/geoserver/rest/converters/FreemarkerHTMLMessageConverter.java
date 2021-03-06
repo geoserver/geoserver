@@ -17,11 +17,14 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -30,7 +33,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 /** Message converter for Freemarker-generated HTML output */
 public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWrapper<?>> {
-
+    static final Logger LOGGER = Logging.getLogger(FreemarkerHTMLMessageConverter.class);
     /** Encoding (null for default) */
     protected String encoding;
 
@@ -116,8 +119,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
             URL url2 = new URL(href);
             return Collections.singletonList(url2);
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
 
         return new ArrayList<>();

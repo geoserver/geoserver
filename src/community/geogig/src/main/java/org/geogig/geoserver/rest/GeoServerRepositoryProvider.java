@@ -195,7 +195,7 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             } catch (IOException | URISyntaxException e) {
                 Throwables.propagate(e);
             } catch (RepositoryConnectionException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
             return Optional.absent();
         }

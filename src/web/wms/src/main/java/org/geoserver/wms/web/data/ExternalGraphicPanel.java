@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
@@ -51,11 +53,14 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.logging.Logging;
 
 /** Allows setting the data for using an ExternalImage */
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
     private static final long serialVersionUID = 5098470683723890874L;
+
+    static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
 
     private static final String[] EXTENSIONS = new String[] {"png", "gif", "jpeg", "jpg"};
 
@@ -263,7 +268,7 @@ public class ExternalGraphicPanel extends Panel {
                                 width.setModelValue(new String[] {"" + image.getWidth()});
                                 height.setModelValue(new String[] {"" + image.getHeight()});
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LOGGER.log(Level.WARNING, "", e);
                             }
                             target.add(format);
                             target.add(width);
@@ -404,7 +409,7 @@ public class ExternalGraphicPanel extends Panel {
             } catch (FileNotFoundException notFound) {
                 form.error("Unable to access " + url);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 form.error("Recommend use of styles directory at " + e);
             }
         }

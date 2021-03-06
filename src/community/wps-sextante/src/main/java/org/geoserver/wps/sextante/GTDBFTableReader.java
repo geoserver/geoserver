@@ -13,9 +13,12 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 public class GTDBFTableReader extends AbstractTable {
-
+    static final Logger LOGGER = Logging.getLogger(GTDBFTableReader.class);
     private String m_sName;
     private final String m_sFilename;
     private int m_iRecordCount;
@@ -68,8 +71,7 @@ public class GTDBFTableReader extends AbstractTable {
         try {
             getDBFReader().close();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 

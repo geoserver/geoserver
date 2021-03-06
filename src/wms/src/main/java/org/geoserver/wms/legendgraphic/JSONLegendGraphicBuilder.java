@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.swing.Icon;
@@ -616,7 +617,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                             jGraphic.element(EXTERNAL_GRAPHIC_URL, url.toString());
                         }
                     } catch (MalformedURLException e) {
-                        e.printStackTrace();
+                        LOGGER.log(Level.WARNING, "", e);
                     }
                 }
                 Icon icon = em.getInlineContent();
@@ -637,7 +638,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
 
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
             jGraphic.element(EXTERNAL_GRAPHIC_TYPE, eg.getFormat());
         }

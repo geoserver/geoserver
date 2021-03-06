@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerFactory;
@@ -578,7 +579,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         try {
             rp.getGridCoverageReader(info, null);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             fail("Unable to add an imagepyramid with a space in it's name");
         }
         rp.dispose();

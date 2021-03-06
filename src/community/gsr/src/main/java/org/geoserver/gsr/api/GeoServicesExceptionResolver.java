@@ -75,7 +75,6 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
             converter.writeToOutputStream(response.getOutputStream(), exception);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error writing exception response", e);
-            e.printStackTrace();
         }
         return new ModelAndView();
     }

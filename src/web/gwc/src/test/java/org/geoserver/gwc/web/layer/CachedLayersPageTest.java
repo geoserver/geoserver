@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -41,7 +42,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             getReplaceModelMethod = AttributeModifier.class.getDeclaredMethod("getReplaceModel");
             getReplaceModelMethod.setAccessible(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             throw new RuntimeException(e);
         }
     }

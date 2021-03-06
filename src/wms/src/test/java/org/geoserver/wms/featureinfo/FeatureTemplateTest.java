@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
@@ -36,8 +37,8 @@ public class FeatureTemplateTest extends WMSTestSupport {
             try {
                 template.description(f);
             } catch (Exception e) {
-                e.printStackTrace();
-                fail("template threw exception on null value");
+                LOGGER.log(Level.WARNING, "", e);
+                fail("template threw exception on null value. " + e.getMessage());
             }
         }
     }
@@ -53,7 +54,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
             try {
                 template.template(f, "rawValues.ftl", FeatureTemplateTest.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 throw (e);
             }
         }
@@ -75,7 +76,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
             try {
                 template.description(f);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 fail("template threw exception on null value");
             }
         }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.ResourceModel;
@@ -57,7 +58,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
             gwc.modifyGridSet(originalName, newGridset);
             doReturn(GridSetsPage.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             form.error("Error saving gridset: " + e.getMessage());
             target.add(form);
         }

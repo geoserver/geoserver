@@ -264,7 +264,7 @@ public class GetMapDefaults {
         try {
             getMap.setCrs(CRS.decode(srs));
         } catch (FactoryException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 

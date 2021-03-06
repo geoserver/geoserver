@@ -7,6 +7,8 @@ package org.geoserver.security.web.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -17,9 +19,10 @@ import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.logging.Logging;
 
 public class SelectionServiceRemovalLink extends AjaxLink {
-
+    static final Logger LOGGER = Logging.getLogger(SelectionServiceRemovalLink.class);
     GeoServerTablePanel<ServiceAccessRule> services;
     GeoServerDialog.DialogDelegate delegate;
     GeoServerDialog dialog;
@@ -68,7 +71,7 @@ public class SelectionServiceRemovalLink extends AjaxLink {
                                 try {
                                     dao.storeRules();
                                 } catch (IOException e) {
-                                    e.printStackTrace();
+                                    LOGGER.log(Level.WARNING, "", e);
                                 }
 
                                 // the deletion will have changed what we see in the page

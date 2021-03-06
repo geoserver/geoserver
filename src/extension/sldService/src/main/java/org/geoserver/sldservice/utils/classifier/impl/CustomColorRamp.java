@@ -9,7 +9,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
+import org.geotools.util.logging.Logging;
 
 /**
  * Custom Color Ramp Implementation
@@ -17,6 +20,8 @@ import org.geoserver.sldservice.utils.classifier.ColorRamp;
  * @author Alessio Fabiani, GeoSolutions SAS
  */
 public class CustomColorRamp implements ColorRamp {
+
+    static final Logger LOGGER = Logging.getLogger(CustomColorRamp.class);
 
     private int classNum = 0;
 
@@ -48,7 +53,7 @@ public class CustomColorRamp implements ColorRamp {
         try {
             createRamp();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 

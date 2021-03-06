@@ -49,7 +49,6 @@ public class JDBCTestSupport {
                     ps.execute();
                     ps.close();
                 } catch (SQLException ex) {
-                    // ex.printStackTrace();
                 }
             }
             con.commit();

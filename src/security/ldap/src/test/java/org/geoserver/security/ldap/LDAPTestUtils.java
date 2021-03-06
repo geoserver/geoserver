@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.Binding;
 import javax.naming.ContextNotEmptyException;
 import javax.naming.Name;
@@ -23,6 +25,7 @@ import javax.naming.ldap.Rdn;
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.core.DefaultDirectoryService;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
+import org.geotools.util.logging.Logging;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
@@ -47,7 +50,7 @@ public class LDAPTestUtils {
     public static final String LDAP_BASE_PATH = "dc=example,dc=com";
     public static final String DEFAULT_PRINCIPAL = "uid=admin,ou=system";
     public static final String DEFAULT_PASSWORD = "secret";
-
+    static final Logger LOGGER = Logging.getLogger(LDAPTestUtils.class);
     private static EmbeddedLdapServer embeddedServer;
 
     /**
@@ -137,8 +140,8 @@ public class LDAPTestUtils {
                 return true;
             }
             return false;
-        } catch (Exception ee) {
-            ee.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
             return false;
         }
     }
@@ -219,7 +222,7 @@ public class LDAPTestUtils {
                 }
             }
         } catch (NamingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         } finally {
             try {
                 enumeration.close();

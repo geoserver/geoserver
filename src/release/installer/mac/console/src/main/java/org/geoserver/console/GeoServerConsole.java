@@ -53,6 +53,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * @author Justin Deoliveira, OpenGEO
  *
  */
+@SuppressWarnings("PMD.AvoidPrintStackTrace")
 public class GeoServerConsole {
 
     /**

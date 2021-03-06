@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
@@ -225,8 +226,7 @@ public class EncodeHTMLImageMap extends WebMap {
                     result.add(rule);
                 }
             } catch (TransformException | FactoryException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
         }
         // TODO Auto-generated method stub

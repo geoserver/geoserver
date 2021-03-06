@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.feature.RetypingFeatureCollection;
@@ -21,6 +23,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 
@@ -30,6 +33,7 @@ import org.opengis.feature.type.Name;
  * @author Gabriel Roldan
  */
 public class GetFeatureInfo {
+    static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public FeatureCollectionType run(final GetFeatureInfoRequest request) throws ServiceException {
@@ -37,10 +41,10 @@ public class GetFeatureInfo {
         try {
             results = execute(request);
         } catch (ServiceException se) {
-            se.printStackTrace();
+            LOGGER.log(Level.FINE, "", se);
             throw se;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.FINE, "", e);
             throw new ServiceException("Internal error occurred", e);
         }
         return buildResults(results);

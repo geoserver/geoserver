@@ -16,6 +16,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.iterator.RectIter;
@@ -41,6 +43,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Utilities;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.coverage.SampleDimension;
@@ -64,7 +67,7 @@ import tech.units.indriya.format.SimpleUnitFormat;
  * @author Simone Giannecchini, GeoSolutions SAS
  */
 class GMLTransformer extends TransformerBase {
-
+    static final Logger LOGGER = Logging.getLogger(GMLTransformer.class);
     protected final EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     protected FileReference fileReference;
@@ -226,8 +229,7 @@ class GMLTransformer extends TransformerBase {
             try {
                 handleMetadata(null, null);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "", e);
             }
 
             end("gml:RectifiedGridCoverage");

@@ -273,7 +273,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         driversToUnload.add(driver);
                     }
                 } catch (Throwable t) {
-                    t.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "", t);
                 }
             }
             for (Driver driver : driversToUnload) {
@@ -424,12 +424,11 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 System.gc();
                 System.runFinalization();
             } catch (Throwable t) {
-                LOGGER.severe("Failed to perform closing up finalization");
-                t.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Failed to perform closing up finalization", t);
             }
         } catch (Throwable t) {
             // if anything goes south during the cleanup procedures I want to know what it is
-            t.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", t);
         }
     }
 

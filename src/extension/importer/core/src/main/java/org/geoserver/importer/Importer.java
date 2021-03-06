@@ -943,7 +943,6 @@ public class Importer implements DisposableBean, ApplicationListener {
                     try {
                         directory.archive(getArchiveFile(context));
                     } catch (Exception ioe) {
-                        ioe.printStackTrace();
                         // this is not a critical operation, so don't make the whole thing fail
                         LOGGER.log(Level.WARNING, "Error archiving", ioe);
                     }

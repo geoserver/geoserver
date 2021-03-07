@@ -82,9 +82,10 @@ public class MapMLController {
 
     @Autowired GeoServer geoServer;
     @Autowired WMS wms;
+    @Autowired GWC GWC;
 
     public static final HashMap<String, TiledCRS> previewTcrsMap = new HashMap<>();
-    private static final GWC gwc = GWC.get();
+    private final GWC gwc;
 
     private static final Bounds DISPLAY_BOUNDS_PHONE_PORTRAIT =
             new Bounds(new Point(0, 0), new Point(300, 812));
@@ -120,6 +121,17 @@ public class MapMLController {
         desktops.add(DISPLAY_BOUNDS_DESKTOP_PORTRAIT);
         desktops.add(DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
         DISPLAYS.put("DESKTOP", desktops);
+    }
+
+    /**
+     * The MapMLController provides an HTML preview via the html method, which constructs a document
+     * that will make a request to the mapml method, which serves a mapml document referring to the
+     * layer or layer group requested.
+     *
+     * @param GWC should be provided by spring
+     */
+    public MapMLController(GWC GWC) {
+        this.gwc = GWC.get();
     }
 
     /**

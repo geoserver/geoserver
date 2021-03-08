@@ -37,11 +37,11 @@ import org.geoserver.ogcapi.DateTimeList;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.PropertiesParser;
 import org.geoserver.ogcapi.features.FeaturesGetFeature;
 import org.geoserver.ogcapi.features.FeaturesResponse;
-import org.geoserver.ogcapi.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
@@ -206,7 +206,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/zones", name = "getZones")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse zones(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -222,7 +222,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -292,7 +292,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/neighbors", name = "getNeighbors")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse neighbors(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -305,7 +305,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -349,7 +349,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/zone", name = "getZone")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     @HTMLResponseBody(templateName = "zone.ftl", fileName = "zone.html")
     public FeaturesResponse zone(
             @PathVariable(name = "collectionId") String collectionId,
@@ -359,7 +359,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -463,7 +463,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/children", name = "getChildren")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse children(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -476,7 +476,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -508,7 +508,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/parents", name = "getParents")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse parents(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -520,7 +520,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -610,7 +610,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/point", name = "point")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     @HTMLResponseBody(templateName = "zone.ftl", fileName = "zone.html")
     public FeaturesResponse point(
             @PathVariable(name = "collectionId") String collectionId,
@@ -621,7 +621,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -659,7 +659,7 @@ public class DGGSService {
 
     @GetMapping(path = "collections/{collectionId}/polygon", name = "polygon")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse polygon(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "polygon") String polygonWKT,
@@ -673,7 +673,7 @@ public class DGGSService {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {

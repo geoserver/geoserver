@@ -63,8 +63,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
     public static final String MIME_TYPE = "text/xml; subtype=gml/2.1.2";
 
     /**
-     * This is a "magic" class provided by Geotools that writes out GML for an array of
-     * FeatureResults.
+     * This is a "magic" class provided by GeoTools that writes out GML for an array of
+     * FeatureCollections.
      *
      * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt
      * it down. We supply all of the header information in the execute method, and work through the

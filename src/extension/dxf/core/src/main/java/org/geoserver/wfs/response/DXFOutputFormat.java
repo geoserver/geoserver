@@ -75,6 +75,15 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         super(gs, formats);
     }
 
+    /** Sets the right extension for the response */
+    protected String getExtension(FeatureCollectionResponse response) {
+        String outputFormat = response.getOutputFormat().toUpperCase();
+        // DXF
+        if (outputFormat.equals("DXF")) return "dxf";
+        // DXF-ZIP
+        return "zip";
+    }
+
     /** Gets current request extension (dxf or zip). */
     public String getDxfExtension(Operation operation) {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -138,6 +147,16 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        if (request.getFormatOptions() != null
+                && request.getFormatOptions().containsKey("FILENAME")) {
+            String fileName = (String) request.getFormatOptions().get("FILENAME");
+            if (fileName.contains(".")) {
+                return fileName; // includes extension
+            } else {
+                return fileName + "." + getDxfExtension(operation);
+            }
+        }
         return getFileName(operation) + '.' + getDxfExtension(operation);
     }
 

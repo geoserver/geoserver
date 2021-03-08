@@ -7,9 +7,6 @@ package org.geoserver.geopkg;
 
 import static org.geoserver.geopkg.GeoPkg.*;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -26,8 +23,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geoserver.wfs.request.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
@@ -68,21 +63,8 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     }
 
     @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
-
-        return Joiner.on("_")
-                        .join(
-                                Iterables.transform(
-                                        req.getQueries(),
-                                        new Function<Query, String>() {
-                                            @Override
-                                            public String apply(Query input) {
-                                                return input.getTypeNames().get(0).getLocalPart();
-                                            }
-                                        }))
-                + "."
-                + EXTENSION;
+    protected String getExtension(FeatureCollectionResponse response) {
+        return EXTENSION;
     }
 
     @Override

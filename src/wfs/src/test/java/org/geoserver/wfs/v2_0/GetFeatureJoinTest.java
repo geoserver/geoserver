@@ -995,7 +995,8 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals(
+                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1047,7 +1048,8 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals(
+                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1099,7 +1101,8 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals(
+                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1149,7 +1152,8 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals(
+                "attachment; filename=Forests_Forests.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1193,7 +1197,8 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals(
+                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1260,7 +1265,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals("UTF-8", resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals("attachment; filename=t1.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=t1_t2_t3.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not

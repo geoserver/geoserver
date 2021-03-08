@@ -11,6 +11,8 @@
       <includes>	
         <include>gt-mbtiles-*.jar</include>
         <include>gs-mbtiles-*.jar</include>
+        <include>jackson-databind*</include>
+        <include>jackson-annotations*</include>
         <include>gs-geopkg-*.jar</include>
       </includes>
     </fileSet>

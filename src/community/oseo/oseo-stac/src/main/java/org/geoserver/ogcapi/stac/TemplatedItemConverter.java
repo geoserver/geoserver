@@ -9,62 +9,52 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.writers.GeoJSONWriter;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Feature;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-/**
- * Converter for the {@link CollectionsDocument} that will encode STAC collections using a feature
- * template
- */
+/** Converter for the {@link ItemsResponse} that will encode STAC items using a feature template */
 @Component
-public class TemplatedCollectionsConverter
-        extends AbstractHttpMessageConverter<CollectionsResponse> {
+public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemResponse> {
 
     private final STACTemplates templates;
 
-    public TemplatedCollectionsConverter(STACTemplates templates) {
-        super(MediaType.APPLICATION_JSON);
+    public TemplatedItemConverter(STACTemplates templates) {
+        super(OGCAPIMediaTypes.GEOJSON);
         this.templates = templates;
     }
 
     @Override
     protected boolean supports(Class<?> aClass) {
-        return CollectionsResponse.class.isAssignableFrom(aClass);
+        return ItemResponse.class.isAssignableFrom(aClass);
     }
 
     @Override
-    protected CollectionsResponse readInternal(
-            Class<? extends CollectionsResponse> aClass, HttpInputMessage httpInputMessage)
+    protected ItemResponse readInternal(
+            Class<? extends ItemResponse> aClass, HttpInputMessage httpInputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedOperationException("This converter is write only");
     }
 
     @Override
-    protected void writeInternal(
-            CollectionsResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
+    protected void writeInternal(ItemResponse response, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
-        RootBuilder builder = templates.getCollectionTemplate();
+        RootBuilder builder = templates.getItemTemplate();
 
-        try (STACCollectionWriter writer =
-                new STACCollectionWriter(
+        try (GeoJSONWriter writer =
+                new GeoJSONWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
-            writer.startTemplateOutput();
-            try (FeatureIterator features = collectionsResponse.getCollections().features()) {
-                while (features.hasNext()) {
-                    builder.evaluate(writer, new TemplateBuilderContext(features.next()));
-                }
-            }
-            writer.endArray();
-            // writeAdditionFields(writer, featureCollection, getFeature);
-            writer.endTemplateOutput();
+            // no collection wrapper
+            Feature item = response.getItem();
+            builder.evaluate(writer, new TemplateBuilderContext(item));
         } catch (Exception e) {
             throw new ServiceException(e);
         }

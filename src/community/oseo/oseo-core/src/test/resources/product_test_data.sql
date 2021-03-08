@@ -1,6 +1,6 @@
 -- product data, without geometries
 INSERT INTO product
-("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution")
+("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution", "eoProductPlatform")
 VALUES(352, '<table xmlns="">
     <tr>
         <td valign="top" width="10%">
@@ -36,7 +36,7 @@ VALUES(352, '<table xmlns="">
             </table>
         </td>
     </tr>
-</table>', '2016-09-29 10:20:22.026', '2016-09-29 10:23:44.107', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2016-09-29 18:59:02.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+</table>', '2016-09-29 10:20:22.026', '2016-09-29 10:23:44.107', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2016-09-29 18:59:02.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'sentinel-2a');
 INSERT INTO product
 ("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution")
 VALUES(353, '<table xmlns="">
@@ -646,7 +646,7 @@ VALUES(368, '<table xmlns="">
     </tr>
 </table>', '2016-01-17 10:10:30.743', '2016-01-17 10:10:30.743', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01', 'SENTINEL2', NULL, 'NOMINAL', 122, 'DESCENDING', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, '2016-01-18 21:05:18.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO product
-("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution")
+("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution", "eoProductPlatform")
 VALUES(369, '<table xmlns="">
     <tr>
         <td valign="top" width="10%">
@@ -682,7 +682,7 @@ VALUES(369, '<table xmlns="">
             </table>
         </td>
     </tr>
-</table>', '2017-03-08 18:54:21.026', '2017-03-08 18:54:21.026', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 70, 'DESCENDING', NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, '2017-03-08 18:54:20.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+</table>', '2017-03-08 18:54:21.026', '2017-03-08 18:54:21.026', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 70, 'DESCENDING', NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, '2017-03-08 18:54:20.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'sentinel-2a');
 INSERT INTO product
 ("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution")
 VALUES(370, '<table xmlns="">
@@ -720,7 +720,7 @@ VALUES(370, '<table xmlns="">
             </table>
         </td>
     </tr>
-</table>', '2017-02-26 10:20:21.026', '2017-02-26 10:20:21.026', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+</table>', '2017-02-26 10:20:21.026', '2017-02-26 10:30:00.031', NULL, NULL, NULL, 'S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04', 'SENTINEL2', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO product
 ("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoResolution", "atmSpecies", "atmVerticalRange")
 VALUES(1, '<table xmlns="">
@@ -797,6 +797,44 @@ VALUES(2, '<table xmlns="">
         </td>
     </tr>
 </table>', '2018-02-27 10:20:21.000', '2018-02-27 10:20:21.000', NULL, NULL, NULL, 'SAS1_20180227102021.02', 'SAS1', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', NULL, NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ARRAY['O3', 'NO2'], ARRAY[2000, 500]);
+INSERT INTO product
+("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoProductPlatform")
+VALUES(250, '<table xmlns="">
+    <tr>
+        <td valign="top" width="10%">
+            <a href="${QUICKLOOK_URL}" target="_blank" title="View browse image">
+                <img align="left" border="0" height="66" hspace="8" src="" width="66" />
+            </a>
+        </td>
+        <td valign="top" width="90%">
+            <table>
+                <tr valign="top">
+                    <td>
+                        <b>Date </b>
+                    </td>
+                    <td>2018-02-27 10:20:21.000/2018-02-27 10:20:21.000</td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <b>Media Type</b>
+                    </td>
+                    <td>
+                        <a href="${ATOM_URL}" title="Atom format">ATOM(todo)</a>
+
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <b>Metadata </b>
+                    </td>
+                    <td>
+                        <a href="${OM_METADATA_URL}" title="O&M format">O&amp;M</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>', '2018-02-27 10:20:21.000', '2018-02-27 10:20:21.000', NULL, NULL, NULL, 'LS8_TEST.02', 'LANDSAT8', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', '2017-02-28 10:24:58.000', NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'LANDSAT_8');
 -- setup sequence to allow new inserts
 select setval('product_id_seq'::regclass, 400);
 -- geometries
@@ -821,6 +859,7 @@ update product set "footprint" = ST_GeomFromText('POLYGON((-117.969375418501 33.
 update product set "footprint" = ST_GeomFromText('POLYGON((11.54663057229 42.3357822388091,11.5875361840958 43.3235765959035,10.2338121377569 43.3462000093822,10.2142871341731 42.357641452722,11.54663057229 42.3357822388091))', 4326) where "id" = 370;
 update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 1;
 update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 2;
+update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 250;
 
 -- metadata
 INSERT INTO product_metadata

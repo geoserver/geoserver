@@ -9,9 +9,9 @@ import java.io.IOException;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 
 /** A writer for the collections */
-public class STACJSONWriter extends GeoJSONWriter {
+public class STACCollectionWriter extends GeoJSONWriter {
 
-    public STACJSONWriter(JsonGenerator generator) {
+    public STACCollectionWriter(JsonGenerator generator) {
         super(generator);
     }
 

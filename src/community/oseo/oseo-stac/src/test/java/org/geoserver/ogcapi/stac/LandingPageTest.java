@@ -28,11 +28,13 @@ public class LandingPageTest extends STACTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
-                        "getCollections",
-                        "getCollection",
                         "getApi",
                         "getLandingPage",
-                        "getConformanceDeclaration"));
+                        "getConformanceDeclaration",
+                        "getCollections",
+                        "getCollection",
+                        "getItems",
+                        "getItem"));
     }
 
     @Test
@@ -83,7 +85,6 @@ public class LandingPageTest extends STACTestSupport {
     }
 
     void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(12, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -118,7 +119,6 @@ public class LandingPageTest extends STACTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/stac\\/collections.*/)].rel",
-                Link.REL_DATA,
                 Link.REL_DATA,
                 Link.REL_DATA);
         // check title

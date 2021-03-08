@@ -51,8 +51,8 @@ public class TemplatedCollectionConverter extends AbstractHttpMessageConverter<C
             throws IOException, HttpMessageNotWritableException {
         RootBuilder builder = templates.getCollectionTemplate();
 
-        try (STACJSONWriter writer =
-                new STACJSONWriter(
+        try (STACCollectionWriter writer =
+                new STACCollectionWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
             // no collection wrapper

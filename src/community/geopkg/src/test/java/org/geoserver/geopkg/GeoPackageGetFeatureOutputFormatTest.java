@@ -132,6 +132,24 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         assertEquals(
                 "attachment; filename=" + layerName + ".gpkg",
                 resp.getHeader("Content-Disposition"));
+
+        resp =
+                getAsServletResponse(
+                        "wfs?request=getfeature&typename="
+                                + layerName
+                                + "&outputformat=geopackage"
+                                + "&format_options=filename:test");
+        assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
+        assertEquals("attachment; filename=test.gpkg", resp.getHeader("Content-Disposition"));
+
+        resp =
+                getAsServletResponse(
+                        "wfs?request=getfeature&typename="
+                                + layerName
+                                + "&outputformat=geopackage"
+                                + "&format_options=filename:TEST.GPKG");
+        assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
+        assertEquals("attachment; filename=TEST.GPKG", resp.getHeader("Content-Disposition"));
     }
 
     public void testGetFeature(FeatureCollectionResponse fct, boolean indexed) throws IOException {

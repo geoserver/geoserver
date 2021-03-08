@@ -572,8 +572,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         return gs.getGlobal().getSettings().getCharset();
     }
 
-    @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        return super.getAttachmentFileName(value, operation);
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "json";
     }
 }

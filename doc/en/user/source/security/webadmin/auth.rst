@@ -35,8 +35,8 @@ GeoServer ships with a delay based brute force attack prevention system.
        
 The mechanism works as follows:
 
-* Each failed authentication request is made to wait between min and max seconds before getting an actual response back
-* Each attempt to authenticate the same username in parallel fails immediately, regardless of whether the credentials were valid or not, with a message stating concurrent loging attempts are not allowed.
+* Each failed authentication request is made to wait between min and max seconds before getting an actual response back.
+* Each attempt to authenticate the same username in parallel fails immediately, regardless of whether the credentials were valid or not, with a message stating concurrent login attempts are not allowed.
 
 The first item slows down a single threaded attack to the point of making it ineffective (each failed attempt is logged
 along with the IP attempting access), the second item breaks multi-threaded attacks ability to scale.
@@ -60,17 +60,17 @@ an attack. The system only trusts the actual requestor IP, ignoring "X-Forwarded
 (this in turn requires the admin to access the system from a local network, without proxies in the middle, for the blessed
 IP to be recognized).
 
-The maximum number of threads blocked configuration allows to setup the system so that an attacker can mis-use the
-system to simply block all service threads, by issuing requests with random user names (the system cannot determine
+The maximum number of threads blocked configuration allows to setup the system so that an attacker can misuse the
+system to simply block all service threads, by issuing requests with random usernames (the system cannot determine
 if a username is valid or not, none of the authentication mechanisms provides this information for security reasons).
 
 Considerations on how to setup the system:
 
 * A small delay is normally more than enough to stop a brute force attack, resist the temptation of setting high delay values
-  as they might end up blocking too many legit account and trigger the max blocked threads mechanism
-* Ensure that the execluded networks are well protected by other means
+  as they might end up blocking too many legitimate accounts and trigger the max blocked threads mechanism.
+* Ensure that the excluded networks are well protected by other means.
 * Set the maximum number of blocked threads to a value large allow peak hour legit logins (e.g., early morning when
-  all the users start working) while still leaving room for successful authentication requests
+  all the users start working) while still leaving room for successful authentication requests.
 * A clustered/load balanced setup will not share the state of blocked logins, each host tracks its local login failures.
 
 Authentication filters
@@ -88,7 +88,7 @@ Anonymous access
 
 By default, GeoServer will allow anonymous access to the :ref:`web_admin`. Without authentication, users will still be able to view the :ref:`layerpreview`, capabilities documents, and basic GeoServer details. Anonymous access can by removing the :guilabel:`anonymous` authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
 
-Credentials From Headers filter
+Credentials from Headers filter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This filter allows gathering user credentials (username and password) from request headers in a flexible and configurable way.
@@ -116,7 +116,7 @@ This filter allows gathering user credentials (username and password) from reque
    * - Regular Expression for Password
      - Regular Expression used to extract the password from the related Header. Must define a group that will match the password.
    * - Parse Arguments as Uri Components
-     - If checked username and password are uri deocded before being used as credentials
+     - If checked username and password are URI decoded before being used as credentials
 
    
 	 

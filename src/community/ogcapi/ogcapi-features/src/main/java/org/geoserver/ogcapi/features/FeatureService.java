@@ -29,6 +29,7 @@ import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.QueryablesDocument;
 import org.geoserver.ows.kvp.TimeParser;
@@ -232,7 +233,7 @@ public class FeatureService {
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getFeature")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse item(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -249,7 +250,7 @@ public class FeatureService {
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")

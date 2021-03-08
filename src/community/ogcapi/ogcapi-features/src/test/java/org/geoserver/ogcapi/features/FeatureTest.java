@@ -44,7 +44,8 @@ public class FeatureTest extends FeaturesTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/features/collections/" + roadSegments + "/items");
         assertEquals(200, response.getStatus());
-        assertEquals("inline; filename=features.json", response.getHeader("Content-Disposition"));
+        assertEquals(
+                "inline; filename=RoadSegments.json", response.getHeader("Content-Disposition"));
     }
 
     @Test

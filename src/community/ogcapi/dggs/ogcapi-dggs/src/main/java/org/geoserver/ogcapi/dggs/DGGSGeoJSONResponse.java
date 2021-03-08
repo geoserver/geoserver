@@ -11,6 +11,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.features.FeaturesResponse;
 import org.geoserver.ogcapi.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.ows.URLMangler;
@@ -44,10 +45,20 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
         // paging links
         if (response != null) {
             if (response.getPrevious() != null) {
-                writeLink(jw, "Previous page", MIME, "prev", response.getPrevious());
+                writeLink(
+                        jw,
+                        "Previous page",
+                        OGCAPIMediaTypes.GEOJSON_VALUE,
+                        "prev",
+                        response.getPrevious());
             }
             if (response.getNext() != null) {
-                writeLink(jw, "Next page", MIME, "next", response.getNext());
+                writeLink(
+                        jw,
+                        "Next page",
+                        OGCAPIMediaTypes.GEOJSON_VALUE,
+                        "next",
+                        response.getNext());
             }
         }
         Collection<MediaType> formats =
@@ -63,7 +74,7 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
                             URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
-            if (format.toString().equals(MIME)) {
+            if (format.toString().equals(OGCAPIMediaTypes.GEOJSON_VALUE)) {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }

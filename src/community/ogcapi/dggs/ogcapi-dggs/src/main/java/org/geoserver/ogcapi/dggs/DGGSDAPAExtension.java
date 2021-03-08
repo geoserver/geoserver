@@ -31,8 +31,8 @@ import org.geoserver.ogcapi.DateTimeConverter;
 import org.geoserver.ogcapi.DateTimeList;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.features.FeaturesResponse;
-import org.geoserver.ogcapi.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.data.DataUtilities;
@@ -127,7 +127,7 @@ public class DGGSDAPAExtension {
         name = "dapaAreaRetrieve"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse area(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -143,7 +143,7 @@ public class DGGSDAPAExtension {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -165,7 +165,7 @@ public class DGGSDAPAExtension {
         name = "dapaAreaSpaceAggregate"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaSpaceAggregation(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "bbox", required = false) String bbox,
@@ -254,7 +254,7 @@ public class DGGSDAPAExtension {
         name = "dapaAreaTimeAggregate"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaTimeAggregation(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "bbox", required = false) String bbox,
@@ -334,7 +334,7 @@ public class DGGSDAPAExtension {
         name = "dapaAreaSpaceTimeAggregate"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaSpaceTimeAggregation(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "bbox", required = false) String bbox,
@@ -420,7 +420,7 @@ public class DGGSDAPAExtension {
         name = "dapaPositionRetrieve"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse position(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -436,7 +436,7 @@ public class DGGSDAPAExtension {
             @RequestParam(
                         name = "f",
                         required = false,
-                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
                     )
                     String format)
             throws Exception {
@@ -452,7 +452,7 @@ public class DGGSDAPAExtension {
         name = "dapaPositionTimeAggregate"
     )
     @ResponseBody
-    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection positionTimeAggregate(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")

@@ -70,6 +70,12 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     String BAND_LAYER_SEPARATOR = "__";
 
     /**
+     * Attribute prefix, to be used when encoding XML outputs or referencing attributes in feature
+     * templates.
+     */
+    String PREFIX = "prefix";
+
+    /**
      * Returns the feature source backing collections (dynamic, as the store has to respect the
      * namespace URI given by GeoServer)
      */

@@ -1,4 +1,4 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.BuilderFactory;
@@ -18,14 +20,17 @@ import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.data.FeatureSource;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.springframework.stereotype.Component;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/** Provides access to the collection and product templates used for the STAC JSON outputs */
+/** Provides access to the collection and item templates used for the STAC JSON outputs */
 @Component
 public class STACTemplates {
 
@@ -34,7 +39,7 @@ public class STACTemplates {
     private final OpenSearchAccessProvider accessProvider;
     private final GeoServerDataDirectory dd;
     private Template collectionTemplate;
-    private Template productTemplate;
+    private Template itemTemplate;
 
     public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
@@ -44,31 +49,38 @@ public class STACTemplates {
 
     public void reloadTemplates() {
         try {
-            Name name =
-                    accessProvider
-                            .getOpenSearchAccess()
-                            .getCollectionSource()
-                            .getSchema()
-                            .getName();
-            NamespaceSupport namespaces = new NamespaceSupport();
-            namespaces.declarePrefix("", name.getNamespaceURI());
-
+            OpenSearchAccess access = accessProvider.getOpenSearchAccess();
             try {
-                reloadCollectionTemplate(dd, namespaces);
+                reloadCollectionTemplate(dd, getNamespaces(access.getCollectionSource()));
             } finally {
-                reloadProductTemplate(dd, namespaces);
+                reloadItemTemplate(dd, getNamespaces(access.getProductSource()));
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load STAC JSON templates", e);
         }
     }
 
-    private void reloadProductTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
+    private NamespaceSupport getNamespaces(FeatureSource<FeatureType, Feature> fs) {
+        // collect properties from all namespaces
+        FeatureType schema = fs.getSchema();
+        NamespaceSupport namespaces = new NamespaceSupport();
+        for (PropertyDescriptor pd : schema.getDescriptors()) {
+            String uri = pd.getName().getNamespaceURI();
+            String prefix = (String) pd.getUserData().get(OpenSearchAccess.PREFIX);
+            if (prefix == null) throw new RuntimeException("No prefix available for " + uri);
+            namespaces.declarePrefix(prefix, uri);
+        }
+        // done last, to avoid overrides
+        namespaces.declarePrefix("", schema.getName().getNamespaceURI());
+        return namespaces;
+    }
+
+    private void reloadItemTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
             throws IOException {
-        // setup the products template
-        Resource products = dd.get("templates/ogc/stac/products.json");
-        copyDefault(products, "products.json");
-        this.productTemplate = new Template(products, new TemplateReaderConfiguration(namespaces));
+        // setup the items template
+        Resource items = dd.get("templates/ogc/stac/items.json");
+        copyDefault(items, "items.json");
+        this.itemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
     private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
@@ -107,23 +119,24 @@ public class STACTemplates {
                     builder,
                     new AbstractTemplateValidator() {
                         @Override
-                        protected FeatureType getFeatureType() throws IOException {
+                        public FeatureType getFeatureType() throws IOException {
                             return accessProvider
                                     .getOpenSearchAccess()
                                     .getCollectionSource()
                                     .getSchema();
                         }
-                    });
+                    },
+                    accessProvider.getOpenSearchAccess().getCollectionSource());
 
         return builder;
     }
 
-    /** Returns the product template */
-    public RootBuilder getProductTemplate() throws IOException {
+    /** Returns the item template */
+    public RootBuilder getItemTemplate() throws IOException {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (productTemplate == null) reloadTemplates();
+        if (itemTemplate == null) reloadTemplates();
 
-        RootBuilder builder = productTemplate.getRootBuilder();
+        RootBuilder builder = itemTemplate.getRootBuilder();
         if (builder != null)
             validate(
                     builder,
@@ -135,12 +148,16 @@ public class STACTemplates {
                                     .getProductSource()
                                     .getSchema();
                         }
-                    });
+                    },
+                    accessProvider.getOpenSearchAccess().getProductSource());
 
         return builder;
     }
 
-    private void validate(RootBuilder root, AbstractTemplateValidator validator)
+    private void validate(
+            RootBuilder root,
+            AbstractTemplateValidator validator,
+            FeatureSource<FeatureType, Feature> source)
             throws IOException {
         if (root != null) {
             boolean isValid = validator.validateTemplate(root);
@@ -149,8 +166,34 @@ public class STACTemplates {
                         "Failed to validate template for "
                                 + validator.getTypeName()
                                 + ". Failing attribute is "
-                                + URI.decode(validator.getFailingAttribute()));
+                                + URI.decode(validator.getFailingAttribute())
+                                + "\n"
+                                + availableAttributesSuffix(
+                                        source.getSchema(), getNamespaces(source)));
             }
         }
+    }
+
+    private String availableAttributesSuffix(Object ctx, NamespaceSupport ns) {
+        if (ctx instanceof FeatureType) {
+            FeatureType ft = (FeatureType) ctx;
+            String values =
+                    ft.getDescriptors()
+                            .stream()
+                            .map(ad -> attributeName(ad, ns))
+                            .collect(Collectors.joining(", "));
+            if (!StringUtils.isEmpty(values)) return " Available attributes: " + values;
+        }
+        return "";
+    }
+
+    protected String attributeName(PropertyDescriptor ad, NamespaceSupport ns) {
+        String name = ad.getName().getLocalPart();
+        String uri = ad.getName().getNamespaceURI();
+        if (ns != null && uri != null && !StringUtils.isEmpty(ns.getPrefix(uri))) {
+            name = ns.getPrefix(uri) + ":" + name;
+        }
+
+        return name;
     }
 }

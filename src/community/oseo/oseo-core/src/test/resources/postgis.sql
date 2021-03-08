@@ -104,6 +104,7 @@ create table product (
   "eoTrack" int,
   "eoFrame" int,
   "eoSwathIdentifier" text,
+  "eoProductPlatform" varchar,
   "optCloudCover" int check ("optCloudCover" between 0 and 100),
   "optSnowCover" int check ("optSnowCover" between 0 and 100),
   "eoProductQualityStatus" varchar check ("eoProductQualityStatus" in ('NOMINAL', 'DEGRADED')),

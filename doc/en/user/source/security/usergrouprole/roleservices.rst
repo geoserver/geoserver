@@ -228,7 +228,7 @@ The JDBC role service persists the role database via JDBC, managing the role inf
      - NO
      - PRI
 
-The ``roles`` table is the primary table and contains the list of roles.  Roles in GeoServer support inheritance, so a role may optionally have a link to a parent role. The ``role_props`` table maps additional properties to a role. (See the section on :ref:`security_rolesystem_roles` for more details.)  The ``user_roles`` table maps users to the roles they are assigned.  Similarly the ``group_roles`` table maps which groups have been assigned to which roles. 
+The ``roles`` table is the primary table and contains the list of roles.  Roles in GeoServer support inheritance, so a role may optionally have a link to a parent role. The ``role_props`` table maps additional properties to a role. (See the section on :ref:`security_rolesystem_roles` for more details.)  The ``user_roles`` table maps users to the roles they are assigned.  Similarly, the ``group_roles`` table maps which groups have been assigned to which roles. 
 
 The default GeoServer security configuration is:
 
@@ -343,7 +343,7 @@ Here is a listing of significant methods provided by the REST Role Service (base
 REST APIs
 ^^^^^^^^^
 
-The following is an example of the REST API the role service may handle. The JSON and remote endpoints may differ; this is conifgurable via UI, allowing the REST role service to connect to a generci REST Service
+The following is an example of the REST API the role service may handle. The JSON and remote endpoints may differ; this is configurable via UI, allowing the REST role service to connect to a generic REST Service
 
 From the above we could have the following REST API to talk to
 
@@ -380,7 +380,7 @@ The GeoServerRoleService talking to a remote service provides the following conf
 * Configurable URLs for the various calls
 * JSON paths to the properties that contain the list of roles, and the one admin role
 
-The above can be configured via the :ref:`web_admin`. The figure below shows the REST role service options configured to be compatible with the sampe APIs above:
+The above can be configured via the :ref:`web_admin`. The figure below shows the REST role service options configured to be compatible with the sample APIs above:
 
 .. figure:: images/restroleservice.png
    :align: center

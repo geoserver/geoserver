@@ -19,7 +19,7 @@ make test suite=<suite test>
 ```
 * To run all the steps from the beginning.
 ```shell
-make all suite=<suite test>
+make clean build test suite=<suite test>
 ```
 *Note*: <suite test> shall match the name of the subdirectory of the suite.
   examples below.

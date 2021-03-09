@@ -12,8 +12,6 @@ import org.geoserver.smartdataloader.metadata.AttributeMetadata;
  * Class representing metadata for ForeignKeys in a JDBC DataStore. ForeignKeys columns are a
  * particular kind of Column, keeping a mapping with another related column (at same entity or
  * other)
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class JdbcForeignKeyColumnMetadata extends JdbcColumnMetadata {
     private final JdbcColumnMetadata relatedColumn;

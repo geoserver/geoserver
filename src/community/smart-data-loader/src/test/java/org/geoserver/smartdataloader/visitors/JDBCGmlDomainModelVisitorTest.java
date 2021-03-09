@@ -18,11 +18,7 @@ import org.geoserver.smartdataloader.visitors.gml.GmlSchemaVisitor;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-/**
- * Tests related to GMLDomainModelVisitor
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests related to GMLDomainModelVisitor */
 public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     public JDBCGmlDomainModelVisitorTest(JDBCFixtureHelper fixtureHelper) {

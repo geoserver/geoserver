@@ -6,11 +6,7 @@ package org.geoserver.smartdataloader.metadata;
 
 import com.google.common.collect.ComparisonChain;
 
-/**
- * Class that represents metadata for entities' attributes on the underlying DataStore model.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Class that represents metadata for entities' attributes on the underlying DataStore model. */
 public abstract class AttributeMetadata implements Comparable<AttributeMetadata> {
 
     protected String name;

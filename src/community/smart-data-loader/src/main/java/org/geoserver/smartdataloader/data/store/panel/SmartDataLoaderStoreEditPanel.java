@@ -44,11 +44,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 
-/**
- * Implementation od StoreEditPanel for PostgisSmartAppSchemaDataAccessFactory.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Implementation od StoreEditPanel for PostgisSmartAppSchemaDataAccessFactory. */
 @SuppressWarnings("serial")
 public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
@@ -126,6 +122,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                 .add(
                         new AjaxFormComponentUpdatingBehavior("change") {
                             @SuppressWarnings({"rawtypes", "unchecked"})
+                            @Override
                             protected void onUpdate(AjaxRequestTarget target) {
                                 WorkspaceInfo wi =
                                         ((WorkspaceInfo)
@@ -210,6 +207,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         datastores.setRequired(true);
         datastores.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
+                    @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         selectedPostgisDataStoreId =
                                 datastores.getModelObject() != null
@@ -281,6 +279,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                 .getFormComponent()
                 .add(
                         new AjaxFormComponentUpdatingBehavior("change") {
+                            @Override
                             protected void onUpdate(AjaxRequestTarget target) {
                                 selectedRootEntityName =
                                         (String)

@@ -10,11 +10,7 @@ import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geotools.util.logging.Logging;
 
-/**
- * Dummy DomainModelVisitor that logs visited items in a StringBuilder
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Dummy DomainModelVisitor that logs visited items in a StringBuilder */
 public class LoggerDomainModelVisitor extends DomainModelVisitorImpl {
 
     private static final Logger LOGGER = Logging.getLogger(LoggerDomainModelVisitor.class);

@@ -60,12 +60,12 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
-/**
- * Smart AppSchema DataStore factory.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Smart AppSchema DataStore factory. */
 public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
+
+    public static final String GML_SUFFIX = "-gml.xsd";
+
+    public static final String APPSCHEMA_SUFFIX = "-appschema.xml";
 
     static final Logger LOGGER = Logging.getLogger(SmartDataLoaderDataAccessFactory.class);
 
@@ -163,34 +163,17 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             final Set<AppSchemaDataAccess> registeredAppSchemaStores)
             throws IOException {
         // get parameters
-        URI namespace = lookup(NAMESPACE, params, URI.class);
         String datastoreName = lookup(DATASTORE_NAME, params, String.class);
         String excludedObjects = lookup(DOMAIN_MODEL_EXCLUSIONS, params, String.class);
-
-        // convert excluded objects in a list
-        String[] elements = {};
-        if (excludedObjects != null) {
-            elements = excludedObjects.split(",");
-        }
-        List<String> excludedObjectsList = Arrays.asList(elements);
-
+        URI namespace = lookup(NAMESPACE, params, URI.class);
         // build domainmodel, and exclude elements based on excludedObjects list
-        DomainModel dm = buildDomainModel(params, excludedObjectsList);
+        DomainModel dm = buildDomainModel(params, getExcludedObjectAsList(excludedObjects));
         // define filenames naming convention for documents to be saved
-        String gmlFilename = getFilenamePrefix(params) + "-gml.xsd";
-        String appschemaFilename = getFilenamePrefix(params) + "-appschema.xml";
-        // String gmlFilename = rootEntity+"-gml.xsd";
-        // String appschemaFilename = rootEntity+"-appschema.xml";
-        GeoServerDataDirectory gdd =
-                ((GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory"));
+        String gmlFilename = getFilenamePrefix(params) + GML_SUFFIX;
+        String appschemaFilename = getFilenamePrefix(params) + APPSCHEMA_SUFFIX;
         String target_namespace = namespace.toASCIIString();
-        Catalog c = ((GeoServer) GeoServerExtensions.bean("geoServer")).getCatalog();
-        NamespaceInfo ni = c.getNamespaceByURI(target_namespace);
-        WorkspaceInfo wi = c.getWorkspaceByName(ni.getName());
-        String namespace_prefix = c.getNamespaceByURI(target_namespace).getPrefix();
-        Resource wiFolder = gdd.get(wi, "");
-        // create folder called appschema-smart inside the datastore folder
-        String pathname = wiFolder.toString() + "/" + datastoreName + "/appschema-mappings/";
+        Catalog catalog = getGeoServer().getCatalog();
+        String namespace_prefix = catalog.getNamespaceByURI(target_namespace).getPrefix();
 
         // populate appschema model visitor
         AppSchemaVisitor appSchemaDmv =
@@ -200,10 +183,13 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         GmlSchemaVisitor gmlDmv = new GmlSchemaVisitor(namespace_prefix, target_namespace);
         dm.accept(gmlDmv);
 
+        String pathToAppSchemaFolder =
+                createAppSchemaFolder(target_namespace, catalog, datastoreName);
         // save datamodel related files
         File appschemaFile =
-                saveMappingDocument(pathname, appschemaFilename, appSchemaDmv.getDocument());
-        saveMappingDocument(pathname, gmlFilename, gmlDmv.getDocument());
+                saveMappingDocument(
+                        pathToAppSchemaFolder, appschemaFilename, appSchemaDmv.getDocument());
+        saveMappingDocument(pathToAppSchemaFolder, gmlFilename, gmlDmv.getDocument());
 
         // define datastore mappings and save datastore
         Set<FeatureTypeMapping> mappings;
@@ -220,6 +206,28 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         dataStore = new AppSchemaDataAccess(mappings, hidden);
         registeredAppSchemaStores.add(dataStore);
         return dataStore;
+    }
+
+    private String createAppSchemaFolder(
+            String target_namespace, Catalog catalog, String datastoreName) {
+
+        NamespaceInfo ni = catalog.getNamespaceByURI(target_namespace);
+        WorkspaceInfo wi = catalog.getWorkspaceByName(ni.getName());
+        GeoServerDataDirectory gdd =
+                ((GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory"));
+        Resource wiFolder = gdd.get(wi, "");
+        // create folder called appschema-smart inside the datastore folder
+        String pathname = wiFolder.toString() + "/" + datastoreName + "/appschema-mappings/";
+        return pathname;
+    }
+
+    private List<String> getExcludedObjectAsList(String excludedObjects) {
+        // convert excluded objects in a list
+        String[] elements = {};
+        if (excludedObjects != null) {
+            elements = excludedObjects.split(",");
+        }
+        return Arrays.asList(elements);
     }
 
     /** Helper method that allows to create the DomainModel. */
@@ -242,8 +250,13 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
         } catch (SQLException e) {
             LOGGER.log(
-                    Level.WARNING,
+                    Level.SEVERE,
                     "Sql exception while retrieving metadata from the DB " + e.getMessage());
+            StringBuilder sb = new StringBuilder("Error while acquiring JDBC connection");
+            if (jdbcDataStoreInfo.getName() != null)
+                sb.append(" from data store with name " + jdbcDataStoreInfo.getName());
+            sb.append(" with message " + e.getMessage());
+            throw new RuntimeException(sb.toString(), e);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving metadata from DB.");
         }
@@ -286,7 +299,6 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             StreamResult stream = new StreamResult(file);
             transf.transform(source, stream);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(
                     "Cannot save generated mapping in the workspace related folder.");
         }
@@ -296,7 +308,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
     /** Method that allows to get a DataStoreInfo based on a set of parameters. */
     private DataStoreInfo getDataStoreInfo(Map<String, Serializable> params) throws IOException {
         String jdbcDataStoreId = lookup(DATASTORE_METADATA, params, String.class);
-        Catalog c = ((GeoServer) GeoServerExtensions.bean("geoServer")).getCatalog();
+        Catalog c = getGeoServer().getCatalog();
         DataStoreInfo ds = c.getDataStore(jdbcDataStoreId);
         return ds;
     }
@@ -352,5 +364,9 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             }
             throw ex;
         }
+    }
+
+    private GeoServer getGeoServer() {
+        return (GeoServer) GeoServerExtensions.bean("geoServer");
     }
 }

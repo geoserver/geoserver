@@ -21,11 +21,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.SetModel;
 
-/**
- * Panel that includes a NestedTree wicket component and a label.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Panel that includes a NestedTree wicket component and a label. */
 public class NestedTreePanel extends Panel {
 
     private static final long serialVersionUID = 1L;

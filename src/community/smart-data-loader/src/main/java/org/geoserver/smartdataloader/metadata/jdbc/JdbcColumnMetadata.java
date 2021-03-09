@@ -8,11 +8,7 @@ import java.sql.Connection;
 import java.util.Objects;
 import org.geoserver.smartdataloader.metadata.AttributeMetadata;
 
-/**
- * Class representing metadata for a column (entity's attribute) in a JDBC DataStore.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Class representing metadata for a column (entity's attribute) in a JDBC DataStore. */
 public class JdbcColumnMetadata extends AttributeMetadata implements JdbcConnectable {
 
     public JdbcColumnMetadata(

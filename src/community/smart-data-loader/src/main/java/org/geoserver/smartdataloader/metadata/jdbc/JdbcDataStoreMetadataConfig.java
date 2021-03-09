@@ -17,12 +17,10 @@ import org.geotools.jdbc.JDBCDataStore;
 /**
  * Configuration class that keeps specific information related to DataStoreMetadata for JDBCs
  * connections.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class JdbcDataStoreMetadataConfig extends DataStoreMetadataConfig {
 
-    public static String TYPE = "JDBC";
+    public static final String TYPE = "JDBC";
 
     private final Connection connection;
     private String password;

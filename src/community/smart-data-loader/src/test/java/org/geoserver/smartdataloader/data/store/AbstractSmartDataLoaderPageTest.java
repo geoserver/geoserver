@@ -34,15 +34,12 @@ import org.geotools.data.DataAccessFactory;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.test.FixtureUtilities;
-import org.junit.After;
 import org.junit.Test;
 import org.postgresql.jdbc.SslMode;
 
 /**
  * Implementation of GeoServerWicketTestSupport for SmartAppSchema Postgis tests, including
  * Geoserver and Wicket support.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTestSupport {
 
@@ -83,12 +80,8 @@ public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTes
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-        if (setup != null) setup.tearDown();
-    }
-
-    @After
-    public void cleanUp() {
         if (dataStore != null) getCatalog().remove(dataStore);
+        if (setup != null) setup.tearDown();
     }
 
     protected Properties getFixture() {
@@ -153,16 +146,19 @@ public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTes
         Catalog catalog = getCatalog();
         // use default workspace
         WorkspaceInfo workspace = catalog.getDefaultWorkspace();
-        DataStoreInfo storeInfo = catalog.getFactory().createDataStore();
-        storeInfo.setWorkspace(workspace);
-        PostgisNGDataStoreFactory storeFactory = new PostgisNGDataStoreFactory();
-        storeInfo.setName(SIMPLE_DATA_STORE_NAME);
-        storeInfo.setType(storeFactory.getDisplayName());
-        storeInfo.setDescription(storeFactory.getDescription());
-        this.dataStore = storeInfo;
-        Map<String, Serializable> params = storeInfo.getConnectionParameters();
-        setUpParameters(params);
-        catalog.save(storeInfo);
+        DataStoreInfo storeInfo = catalog.getDataStoreByName(workspace, SIMPLE_DATA_STORE_NAME);
+        if (storeInfo == null) {
+            storeInfo = catalog.getFactory().createDataStore();
+            storeInfo.setWorkspace(workspace);
+            PostgisNGDataStoreFactory storeFactory = new PostgisNGDataStoreFactory();
+            storeInfo.setName(SIMPLE_DATA_STORE_NAME);
+            storeInfo.setType(storeFactory.getDisplayName());
+            storeInfo.setDescription(storeFactory.getDescription());
+            Map<String, Serializable> params = storeInfo.getConnectionParameters();
+            setUpParameters(params);
+            catalog.save(storeInfo);
+            this.dataStore = storeInfo;
+        }
     }
 
     @Test

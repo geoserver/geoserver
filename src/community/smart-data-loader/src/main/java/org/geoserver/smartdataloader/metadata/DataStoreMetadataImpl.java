@@ -12,8 +12,6 @@ import java.util.List;
  * Abstract class that allows to get metadata information from a particular DataStore. Implements
  * some of the generic methods in the interface DataStoreMetadata, delegating some specific methods
  * to the concrete DataStores classes implementations (ie. JdbcDataStoreMetadata)
- *
- * @author Jose Macchi - GeoSolutions
  */
 public abstract class DataStoreMetadataImpl implements DataStoreMetadata {
 

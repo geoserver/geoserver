@@ -18,11 +18,7 @@ import org.geoserver.smartdataloader.visitors.appschema.AppSchemaVisitor;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-/**
- * Tests related to SmartAppSchemaDomainModelVisitor
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests related to SmartAppSchemaDomainModelVisitor */
 public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     public JDBCAppSchemaVisitorTest(JDBCFixtureHelper fixtureHelper) {

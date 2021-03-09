@@ -19,8 +19,6 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * CheckedFolder that includes javascript code that allows to autocheck nodes based on hierarchy.
- *
- * @author Jose Macchi - GeoSolutions
  */
 @SuppressWarnings("serial")
 public class AutocheckedFolder<T> extends CheckedFolder<T> {

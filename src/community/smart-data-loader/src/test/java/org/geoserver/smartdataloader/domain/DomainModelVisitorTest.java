@@ -13,11 +13,7 @@ import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.utils.LoggerDomainModelVisitor;
 import org.junit.Test;
 
-/**
- * Tests related to a simple DomainModelVisitor (which logs DomainModel visited nodes)
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests related to a simple DomainModelVisitor (which logs DomainModel visited nodes) */
 public abstract class DomainModelVisitorTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     public DomainModelVisitorTest(JDBCFixtureHelper fixtureHelper) {

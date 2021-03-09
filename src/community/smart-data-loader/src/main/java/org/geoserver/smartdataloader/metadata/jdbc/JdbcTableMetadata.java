@@ -103,6 +103,7 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
         return schema;
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }

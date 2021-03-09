@@ -18,8 +18,6 @@ import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 /**
  * DomainModelVisitor that based on list of exclusions tails a domainmodel and returns a new one
  * with removed domainmodel objects.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
 

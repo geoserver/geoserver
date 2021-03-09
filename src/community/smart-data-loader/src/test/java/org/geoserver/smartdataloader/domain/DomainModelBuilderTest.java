@@ -16,11 +16,7 @@ import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 
-/**
- * Tests for DomainModelBuilder class.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests for DomainModelBuilder class. */
 public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     private static final Logger LOGGER = Logging.getLogger(DomainModelBuilderTest.class);

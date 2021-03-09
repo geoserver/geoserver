@@ -7,11 +7,7 @@ package org.geoserver.smartdataloader.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class that represents metadata for entities on the underlying DataStore model.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Class that represents metadata for entities on the underlying DataStore model. */
 public abstract class EntityMetadata implements Comparable<EntityMetadata> {
 
     protected String name;

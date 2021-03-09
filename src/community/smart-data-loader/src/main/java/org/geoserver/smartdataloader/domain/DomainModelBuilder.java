@@ -22,8 +22,6 @@ import org.geoserver.smartdataloader.metadata.RelationMetadata;
 /**
  * Smart AppSchema model builder. Given a DomainModelConfig object and a DataStoreMetadata it allows
  * to get the Smart AppSchema model.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public final class DomainModelBuilder {
 

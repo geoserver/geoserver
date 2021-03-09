@@ -17,8 +17,6 @@ import org.geoserver.web.data.store.panel.ParamPanel;
  * A DataStore parameter panel that presents a simple dropdown choice. Created to avoid use of
  * DropDownChoiceParamPanel since it contains a Select2DropDownChoice which have a bug when multiple
  * dropdowns are rendered on same panel.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class SimpleDropDownChoiceParamPanel extends Panel implements ParamPanel {
 
@@ -57,6 +55,7 @@ public class SimpleDropDownChoiceParamPanel extends Panel implements ParamPanel 
         add(feedback);
     }
 
+    @Override
     public DropDownChoice<Serializable> getFormComponent() {
         return choice;
     }

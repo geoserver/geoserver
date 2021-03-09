@@ -26,8 +26,6 @@ import org.geotools.jdbc.JDBCDataStore;
 /**
  * JDBC utilities singleton class. It encapsulates a GeoTools JDBCDataStore instance in order to use
  * some useful methods and extends it based on JDBC API use.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class JdbcHelper {
 
@@ -502,6 +500,13 @@ public class JdbcHelper {
         return null;
     }
 
+    /**
+     * @param metaData the Database metadata
+     * @param table the table metadata to use to pick up the column metadata
+     * @return a SortedMap mapping the foreignKeys metadata to the column metadata. Returns null if
+     *     no column referencing the table are found
+     * @throws Exception
+     */
     public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
             getInversedForeignKeysByTable(DatabaseMetaData metaData, JdbcTableMetadata table)
                     throws Exception {

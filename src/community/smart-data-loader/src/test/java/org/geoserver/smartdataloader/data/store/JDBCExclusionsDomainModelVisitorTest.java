@@ -13,11 +13,7 @@ import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.junit.Test;
 
-/**
- * Tests related to ExclusionsDomainModelVisitor.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests related to ExclusionsDomainModelVisitor. */
 public abstract class JDBCExclusionsDomainModelVisitorTest
         extends AbstractJDBCSmartDataLoaderTestSupport {
 

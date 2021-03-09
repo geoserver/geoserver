@@ -11,11 +11,7 @@ import org.geoserver.smartdataloader.metadata.EntityMetadata;
 import org.geoserver.smartdataloader.metadata.RelationMetadata;
 import org.junit.Test;
 
-/**
- * Tests in Smart AppSchema related to use of a DataStoreMetadata linked to a JDBC connection.
- *
- * @author Jose Macchi - GeoSolutions
- */
+/** Tests in Smart AppSchema related to use of a DataStoreMetadata linked to a JDBC connection. */
 public abstract class JDBCDataStoreMetadataTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     public JDBCDataStoreMetadataTest(JDBCFixtureHelper fixtureHelper) {

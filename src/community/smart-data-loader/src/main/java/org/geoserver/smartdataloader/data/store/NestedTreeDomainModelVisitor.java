@@ -16,8 +16,6 @@ import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 /**
  * DomainModelVisitor that translates DomainModel representation into the required structure for
  * NestedTree.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class NestedTreeDomainModelVisitor extends DomainModelVisitorImpl {
 

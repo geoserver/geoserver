@@ -9,8 +9,6 @@ import org.geoserver.smartdataloader.domain.entities.DomainRelationType;
 
 /**
  * Class that represents metadata for relations between entities on the underlying DataStore model.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public abstract class RelationMetadata implements Comparable<RelationMetadata> {
 

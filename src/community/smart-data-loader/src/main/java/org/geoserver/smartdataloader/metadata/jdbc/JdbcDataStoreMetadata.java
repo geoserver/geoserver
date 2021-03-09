@@ -16,8 +16,6 @@ import org.geoserver.smartdataloader.metadata.RelationMetadata;
 /**
  * Concrete class that implements access to JDBC dataStore metadata model, extending
  * DataStoreMetadataImpl.
- *
- * @author Jose Macchi - GeoSolutions
  */
 public class JdbcDataStoreMetadata extends DataStoreMetadataImpl {
 

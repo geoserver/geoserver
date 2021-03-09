@@ -78,13 +78,12 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
             fout.flush();
             fout.close();
         } catch (IOException ioe) {
-
+            throw new RuntimeException(ioe);
         } finally {
             if (fout != null) {
                 try {
                     fout.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }

@@ -76,6 +76,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     /** Sets the right extension for the response */
+    @Override
     protected String getExtension(FeatureCollectionResponse response) {
         String outputFormat = response.getOutputFormat().toUpperCase();
         // DXF

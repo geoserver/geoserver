@@ -33,6 +33,7 @@ public class ServiceLinkFunction extends FunctionImpl {
         this.functionName = NAME;
     }
 
+    @Override
     public Object evaluate(Object feature) {
         List<Expression> params = getParameters();
         String template = params.get(0).evaluate(feature, String.class);

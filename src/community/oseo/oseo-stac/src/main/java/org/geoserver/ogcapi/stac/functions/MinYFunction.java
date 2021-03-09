@@ -21,6 +21,7 @@ public class MinYFunction extends FunctionImpl {
         this.functionName = NAME;
     }
 
+    @Override
     public Object evaluate(Object feature) {
         Geometry g = getParameters().get(0).evaluate(feature, Geometry.class);
         if (g == null) return null;

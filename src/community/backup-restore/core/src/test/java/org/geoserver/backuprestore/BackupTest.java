@@ -415,6 +415,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
     public static class ParameterizedRestoreTest extends BackupRestoreTestSupport {
 
+        @Override
         @Before
         public void beforeTest() throws InterruptedException {
             ensureCleanedQueues();
@@ -534,6 +535,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
     public static class RunSpringBatchRestoreJobTest extends BackupRestoreTestSupport {
 
+        @Override
         @Before
         public void beforeTest() throws InterruptedException {
             ensureCleanedQueues();

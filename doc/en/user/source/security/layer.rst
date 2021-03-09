@@ -352,7 +352,7 @@ Here are a few examples of how the structure changes based on different security
         |   ws1:layerA
         └   ws2:layerB
 
-* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing access to ``ws1:layerA``::
+* Denying access to ``nameTreeGroupA`` and ``namedTreeGroupB`` but explicitly allowing access to ``ws1:layerA``::
 
     namedTreeGroupA.r=ROLE_PRIVATE
     namedTreeGroupB.r=ROLE_PRIVATE
@@ -364,8 +364,8 @@ Here are a few examples of how the structure changes based on different security
     +- ws1:layerA
     +- layerD
 
-* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing all layers in ws2
-  (a workspace rules overrides global groups ones)::
+* Denying access to ``nameTreeGroupA`` and ``namedTreeGroupB`` but explicitly allowing all layers in ws2
+  (a workspace rule overrides global groups ones)::
 
     namedTreeGroupA.r=ROLE_PRIVATE
     namedTreeGroupB.r=ROLE_PRIVATE

@@ -107,7 +107,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         restoreCatalog.setResourceLoader(gsCatalog.getResourceLoader());
         restoreCatalog.setResourcePool(gsCatalog.getResourcePool());
 
-        keepExistingWorkspaces(restoreCatalog, gsCatalog);
+        syncCatalogs(restoreCatalog, gsCatalog);
 
         for (CatalogListener listener : gsCatalog.getListeners()) {
             restoreCatalog.addListener(listener);
@@ -116,24 +116,11 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         return restoreCatalog;
     }
 
-    /** Pass existing workspaces and namespaces to the resulting restore catalog. */
-    private void keepExistingWorkspaces(CatalogImpl restoreCatalog, Catalog gsCatalog) {
-        gsCatalog
-                .getNamespaces()
-                .forEach(
-                        nsInfo -> {
-                            restoreCatalog.add(nsInfo);
-                            restoreCatalog.save(
-                                    restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix()));
-                        });
-        gsCatalog
-                .getWorkspaces()
-                .forEach(
-                        wsInfo -> {
-                            restoreCatalog.add(wsInfo);
-                            restoreCatalog.save(
-                                    restoreCatalog.getWorkspaceByName(wsInfo.getName()));
-                        });
+    /** Synchronizes catalogs content. */
+    private void syncCatalogs(CatalogImpl restoreCatalog, Catalog gsCatalog) {
+        if (gsCatalog instanceof CatalogImpl) {
+            restoreCatalog.sync((CatalogImpl) gsCatalog);
+        }
     }
 
     @Override

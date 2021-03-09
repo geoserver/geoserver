@@ -153,7 +153,7 @@ The mapping of roles to permissions is as follows:
      - r
      - r
      - r
-   * - ``STATE_LEGISLATURES``
+   * - ``STATE_LEGISLATORS``
      - (none)
      - r
      - r/w

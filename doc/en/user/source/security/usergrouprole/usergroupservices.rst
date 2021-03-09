@@ -15,11 +15,11 @@ A user/group service may be read-only, providing access to user information but 
 
 By default, GeoServer support three types of user/group services:
 
-* :ref:`XML<_security_rolesystem_usergroupxml>`—*(Default)* User/group service persisted as XML
-* :ref:`JDBC<_security_rolesystem_usergroupjdbc>`—User/group service persisted in database via JDBC
-* :ref:`LDAP<_security_rolesystem_usergroupldap>`—User/group service obtained from an LDAP repository
+* :ref:`XML<security_rolesystem_usergroupxml>`—*(Default)* User/group service persisted as XML
+* :ref:`JDBC<security_rolesystem_usergroupjdbc>`—User/group service persisted in database via JDBC
+* :ref:`LDAP<security_rolesystem_usergroupldap>`—User/group service obtained from an LDAP repository
 
-Other services can be added to GeoServer, such as that provided by the :ref:`AuthKey<_authkey>` extension.
+Other services can be added to GeoServer, such as that provided by the :ref:`AuthKey<authkey>` extension.
 
 .. _security_rolesystem_usergroupxml:
 

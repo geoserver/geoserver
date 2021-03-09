@@ -689,6 +689,7 @@ public class Backup extends JobExecutionListenerSupport
                             case PARAM_CLEANUP_TEMP:
                             case PARAM_DRY_RUN_MODE:
                             case PARAM_BEST_EFFORT_MODE:
+                            case PARAM_SKIP_GWC:
                                 if (paramsBuilder.toJobParameters().getString(k) == null) {
                                     paramsBuilder.addString(k, "true");
                                 }

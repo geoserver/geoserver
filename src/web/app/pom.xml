@@ -481,11 +481,6 @@
             <artifactId>gs-app-schema-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-app-schema</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1738,6 +1733,16 @@
       </dependency>
     </dependencies>
   </profile>
+    <profile>
+      <id>smart-data-loader</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-smart-data-loader</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>gsr</id>
       <dependencies>

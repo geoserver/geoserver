@@ -589,7 +589,7 @@ parameters:
           <dataStore>
             <name>nyc</name>
             <connectionParameters>
-              <url>file:/path/to/nyc.shp</database>
+              <url>file:/path/to/nyc.shp</url>
             </connectionParameters>
           </dataStore>
           ```
@@ -633,7 +633,7 @@ parameters:
           <dataStore>
             <name>nyc</name>
             <connectionParameters>
-              <url>file:/path/to/directory</database>
+              <url>file:/path/to/directory</url>
             </connectionParameters>
           </dataStore>
           ```
@@ -882,7 +882,7 @@ parameters:
             <enabled>true</enabled>
             <__default>true</__default>
             <connectionParameters>
-              <url>file:/path/to/nyc.shp</database>
+              <url>file:/path/to/nyc.shp</url>
             </connectionParameters>
           </dataStore>
           ```
@@ -930,7 +930,7 @@ parameters:
             <enabled>true</enabled>
             <__default>true</__default>
             <connectionParameters>
-              <url>file:/path/to/directory</database>
+              <url>file:/path/to/directory</url>
             </connectionParameters>
           </dataStore>
           ```

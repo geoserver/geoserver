@@ -5,7 +5,9 @@
 package org.geoserver.mapml.tcrs;
 
 import java.util.HashMap;
+import org.geotools.referencing.CRS;
 import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 /** @author prushforth */
@@ -14,9 +16,18 @@ public class TiledCRSConstants {
     /** */
     public static final HashMap<String, TiledCRSParams> tiledCRSDefinitions = new HashMap<>();
 
+    public static final HashMap<String, TiledCRSParams> tiledCRSBySrsName = new HashMap<>();
+
     static {
         final String WGS84_NAME = "WGS84";
         final String WGS84_CODE = "urn:ogc:def:crs:OGC:1.3:CRS84";
+        final CoordinateReferenceSystem CRS_WGS84;
+        String WGS84_SRSNAME = null;
+        try {
+            CRS_WGS84 = CRS.decode(WGS84_CODE);
+            WGS84_SRSNAME = CRS.toSRS(CRS_WGS84);
+        } catch (Exception e) {
+        }
         final Bounds WGS84_BOUNDS =
                 new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
         final int WGS84_TILE_SIZE = 256;
@@ -55,9 +66,17 @@ public class TiledCRSConstants {
                         WGS84_TILE_SIZE,
                         WGS84_TILE_ORIGIN,
                         WGS84_SCALES));
+        tiledCRSBySrsName.put(WGS84_SRSNAME, tiledCRSDefinitions.get(WGS84_NAME));
 
         final String OSMTILE_NAME = "OSMTILE";
         final String OSMTILE_CODE = "urn:x-ogc:def:crs:EPSG:3857";
+        final CoordinateReferenceSystem CRS_OSMTILE;
+        String OSMTILE_SRSNAME = null;
+        try {
+            CRS_OSMTILE = CRS.decode(OSMTILE_CODE);
+            OSMTILE_SRSNAME = CRS.toSRS(CRS_OSMTILE);
+        } catch (Exception e) {
+        }
         Projection proj = new Projection(OSMTILE_CODE);
         final Bounds OSMTILE_BOUNDS;
         try {
@@ -101,9 +120,17 @@ public class TiledCRSConstants {
                         OSMTILE_TILE_SIZE,
                         OSMTILE_TILE_ORIGIN,
                         OSMTILE_SCALES));
+        tiledCRSBySrsName.put(OSMTILE_SRSNAME, tiledCRSDefinitions.get(OSMTILE_NAME));
 
         final String CBMTILE_NAME = "CBMTILE";
         final String CBMTILE_CODE = "urn:x-ogc:def:crs:EPSG:3978";
+        final CoordinateReferenceSystem CRS_CBMTILE;
+        String CBMTILE_SRSNAME = null;
+        try {
+            CRS_CBMTILE = CRS.decode(CBMTILE_CODE);
+            CBMTILE_SRSNAME = CRS.toSRS(CRS_CBMTILE);
+        } catch (Exception e) {
+        }
         final Bounds CBMTILE_BOUNDS =
                 new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
         //                new Bounds(new Point(-4282638.06150141,-5153821.09213678),new
@@ -147,10 +174,18 @@ public class TiledCRSConstants {
                         CBMTILE_TILE_SIZE,
                         CBMTILE_TILE_ORIGIN,
                         CBMTILE_SCALES));
+        tiledCRSBySrsName.put(CBMTILE_SRSNAME, tiledCRSDefinitions.get(CBMTILE_NAME));
 
         /* Arctic Polar Stereographic, origin and scales defined by map service at http://maps8.arcgisonline.com/arcgis/rest/services/Arctic_Polar_Ocean_Base/MapServer */
         final String APSTILE_NAME = "APSTILE";
         final String APSTILE_CODE = "urn:x-ogc:def:crs:EPSG:5936";
+        final CoordinateReferenceSystem CRS_APSTILE;
+        String APSTILE_SRSNAME = null;
+        try {
+            CRS_APSTILE = CRS.decode(APSTILE_CODE);
+            APSTILE_SRSNAME = CRS.toSRS(CRS_APSTILE);
+        } catch (Exception e) {
+        }
         final Bounds APSTILE_BOUNDS =
                 new Bounds(
                         new Point(-28567784.109254867D, -28567784.109254755D),
@@ -189,5 +224,6 @@ public class TiledCRSConstants {
                         APSTILE_TILE_SIZE,
                         APSTILE_TILE_ORIGIN,
                         APSTILE_SCALES));
+        tiledCRSBySrsName.put(APSTILE_SRSNAME, tiledCRSDefinitions.get(APSTILE_NAME));
     }
 }

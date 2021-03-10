@@ -289,6 +289,20 @@
         // must have leaflet-pane class because of new/changed rule in leaflet.css
         // info: https://github.com/Leaflet/Leaflet/pull/4597 
         L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
+
+        let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
+        anim.innerHTML = `@keyframes pathSelect {
+        0% {stroke: white;}
+        50% {stroke: black;}
+      }
+      
+      .mapml-path-selected {
+        animation-name: pathSelect;
+        animation-duration: 1s;
+        stroke-width: 5;
+        stroke: black;
+      }`;
+
         L.setOptions(this.options.renderer, {pane: this._container});
         this._layers = {};
         if(this.options.query){
@@ -325,18 +339,19 @@
       },
 
       onRemove: function(map){
-        L.FeatureGroup.prototype.onRemove.call(this, map);
         if(this._mapmlFeatures){
           map.off("featurepagination", this.showPaginationFeature, this);
           delete this._mapmlFeatures;
+          L.DomUtil.remove(this._container);
         }
-        L.DomUtil.remove(this._container);
+        L.FeatureGroup.prototype.onRemove.call(this, map);
       },
 
       getEvents: function(){
         if(this._staticFeature){
           return {
             'moveend':this._handleMoveEnd,
+            'zoomend' : this._handleZoomEnd,
           };
         }
         return {
@@ -353,11 +368,21 @@
               } else {
                 path._path.removeAttribute("tabindex");
               }
-              if(path._path.childElementCount === 0) {
-                let title = document.createElement("title");
-                title.innerText = "Feature";
-                path._path.appendChild(title);
-              }
+              path._path.setAttribute("aria-label", path.accessibleTitle);
+              path._path.setAttribute("aria-expanded", "false");
+              /* jshint ignore:start */
+              L.DomEvent.on(path._path, "keyup keydown", (e)=>{
+                if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
+                  path._path.classList.add("mapml-path-selected");
+                  path.openTooltip();
+                } else {
+                  path._path.classList.remove("mapml-path-selected");
+                  path.closeTooltip(); 
+                }
+              });
+              path._path.classList.remove("mapml-path-selected");
+              if(path.isTooltipOpen())path.closeTooltip(); 
+              /* jshint ignore:end */
             }
           }
         }
@@ -374,21 +399,41 @@
       },
 
       _previousFeature: function(e){
-        this._map.closePopup();
-        if(this._source._path.previousSibling){
-          this._source._path.previousSibling.focus();
-        } else {
-          this._source._path.focus();
+        let path = this._source._path.previousSibling;
+        if(!path){
+          let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+          let overlays = this._map.getPane("overlayPane").children;
+          for(let i = overlays.length - 1; i >= 0; i--){
+            let layer = overlays[i];
+            if(layer.style.zIndex >= currentIndex) continue;
+            path = layer.querySelector("path");
+            if(path){
+              path = path.parentNode.lastChild;
+              break;
+            }
+          }
+          if (!path) path = this._source._path; 
         }
+        path.focus();
+        this._map._targets[path._leaflet_id].openTooltip();
+        this._map.closePopup();
       },
 
       _nextFeature: function(e){
-        this._map.closePopup();
-        if(this._source._path.nextSibling){
-          this._source._path.nextSibling.focus();
-        } else {
-          this._source._path.focus();
+        let path = this._source._path.nextSibling;
+        if(!path){
+          let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+
+          for(let layer of this._map.getPane("overlayPane").children){
+            if(layer.style.zIndex <= currentIndex) continue;
+            path = layer.querySelector("path");
+            if(path)break;
+          }
+          if (!path) path = this._source._path; 
         }
+        path.focus();
+        this._map._targets[path._leaflet_id].openTooltip();
+        this._map.closePopup();
       },
 
       _getNativeVariables: function(mapml){
@@ -400,21 +445,25 @@
       },
 
       _handleMoveEnd : function(){
-        let mapZoom = this._map.getZoom();
-        if(mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom){
-          this.clearLayers();
-          this.isVisible = false;
-          return;
-        }
-        let clampZoom = this._clampZoom(mapZoom);
-        this._resetFeatures(clampZoom);
-        this.isVisible = this._layers && this.layerBounds && 
+        let mapZoom = this._map.getZoom(),
+            withinZoom = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom;   
+        this.isVisible = withinZoom && this._layers && this.layerBounds && 
                           this.layerBounds.overlaps(
                             M.pixelToPCRSBounds(
                               this._map.getPixelBounds(),
                               mapZoom,this._map.options.projection));
         this._removeCSS();
         this._updateTabIndex();
+      },
+
+      _handleZoomEnd: function(e){
+        let mapZoom = this._map.getZoom();
+        if(mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom){
+          this.clearLayers();
+          return;
+        }
+        let clampZoom = this._clampZoom(mapZoom);
+        this._resetFeatures(clampZoom);
       },
 
       //sets default if any are missing, better to only replace ones that are missing
@@ -558,13 +607,16 @@
           this.resetStyle(layer);
 
           if (options.onEachFeature) {
-           options.onEachFeature(layer.properties, layer);
-           if(layer._events){
-              layer._events.keypress.push({
-                "ctx": layer,
-                "fn": this._onSpacePress,
-              });
-            }
+            layer.accessibleTitle = mapml.querySelector("featurecaption");
+            layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
+            options.onEachFeature(layer.properties, layer);
+            layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+            if(layer._events){
+                layer._events.keypress.push({
+                  "ctx": layer,
+                  "fn": this._onSpacePress,
+                });
+              }
           }
           if(this._staticFeature){
             let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -606,6 +658,7 @@
       _removeCSS: function(){
         let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
         for(let i = 0; i < toDelete.length;i++){
+          if(toDelete[i].classList.contains("mapml-feature-animation")) continue;
           this._container.removeChild(toDelete[i]);
         }
       },
@@ -619,16 +672,6 @@
           latlng, latlngs, coordinates, member, members, linestrings;
 
       coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
-      var pointOptions = {  opacity: vectorOptions.opacity ? vectorOptions.opacity : null,
-                            icon: L.icon(
-                              { iconUrl: vectorOptions.imagePath+"marker-icon.png",
-                                iconRetinaUrl: vectorOptions.imagePath+"marker-icon-2x.png",
-                                shadowUrl: vectorOptions.imagePath+"marker-shadow.png",
-                                iconSize: [25, 41],
-                                iconAnchor: [12, 41],
-                                popupAnchor: [1, -34],
-                                shadowSize: [41, 41]
-                              })};
       
       var cs = geometry.getAttribute("cs") || nativeCS;
 
@@ -637,8 +680,7 @@
           coordinates = [];
           geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
           latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
-          return pointToLayer ? pointToLayer(mapml, latlng) : 
-                                      new L.Marker(latlng, pointOptions);
+          return pointToLayer ? pointToLayer(mapml, latlng) : M.svgMarker(latlng, vectorOptions);
 
         case 'MULTIPOINT':
           coordinates = [];
@@ -646,7 +688,7 @@
           latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
           var points = new Array(latlngs.length);
           for(member=0;member<points.length;member++) {
-            points[member] = new L.Marker(latlngs[member],pointOptions);
+            points[member] = M.svgMarker(latlngs[member], vectorOptions);
           }
           return new L.featureGroup(points);
         case 'LINESTRING':
@@ -2355,7 +2397,7 @@
                     var c = document.createElement('div');
                     c.classList.add("mapml-popup-content");
                     c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                    geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                    geometry.bindPopup(c, {autoClose: false, minWidth: 108});
                   }
                 }
               });
@@ -2377,6 +2419,7 @@
                     pane: this._container,
                     opacity: this.options.opacity,
                     imagePath: M.detectImagePath(this._map.getContainer()),
+                    projection:map.options.projection,
                     // each owned child layer gets a reference to the root layer
                     _leafletLayer: this,
                     onEachFeature: function(properties, geometry) {
@@ -2385,7 +2428,7 @@
                         var c = document.createElement('div');
                         c.classList.add("mapml-popup-content");
                         c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                        geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                        geometry.bindPopup(c, {autoClose: false, minWidth: 108});
                       }
                     }
                   }).addTo(map);
@@ -2556,6 +2599,7 @@
           if (this._templatedLayer) {
               map.removeLayer(this._templatedLayer);
           }
+          map.fire("checkdisabled");
           map.off("popupopen", this._attachSkipButtons);
       },
       getZoomBounds: function () {
@@ -2748,11 +2792,28 @@
           name = document.createElement('span'),
           details = document.createElement('details'),
           summary = document.createElement('summary'),
+          summaryContainer = document.createElement('div'),
           opacity = document.createElement('input'),
           opacityControl = document.createElement('details'),
           opacityControlSummary = document.createElement('summary'),
           opacityControlSummaryLabel = document.createElement('label'),
           mapEl = this._layerEl.parentNode;
+
+          summary.style.display = 'flex';
+          summary.style.alignItems = 'center';
+          summaryContainer.classList.add('mapml-control-summary-container');
+
+          let removeButton = document.createElement('a');
+          removeButton.href = '#';
+          removeButton.role = 'button';
+          removeButton.title = 'Remove Layer';
+          removeButton.innerHTML = "<span aria-hidden='true'>&#10006;</span>";
+          removeButton.classList.add('mapml-layer-remove-button');
+          L.DomEvent.disableClickPropagation(removeButton);
+          L.DomEvent.on(removeButton, 'click', L.DomEvent.stop);
+          L.DomEvent.on(removeButton, 'click', (e)=>{
+            mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
+          }, this);
 
           input.defaultChecked = this._map ? true: false;
           input.type = 'checkbox';
@@ -2857,7 +2918,9 @@
 
           fieldset.appendChild(details);
           details.appendChild(summary);
-          summary.appendChild(label);
+          summaryContainer.appendChild(label);
+          summaryContainer.appendChild(removeButton);
+          summary.appendChild(summaryContainer);
           details.appendChild(opacityControl);
 
           if (this._styles) {
@@ -3443,7 +3506,7 @@
         mapFocusButton.href = '#';
         mapFocusButton.role = "button";
         mapFocusButton.title = "Focus Map";
-        mapFocusButton.innerHTML = '|&#10094;';
+        mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
         L.DomEvent.disableClickPropagation(mapFocusButton);
         L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(mapFocusButton, 'click', (e)=>{
@@ -3456,7 +3519,7 @@
         previousButton.href = '#';
         previousButton.role = "button";
         previousButton.title = "Previous Feature";
-        previousButton.innerHTML = "&#10094;";
+        previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
         L.DomEvent.disableClickPropagation(previousButton);
         L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
@@ -3476,7 +3539,7 @@
         nextButton.href = '#';
         nextButton.role = "button";
         nextButton.title = "Next Feature";
-        nextButton.innerHTML = "&#10095;";
+        nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
         L.DomEvent.disableClickPropagation(nextButton);
         L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
@@ -3486,16 +3549,12 @@
         controlFocusButton.href = '#';
         controlFocusButton.role = "button";
         controlFocusButton.title = "Focus Controls";
-        controlFocusButton.innerHTML = '&#10095;|';
+        controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
         L.DomEvent.disableClickPropagation(controlFocusButton);
         L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(controlFocusButton, 'click', (e) => {
           map.closePopup();
-          if(map._controlContainer.firstElementChild.firstElementChild.firstElementChild){
-            map._controlContainer.firstElementChild.firstElementChild.firstElementChild.focus();
-          } else {
-            map._controlContainer.focus();
-          }
+          map._controlContainer.querySelector("A").focus();
         }, popup);
     
         let divider = L.DomUtil.create("hr");
@@ -3510,6 +3569,7 @@
         if(path) {
           // e.target = this._map
           // Looks for keydown, more specifically tab and shift tab
+          path.setAttribute("aria-expanded", "true");
           map.on("keydown", focusFeature);
         } else {
           map.on("keydown", focusMap);
@@ -3558,6 +3618,7 @@
             map.off("keydown", focusFeature);
             map.off("keydown", focusMap);
             map.off('popupclose', removeHandlers);
+            if(path) path.setAttribute("aria-expanded", "false");
           }
         }
       },
@@ -3847,7 +3908,7 @@
             crs = layer.crs,
             tileSize = map.options.crs.options.crs.tile.bounds.max.x,
             container = layer._container,
-            popupOptions = {autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
+            popupOptions = {autoClose: false, autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
             tcrs2pcrs = function (c) {
               return crs.transformation.untransform(c,crs.scale(zoom));
             },
@@ -5124,6 +5185,48 @@
     return new Crosshair(options);
   };
 
+  var SVGMarker = L.Path.extend({
+    options: {
+      fillColor: '#2e91bf',
+      color: '#ffffff',
+      fill: true,
+      className: "mapml-marker",
+      fillOpacity: 1,
+      weight: 1,
+    },
+
+    initialize: function (latlng, options) {
+      L.setOptions(this, options);
+      this._latlng = L.latLng(latlng);
+    },
+
+    _project: function () {
+      this._point = this._map.latLngToLayerPoint(this._latlng);
+    },
+
+    _update: function () {
+      if (!this._map) return;
+      this._path.setAttribute("d", this.defineMarker(this._point));
+    },
+
+    getLatLngs: function () {
+      return this._latlng;
+    },
+
+    getCenter: function () {
+      return this._latlng;
+    },
+
+    defineMarker: function (p) {
+      return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
+    },
+
+  });
+
+  var svgMarker = function (latlng, options) {
+    return new SVGMarker(latlng, options);
+  };
+
   /* 
    * Copyright 2015-2016 Canada Centre for Mapping and Earth Observation, 
    * Earth Sciences Sector, Natural Resources Canada.
@@ -5741,6 +5844,9 @@
 
   M.Crosshair = Crosshair;
   M.crosshair = crosshair;
+
+  M.SVGMarker = SVGMarker;
+  M.svgMarker = svgMarker;
 
   }(window));
 

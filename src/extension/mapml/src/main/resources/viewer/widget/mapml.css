@@ -447,3 +447,15 @@ summary {
   pointer-events: none;
   position: relative;
 }
+
+.mapml-control-summary-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mapml-layer-remove-button {
+  margin-left: 15px;
+  text-decoration: none;
+}

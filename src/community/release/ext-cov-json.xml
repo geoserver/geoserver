@@ -10,6 +10,8 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-cov-json*.jar</include>
+        <include>jackson-databind*</include>
+        <include>jackson-annotations*</include>
       </includes>
     </fileSet>
   </fileSets>

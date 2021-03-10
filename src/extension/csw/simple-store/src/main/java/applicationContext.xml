@@ -6,7 +6,6 @@
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
     <bean id="gsSimpleCatalogStore" class="org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore">
         <constructor-arg ref="dataDirectory"/>
     </bean>

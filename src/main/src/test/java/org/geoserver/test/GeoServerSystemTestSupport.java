@@ -97,6 +97,7 @@ import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerRoleService;
@@ -2538,5 +2539,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         catalog.add(copyLayerInfo);
         // retrieve the cloned layer by name
         return catalog.getLayerByName(new NameImpl(targetNameSpace.getPrefix(), targetLayerName));
+    }
+
+    /**
+     * Check that a corresponding ModuleStatus is registered with the platform.
+     *
+     * <p>This check will fail if the module identifier is not present, or the name doesn't match.
+     *
+     * @param moduleId the module identifier (e.g. "gs-main")
+     * @param moduleName the module name to match (e.g. "GeoServer Main")
+     */
+    protected void assertModuleStatus(String moduleId, String moduleName) {
+        boolean requiredModuleWasFound = false;
+        for (ModuleStatus statusBean : GeoServerExtensions.extensions(ModuleStatus.class)) {
+            if (statusBean.getModule().equals(moduleId)) {
+                requiredModuleWasFound = true;
+                assertEquals(moduleName, statusBean.getName());
+            }
+        }
+        assertTrue(requiredModuleWasFound);
     }
 }

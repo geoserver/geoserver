@@ -3,10 +3,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.web;
+package org.geoserver.csw.web;
 
 import org.geoserver.csw.CSWInfo;
-import org.geoserver.csw.web.CSWAdminPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.junit.Test;

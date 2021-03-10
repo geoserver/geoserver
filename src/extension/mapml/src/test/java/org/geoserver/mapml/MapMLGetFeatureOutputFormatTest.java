@@ -23,9 +23,14 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.mapml.tcrs.TiledCRSConstants;
+import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.GeodeticCRS;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.w3c.dom.Document;
 
@@ -153,8 +158,13 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
                 assertXpathEvaluatesTo(
                         "1", "count(//html:meta[@name='cs'][@content='" + cs + "'])", doc);
+                assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);
+                TiledCRSParams tcrs = lookupTCRS(code);
+                CoordinateReferenceSystem crs = CRS.decode(code);
+                String cite = (crs instanceof GeodeticCRS) ? "MapML:" : "";
+                String proj = tcrs == null ? cite + code : tcrs.getName();
                 assertXpathEvaluatesTo(
-                        "1", "count(//html:meta[@name='projection'])", doc); // [@content='CBMTILE']
+                        "1", "count(//html:meta[@name='projection'][@content='" + proj + "')", doc);
                 assertXpathEvaluatesTo("1", "count(//html:meta[@name='extent'])", doc);
                 String extent = xpath.evaluate("//html:meta[@name='extent']/@content", doc);
                 String[] positions = extent.split(",");
@@ -180,6 +190,14 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
             }
         } catch (Exception e) {
         }
+    }
+    /**
+     * @param crsCode - an official CRS code / srsName to look up
+     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
+     */
+    private TiledCRSParams lookupTCRS(String crsCode) {
+        return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
+                crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
     }
 
     @Test

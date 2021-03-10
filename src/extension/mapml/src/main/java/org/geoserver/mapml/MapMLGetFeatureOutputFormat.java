@@ -139,6 +139,11 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         osw.flush();
     }
 
+    /**
+     * @param getFeature the GetFeature operation itself, from which we obtain srsName
+     * @param layerInfo metadata for the feature class
+     * @return
+     */
     private Set<Meta> deduceProjectionAndExtent(Operation getFeature, LayerInfo layerInfo) {
         Set<Meta> metas = new HashSet<>();
         TiledCRSParams tcrs = null;
@@ -186,12 +191,19 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         metas.add(extent);
         return metas;
     }
-
+    /**
+     * @param crsCode - an official CRS code / srsName to look up
+     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
+     */
     private TiledCRSParams lookupTCRS(String crsCode) {
         return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
                 crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
     }
 
+    /**
+     * @param getFeature the Operation from which we get the srsName of the request
+     * @return the EPSG / whatever code that was requested, or null if not available
+     */
     private URI getSrsNameFromOperation(Operation getFeature) {
         URI srsName = null;
         try {
@@ -215,6 +227,12 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         return srsName;
     }
 
+    /**
+     * @param layerInfo source of bbox info
+     * @param responseCRSCode output CRS code
+     * @param responseCRS used to transform source bbox to, if necessary
+     * @return
+     */
     private String getExtent(
             LayerInfo layerInfo, String responseCRSCode, CoordinateReferenceSystem responseCRS) {
         String extent = "";

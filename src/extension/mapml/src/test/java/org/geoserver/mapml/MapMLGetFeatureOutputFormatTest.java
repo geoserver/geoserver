@@ -6,6 +6,7 @@ package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -157,10 +158,10 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 assertXpathEvaluatesTo("1", "count(//html:meta[@name='extent'])", doc);
                 String extent = xpath.evaluate("//html:meta[@name='extent']/@content", doc);
                 String[] positions = extent.split(",");
-                assertTrue(
-                        "meta extent must have four positions, but this one has: "
-                                + positions.length,
-                        positions.length == 4);
+                assertSame(
+                        "meta extent must have 4 positions, but this one has: " + positions.length,
+                        4,
+                        positions.length);
                 for (String pos : positions) {
                     String[] nameValue = pos.split("=");
                     String name = nameValue[0];

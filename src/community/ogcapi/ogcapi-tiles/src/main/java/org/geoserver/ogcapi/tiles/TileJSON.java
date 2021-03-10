@@ -46,6 +46,8 @@ public class TileJSON {
 
     double[] bounds;
 
+    private String format;
+
     @JsonProperty("vector_layers")
     List<VectorLayerMetadata> layers = new ArrayList<>();
 
@@ -128,5 +130,17 @@ public class TileJSON {
 
     public void setCenter(double[] center) {
         this.center = center;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getTilejson() {
+        return tilejson;
     }
 }

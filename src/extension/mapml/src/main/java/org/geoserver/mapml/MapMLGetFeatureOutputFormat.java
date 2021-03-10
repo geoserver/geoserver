@@ -182,7 +182,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             // so that nobody can be surprised by x,y axis order in WGS84 data
             crs = (responseCRS instanceof GeodeticCRS) ? "gcrs" : "pcrs";
             projection.setContent(
-                    crs.equalsIgnoreCase("grcrs") ? cite + ":" : "" + responseCRSCode);
+                    crs.equalsIgnoreCase("gcrs") ? cite + ":" + responseCRSCode : responseCRSCode);
             coordinateSystem.setContent(crs);
         }
         extent.setContent(getExtent(layerInfo, responseCRSCode, responseCRS));

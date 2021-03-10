@@ -447,3 +447,24 @@ summary {
   pointer-events: none;
   position: relative;
 }
+
+.mapml-control-summary-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mapml-layer-remove-button {
+  margin-left: 15px;
+  text-decoration: none;
+}
+ 
+ /* Force printers to include background-images of controls for printing.
+   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
+@media print {
+  .leaflet-control {
+    -webkit-print-color-adjust: exact;
+                  color-adjust: exact;
+  }
+}

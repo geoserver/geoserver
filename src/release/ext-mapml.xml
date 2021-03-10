@@ -6,16 +6,10 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>release/extensions/mapml</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>gs-mapml*.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
+        <include>gs-mapml*.jar</include>
         <include>spring-oxm*.jar</include>
         <include>org.eclipse.persistence*.jar</include>
       </includes>

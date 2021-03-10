@@ -266,7 +266,7 @@ export class MapViewer extends HTMLElement {
         }
       }
 
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
+      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){

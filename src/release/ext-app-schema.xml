@@ -30,7 +30,7 @@
             <directory>release/</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>LGPL.txt</include>
+                <include>LGPL.md</include>
                 <include>GEOTOOLS_NOTICE.txt</include>
             </includes>
         </fileSet>
@@ -48,5 +48,3 @@
         </fileSet>
     </fileSets>
 </assembly>
-
-

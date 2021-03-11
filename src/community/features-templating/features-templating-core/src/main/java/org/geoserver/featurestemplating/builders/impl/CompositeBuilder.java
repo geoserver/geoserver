@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders.impl;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -53,12 +54,31 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     /**
-     * Check if it is possible to write its content to the output
+     * Check if it is possible to write its content to the output. By default, returns true if at
+     * least one of the child builders has a non null value
      *
      * @param context the current context
      * @return true if can write the output, else false
      */
     public boolean canWrite(TemplateBuilderContext context) {
+        List<TemplateBuilder> filtered =
+                children.stream()
+                        .filter(
+                                b ->
+                                        b instanceof DynamicValueBuilder
+                                                || b instanceof CompositeBuilder)
+                        .collect(Collectors.toList());
+        if (filtered.size() == children.size()) {
+            int falseCounter = 0;
+            for (TemplateBuilder b : filtered) {
+                if (b instanceof CompositeBuilder) {
+                    if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
+                } else {
+                    if (!((DynamicValueBuilder) b).checkNotNullValue(context)) falseCounter++;
+                }
+            }
+            if (falseCounter == filtered.size()) return false;
+        }
         return true;
     }
 

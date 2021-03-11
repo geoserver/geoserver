@@ -16,9 +16,6 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JSONLDCompositeBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JSONLDDynamicBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JSONLDIteratingBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -58,12 +55,8 @@ public class BuilderFactory {
      */
     public TemplateBuilder getIteratingBuilder(String key, NamespaceSupport namespaces) {
         IteratingBuilder iterating;
-        if (isJsonLd) {
-            iterating = new JSONLDIteratingBuilder(key, namespaces);
-        } else {
-            if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces, separator);
-            else iterating = new IteratingBuilder(key, namespaces);
-        }
+        if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces, separator);
+        else iterating = new IteratingBuilder(key, namespaces);
         iterating.setRootCollection(key != null && key.equalsIgnoreCase(rootCollectionName));
         return iterating;
     }
@@ -76,14 +69,9 @@ public class BuilderFactory {
      * @return a CompositeBuilder
      */
     public TemplateBuilder getCompositeBuilder(String key, NamespaceSupport namespaces) {
-        TemplateBuilder composite;
-        if (isJsonLd) {
-            composite = new JSONLDCompositeBuilder(key, namespaces);
-        } else {
-            if (flatOutput) composite = new FlatCompositeBuilder(key, namespaces, separator);
-            else composite = new CompositeBuilder(key, namespaces);
-        }
-        return composite;
+        if (isJsonLd) new CompositeBuilder(key, namespaces);
+        if (flatOutput) return new FlatCompositeBuilder(key, namespaces, separator);
+        return new CompositeBuilder(key, namespaces);
     }
 
     /**
@@ -97,13 +85,13 @@ public class BuilderFactory {
     public TemplateBuilder getDynamicBuilder(
             String key, String expression, NamespaceSupport namespaces) {
         TemplateBuilder dynamic;
-        if (isJsonLd) {
-            dynamic = new JSONLDDynamicBuilder(key, expression, namespaces);
-        } else {
-            if (flatOutput)
-                dynamic = new FlatDynamicBuilder(key, expression, namespaces, separator);
-            else dynamic = new DynamicValueBuilder(key, expression, namespaces);
-        }
+        //        if (isJsonLd) {
+        //            dynamic = new JSONLDDynamicBuilder(key, expression, namespaces);
+        //        } else {
+        if (flatOutput && !isJsonLd)
+            dynamic = new FlatDynamicBuilder(key, expression, namespaces, separator);
+        else dynamic = new DynamicValueBuilder(key, expression, namespaces);
+        //        }
         return dynamic;
     }
 

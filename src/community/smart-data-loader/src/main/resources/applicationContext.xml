@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+(c) 2016 Open Source Geospatial Foundation - all rights reserved
+This code is licensed under the GPL 2.0 license, available at the root
+application directory.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+        
+    <bean id="postgisSmartAppSchemaDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+	    <property name="id" value="smart-appschema" />
+	    <property name="factoryClass"
+	      value="org.geoserver.smartdataloader.data.SmartDataLoaderDataAccessFactory" />
+	    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+	    <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+	    <property name="componentClass"
+	      value="org.geoserver.smartdataloader.data.store.panel.SmartDataLoaderStoreEditPanel" />
+	</bean>         
+        
+</beans>

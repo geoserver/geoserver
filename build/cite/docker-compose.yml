@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./geoserver/Dockerfile
       args:
-        GEOSERVER_WEBAPP_SRC: "https://build.geoserver.org/geoserver/master/geoserver-master-latest-war.zip"
+        GEOSERVER_WEBAPP_SRC: "https://build.geoserver.org/geoserver/main/geoserver-master-latest-war.zip"
     ports:
       - 8080
     env_file:

@@ -31,8 +31,14 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
 
     @Override
     public void writeStaticContent(String key, Object staticContent) throws IOException {
-        if (staticContent instanceof String) {
-            writeStringField(key, (String) staticContent);
+        if (staticContent instanceof String
+                || staticContent instanceof Number
+                || staticContent instanceof Date) {
+            if (key == null) {
+                writeValue(staticContent);
+            } else {
+                writeStringField(key, (String) staticContent);
+            }
         } else {
             JsonNode jsonNode = (JsonNode) staticContent;
             if (jsonNode.isArray()) writeArrayNode(key, jsonNode);

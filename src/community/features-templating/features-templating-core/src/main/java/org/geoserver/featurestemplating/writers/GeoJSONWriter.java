@@ -71,9 +71,18 @@ public class GeoJSONWriter extends CommonJSONWriter {
         endObject();
     }
 
-    protected void writeLink(String title, String mimeType, String rel, String href)
+    /**
+     * Writes a OGC link object
+     *
+     * @param href
+     * @param rel
+     * @param mimeType
+     * @param title
+     * @param method
+     * @throws IOException
+     */
+    public void writeLink(String href, String rel, String mimeType, String title, String method)
             throws IOException {
-
         if (href != null) {
             startObject();
             if (title != null) {
@@ -88,6 +97,10 @@ public class GeoJSONWriter extends CommonJSONWriter {
                 writeFieldName("rel");
                 writeValue(rel);
             }
+            if (method != null) {
+                writeFieldName("method");
+                writeValue(method);
+            }
             writeFieldName("href");
             writeValue(href);
             endObject();
@@ -98,8 +111,8 @@ public class GeoJSONWriter extends CommonJSONWriter {
 
         writeFieldName("links");
         startArray();
-        writeLink("previous page", mimeType, "previous", previous);
-        writeLink("next page", mimeType, "next", next);
+        writeLink(previous, "previous", mimeType, "previous page", null);
+        writeLink(next, "next", mimeType, "next page", null);
         endArray();
     }
 

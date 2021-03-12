@@ -29,7 +29,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class TileJSON {
 
-    String tilejson = "3.0.0";
+    String tilejson = "2.2.0";
     String name;
     String description;
     String version;
@@ -45,6 +45,8 @@ public class TileJSON {
     Integer maxZoom;
 
     double[] bounds;
+
+    private String format;
 
     @JsonProperty("vector_layers")
     List<VectorLayerMetadata> layers = new ArrayList<>();
@@ -128,5 +130,17 @@ public class TileJSON {
 
     public void setCenter(double[] center) {
         this.center = center;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getTilejson() {
+        return tilejson;
     }
 }

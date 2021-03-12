@@ -1,5 +1,6 @@
 <#-- 
-Footer section of the STAC Items HTML output. Should close the body and the html tag.
+Footer section of the Search HTML output. Should close the body and the html tag.
+
 -->
 
   <#if previous?? || next??>

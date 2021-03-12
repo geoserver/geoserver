@@ -7,14 +7,19 @@ package org.geoserver.ogcapi.stac;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.springframework.http.HttpMethod;
 
 /** A STAC server landing page */
 @JsonPropertyOrder({"title", "description", "links"})
 public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
+
+    /** <code>rel</code> for the search resource */
+    public static String REL_SEARCH = "search";
 
     private String stacVersion = STACService.STAC_VERSION;
     private final List<String> conformsTo;
@@ -43,6 +48,30 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 "collections",
                 null,
                 Link.REL_DATA);
+
+        // search, GET
+        links.addAll(
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                basePath + "/search",
+                                SearchResponse.class,
+                                "Items as ",
+                                "searchGet",
+                                (t, l) -> l.setMethod(HttpMethod.GET),
+                                REL_SEARCH,
+                                true));
+
+        // search, POST
+        links.addAll(
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                basePath + "/search",
+                                SearchResponse.class,
+                                "Items as ",
+                                "searchGet",
+                                (t, l) -> l.setMethod(HttpMethod.POST),
+                                REL_SEARCH,
+                                true));
     }
 
     @JsonProperty("stac_version")

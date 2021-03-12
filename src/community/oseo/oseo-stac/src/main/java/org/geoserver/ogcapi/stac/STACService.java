@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -26,27 +28,34 @@ import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
+import org.geoserver.ogcapi.PaginationLinksBuilder;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
+import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -86,15 +95,18 @@ public class STACService {
 
     private final GeoServer geoServer;
     private final OpenSearchAccessProvider accessProvider;
+    private final STACTemplates templates;
     private TimeParser timeParser = new TimeParser();
     private final APIFilterParser filterParser;
 
     public STACService(
             GeoServer geoServer,
             OpenSearchAccessProvider accessProvider,
+            STACTemplates templates,
             APIFilterParser filterParser) {
         this.geoServer = geoServer;
         this.accessProvider = accessProvider;
+        this.templates = templates;
         this.filterParser = filterParser;
     }
 
@@ -195,35 +207,223 @@ public class STACService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public ItemsResponse items(
             @PathVariable(name = "collectionId") String collectionId,
-            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
-                    BigInteger startIndex,
-            @RequestParam(name = "limit", required = false) BigInteger limit,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") int startIndex,
+            @RequestParam(name = "limit", required = false) Integer requestedLimit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage)
             throws Exception {
+        // query the items based on the request parameters
+        QueryResult qr =
+                queryItems(
+                        Arrays.asList(collectionId),
+                        startIndex,
+                        requestedLimit,
+                        bbox,
+                        null,
+                        datetime,
+                        filter,
+                        filterLanguage);
+
+        // build the links
+        ItemsResponse response =
+                new ItemsResponse(
+                        collectionId, qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        String path = "ogc/stac/collections/" + ResponseUtils.urlEncode(collectionId) + "/items";
+        PaginationLinksBuilder linksBuilder =
+                new PaginationLinksBuilder(
+                        path,
+                        startIndex,
+                        qr.getQuery().getMaxFeatures(),
+                        qr.getReturned(),
+                        qr.getNumberMatched().longValue());
+        response.setPrevious(linksBuilder.getPrevious());
+        response.setNext(linksBuilder.getNext());
+        response.setSelf(linksBuilder.getSelf());
+
+        return response;
+    }
+
+    @GetMapping(path = "search", name = "searchGet")
+    @ResponseBody
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    public SearchResponse searchGet(
+            @RequestParam(name = "collections", required = false) List<String> collectionIds,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") int startIndex,
+            @RequestParam(name = "limit", required = false) Integer requestedLimit,
+            @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "intersects", required = false) String intersects,
+            @RequestParam(name = "datetime", required = false) String datetime,
+            @RequestParam(name = "filter", required = false) String filter,
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage)
+            throws Exception {
+        // query the items based on the request parameters
+        QueryResult qr =
+                queryItems(
+                        collectionIds,
+                        startIndex,
+                        requestedLimit,
+                        bbox,
+                        intersects,
+                        datetime,
+                        filter,
+                        filterLanguage);
+
+        // build the links
+        SearchResponse response =
+                new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        String path = "ogc/stac/search";
+        PaginationLinksBuilder linksBuilder =
+                new PaginationLinksBuilder(
+                        path,
+                        startIndex,
+                        qr.getQuery().getMaxFeatures(),
+                        qr.getReturned(),
+                        qr.getNumberMatched().longValue());
+        response.setPrevious(linksBuilder.getPrevious());
+        response.setNext(linksBuilder.getNext());
+        response.setSelf(linksBuilder.getSelf());
+
+        return response;
+    }
+
+    @PostMapping(path = "search", name = "searchPost")
+    @ResponseBody
+    @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    public SearchResponse searchPost(@RequestBody SearchQuery sq) throws Exception {
+        FeatureSource<FeatureType, Feature> source =
+                accessProvider.getOpenSearchAccess().getProductSource();
+
+        // request parsing
         List<Filter> filters = new ArrayList<>();
-        filters.add(FF.equals(FF.property("parentIdentifier"), FF.literal(collectionId)));
+        if (sq.getCollections() != null && !sq.getCollections().isEmpty())
+            filters.add(getCollectionsFilter(sq.getCollections()));
+        double[] bbox = sq.getBbox();
         if (bbox != null) {
             filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
+        }
+        if (sq.getIntersection() != null) {
+            filters.add(FF.intersects(FF.property(""), FF.literal(sq.getIntersection())));
+        }
+        if (sq.getDatetime() != null) {
+            filters.add(buildTimeFilter(sq.getDatetime()));
+        }
+        if (sq.getFilter() != null) {
+            Filter mapped = parseFilter(source, sq.getFilter(), sq.getFilterLang());
+            filters.add(mapped);
+        }
+        Query q = new Query();
+        q.setStartIndex(sq.getStartIndex());
+        int limit = getLimit(sq.getLimit());
+        q.setMaxFeatures(limit);
+        q.setFilter(mergeFiltersAnd(filters));
+
+        // query the items based on the request parameters
+        QueryResult qr = queryItems(source, q);
+
+        // build the links
+        SearchResponse response =
+                new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        String path = "ogc/stac/search";
+        PaginationLinksBuilder linksBuilder =
+                new PaginationLinksBuilder(
+                        path,
+                        Optional.ofNullable(sq.getStartIndex()).orElse(0),
+                        qr.getQuery().getMaxFeatures(),
+                        qr.getReturned(),
+                        qr.getNumberMatched().longValue());
+        response.setSelf(linksBuilder.getSelf());
+        response.setPost(true);
+        response.setPreviousBody(linksBuilder.getPreviousMap(false));
+        response.setNextBody(linksBuilder.getNextMap(false));
+
+        return response;
+    }
+
+    public Filter parseFilter(
+            FeatureSource<FeatureType, Feature> source, String filter, String filterLang)
+            throws IOException {
+        Filter parsedFilter = filterParser.parse(filter, filterLang);
+        STACPathVisitor visitor = new STACPathVisitor(source.getSchema());
+        return (Filter) parsedFilter.accept(visitor, templates.getItemTemplate());
+    }
+
+    private QueryResult queryItems(
+            List<String> collectionIds,
+            int startIndex,
+            Integer requestedLimit,
+            String bbox,
+            String intersects,
+            String datetime,
+            String filter,
+            String filterLanguage)
+            throws IOException, FactoryException, ParseException {
+        FeatureSource<FeatureType, Feature> source =
+                accessProvider.getOpenSearchAccess().getProductSource();
+
+        // request parsing
+        List<Filter> filters = new ArrayList<>();
+        if (collectionIds != null && !collectionIds.isEmpty())
+            filters.add(getCollectionsFilter(collectionIds));
+        if (bbox != null) {
+            filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
+        }
+        if (intersects != null) {
+            Geometry geometry = new GeometryJSON().read(intersects);
+            filters.add(FF.intersects(FF.property(""), FF.literal(geometry)));
         }
         if (datetime != null) {
             filters.add(buildTimeFilter(datetime));
         }
         if (filter != null) {
-            Filter parsedFilter = filterParser.parse(filter, filterLanguage);
-            filters.add(parsedFilter);
+            Filter mapped = parseFilter(source, filter, filterLanguage);
+            filters.add(mapped);
         }
         Query q = new Query();
-        if (startIndex != null) q.setStartIndex(startIndex.intValue());
-        if (limit != null) q.setMaxFeatures(limit.intValue());
+        q.setStartIndex(startIndex);
+        int limit = getLimit(requestedLimit);
+        q.setMaxFeatures(limit);
         q.setFilter(mergeFiltersAnd(filters));
 
-        FeatureSource<FeatureType, Feature> source =
-                accessProvider.getOpenSearchAccess().getProductSource();
+        return queryItems(source, q);
+    }
+
+    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)
+            throws IOException {
+        // get the items
         FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
-        return new ItemsResponse(collectionId, items);
+
+        // the counts
+        Query matchedQuery = new Query(q);
+        matchedQuery.setMaxFeatures(-1);
+        matchedQuery.setStartIndex(0);
+        int matched = source.getCount(matchedQuery);
+        int returned = items.size();
+
+        return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
+    }
+
+    private Filter getCollectionsFilter(List<String> collectionIds) {
+        List<Filter> filters =
+                collectionIds
+                        .stream()
+                        .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
+                        .collect(Collectors.toList());
+        return mergeFiltersOr(filters);
+    }
+
+    /**
+     * Returns an actual limit based on the
+     *
+     * @param requestedLimit
+     * @return
+     */
+    private int getLimit(Integer requestedLimit) {
+        OSEOInfo oseo = getService();
+        int serviceMax = oseo.getMaximumRecordsPerPage();
+        if (requestedLimit == null) return oseo.getRecordsPerPage();
+        return Math.min(serviceMax, requestedLimit);
     }
 
     private Filter buildTimeFilter(String time) throws ParseException, IOException {
@@ -251,6 +451,16 @@ public class STACService {
             return FF.and(lower, upper);
         } else {
             throw new IllegalArgumentException("Cannot build time filter out of " + timeSpec);
+        }
+    }
+
+    private Filter mergeFiltersOr(List<Filter> filters) {
+        if (filters.isEmpty()) {
+            return Filter.EXCLUDE;
+        } else if (filters.size() == 1) {
+            return filters.get(0);
+        } else {
+            return FF.or(filters);
         }
     }
 

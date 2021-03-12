@@ -38,6 +38,13 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         return getAsJSONPath(response);
     }
 
+    protected DocumentContext postAsJSONPath(String path, String body, int expectedHttpCode)
+            throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(path, body, "application/json");
+        assertEquals(expectedHttpCode, response.getStatus());
+        return getAsJSONPath(response);
+    }
+
     protected DocumentContext getAsJSONPath(MockHttpServletResponse response)
             throws UnsupportedEncodingException {
         assertThat(response.getContentType(), containsString("json"));

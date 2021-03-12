@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi.stac;
 
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
-import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class STACTemplatesReloader implements GeoServerLifecycleHandler {
     STACTemplates templates;
 
-    public STACTemplatesReloader(STACTemplates templates, OpenSearchAccessProvider accessProvider) {
+    public STACTemplatesReloader(STACTemplates templates) {
         this.templates = templates;
     }
 

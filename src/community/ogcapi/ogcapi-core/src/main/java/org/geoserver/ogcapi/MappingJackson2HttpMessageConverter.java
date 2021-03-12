@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi;
 
+import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.http.MediaType;
@@ -14,6 +15,10 @@ import org.springframework.http.MediaType;
  */
 public class MappingJackson2HttpMessageConverter
         extends org.springframework.http.converter.json.MappingJackson2HttpMessageConverter {
+
+    public MappingJackson2HttpMessageConverter() {
+        getObjectMapper().registerModule(new JtsModule());
+    }
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {

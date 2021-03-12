@@ -24,7 +24,7 @@ public class FilteringFlatGeoJSONComplexFeaturesResponseTest
         sb.append("application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(4, features.size());
+        assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             if (feature.getString("@id").equals("mf4")) {

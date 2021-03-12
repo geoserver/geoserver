@@ -29,7 +29,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 4);
+        assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);
@@ -127,6 +127,8 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         JSONArray features = (JSONArray) result.get("features");
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = features.getJSONObject(i);
+            // mf5 setup is not complete, skip it
+            if ("mf5".equals(feature.get("@id"))) continue;
             JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
             String geologicUnitId = geologicUnit.getString("@id");
             assertNotNull(geologicUnitId);
@@ -168,7 +170,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                         .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");
-        assertEquals(features.size(), 2);
+        assertEquals(3, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject f = features.getJSONObject(i);
             JSONArray values =

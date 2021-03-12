@@ -28,7 +28,7 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 4);
+        assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);

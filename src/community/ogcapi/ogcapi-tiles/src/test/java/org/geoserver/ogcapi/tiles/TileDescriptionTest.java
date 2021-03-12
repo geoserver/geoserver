@@ -1,5 +1,7 @@
 package org.geoserver.ogcapi.tiles;
 
+import static org.geoserver.data.test.MockData.CITE_PREFIX;
+import static org.geoserver.data.test.MockData.CITE_URI;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.closeTo;
@@ -14,15 +16,69 @@ import static org.junit.Assert.assertFalse;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.xml.namespace.QName;
+import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
+import org.geotools.feature.NameImpl;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class TileDescriptionTest extends TilesTestSupport {
+
+    static final String FOREST_WITH_SCALES_STYLE = "ForestsWithScaleDenominator";
+
+    static final String LAKES_WITH_SCALES_STYLE = "LakesWithScaleDenominator";
+
+    static final String NATURES_ZOOM_GROUP = "NatureZoom";
+
+    public static QName FORESTS_ZOOM = new QName(CITE_URI, "ForestsZoom", CITE_PREFIX);
+
+    public static QName LAKES_ZOOM = new QName(CITE_URI, "LakesZoom", CITE_PREFIX);
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle(FOREST_WITH_SCALES_STYLE, getClass(), getCatalog());
+        testData.addStyle(LAKES_WITH_SCALES_STYLE, getClass(), getCatalog());
+
+        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
+        properties.put(SystemTestData.LayerProperty.STYLE, FOREST_WITH_SCALES_STYLE);
+        testData.addVectorLayer(
+                FORESTS_ZOOM, properties, "ForestsZoomTest.properties", getClass(), catalog);
+        properties.put(SystemTestData.LayerProperty.STYLE, LAKES_WITH_SCALES_STYLE);
+        testData.addVectorLayer(
+                LAKES_ZOOM, properties, "LakesZoomTest.properties", getClass(), catalog);
+
+        LayerInfo lakesZoom =
+                catalog.getLayerByName(
+                        new NameImpl(LAKES_ZOOM.getNamespaceURI(), LAKES_ZOOM.getLocalPart()));
+        LayerInfo forestsZoom =
+                catalog.getLayerByName(
+                        new NameImpl(FORESTS_ZOOM.getNamespaceURI(), FORESTS_ZOOM.getLocalPart()));
+
+        addVectorTileFormats(getLayerId(LAKES_ZOOM), true);
+        addVectorTileFormats(getLayerId(FORESTS_ZOOM), true);
+
+        createsLayerGroup(
+                catalog,
+                NATURES_ZOOM_GROUP,
+                null,
+                null,
+                null,
+                Arrays.asList(lakesZoom, forestsZoom));
+    }
 
     @Test
     public void testGetTileMatrixSets() throws Exception {
@@ -286,5 +342,71 @@ public class TileDescriptionTest extends TilesTestSupport {
         assertThat(doc.read("center"), equalTo(Arrays.asList(0d, 0d, 0d)));
         assertThat(doc.read("bounds"), equalTo(Arrays.asList(-0.0042, -0.0024, 0.0042, 0.0024)));
         assertFalse(exists(doc, "vector_layers"));
+    }
+
+    @Test
+    public void testTileJSONLayerGroupZoomLevelsLayerMetadata() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "/ogc/tiles/collections/"
+                                + NATURES_ZOOM_GROUP
+                                + "/tiles/EPSG:900913/metadata?f=application%2Fjson",
+                        200);
+        assertThat(doc.read("name"), equalTo("NatureZoom"));
+
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'LakesZoom')].minzoom"), equalTo(10));
+
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'LakesZoom')].maxzoom"), equalTo(13));
+
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'ForestsZoom')].minzoom"), equalTo(13));
+
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'ForestsZoom')].maxzoom"), equalTo(16));
+
+        assertThat(doc.read("minzoom"), equalTo(10));
+        assertThat(doc.read("maxzoom"), equalTo(16));
+    }
+
+    @Test
+    public void testAdditionalAttributesTileJson() throws Exception {
+
+        Catalog cat = getCatalog();
+        LayerGroupInfo group = cat.getLayerGroupByName(NATURES_ZOOM_GROUP);
+
+        AttributionInfo attributionInfo = new AttributionInfoImpl();
+        attributionInfo.setTitle("This is the attribution title");
+
+        String abstractTxt = "This is the layerGroup description";
+
+        group.setAttribution(attributionInfo);
+        group.setAbstract(abstractTxt);
+
+        cat.save(group);
+
+        LayerInfo li =
+                cat.getLayerByName(
+                        new NameImpl(FORESTS_ZOOM.getNamespaceURI(), FORESTS_ZOOM.getLocalPart()));
+        String abstractTxtLi = "This is the ForestZoom layer description";
+        li.setAbstract(abstractTxtLi);
+        cat.save(li);
+
+        DocumentContext doc =
+                getAsJSONPath(
+                        "/ogc/tiles/collections/"
+                                + NATURES_ZOOM_GROUP
+                                + "/tiles/EPSG:900913/metadata?f=application%2Fjson",
+                        200);
+        assertThat(doc.read("name"), equalTo("NatureZoom"));
+
+        assertThat(doc.read("attribution"), equalTo("This is the attribution title"));
+
+        assertThat(doc.read("description"), equalTo("This is the layerGroup description"));
+
+        assertThat(doc.read("format"), equalTo("application/vnd.mapbox-vector-tile"));
+
+        assertThat(doc.read("tilejson"), equalTo("2.2.0"));
+
+        assertThat(
+                readSingle(doc, "vector_layers[?(@.id == 'ForestsZoom')].description"),
+                equalTo("This is the ForestZoom layer description"));
     }
 }

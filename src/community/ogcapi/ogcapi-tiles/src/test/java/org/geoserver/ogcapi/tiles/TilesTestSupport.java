@@ -4,7 +4,10 @@
  */
 package org.geoserver.ogcapi.tiles;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -79,20 +82,10 @@ public class TilesTestSupport extends OGCApiTestSupport {
         addVectorTileFormats(forestsId, true);
 
         // setup a layer group
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
         LayerInfo lakesLayer = catalog.getLayerByName(getLayerId(MockData.LAKES));
         LayerInfo forestsLayer = catalog.getLayerByName(getLayerId(MockData.FORESTS));
-        if (lakesLayer != null && forestsLayer != null) {
-            group.setName(NATURE_GROUP);
-            group.getLayers().add(lakesLayer);
-            group.getLayers().add(forestsLayer);
-            group.getStyles().add(null);
-            group.getStyles().add(null);
-            cb.calculateLayerGroupBounds(group);
-            catalog.add(group);
-            addVectorTileFormats(NATURE_GROUP, false);
-        }
-
+        createsLayerGroup(
+                catalog, NATURE_GROUP, null, null, null, Arrays.asList(lakesLayer, forestsLayer));
         // add a style groupd
         testData.addStyle(
                 BASIC_STYLE_GROUP_STYLE,
@@ -110,7 +103,7 @@ public class TilesTestSupport extends OGCApiTestSupport {
         addVectorTileFormats(BASIC_STYLE_GROUP, false);
     }
 
-    private void addVectorTileFormats(String layerId, boolean clear) {
+    protected void addVectorTileFormats(String layerId, boolean clear) {
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) getGWC().getTileLayerByName(layerId);
         Set<String> formats = tileLayer.getInfo().getMimeFormats();
         if (clear) {
@@ -124,5 +117,33 @@ public class TilesTestSupport extends OGCApiTestSupport {
 
     protected GWC getGWC() {
         return applicationContext.getBean(GWC.class);
+    }
+
+    protected LayerGroupInfo createsLayerGroup(
+            Catalog catalog,
+            String name,
+            String description,
+            AttributionInfo attributionInfo,
+            LayerGroupInfo.Mode mode,
+            List<LayerInfo> layers)
+            throws Exception {
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(name);
+        if (mode != null) group.setMode(mode);
+
+        if (description != null) group.setAbstract(description);
+        if (attributionInfo != null) group.setAttribution(attributionInfo);
+
+        for (LayerInfo li : layers) {
+            if (li != null) {
+                group.getLayers().add(li);
+                group.getStyles().add(null);
+            }
+        }
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(group);
+        catalog.add(group);
+        addVectorTileFormats(name, false);
+        return group;
     }
 }

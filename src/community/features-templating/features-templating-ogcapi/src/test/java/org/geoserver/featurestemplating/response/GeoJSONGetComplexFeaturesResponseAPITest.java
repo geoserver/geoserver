@@ -23,7 +23,7 @@ public class GeoJSONGetComplexFeaturesResponseAPITest
                 "ogc/features/collections/" + "gsml:MappedFeature" + "/items?f=application/json";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 4);
+        assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeature(feature);

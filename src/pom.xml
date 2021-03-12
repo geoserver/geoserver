@@ -1942,7 +1942,7 @@
  <properties>
   <gs.version>2.20-SNAPSHOT</gs.version>
   <gt.version>26-SNAPSHOT</gt.version>
-  <gwc.version>1.19-SNAPSHOT</gwc.version>
+  <gwc.version>1.20-SNAPSHOT</gwc.version>
   <jts.version>1.18.1</jts.version>
   <spring.version>5.1.20.RELEASE</spring.version>
   <spring.security.version>5.1.13.RELEASE</spring.security.version>

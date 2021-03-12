@@ -42,6 +42,7 @@ public class OSEOFilter implements GeoServerFilter {
         String pathInfo = requestHTTP.getPathInfo();
         Map<String, String[]> parameterMap = requestHTTP.getParameterMap();
         return pathInfo != null
+                && pathInfo.contains("oseo")
                 && parameterMap != null
                 && "GET".equalsIgnoreCase(requestHTTP.getMethod())
                 && !(new CaseInsensitiveMap(parameterMap).containsKey("service"))
@@ -74,9 +75,9 @@ public class OSEOFilter implements GeoServerFilter {
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
             Map filtered = new HashMap<String, String[]>(original);
-            filtered.put("service", "OSEO");
-            filtered.put("version", "1.0.0");
-            filtered.put("request", request);
+            filtered.put("service", new String[] {"OSEO"});
+            filtered.put("version", new String[] {"1.0.0"});
+            filtered.put("request", new String[] {request});
             return filtered;
         }
 

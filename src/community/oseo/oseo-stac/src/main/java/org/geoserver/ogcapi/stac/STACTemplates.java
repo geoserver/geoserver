@@ -27,6 +27,8 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -41,13 +43,39 @@ public class STACTemplates {
     private Template collectionTemplate;
     private Template itemTemplate;
 
+    ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+
     public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
         this.accessProvider = accessProvider;
         this.dd = dd;
+        reloadTemplates();
+    }
+
+    /** Copies over all HTML templates, to allow customization */
+    private void copyHTMLTemplates() throws IOException {
+        Resource stac = dd.get("templates/ogc/stac");
+        stac.dir();
+        String path =
+                "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/*.ftl";
+        for (org.springframework.core.io.Resource r : resourceResolver.getResources(path)) {
+            Resource target = stac.get(r.getFilename());
+            if (target.getType() == Resource.Type.UNDEFINED) {
+                try (InputStream is = r.getInputStream();
+                        OutputStream os = target.out()) {
+                    IOUtils.copy(is, os);
+                }
+            }
+        }
     }
 
     public void reloadTemplates() {
+        try {
+            copyHTMLTemplates();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to copy STAC HTML templates", e);
+        }
+
         try {
             OpenSearchAccess access = accessProvider.getOpenSearchAccess();
             try {

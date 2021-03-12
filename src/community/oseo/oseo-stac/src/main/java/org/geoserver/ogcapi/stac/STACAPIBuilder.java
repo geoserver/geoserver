@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
@@ -44,6 +43,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
      * @param service The Opensearch for EO configuration
      */
     @Override
+    @SuppressWarnings("unchecked")
     public OpenAPI build(OSEOInfo service) throws IOException {
         OpenAPI api = super.build(service);
 
@@ -67,7 +67,6 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
-        Catalog catalog = service.getGeoServer().getCatalog();
         List<String> validCollectionIds = getCollectionIds();
         collectionId.getSchema().setEnum(validCollectionIds);
 

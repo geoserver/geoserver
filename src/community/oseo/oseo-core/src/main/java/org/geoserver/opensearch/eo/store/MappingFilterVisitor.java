@@ -5,7 +5,9 @@
 package org.geoserver.opensearch.eo.store;
 
 import org.geoserver.platform.ServiceException;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.PropertyName;
 
 /**
@@ -28,7 +30,15 @@ class MappingFilterVisitor extends DuplicatingFilterVisitor {
         if ("".equals(name)) {
             return expression;
         }
-        String sourceName = mapper.getSourceName(name);
+
+        String sourceName;
+        if (name.contains(":") && expression.getNamespaceContext() != null) {
+            Name qualifiedName = getQualifiedName(expression);
+            sourceName = mapper.getSourceName(qualifiedName);
+        } else {
+            sourceName = mapper.getSourceName(name);
+        }
+
         if (sourceName == null) {
             throw new ServiceException(
                     "Simple feature translation failed, could not back-map '"
@@ -37,5 +47,11 @@ class MappingFilterVisitor extends DuplicatingFilterVisitor {
         } else {
             return ff.property(sourceName);
         }
+    }
+
+    private Name getQualifiedName(PropertyName expression) {
+        String[] split = expression.getPropertyName().split(":");
+        String uri = expression.getNamespaceContext().getURI(split[0]);
+        return new NameImpl(uri, split[1]);
     }
 }

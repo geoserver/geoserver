@@ -31,10 +31,10 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
         startArray();
         // paging links
         if (previous != null) {
-            writeLink("Previous page", mimeType, "prev", previous);
+            writeLink(previous, "prev", mimeType, "Previous page", null);
         }
         if (next != null) {
-            writeLink("Next page", mimeType, "next", next);
+            writeLink(next, "next", mimeType, "Next page", null);
         }
         // alternate/self links
         String basePath = "ogc/features/collections/" + ResponseUtils.urlEncode(prefixedName);
@@ -57,7 +57,7 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }
-            writeLink(linkTitle, format.toString(), linkType, href);
+            writeLink(href, linkType, format.toString(), linkTitle, null);
         }
         // backpointer to the collection
         for (MediaType format :
@@ -70,7 +70,7 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
                             URLMangler.URLType.SERVICE);
             String linkType = Link.REL_COLLECTION;
             String linkTitle = "The collection description as " + format;
-            writeLink(linkTitle, format.toString(), linkType, href);
+            writeLink(href, linkType, format.toString(), linkTitle, null);
         }
         endArray();
     }

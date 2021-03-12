@@ -12,26 +12,26 @@ import org.springframework.stereotype.Component;
 
 /** Renders a list of items in HTML. */
 @Component
-public class ItemsHTMLMessageConverter extends AbstractItemsHTMLMessageConverter<ItemsResponse> {
+public class SearchHTMLMessageConverter extends AbstractItemsHTMLMessageConverter<SearchResponse> {
 
-    public ItemsHTMLMessageConverter(
+    public SearchHTMLMessageConverter(
             FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
-        super(ItemsResponse.class, templateSupport, geoServer);
+        super(SearchResponse.class, templateSupport, geoServer);
     }
 
     protected Template getEmptyTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-empty.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-empty.ftl", this.getClass());
     }
 
     protected Template getContentTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-content.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-content.ftl", this.getClass());
     }
 
     protected Template getFooterTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-footer.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-footer.ftl", this.getClass());
     }
 
     protected Template getHeaderTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-header.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-header.ftl", this.getClass());
     }
 }

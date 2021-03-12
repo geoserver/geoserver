@@ -13,17 +13,9 @@ import org.geotools.feature.FeatureCollection;
  * collection search.
  */
 @JsonIgnoreType
-public class ItemsResponse extends AbstractItemsResponse {
+public class SearchResponse extends AbstractItemsResponse {
 
-    private String collectionId;
-
-    public ItemsResponse(
-            String collectionId, FeatureCollection items, BigInteger numberMatched, int returned) {
+    public SearchResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
         super(items, numberMatched, returned);
-        this.collectionId = collectionId;
-    }
-
-    public String getCollectionId() {
-        return collectionId;
     }
 }

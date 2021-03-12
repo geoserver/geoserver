@@ -23,6 +23,7 @@ import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
     protected static final String STAC_TITLE = "STAC server title";
+    protected static final double EPS = 1e-5;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

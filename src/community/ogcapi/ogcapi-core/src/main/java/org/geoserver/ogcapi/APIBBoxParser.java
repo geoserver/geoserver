@@ -23,6 +23,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.http.HttpStatus;
 
 /** A BBOX parser specialized for API bounding boxes (up to 6 coordinates, default CRS is CRS84) */
 public class APIBBoxParser {
@@ -43,6 +44,34 @@ public class APIBBoxParser {
      * DefaultGeographicCRS#WGS84} if null is passed. Will return {@link Filter#INCLUDE} if the bbox
      * spec itself is null or empty.
      */
+    public static Filter toFilter(double[] bbox, CoordinateReferenceSystem crs)
+            throws FactoryException {
+        if (bbox == null) {
+            return Filter.INCLUDE;
+        }
+
+        // to envelopes first, build filter around them then
+        ReferencedEnvelope[] parsed;
+        if (bbox.length == 4) {
+            parsed = buildEnvelopes(bbox.length, bbox[0], bbox[1], 0, bbox[2], bbox[3], 0, crs);
+        } else if (bbox.length == 6) {
+            parsed =
+                    buildEnvelopes(
+                            bbox.length, bbox[0], bbox[1], bbox[2], bbox[3], bbox[4], bbox[5], crs);
+        } else {
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Bounding box array must have either 4 or 6 ordinates",
+                    HttpStatus.BAD_REQUEST);
+        }
+        return toFilter(parsed);
+    }
+
+    /**
+     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link
+     * DefaultGeographicCRS#WGS84} if null is passed. Will return {@link Filter#INCLUDE} if the bbox
+     * spec itself is null or empty.
+     */
     public static Filter toFilter(String bbox, CoordinateReferenceSystem crs)
             throws FactoryException {
         if (bbox == null || bbox.trim().isEmpty()) {
@@ -51,17 +80,21 @@ public class APIBBoxParser {
 
         // to envelopes first, build filter around them then
         ReferencedEnvelope[] parsed = parse(bbox, crs);
-        if (parsed.length == 1) {
-            return FF.bbox(FF.property(""), parsed[0]);
-        } else if (parsed instanceof ReferencedEnvelope[]) {
+        return toFilter(parsed);
+    }
+
+    private static Filter toFilter(ReferencedEnvelope[] bboxes) {
+        if (bboxes.length == 1) {
+            return FF.bbox(FF.property(""), bboxes[0]);
+        } else if (bboxes instanceof ReferencedEnvelope[]) {
             List<Filter> filters =
-                    Stream.of((ReferencedEnvelope[]) parsed)
+                    Stream.of((ReferencedEnvelope[]) bboxes)
                             .map(e -> FF.bbox(FF.property(""), e))
                             .collect(Collectors.toList());
             return FF.or(filters);
         } else {
             throw new IllegalArgumentException(
-                    "Could not understand parsed bbox " + Arrays.toString(parsed));
+                    "Could not understand parsed bbox " + Arrays.toString(bboxes));
         }
     }
 
@@ -123,10 +156,10 @@ public class APIBBoxParser {
             maxy = bbox[3];
         }
 
-        return buildEnvelope(countco, minx, miny, minz, maxx, maxy, maxz, crs);
+        return buildEnvelopes(countco, minx, miny, minz, maxx, maxy, maxz, crs);
     }
 
-    private static ReferencedEnvelope[] buildEnvelope(
+    private static ReferencedEnvelope[] buildEnvelopes(
             int countco,
             double minx,
             double miny,
@@ -139,7 +172,7 @@ public class APIBBoxParser {
         if (crs == null) {
             if (countco == 4) {
                 crs = DefaultGeographicCRS.WGS84;
-            } else {
+            } else if (countco == 6) {
                 crs = DefaultGeographicCRS.WGS84_3D;
             }
         }

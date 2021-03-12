@@ -24,17 +24,33 @@
     </div>
     
     <div class="col-6 col-xl-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2>Search</h2>
+              <p>The <a id="searchLink" href="${model.getLinkUrl('searchGet', 'text/html')!}"> search page</a> provides a searchable list of all the STAC items available in this service. 
+              <br/> 
+              The search page is also available as
+              <#list model.getLinksExcept("searchGet", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+              </p>
+            </div>
+          </div>
+        </div>
+    
+    
+    <div class="col-6 col-xl-3">
       <div class="card h-100">
         <div class="card-body">
           <h2>Collections</h2>
           <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
           <br/> 
-          This collection page is also available as
+          The collections page is also available as
           <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p>
         </div>
       </div>
     </div>
+    
+    
 
     <div class="col-6 col-xl-3">
       <div class="card h-100">

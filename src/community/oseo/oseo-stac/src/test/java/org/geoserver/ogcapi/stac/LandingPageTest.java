@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.stac.STACLandingPage.REL_SEARCH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,7 +35,9 @@ public class LandingPageTest extends STACTestSupport {
                         "getCollections",
                         "getCollection",
                         "getItems",
-                        "getItem"));
+                        "getItem",
+                        "searchGet",
+                        "searchPost"));
     }
 
     @Test
@@ -121,6 +124,17 @@ public class LandingPageTest extends STACTestSupport {
                 "links[?(@.href =~ /.*ogc\\/stac\\/collections.*/)].rel",
                 Link.REL_DATA,
                 Link.REL_DATA);
+        // check search links
+        assertJSONList(
+                json,
+                "links[?(@.method == 'GET' && @.href =~ /.*ogc\\/stac\\/search.*/)].rel",
+                REL_SEARCH,
+                REL_SEARCH);
+        assertJSONList(
+                json,
+                "links[?(@.method == 'POST' && @.href =~ /.*ogc\\/stac\\/search.*/)].rel",
+                REL_SEARCH,
+                REL_SEARCH);
         // check title
         assertEquals(STAC_TITLE, json.read("title"));
         // check description

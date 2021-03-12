@@ -20,7 +20,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-/** Converter for the {@link ItemsResponse} that will encode STAC items using a feature template */
+/**
+ * Converter for the {@link ItemsResponse} that will encode a single STAC item using a feature
+ * template
+ */
 @Component
 public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemResponse> {
 

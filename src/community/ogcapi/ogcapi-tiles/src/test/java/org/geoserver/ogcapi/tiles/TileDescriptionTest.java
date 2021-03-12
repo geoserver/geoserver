@@ -403,7 +403,7 @@ public class TileDescriptionTest extends TilesTestSupport {
 
         assertThat(doc.read("format"), equalTo("application/vnd.mapbox-vector-tile"));
 
-        assertThat(doc.read("tilejson"), equalTo("3.0.0"));
+        assertThat(doc.read("tilejson"), equalTo("2.2.0"));
 
         assertThat(
                 readSingle(doc, "vector_layers[?(@.id == 'ForestsZoom')].description"),

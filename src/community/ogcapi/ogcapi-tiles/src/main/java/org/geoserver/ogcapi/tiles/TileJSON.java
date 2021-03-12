@@ -29,7 +29,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class TileJSON {
 
-    String tilejson = "3.0.0";
+    String tilejson = "2.2.0";
     String name;
     String description;
     String version;

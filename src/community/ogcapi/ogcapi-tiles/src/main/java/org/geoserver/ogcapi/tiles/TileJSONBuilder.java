@@ -282,7 +282,7 @@ class TileJSONBuilder {
         int limit = startLevel + gridSet.getNumLevels();
 
         double startScale = gridSet.getGrid(startLevel).getScaleDenominator();
-        double endScale = gridSet.getGrid(limit - 1).getScaleDenominator();
+        double endScale = gridSet.getGrid(endLevel).getScaleDenominator();
 
         boolean foundStartLevel = maxScale > startScale ? true : false;
         boolean foundEndLevel = minScale < endScale ? true : false;

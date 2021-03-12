@@ -8,6 +8,8 @@ package org.geoserver.ows;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -118,12 +120,13 @@ public class DispatcherTest {
 
         try (BufferedReader buffered = new BufferedReader(new InputStreamReader(input))) {
             buffered.mark(2048);
+            Request req = new Request();
+            req.setInput(buffered);
 
-            Map map = dispatcher.readOpPost(buffered);
-
-            Assert.assertNotNull(map);
-            Assert.assertEquals("Hello", map.get("request"));
-            Assert.assertEquals("hello", map.get("service"));
+            Request res = dispatcher.readOpPost(req);
+            assertSame(req, res);
+            assertEquals("Hello", res.getRequest());
+            assertEquals("hello", res.getService());
         }
     }
 
@@ -177,6 +180,11 @@ public class DispatcherTest {
 
                 Request req = new Request();
                 req.setInput(input);
+                // this is what Dispatcher.service() would have done before calling
+                // dispatch()->parseRequestXML(...)
+                req.setRequest("Hello");
+                req.setPostRequestElementName("Hello");
+                req.setService("hello");
 
                 Object object = dispatcher.parseRequestXML(null, input, req);
                 Assert.assertEquals(new Message("Hello world!"), object);

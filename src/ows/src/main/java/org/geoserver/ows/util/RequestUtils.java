@@ -5,7 +5,6 @@
  */
 package org.geoserver.ows.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -200,22 +199,8 @@ public class RequestUtils {
     public static BufferedReader getBufferedXMLReader(InputStream stream, int xmlLookahead)
             throws IOException {
 
-        // create a buffer so we can reset the input stream
-        BufferedInputStream input = new BufferedInputStream(stream);
-        input.mark(xmlLookahead);
-
-        // create object to hold encoding info
-        EncodingInfo encoding = new EncodingInfo();
-
-        // call this method to set the encoding info
-        XmlCharsetDetector.getCharsetAwareReader(input, encoding);
-
-        // call this method to create the reader
-        @SuppressWarnings("PMD.CloseResource") // just a wrapper
-        Reader reader = XmlCharsetDetector.createReader(input, encoding);
-
-        // rest the input
-        input.reset();
+        @SuppressWarnings("PMD.CloseResource")
+        Reader reader = XmlCharsetDetector.getCharsetAwareReader(stream);
 
         return getBufferedXMLReader(reader, xmlLookahead);
     }
@@ -234,7 +219,7 @@ public class RequestUtils {
         // ensure the reader is a buffered reader
 
         if (!(reader instanceof BufferedReader)) {
-            reader = new BufferedReader(reader);
+            reader = new BufferedReader(reader, xmlLookahead);
         }
 
         // mark the input stream

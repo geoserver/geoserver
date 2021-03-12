@@ -48,6 +48,9 @@ public class Request {
     /** OWS request (ie operation) combined with service and version */
     protected String request;
 
+    /** XML root element name as parsed from a POST request with an xml request body */
+    protected String postRequestElementName;
+
     /** OWS protocol version (combined with service and request) */
     protected String version;
 
@@ -300,6 +303,24 @@ public class Request {
      */
     public void setRequest(String request) {
         this.request = request;
+    }
+
+    /**
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
+     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
+     * since it may differ from the final {@link #getRequest() request name}
+     */
+    String getPostRequestElementName() {
+        return postRequestElementName;
+    }
+
+    /**
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
+     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
+     * since it may differ from the final {@link #getRequest() request name}
+     */
+    void setPostRequestElementName(String rootXmlElementName) {
+        this.postRequestElementName = rootXmlElementName;
     }
 
     /**

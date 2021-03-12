@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -1311,7 +1313,8 @@ public class TransactionTest extends WFS20TestSupport {
             Node serviceException = serviceExceptionList.item(0);
             // the service exception should contain the JAXP00010001 error code, that means entity
             // expansion limit is working.
-            assertTrue(serviceException.getTextContent().contains("JAXP00010001"));
+            String textContent = serviceException.getTextContent();
+            assertThat(textContent, containsString("JAXP00010001"));
         } finally {
             System.getProperties().remove(WFSXmlUtils.ENTITY_EXPANSION_LIMIT);
         }

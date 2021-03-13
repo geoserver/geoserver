@@ -375,11 +375,10 @@ public class ReprojectionTest extends WFSTestSupport {
                         .getNodeValue();
         String lc = coordinates.split(" ")[0];
         String uc = coordinates.split(" ")[1];
-        double[] c =
-                new double[] {
-                    Double.parseDouble(lc.split(",")[0]), Double.parseDouble(lc.split(",")[1]),
-                    Double.parseDouble(uc.split(",")[0]), Double.parseDouble(uc.split(",")[1])
-                };
+        double[] c = {
+            Double.parseDouble(lc.split(",")[0]), Double.parseDouble(lc.split(",")[1]),
+            Double.parseDouble(uc.split(",")[0]), Double.parseDouble(uc.split(",")[1])
+        };
         double[] cr = new double[4];
         tx.transform(c, 0, cr, 0, 2);
         return cr;

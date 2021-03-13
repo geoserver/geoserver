@@ -28,8 +28,8 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
     public void testUpdateTwiceComplex() throws Exception {
         // build up the mock
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
-        Name[] names = new Name[] {new NameImpl("foo")};
-        Object[] values = new Object[] {"abc"};
+        Name[] names = {new NameImpl("foo")};
+        Object[] values = {"abc"};
         Filter filter = Filter.INCLUDE;
         fs.modifyFeatures(eq(names), eq(values), eq(filter));
         expectLastCall().once();
@@ -48,8 +48,8 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
     public void testUpdateTwiceSimple() throws Exception {
         // build up the mock
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
-        String[] names = new String[] {"foo"};
-        Object[] values = new Object[] {"abc"};
+        String[] names = {"foo"};
+        Object[] values = {"abc"};
         Filter filter = Filter.INCLUDE;
         fs.modifyFeatures(eq(names), eq(values), eq(filter));
         expectLastCall().once();

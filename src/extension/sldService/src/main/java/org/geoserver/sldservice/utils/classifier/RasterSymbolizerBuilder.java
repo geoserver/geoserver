@@ -401,8 +401,7 @@ public class RasterSymbolizerBuilder {
             ParameterBlock pb = new ParameterBlock();
             pb.setSource(iw.getRenderedImage(), 0);
             if (JAIExt.isJAIExtOperation("Stats")) {
-                StatsType[] stats =
-                        new StatsType[] {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
+                StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
 
                 // Image parameters
                 pb.set(iw.getXPeriod(), 0); // xPeriod
@@ -443,12 +442,12 @@ public class RasterSymbolizerBuilder {
         int classNum = breaks.length - 1;
         double classMembersAr[] = new double[classNum];
         for (int i = 0; i < classNum; i++) {
-            double[] low = new double[] {(double) breaks[i]};
+            double[] low = {(double) breaks[i]};
             double dHigh =
                     i != classNum - 1
                             ? Math.nextDown((double) breaks[i + 1])
                             : (double) breaks[i + 1];
-            double[] high = new double[] {dHigh};
+            double[] high = {dHigh};
             Histogram hist = iw.getHistogram(new int[] {1}, low, high);
             classMembersAr[i] = hist.getBins(0)[0];
         }

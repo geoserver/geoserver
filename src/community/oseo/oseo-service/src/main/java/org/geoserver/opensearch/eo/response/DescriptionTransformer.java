@@ -220,11 +220,9 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     map.put("minimum", "0");
                 }
                 if (param.metadata != null) {
-                    String[] keys =
-                            new String[] {
-                                OpenSearchParameters.MIN_INCLUSIVE,
-                                OpenSearchParameters.MAX_INCLUSIVE
-                            };
+                    String[] keys = {
+                        OpenSearchParameters.MIN_INCLUSIVE, OpenSearchParameters.MAX_INCLUSIVE
+                    };
                     for (String key : keys) {
                         Object value = param.metadata.get(key);
                         if (value != null) {

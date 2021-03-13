@@ -205,8 +205,9 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testMultiType() throws Exception {
         byte[] zip = writeOut(getFeatureSource(ALL_TYPES).getFeatures());
 
-        final String[] expectedTypes =
-                new String[] {"AllTypesPoint", "AllTypesMPoint", "AllTypesPolygon", "AllTypesLine"};
+        final String[] expectedTypes = {
+            "AllTypesPoint", "AllTypesMPoint", "AllTypesPolygon", "AllTypesLine"
+        };
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
         checkFieldsAreNotEmpty(new ByteArrayInputStream(zip));
     }
@@ -216,8 +217,7 @@ public class ShapeZipTest extends WFSTestSupport {
         byte[] zip =
                 writeOut(getFeatureSource(SystemTestData.BASIC_POLYGONS).getFeatures(), 500, 500);
         String shapefileName = SystemTestData.BASIC_POLYGONS.getLocalPart();
-        final String[] expectedTypes =
-                new String[] {shapefileName, shapefileName + "1", shapefileName + "2"};
+        final String[] expectedTypes = {shapefileName, shapefileName + "1", shapefileName + "2"};
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
     }
 
@@ -225,13 +225,12 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testMultiTypeDots() throws Exception {
         byte[] zip = writeOut(getFeatureSource(ALL_DOTS).getFeatures());
 
-        final String[] expectedTypes =
-                new String[] {
-                    "All_Types_DotsPoint",
-                    "All_Types_DotsMPoint",
-                    "All_Types_DotsPolygon",
-                    "All_Types_DotsLine"
-                };
+        final String[] expectedTypes = {
+            "All_Types_DotsPoint",
+            "All_Types_DotsMPoint",
+            "All_Types_DotsPolygon",
+            "All_Types_DotsLine"
+        };
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
         checkFieldsAreNotEmpty(new ByteArrayInputStream(zip));
     }
@@ -247,7 +246,7 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testNullGeometries() throws Exception {
         byte[] zip = writeOut(getFeatureSource(NULLGEOM).getFeatures());
 
-        final String[] expectedTypes = new String[] {"nullgeom"};
+        final String[] expectedTypes = {"nullgeom"};
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
     }
 
@@ -280,7 +279,7 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testDots() throws Exception {
         byte[] zip = writeOut(getFeatureSource(DOTS).getFeatures());
 
-        final String[] expectedTypes = new String[] {"dots_in_name"};
+        final String[] expectedTypes = {"dots_in_name"};
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
         checkFieldsAreNotEmpty(new ByteArrayInputStream(zip));
     }
@@ -514,8 +513,9 @@ public class ShapeZipTest extends WFSTestSupport {
         zip.write(fct, bos, op);
         byte[] byteArrayZip = bos.toByteArray();
 
-        final String[] expectedTypes =
-                new String[] {"AllTypesPoint", "AllTypesMPoint", "AllTypesPolygon", "AllTypesLine"};
+        final String[] expectedTypes = {
+            "AllTypesPoint", "AllTypesMPoint", "AllTypesPolygon", "AllTypesLine"
+        };
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(byteArrayZip));
 
         for (String fileName : expectedTypes) {
@@ -720,7 +720,7 @@ public class ShapeZipTest extends WFSTestSupport {
         ZipInputStream zis = new ZipInputStream(in);
         ZipEntry entry = null;
 
-        final String[] extensions = new String[] {".shp", ".shx", ".dbf", ".prj", ".cst"};
+        final String[] extensions = {".shp", ".shx", ".dbf", ".prj", ".cst"};
         Set names = new HashSet();
         for (String name : typeNames) {
             for (String extension : extensions) {
@@ -972,7 +972,7 @@ public class ShapeZipTest extends WFSTestSupport {
      * @return shp file byte array
      */
     private byte[] getShpOnlyBytes(byte[] zipBytes) throws IOException {
-        byte[] resultBytes = new byte[] {};
+        byte[] resultBytes = {};
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes));
         ZipEntry entry = null;
         while ((entry = zis.getNextEntry()) != null) {

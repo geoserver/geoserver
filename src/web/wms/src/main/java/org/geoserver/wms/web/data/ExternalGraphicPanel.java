@@ -61,7 +61,7 @@ public class ExternalGraphicPanel extends Panel {
 
     static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
 
-    private static final String[] EXTENSIONS = new String[] {"png", "gif", "jpeg", "jpg"};
+    private static final String[] EXTENSIONS = {"png", "gif", "jpeg", "jpg"};
 
     private TextField<String> onlineResource;
     private TextField<String> format;

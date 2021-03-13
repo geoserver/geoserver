@@ -40,8 +40,9 @@ import org.w3c.dom.Document;
 
 public class GML32OutputFormat extends GML3OutputFormat {
 
-    public static final String[] MIME_TYPES =
-            new String[] {"application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"};
+    public static final String[] MIME_TYPES = {
+        "application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"
+    };
 
     public static final List<String> FORMATS = new ArrayList<>();
 

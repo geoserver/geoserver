@@ -112,14 +112,13 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
 
     private Polygon envToGeometry(ReferencedEnvelope env) {
 
-        Coordinate[] coordinates =
-                new Coordinate[] {
-                    new Coordinate(env.getMinX(), env.getMinY()),
-                    new Coordinate(env.getMaxX(), env.getMinY()),
-                    new Coordinate(env.getMaxX(), env.getMaxY()),
-                    new Coordinate(env.getMinX(), env.getMaxY()),
-                    new Coordinate(env.getMinX(), env.getMinY())
-                };
+        Coordinate[] coordinates = {
+            new Coordinate(env.getMinX(), env.getMinY()),
+            new Coordinate(env.getMaxX(), env.getMinY()),
+            new Coordinate(env.getMaxX(), env.getMaxY()),
+            new Coordinate(env.getMinX(), env.getMaxY()),
+            new Coordinate(env.getMinX(), env.getMinY())
+        };
         LinearRing bbox = gFac.createLinearRing(coordinates);
         return gFac.createPolygon(bbox, new LinearRing[] {});
     }

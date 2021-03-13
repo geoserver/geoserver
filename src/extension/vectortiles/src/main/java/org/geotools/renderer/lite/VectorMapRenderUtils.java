@@ -406,7 +406,7 @@ public class VectorMapRenderUtils {
             }
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "PMD.UseShortArrayInitializer"})
         List<Rule>[] ret = new List[] {ruleList, elseRuleList};
         return ret;
     }

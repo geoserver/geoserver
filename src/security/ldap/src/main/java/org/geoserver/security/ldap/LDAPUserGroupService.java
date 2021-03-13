@@ -51,7 +51,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
 
     private String passwordValidatorName;
 
-    private String[] populatedAttributes = new String[] {};
+    private String[] populatedAttributes = {};
 
     public LDAPUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         initializeFromConfig(config);

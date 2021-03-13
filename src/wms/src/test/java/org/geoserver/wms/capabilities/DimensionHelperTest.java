@@ -56,7 +56,7 @@ public class DimensionHelperTest {
 
     @Test
     public void testGetCustomDomainRepresentation() {
-        final String[] vals = new String[] {"value with spaces", "value", "  other values "};
+        final String[] vals = {"value with spaces", "value", "  other values "};
         final List<String> values = new ArrayList<>();
         for (String val : vals) values.add(val);
         DimensionInfo dimensionInfo = new DimensionInfoImpl();

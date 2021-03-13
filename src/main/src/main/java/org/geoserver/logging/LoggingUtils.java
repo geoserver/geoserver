@@ -163,16 +163,15 @@ public class LoggingUtils {
 
             // now we copy in the various logging config files from the base repo location on the
             // classpath
-            final String[] lcfiles =
-                    new String[] {
-                        "DEFAULT_LOGGING.properties",
-                        "GEOSERVER_DEVELOPER_LOGGING.properties",
-                        "GEOTOOLS_DEVELOPER_LOGGING.properties",
-                        "PRODUCTION_LOGGING.properties",
-                        "QUIET_LOGGING.properties",
-                        "TEST_LOGGING.properties",
-                        "VERBOSE_LOGGING.properties"
-                    };
+            final String[] lcfiles = {
+                "DEFAULT_LOGGING.properties",
+                "GEOSERVER_DEVELOPER_LOGGING.properties",
+                "GEOTOOLS_DEVELOPER_LOGGING.properties",
+                "PRODUCTION_LOGGING.properties",
+                "QUIET_LOGGING.properties",
+                "TEST_LOGGING.properties",
+                "VERBOSE_LOGGING.properties"
+            };
 
             for (String lcfile : lcfiles) {
                 File target = new File(lcdir.getAbsolutePath(), lcfile);

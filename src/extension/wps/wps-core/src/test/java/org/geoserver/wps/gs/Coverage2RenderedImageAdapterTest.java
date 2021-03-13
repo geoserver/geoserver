@@ -73,8 +73,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
                 else raster.setSample(x, y, 0, x + y); // normal background
             }
         }
-        final Color[] colors =
-                new Color[] {Color.BLUE, Color.CYAN, Color.WHITE, Color.YELLOW, Color.RED};
+        final Color[] colors = {Color.BLUE, Color.CYAN, Color.WHITE, Color.YELLOW, Color.RED};
 
         return factory.create(
                 "Float coverage",

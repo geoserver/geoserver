@@ -85,7 +85,7 @@ public class KvpUtilsTest {
     public void testRadFlatUnkownDelimiter() {
         List actual;
 
-        final String[] expected = new String[] {"1", "2", "3", ""};
+        final String[] expected = {"1", "2", "3", ""};
         actual = KvpUtils.readFlat("1^2^3^", "\\^");
         assertKvp(expected, actual);
 

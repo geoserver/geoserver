@@ -840,7 +840,7 @@ public class KMLTest extends WMSTestSupport {
                         .getFirstChild()
                         .getTextContent()
                         .split(",");
-        double[] p = new double[] {Double.parseDouble(coords[0]), Double.parseDouble(coords[1])};
+        double[] p = {Double.parseDouble(coords[0]), Double.parseDouble(coords[1])};
 
         assertEquals(-105.2, p[0], 0.1);
         assertEquals(40.0, p[1], 0.1);

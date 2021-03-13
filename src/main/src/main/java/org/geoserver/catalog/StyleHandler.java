@@ -38,7 +38,7 @@ public abstract class StyleHandler {
 
     protected static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
 
-    protected static String[] IMAGE_EXTENSIONS = new String[] {"png", "jpg", "jpeg", "gif", "svg"};
+    protected static String[] IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "svg"};
 
     protected static MimetypesFileTypeMap IMAGE_TYPES = new MimetypesFileTypeMap();
 

@@ -256,14 +256,13 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     @Test
     public void testNamedServices() {
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
-        Class<?>[] extensionPoints =
-                new Class<?>[] {
-                    GeoServerUserGroupService.class,
-                    GeoServerRoleService.class,
-                    PasswordValidator.class,
-                    GeoServerAuthenticationProvider.class,
-                    GeoServerSecurityFilter.class
-                };
+        Class<?>[] extensionPoints = {
+            GeoServerUserGroupService.class,
+            GeoServerRoleService.class,
+            PasswordValidator.class,
+            GeoServerAuthenticationProvider.class,
+            GeoServerSecurityFilter.class
+        };
 
         for (Class<?> ep : extensionPoints) {
             try {

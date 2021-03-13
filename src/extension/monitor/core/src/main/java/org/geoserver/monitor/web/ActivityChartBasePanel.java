@@ -87,7 +87,7 @@ public abstract class ActivityChartBasePanel extends Panel {
                                 ((GeoServerApplication) getApplication())
                                         .getBeanOfType(Monitor.class);
 
-                        Date[] range = new Date[] {from, to};
+                        Date[] range = {from, to};
 
                         chartImage.setImageResource(queryAndRenderChart(monitor, range));
                         target.add(chartImage);

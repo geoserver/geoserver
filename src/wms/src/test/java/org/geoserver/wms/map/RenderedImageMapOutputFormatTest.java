@@ -1478,7 +1478,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
 
-        final int[] bandIndices = new int[] {1, 2, 0, 2, 1};
+        final int[] bandIndices = {1, 2, 0, 2, 1};
         // Inject bandIndices read param
         Parameter<int[]> bandIndicesParam =
                 (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();

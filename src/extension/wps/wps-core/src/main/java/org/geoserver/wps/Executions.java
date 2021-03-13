@@ -117,7 +117,7 @@ public class Executions {
         if (request.orderBy != null && !request.orderBy.isEmpty()) {
             String sortAttribute = translateAttributeName(request.orderBy);
             if (sortAttribute != null && !sortAttribute.isEmpty()) {
-                SortBy[] sortBy = new SortBy[] {ff.sort(sortAttribute, SortOrder.DESCENDING)};
+                SortBy[] sortBy = {ff.sort(sortAttribute, SortOrder.DESCENDING)};
                 queryFilter.setSortBy(sortBy);
             }
         }

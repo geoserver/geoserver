@@ -1954,17 +1954,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             return false;
         }
 
-        String[][] allowedMethods =
-                new String[][] {
-                    {
-                        "org.geoserver.security.GeoServerSecurityManagerTest",
-                        "testMasterPasswordDump"
-                    },
-                    {
-                        "org.geoserver.security.web.passwd.MasterPasswordInfoPage",
-                        "dumpMasterPassword"
-                    }
-                };
+        String[][] allowedMethods = {
+            {"org.geoserver.security.GeoServerSecurityManagerTest", "testMasterPasswordDump"},
+            {"org.geoserver.security.web.passwd.MasterPasswordInfoPage", "dumpMasterPassword"}
+        };
 
         String result = checkStackTrace(10, allowedMethods);
 
@@ -1992,10 +1985,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throw new IOException("Unauthorized user tries to read master password");
         }
 
-        String[][] allowedMethods =
-                new String[][] {
-                    {"org.geoserver.rest.security.MasterPasswordController", "masterPasswordGet"}
-                };
+        String[][] allowedMethods = {
+            {"org.geoserver.rest.security.MasterPasswordController", "masterPasswordGet"}
+        };
 
         String result = checkStackTrace(10, allowedMethods);
         if (result != null) {

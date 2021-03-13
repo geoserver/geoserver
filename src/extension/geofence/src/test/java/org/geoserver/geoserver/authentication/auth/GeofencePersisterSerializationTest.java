@@ -116,7 +116,7 @@ public class GeofencePersisterSerializationTest {
         rule2.setLayer("layer");
         rule2.setAccess(GrantType.ALLOW);
 
-        Rule[] rules = new Rule[] {rule2};
+        Rule[] rules = {rule2};
         JaxbRuleList ruleList = new JaxbRuleList(Arrays.asList(rules));
 
         persister.save(ruleList, baos);

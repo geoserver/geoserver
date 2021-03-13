@@ -64,10 +64,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // array of cyclically used colors (specified as autocad color indexes)
     // each color is assigned to a layer until there are elements
     // available, then they are reused again
-    protected int[] colors = new int[] {7, 1, 2, 3, 4, 5, 6, 8, 9};
+    protected int[] colors = {7, 1, 2, 3, 4, 5, 6, 8, 9};
 
     // array of cyclically used line types
-    protected LineType[] lineTypes = new LineType[] {new LineType("CONTINUOUS", "Solid line")};
+    protected LineType[] lineTypes = {new LineType("CONTINUOUS", "Solid line")};
 
     // current layer color (index in the colors array)
     private int colorPos = 0;

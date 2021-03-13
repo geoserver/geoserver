@@ -53,30 +53,29 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
      * The extension that are recognised as simple text resources (and can be edited with simple
      * text editor).
      */
-    private static final String[] TEXTUAL_EXTENSIONS =
-            new String[] {
-                "txt",
-                "properties",
-                "info",
-                "xml",
-                "sld",
-                "rst",
-                "log",
-                "asc",
-                "cfg",
-                "css",
-                "ftl",
-                "htm",
-                "html",
-                "js",
-                "xsd",
-                "prj",
-                "meta",
-                "pgw",
-                "pal",
-                "tfw",
-                "url"
-            };
+    private static final String[] TEXTUAL_EXTENSIONS = {
+        "txt",
+        "properties",
+        "info",
+        "xml",
+        "sld",
+        "rst",
+        "log",
+        "asc",
+        "cfg",
+        "css",
+        "ftl",
+        "htm",
+        "html",
+        "js",
+        "xsd",
+        "prj",
+        "meta",
+        "pgw",
+        "pal",
+        "tfw",
+        "url"
+    };
 
     /** The expanded states model. */
     protected final ResourceExpandedStates expandedStates = new ResourceExpandedStates();

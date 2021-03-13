@@ -2428,7 +2428,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             // create a scaled 100x100 raster, with 4 bands
             int targetSizeX = 100;
             int targetSizeY = 100;
-            int[] bandIndices = new int[] {0, 2, 2, 2};
+            int[] bandIndices = {0, 2, 2, 2};
             downloadProcess.execute(
                     getLayerId(MockData.USA_WORLDIMG), // layerName
                     null, // filter

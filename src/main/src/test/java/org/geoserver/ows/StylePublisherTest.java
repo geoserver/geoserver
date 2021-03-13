@@ -112,7 +112,7 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testOverride() throws Exception {
-        String[] path = new String[] {"styles", "override.png"};
+        String[] path = {"styles", "override.png"};
         MockHttpServletResponse response = request(path, null);
         assertEquals(Arrays.toString(path), 200, response.getStatus());
 

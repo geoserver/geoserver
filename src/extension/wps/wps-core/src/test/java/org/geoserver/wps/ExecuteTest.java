@@ -2134,7 +2134,7 @@ public class ExecuteTest extends WPSTestSupport {
         ZipInputStream zis = new ZipInputStream(in);
         ZipEntry entry = null;
 
-        final String[] extensions = new String[] {".shp", ".shx", ".dbf", ".prj", ".cst"};
+        final String[] extensions = {".shp", ".shx", ".dbf", ".prj", ".cst"};
         Set<String> names = new HashSet<>();
         for (String name : typeNames) {
             for (String extension : extensions) {

@@ -42,7 +42,7 @@ public class ScaleToTargetTest {
 
     private static final double DELTA = 1E-06;
 
-    private static final double[] EXP_NATIVE_RES = new double[] {0.0041666667, 0.0041666667};
+    private static final double[] EXP_NATIVE_RES = {0.0041666667, 0.0041666667};
 
     private static final ReferencedEnvelope ROI =
             new ReferencedEnvelope(146.5, 148, -43.5, -43, DefaultGeographicCRS.WGS84);
@@ -132,10 +132,9 @@ public class ScaleToTargetTest {
     @Test
     public void testFullSizeScale2X() throws Exception {
         final int targetSizeX = 720, targetSizeY = 720;
-        final double[] expectedRequestedResolution =
-                new double[] {EXP_NATIVE_RES[0] / 2, EXP_NATIVE_RES[1] / 2};
+        final double[] expectedRequestedResolution = {EXP_NATIVE_RES[0] / 2, EXP_NATIVE_RES[1] / 2};
         final double[] expectedReadResolution = EXP_NATIVE_RES;
-        final int[] expectedGridSize = new int[] {360, 360}; // full size image
+        final int[] expectedGridSize = {360, 360}; // full size image
 
         testFullSize(
                 targetSizeX,
@@ -148,10 +147,9 @@ public class ScaleToTargetTest {
     @Test
     public void testFullSizeTargetSizeMatchesOverview() throws Exception {
         final int targetSizeX = 90, targetSizeY = 90;
-        final double[] expectedRequestedResolution = new double[] {0.0166666667, 0.0166666667};
+        final double[] expectedRequestedResolution = {0.0166666667, 0.0166666667};
         final double[] expectedReadResolution = expectedRequestedResolution;
-        final int[] expectedGridSize =
-                new int[] {targetSizeX, targetSizeY}; // matches 90x90 overview
+        final int[] expectedGridSize = {targetSizeX, targetSizeY}; // matches 90x90 overview
 
         testFullSize(
                 targetSizeX,
@@ -164,9 +162,9 @@ public class ScaleToTargetTest {
     @Test
     public void testFullSizeTargetSizeDoesNotMatchOverview() throws Exception {
         final int targetSizeX = 110, targetSizeY = 110;
-        final double[] expectedRequestedResolution = new double[] {0.0136363636, 0.0136363636};
-        final double[] expectedReadResolution = new double[] {0.0166666667, 0.0166666667};
-        final int[] expectedGridSize = new int[] {90, 90}; // closest overview: 90x90
+        final double[] expectedRequestedResolution = {0.0136363636, 0.0136363636};
+        final double[] expectedReadResolution = {0.0166666667, 0.0166666667};
+        final int[] expectedGridSize = {90, 90}; // closest overview: 90x90
 
         testFullSize(
                 targetSizeX,
@@ -234,9 +232,9 @@ public class ScaleToTargetTest {
     @Test
     public void testROITargetSizeMatchesOverview() throws Exception {
         final int targetSizeX = 180, targetSizeY = 60; // matches 180x180 overview
-        final double[] expectedRequestedResolution = new double[] {0.0083333333, 0.0083333333};
+        final double[] expectedRequestedResolution = {0.0083333333, 0.0083333333};
         final double[] expectedReadResolution = expectedRequestedResolution;
-        final int[] expectedGridSize = new int[] {180, 60}; // matches 180x180 overview
+        final int[] expectedGridSize = {180, 60}; // matches 180x180 overview
 
         testROI(
                 targetSizeX,
@@ -249,9 +247,9 @@ public class ScaleToTargetTest {
     @Test
     public void testROITargetSizeDoesNotMatchOverview() throws Exception {
         final int targetSizeX = 150, targetSizeY = 50; // closest overview is 180x180
-        final double[] expectedRequestedResolution = new double[] {0.01, 0.01};
-        final double[] expectedReadResolution = new double[] {0.0083333333, 0.0083333333};
-        final int[] expectedGridSize = new int[] {180, 60}; // targetSize * requestedRes / readRes
+        final double[] expectedRequestedResolution = {0.01, 0.01};
+        final double[] expectedReadResolution = {0.0083333333, 0.0083333333};
+        final int[] expectedGridSize = {180, 60}; // targetSize * requestedRes / readRes
 
         testROI(
                 targetSizeX,
@@ -363,7 +361,7 @@ public class ScaleToTargetTest {
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
         final List<GeneralParameterDescriptor> parameterDescriptors =
                 readParametersDescriptor.getDescriptor().descriptors();
-        GeneralParameterValue[] readParameters = new GeneralParameterValue[] {};
+        GeneralParameterValue[] readParameters = {};
         readParameters =
                 CoverageUtils.mergeParameter(
                         parameterDescriptors,

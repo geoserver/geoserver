@@ -28,19 +28,17 @@ class TimeDimensionHelper {
     static final Logger LOGGER = Logging.getLogger(TimeDimensionHelper.class);
 
     /** Duration in ms of well know time periods */
-    static final BigDecimal[] DURATIONS =
-            new BigDecimal[] {
-                new BigDecimal(31536000000L),
-                new BigDecimal(2628000000L),
-                new BigDecimal(86400000L),
-                new BigDecimal(3600000L),
-                new BigDecimal(60000),
-                new BigDecimal(1000L)
-            };
+    static final BigDecimal[] DURATIONS = {
+        new BigDecimal(31536000000L),
+        new BigDecimal(2628000000L),
+        new BigDecimal(86400000L),
+        new BigDecimal(3600000L),
+        new BigDecimal(60000),
+        new BigDecimal(1000L)
+    };
 
     /** Labels for teh above time periods */
-    static final String[] DURATION_UNITS =
-            new String[] {"year", "month", "day", "hour", "minute", "second"};
+    static final String[] DURATION_UNITS = {"year", "month", "day", "hour", "minute", "second"};
 
     DimensionInfo timeDimension;
 

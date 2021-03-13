@@ -40,7 +40,7 @@ public abstract class GeoServerPropertyFactoryBean<T> extends AbstractFactoryBea
     @Override
     protected T createInstance() throws Exception {
         String value = GeoServerExtensions.getProperty(propertyName, applicationContext);
-        Object[] logParams = new Object[] {propertyName, value, getDefaultValue()};
+        Object[] logParams = {propertyName, value, getDefaultValue()};
         if (value == null || value.isEmpty()) {
             LOGGER.log(
                     Level.INFO,

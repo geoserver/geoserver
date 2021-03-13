@@ -63,8 +63,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
  */
 public class GMLFileFormat extends VectorFormat {
 
-    private static final Class[] TYPE_GUESS_TARGETS =
-            new Class[] {Integer.class, Long.class, Double.class, Boolean.class, Date.class};
+    private static final Class[] TYPE_GUESS_TARGETS = {
+        Integer.class, Long.class, Double.class, Boolean.class, Date.class
+    };
 
     private static final HashSet<Class> VALID_ATTRIBUTE_TYPES =
             new HashSet<>(

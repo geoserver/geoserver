@@ -41,7 +41,7 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
 
     private static final String NESTED_GROUP_NAME = "nested";
 
-    private static final String[] DEFAULT_RULES = new String[] {"*.*.r=*", "*.*.w=*"};
+    private static final String[] DEFAULT_RULES = {"*.*.r=*", "*.*.w=*"};
 
     @Override
     @Before

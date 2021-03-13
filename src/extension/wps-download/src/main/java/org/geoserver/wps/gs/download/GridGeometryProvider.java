@@ -123,8 +123,7 @@ class GridGeometryProvider {
             BoundingBox featureBBox = null;
             GeneralEnvelope env = null;
             ReferencedEnvelope envelope = null;
-            double[] fallbackResolution =
-                    new double[] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+            double[] fallbackResolution = {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
 
             // Look for the best resolution available from features matching the targetCRS.
             // Keep also updating a secondary resolution from features not matching
@@ -229,11 +228,10 @@ class GridGeometryProvider {
             if (!transform.isIdentity()) {
                 BoundingBox bounds = feature.getBounds();
                 // Get the center coordinate in the granule's CRS
-                double center[] =
-                        new double[] {
-                            (bounds.getMaxX() + bounds.getMinX()) / 2,
-                            (bounds.getMaxY() + bounds.getMinY()) / 2
-                        };
+                double center[] = {
+                    (bounds.getMaxX() + bounds.getMinX()) / 2,
+                    (bounds.getMaxY() + bounds.getMinY()) / 2
+                };
 
                 MathTransform inverse = transform.inverse();
                 transform.transform(center, 0, center, 0, 1);
@@ -370,7 +368,7 @@ class GridGeometryProvider {
 
             GranuleSource granules = structuredReader.getGranules(coverageName, true);
             // Initialize resolution with infinite numbers
-            double[] resolution = new double[] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+            double[] resolution = {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
             // Setup a query on top of ROI and input filter (if any)
             Query query = initQuery(granules);
             SimpleFeatureCollection features = granules.getGranules(query);
@@ -393,8 +391,7 @@ class GridGeometryProvider {
                 // no reprojection but has been request to try to preserve native
                 // resolution if under tolerance value
                 resolution = provider.getGranulesNativeResolutionIfSame(features);
-                double[] testResolution =
-                        new double[] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+                double[] testResolution = {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
                 // get best resolution to have a reference
                 envelope = provider.getBestResolution(features, testResolution);
                 if (testResolution[0] != resolution[0] || testResolution[1] != resolution[1]) {

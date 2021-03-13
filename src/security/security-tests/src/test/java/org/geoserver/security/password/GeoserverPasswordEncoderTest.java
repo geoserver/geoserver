@@ -30,7 +30,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
 
     protected String testPassword = "geoserver";
     protected char[] testPasswordArray = testPassword.toCharArray();
-    protected char[] emptyArray = new char[] {};
+    protected char[] emptyArray = {};
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     @Test

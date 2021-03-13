@@ -402,7 +402,7 @@ public class GetCoverage {
             final GridCoverageFactory coverageFactory)
             throws Exception {
         List<GridCoverage2D> coverages = null;
-        double[] preAppliedScale = new double[] {Double.NaN, Double.NaN};
+        double[] preAppliedScale = {Double.NaN, Double.NaN};
         //
         // we setup the params to force the usage of imageread and to make it use
         // the right overview and so on
@@ -817,7 +817,7 @@ public class GetCoverage {
                         .getParameterValues()
                         .parameter(AbstractProvider.CENTRAL_MERIDIAN.getName().getCode())
                         .doubleValue();
-        double[] src = new double[] {centralMeridian, 0, 180 + centralMeridian, 0};
+        double[] src = {centralMeridian, 0, 180 + centralMeridian, 0};
         double[] dst = new double[4];
         MathTransform mt = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
         mt.transform(src, 0, dst, 0, 2);
@@ -1965,7 +1965,7 @@ public class GetCoverage {
         // Before doing the scaling, check if some preScaling as been applied
         // This may occur when dealing with overviews
         if (!Double.isNaN(preAppliedScale[0]) && !Double.isNaN(preAppliedScale[1])) {
-            final Double[] scale = new Double[] {preAppliedScale[0], preAppliedScale[1]};
+            final Double[] scale = {preAppliedScale[0], preAppliedScale[1]};
             hints.add(new Hints(GetCoverage.PRE_APPLIED_SCALE, scale));
         }
         return scalingPolicy.scale(coverage, scaling, spatialInterpolation, hints, wcs);

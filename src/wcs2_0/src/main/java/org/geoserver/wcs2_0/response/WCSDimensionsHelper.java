@@ -39,19 +39,17 @@ import org.vfny.geoserver.wcs.WcsException;
 public class WCSDimensionsHelper {
 
     /** Duration in ms of well know time periods */
-    static final BigDecimal[] DURATIONS =
-            new BigDecimal[] {
-                new BigDecimal(31536000000L),
-                new BigDecimal(2628000000L),
-                new BigDecimal(86400000L),
-                new BigDecimal(3600000L),
-                new BigDecimal(60000),
-                new BigDecimal(1000L)
-            };
+    static final BigDecimal[] DURATIONS = {
+        new BigDecimal(31536000000L),
+        new BigDecimal(2628000000L),
+        new BigDecimal(86400000L),
+        new BigDecimal(3600000L),
+        new BigDecimal(60000),
+        new BigDecimal(1000L)
+    };
 
     /** Labels for the above time periods */
-    static final String[] DURATION_UNITS =
-            new String[] {"year", "month", "day", "hour", "minute", "second"};
+    static final String[] DURATION_UNITS = {"year", "month", "day", "hour", "minute", "second"};
 
     /** Quick access fields for timeDimension and elevationDimension */
     DimensionInfo timeDimension;

@@ -117,8 +117,8 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
 
         assertTrue(mt.toWKT().contains("NADCON"));
 
-        double[] src = new double[] {-169.625, 56.575};
-        double[] expected = new double[] {-169.62744, 56.576034};
+        double[] src = {-169.625, 56.575};
+        double[] expected = {-169.62744, 56.576034};
         double[] p = new double[2];
         mt.transform(src, 0, p, 0, 1);
         assertEquals(expected[0], p[0], 1e-6);

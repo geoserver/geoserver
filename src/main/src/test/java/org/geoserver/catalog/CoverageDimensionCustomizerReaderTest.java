@@ -318,8 +318,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
                         "original",
                         image,
                         new GeneralEnvelope(new Rectangle2D.Double(0, 0, 64, 64)));
-        GridSampleDimension[] gsd =
-                new GridSampleDimension[] {new GridSampleDimension("wrappedSampleDimension")};
+        GridSampleDimension[] gsd = {new GridSampleDimension("wrappedSampleDimension")};
         GridCoverageWrapper wrapper = new GridCoverageWrapper("wrapped", original, gsd, null);
         assertNotSame(original.getSampleDimensions(), wrapper.getSampleDimensions());
         assertNotSame(wrapper, original);

@@ -1631,13 +1631,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final RenderedImage createBkgImage(
             float width, float height, Color bgColor, RenderingHints renderingHints) {
         // prepare bands for constant image if needed
-        final Number[] bands =
-                new Byte[] {
-                    (byte) bgColor.getRed(),
-                    (byte) bgColor.getGreen(),
-                    (byte) bgColor.getBlue(),
-                    (byte) bgColor.getAlpha()
-                };
+        final Byte[] bands = {
+            (byte) bgColor.getRed(),
+            (byte) bgColor.getGreen(),
+            (byte) bgColor.getBlue(),
+            (byte) bgColor.getAlpha()
+        };
         return ConstantDescriptor.create(width, height, bands, renderingHints);
     }
 

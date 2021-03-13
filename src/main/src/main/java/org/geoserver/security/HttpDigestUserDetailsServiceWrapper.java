@@ -63,7 +63,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
     private GeoServerSecurityManager manager;
     protected GeoServerUserGroupService service;
     protected Charset charSet;
-    protected final char[] delimArray = new char[] {':'};
+    protected final char[] delimArray = {':'};
     protected MessageDigest digest;
     protected GeoServerMultiplexingPasswordEncoder enc;
 

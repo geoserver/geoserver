@@ -328,8 +328,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
         child.setAttribute("authenticationCode", "2.0");
 
         int loop = loopContinuously ? 0 : 1;
-        final byte[] userObject =
-                new byte[] {0x1, (byte) (loop & 0xFF), (byte) ((loop >> 8) & 0xFF)};
+        final byte[] userObject = {0x1, (byte) (loop & 0xFF), (byte) ((loop >> 8) & 0xFF)};
         child.setUserObject(userObject);
         appEntensionsNode.appendChild(child);
 

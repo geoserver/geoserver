@@ -201,70 +201,64 @@ public class MockData implements TestData {
     public static QName GEOMETRYLESS = new QName(CITE_URI, "Geometryless", CITE_PREFIX);
 
     /** List of all cite types names */
-    public static QName[] TYPENAMES =
-            new QName[] {
-                // WMS 1.1.1
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS, // WFS 1.0
-                DELETES,
-                FIFTEEN,
-                INSERTS,
-                LOCKS,
-                NULLS,
-                OTHER,
-                SEVEN,
-                UPDATES,
-                LINES,
-                MLINES,
-                MPOINTS,
-                MPOLYGONS,
-                POINTS,
-                POLYGONS, // WFS 1.1
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY,
-                GEOMETRYLESS /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] TYPENAMES = {
+        // WMS 1.1.1
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS, // WFS 1.0
+        DELETES,
+        FIFTEEN,
+        INSERTS,
+        LOCKS,
+        NULLS,
+        OTHER,
+        SEVEN,
+        UPDATES,
+        LINES,
+        MLINES,
+        MPOINTS,
+        MPOLYGONS,
+        POINTS,
+        POLYGONS, // WFS 1.1
+        PRIMITIVEGEOFEATURE,
+        AGGREGATEGEOFEATURE,
+        GENERICENTITY,
+        GEOMETRYLESS /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
     /** List of wms type names. */
-    public static QName[] WMS_TYPENAMES =
-            new QName[] {
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS
-            };
+    public static QName[] WMS_TYPENAMES = {
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS
+    };
 
     /** List of wfs 1.0 type names. */
-    public static QName[] WFS10_TYPENAMES =
-            new QName[] {
-                DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES,
-                MPOINTS, MPOLYGONS, POINTS, POLYGONS
-            };
+    public static QName[] WFS10_TYPENAMES = {
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS,
+        MPOLYGONS, POINTS, POLYGONS
+    };
 
     /** List of wfs 1.1 type names. */
-    public static QName[] WFS11_TYPENAMES =
-            new QName[] {
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] WFS11_TYPENAMES = {
+        PRIMITIVEGEOFEATURE, AGGREGATEGEOFEATURE, GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
     /** map of qname to srs */
     public static HashMap<QName, Integer> SRS = new HashMap<>();
@@ -840,11 +834,9 @@ public class MockData implements TestData {
             final ParameterValueGroup readParams = reader.getFormat().getReadParameters();
             final Map parameters = CoverageUtils.getParametersKVP(readParams);
             double[] minCP = envelope.getLowerCorner().getCoordinate();
-            double[] maxCP =
-                    new double[] {
-                        minCP[0] + (envelope.getSpan(0) / 20.0),
-                        minCP[1] + (envelope.getSpan(1) / 20.0)
-                    };
+            double[] maxCP = {
+                minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)
+            };
             final GeneralEnvelope subEnvelope = new GeneralEnvelope(minCP, maxCP);
             subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
 

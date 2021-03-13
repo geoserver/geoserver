@@ -316,13 +316,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
-        Part[] parts =
-                new Part[] {
-                    new FilePart("archsites.shp", new File(dir, "archsites.shp")),
-                    new FilePart("archsites.dbf", new File(dir, "archsites.dbf")),
-                    new FilePart("archsites.shx", new File(dir, "archsites.shx")),
-                    new FilePart("archsites.prj", new File(dir, "archsites.prj"))
-                };
+        Part[] parts = {
+            new FilePart("archsites.shp", new File(dir, "archsites.shp")),
+            new FilePart("archsites.dbf", new File(dir, "archsites.dbf")),
+            new FilePart("archsites.shx", new File(dir, "archsites.shx")),
+            new FilePart("archsites.prj", new File(dir, "archsites.prj"))
+        };
 
         MultipartRequestEntity multipart =
                 new MultipartRequestEntity(parts, new PostMethod().getParams());

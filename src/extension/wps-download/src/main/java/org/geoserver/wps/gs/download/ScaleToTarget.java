@@ -340,10 +340,9 @@ class ScaleToTarget {
 
         // setup a scaling to get the transformation to be used to access the specified overview
         AffineTransform scaleTransform = new AffineTransform();
-        double[] scaleFactors =
-                new double[] {
-                    readResolution[0] / nativeResolution[0], readResolution[1] / nativeResolution[1]
-                };
+        double[] scaleFactors = {
+            readResolution[0] / nativeResolution[0], readResolution[1] / nativeResolution[1]
+        };
         scaleTransform.scale(scaleFactors[0], scaleFactors[1]);
 
         return scaleTransform;

@@ -20,19 +20,18 @@ public class RuleConverter implements Converter {
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         Rule rule = (Rule) source;
-        String[] properties =
-                new String[] {
-                    "id",
-                    "activated",
-                    "position",
-                    "match",
-                    "activation",
-                    "parameter",
-                    "transform",
-                    "remove",
-                    "combine",
-                    "repeat"
-                };
+        String[] properties = {
+            "id",
+            "activated",
+            "position",
+            "match",
+            "activation",
+            "parameter",
+            "transform",
+            "remove",
+            "combine",
+            "repeat"
+        };
         for (String property : properties) {
             Object value = OwsUtils.get(rule, property);
             if (value == null) continue;

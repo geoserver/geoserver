@@ -246,7 +246,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                         Vocabulary.formatInternational(VocabularyKeys.NODATA),
                         new Color[] {new Color(0, 0, 0, 0)},
                         NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
-        Category[] categories = new Category[] {noDataCategory};
+        Category[] categories = {noDataCategory};
         GridSampleDimension[] bands;
         bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);

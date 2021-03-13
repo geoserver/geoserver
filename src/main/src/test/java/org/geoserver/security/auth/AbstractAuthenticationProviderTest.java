@@ -201,7 +201,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         filterChain.removeForPattern(pattern);
 
         Constructor<?> cons = filterChainClass.getConstructor(new Class[] {String[].class});
-        String[] args = new String[] {pattern};
+        String[] args = {pattern};
         RequestFilterChain requestChain =
                 (RequestFilterChain) cons.newInstance(new Object[] {args});
         requestChain = new HtmlLoginFilterChain(pattern);

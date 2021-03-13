@@ -39,24 +39,22 @@ import org.opengis.filter.Filter;
 public class RasterTimeDimensionTest extends TestsSupport {
 
     // sorted time domain values as date objects
-    protected static Date[] DATE_VALUES =
-            new Date[] {
-                DateUtil.deserializeDateTime("2008-10-31T00:00:00Z"),
-                DateUtil.deserializeDateTime("2008-11-01T00:00:00Z"),
-                getGeneratedMinValue(),
-                getGeneratedMiddleValue(),
-                getGeneratedMaxValue()
-            };
+    protected static Date[] DATE_VALUES = {
+        DateUtil.deserializeDateTime("2008-10-31T00:00:00Z"),
+        DateUtil.deserializeDateTime("2008-11-01T00:00:00Z"),
+        getGeneratedMinValue(),
+        getGeneratedMiddleValue(),
+        getGeneratedMaxValue()
+    };
 
     // sorted time domain values as strings formatted with ISO8601 formatter
-    protected static String[] STRING_VALUES =
-            new String[] {
-                formatDate(DATE_VALUES[0]),
-                formatDate(DATE_VALUES[1]),
-                formatDate(DATE_VALUES[2]),
-                formatDate(DATE_VALUES[3]),
-                formatDate(DATE_VALUES[4])
-            };
+    protected static String[] STRING_VALUES = {
+        formatDate(DATE_VALUES[0]),
+        formatDate(DATE_VALUES[1]),
+        formatDate(DATE_VALUES[2]),
+        formatDate(DATE_VALUES[3]),
+        formatDate(DATE_VALUES[4])
+    };
 
     @Test
     public void testDisabledDimension() throws Exception {

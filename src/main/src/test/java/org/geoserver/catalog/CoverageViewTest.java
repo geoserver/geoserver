@@ -156,16 +156,15 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     private CoverageView buildBandsFlagsView() {
-        String[] sources =
-                new String[] {
-                    "SWIR",
-                    "VNIR",
-                    "QUALITY_CLASSES",
-                    "QUALITY_CLOUD",
-                    "QUALITY_CLOUDSHADOW",
-                    "QUALITY_HAZE",
-                    "QUALITY_SNOW"
-                };
+        String[] sources = {
+            "SWIR",
+            "VNIR",
+            "QUALITY_CLASSES",
+            "QUALITY_CLOUD",
+            "QUALITY_CLOUDSHADOW",
+            "QUALITY_HAZE",
+            "QUALITY_SNOW"
+        };
 
         List<CoverageBand> bands = new ArrayList<>();
         for (String source : sources) {

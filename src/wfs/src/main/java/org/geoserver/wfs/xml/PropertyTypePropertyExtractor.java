@@ -74,11 +74,10 @@ public class PropertyTypePropertyExtractor implements PropertyExtractor {
             properties.add(new Object[] {particle, property.getValue()});
         } else {
             // coudl not determine new type, just fall back to xs:anyType
-            Object[] p =
-                    new Object[] {
-                        Schemas.getChildElementParticle(element.getType(), "Value", false),
-                        property.getValue()
-                    };
+            Object[] p = {
+                Schemas.getChildElementParticle(element.getType(), "Value", false),
+                property.getValue()
+            };
             properties.add(p);
         }
 

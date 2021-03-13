@@ -1759,6 +1759,26 @@
        </execution>
      </executions>
    </plugin>
+
+  <plugin>
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <version>2.11.0</version>
+        <configuration>
+           <skip>${pom.fmt.skip}</skip>
+           <keepBlankLines>true</keepBlankLines>
+	   <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> 
+		<createBackupFile>false</createBackupFile>    
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>${pom.fmt.action}</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
    
    <plugin>
     <groupId>org.commonjava.maven.plugins</groupId>
@@ -2016,6 +2036,8 @@
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
+  <pom.fmt.action>sort</pom.fmt.action>
+  <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.4</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>

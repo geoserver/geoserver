@@ -58,7 +58,7 @@ Configuring a SQL Server data store
    * - ``schema``
      - The database schema to access tables from (optional).
    * - ``user``
-     - The name of the user to connect to the oracle database as.
+     - The name of the user to connect to the database as.
    * - ``password``
      - The password to use when connecting to the database. Leave blank for no password.
    * - ``max connections``

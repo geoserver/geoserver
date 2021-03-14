@@ -4,12 +4,13 @@
  */
 package org.geoserver.rest.security;
 
-import java.util.List;
 import java.util.Map;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.catalog.MapXMLConverter;
-import org.jdom2.Element;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /** Converts a RuleMap into XML and back */
 @Component
@@ -49,10 +50,10 @@ public class RuleMapXMLConverter extends MapXMLConverter {
         if (o instanceof RuleMap) {
             Map<String, String> ruleMap = (Map<String, String>) o;
             for (Map.Entry<String, String> entry : ruleMap.entrySet()) {
-                Element ruleElement = new Element(RULEELEMENT);
+                Element ruleElement = elem.getOwnerDocument().createElement(RULEELEMENT);
                 ruleElement.setAttribute(RESOURCEATTR, entry.getKey());
-                ruleElement.setText(entry.getValue());
-                elem.getChildren().add(ruleElement);
+                ruleElement.setTextContent(entry.getValue());
+                elem.appendChild(ruleElement);
             }
         } else {
             throw new IllegalArgumentException();
@@ -68,11 +69,14 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     @Override
     protected Map<String, String> convert(Element elem) {
         Map<String, String> ruleMap = new RuleMap<>();
-        @SuppressWarnings("unchecked")
-        List<Element> children = elem.getChildren();
-        for (Element ruleElement : children) {
-            String resource = ruleElement.getAttributeValue(RESOURCEATTR);
-            ruleMap.put(resource, ruleElement.getTextTrim());
+        NodeList children = elem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node n = children.item(i);
+            if (n instanceof Element) {
+                Element ruleElement = (Element) n;
+                String resource = ruleElement.getAttribute(RESOURCEATTR);
+                ruleMap.put(resource, ruleElement.getTextContent());
+            }
         }
         return ruleMap;
     }

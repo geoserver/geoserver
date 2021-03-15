@@ -213,7 +213,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // STEP 2: Adding Ground Control Points
             //
             // //
-            final int gcpNum[] = new int[1];
+            final int[] gcpNum = new int[1];
             final List<String> gcp = parseGcps(gcps, gcpNum);
             File vrtFile =
                     addGroundControlPoints(

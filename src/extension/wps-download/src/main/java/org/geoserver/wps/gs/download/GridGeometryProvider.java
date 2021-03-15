@@ -228,7 +228,7 @@ class GridGeometryProvider {
             if (!transform.isIdentity()) {
                 BoundingBox bounds = feature.getBounds();
                 // Get the center coordinate in the granule's CRS
-                double center[] = {
+                double[] center = {
                     (bounds.getMaxX() + bounds.getMinX()) / 2,
                     (bounds.getMaxY() + bounds.getMinY()) / 2
                 };

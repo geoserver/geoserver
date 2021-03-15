@@ -80,7 +80,7 @@ public class TurboImageWorkerTest extends Assert {
         }
 
         // Create paletted image
-        final byte bb[] = new byte[256];
+        final byte[] bb = new byte[256];
         for (int i = 0; i < 200; i++) {
             bb[i] = (byte) i;
         }

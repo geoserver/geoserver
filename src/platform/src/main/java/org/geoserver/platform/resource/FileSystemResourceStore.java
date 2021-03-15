@@ -409,7 +409,7 @@ public class FileSystemResourceStore implements ResourceStore {
             if (file.isFile()) {
                 return Collections.emptyList();
             }
-            String array[] = file.list();
+            String[] array = file.list();
             if (array == null) {
                 return Collections.emptyList();
             }

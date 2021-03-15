@@ -35,7 +35,7 @@ public final class DispatcherOutputStream extends OutputStream {
 
     /** @see OutputStream#write(byte[], int, int) */
     @Override
-    public void write(byte b[], int off, int len) throws ClientStreamAbortedException {
+    public void write(byte[] b, int off, int len) throws ClientStreamAbortedException {
         try {
             real.write(b, off, len);
         } catch (IOException e) {

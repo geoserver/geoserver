@@ -187,7 +187,7 @@ public final class Decimator {
             LiteCoordinateSequence seq, MathTransform transform) throws TransformException {
         // decimates before XFORM
         int ncoords = seq.size();
-        double originalOrds[] = seq.getXYArray(); // 2*#of points
+        double[] originalOrds = seq.getXYArray(); // 2*#of points
 
         if (ncoords < 2) {
             if (ncoords == 1) // 1 coordinate -- just xform it

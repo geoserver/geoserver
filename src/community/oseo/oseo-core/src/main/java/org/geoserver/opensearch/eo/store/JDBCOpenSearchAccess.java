@@ -144,7 +144,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             String prefix = "";
             if (name.startsWith(EO_PREFIX)) {
                 name = name.substring(EO_PREFIX.length());
-                char c[] = name.toCharArray();
+                char[] c = name.toCharArray();
                 c[0] = Character.toLowerCase(c[0]);
                 name = new String(c);
                 namespaceURI = EO_NAMESPACE;
@@ -242,7 +242,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                 String pcPrefix = pc.getPrefix();
                 if (name.startsWith(pcPrefix)) {
                     name = name.substring(pcPrefix.length());
-                    char c[] = name.toCharArray();
+                    char[] c = name.toCharArray();
                     c[0] = Character.toLowerCase(c[0]);
                     name = new String(c);
                     namespaceURI = pc.getNamespace();

@@ -888,7 +888,7 @@ public class SystemTestData extends CiteTestData {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
 
-            final String coverageNames[] = reader.getGridCoverageNames();
+            final String[] coverageNames = reader.getGridCoverageNames();
             if (reader instanceof StructuredGridCoverage2DReader
                     && coverageNames != null
                     && coverageNames.length > 1) {
@@ -1115,7 +1115,7 @@ public class SystemTestData extends CiteTestData {
     }
 
     private static void printFileTree_(StringBuilder sb, String prefix, File dir) {
-        File listFile[] = dir.listFiles();
+        File[] listFile = dir.listFiles();
         if (listFile != null) {
             for (int i = 0; i < listFile.length; i++) {
                 boolean last = i == listFile.length - 1;

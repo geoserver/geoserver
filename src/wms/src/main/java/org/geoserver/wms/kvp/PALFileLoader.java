@@ -93,7 +93,7 @@ class PALFileLoader {
                 throw new IllegalArgumentException("The provided number of colors is invalid");
 
             // load various colors
-            final byte colorMap[][] = new byte[3][mapsize < 256 ? mapsize + 1 : mapsize];
+            final byte[][] colorMap = new byte[3][mapsize < 256 ? mapsize + 1 : mapsize];
             for (int i = 0; i < mapsize; i++) {
                 // get the line
                 temp = trimNextLine(reader);

@@ -121,7 +121,7 @@ public class GwcServiceProxy {
         }
 
         @Override
-        public void write(byte b[], int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) throws IOException {
             outputStream.write(b, off, len);
         }
 

@@ -1817,7 +1817,7 @@ public class GetCoverage {
         }
         // houston we got a list of dimensions
         // create a list of indexes to select
-        final int indexes[] = new int[returnValue.size()];
+        final int[] indexes = new int[returnValue.size()];
         int i = 0;
         for (String bandName : returnValue) {
             indexes[i++] =
@@ -1922,7 +1922,7 @@ public class GetCoverage {
             GridCoverage2D coverage,
             ScalingType scaling,
             Interpolation spatialInterpolation,
-            double preAppliedScale[],
+            double[] preAppliedScale,
             Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);

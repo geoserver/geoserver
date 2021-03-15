@@ -839,8 +839,8 @@ public class KMLReflectorTest extends WMSTestSupport {
             return;
         }
         if (expectedText != null && text != null) {
-            String expectedCoordinates[] = expectedText.split("(\\s|,)");
-            String actualCoordiantes[] = text.split("(\\s|,)");
+            String[] expectedCoordinates = expectedText.split("(\\s|,)");
+            String[] actualCoordiantes = text.split("(\\s|,)");
             if (expectedCoordinates.length == actualCoordiantes.length) {
                 final int LENGTH = actualCoordiantes.length;
                 boolean checked = true;

@@ -36,7 +36,7 @@ public class PreviewFontProvider extends GeoServerDataProvider<PreviewFont> {
         List<PreviewFont> result = new ArrayList<>();
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        Font fonts[] = ge.getAllFonts();
+        Font[] fonts = ge.getAllFonts();
         for (Font font : fonts) {
             result.add(new PreviewFont(font.deriveFont(12f)));
         }

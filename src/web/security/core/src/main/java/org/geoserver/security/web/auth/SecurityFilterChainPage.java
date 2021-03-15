@@ -50,7 +50,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
     SecurityManagerConfig secMgrConfig;
 
     Form<? extends RequestFilterChainWrapper> form;
-    CheckBox methodList[] = new CheckBox[7];;
+    CheckBox[] methodList = new CheckBox[7];;
 
     protected boolean isNew;
 

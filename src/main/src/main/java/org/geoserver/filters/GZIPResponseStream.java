@@ -52,12 +52,12 @@ public class GZIPResponseStream extends ServletOutputStream {
     }
 
     @Override
-    public void write(byte b[]) throws IOException {
+    public void write(byte[] b) throws IOException {
         write(b, 0, b.length);
     }
 
     @Override
-    public void write(byte b[], int off, int len) throws IOException {
+    public void write(byte[] b, int off, int len) throws IOException {
         if (closed) {
             throw new IOException("Cannot write to a closed output stream");
         }

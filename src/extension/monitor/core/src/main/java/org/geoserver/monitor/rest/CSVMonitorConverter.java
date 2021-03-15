@@ -30,7 +30,7 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
         private BufferedWriter writer;
         private String[] fields;
 
-        CSVRequestDataVisitor(BufferedWriter writer, String fields[]) {
+        CSVRequestDataVisitor(BufferedWriter writer, String[] fields) {
             this.writer = writer;
             this.fields = fields;
         }

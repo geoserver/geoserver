@@ -332,7 +332,7 @@ public class NetCDFDimensionsManager {
 
                 final Index index = data.getIndex();
                 final Iterator<Object> valuesIterator = values.iterator();
-                final int indexing[] = new int[rangeValues ? 2 : 1];
+                final int[] indexing = new int[rangeValues ? 2 : 1];
 
                 // Setting array values
                 for (int pos = 0; pos < numElements; pos++) {

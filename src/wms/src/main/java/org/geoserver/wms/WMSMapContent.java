@@ -298,7 +298,7 @@ public class WMSMapContent extends MapContent {
             String keywords = (String) obj;
             return keywords.split(",");
         } else if (obj instanceof String[]) {
-            String keywords[] = (String[]) obj;
+            String[] keywords = (String[]) obj;
             String[] copy = new String[keywords.length];
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;

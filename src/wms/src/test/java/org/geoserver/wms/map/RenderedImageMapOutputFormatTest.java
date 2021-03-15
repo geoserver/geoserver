@@ -581,7 +581,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         RenderedImage image = imageMap.getImage();
-        RenderedImage warp[] = new RenderedImage[1];
+        RenderedImage[] warp = new RenderedImage[1];
         lookForOp("Warp", image, warp);
         // No Gutter has been done
         assertEquals(width, image.getWidth());

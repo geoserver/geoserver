@@ -59,7 +59,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
 
             if (":org.geoserver.web.GeoServerLoginPage".equals(pageClass[0]) == false) return false;
 
-            String error[] = (String[]) params.get("error");
+            String[] error = (String[]) params.get("error");
             if (error == null || error.length != 1) return false;
 
             return true;

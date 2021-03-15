@@ -454,7 +454,7 @@ enum ScalingPolicy {
             // TODO dimension management
 
             // get scale factor
-            double scaleFactors[] = getScaleFactors(scaling);
+            double[] scaleFactors = getScaleFactors(scaling);
             scaleFactors = arrangeScaleFactors(hints, scaleFactors);
             double scaleFactorX = scaleFactors[0];
             double scaleFactorY = scaleFactors[1];

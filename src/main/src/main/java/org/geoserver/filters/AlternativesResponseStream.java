@@ -52,12 +52,12 @@ public class AlternativesResponseStream extends ServletOutputStream {
     }
 
     @Override
-    public void write(byte b[]) throws IOException {
+    public void write(byte[] b) throws IOException {
         getStream().write(b);
     }
 
     @Override
-    public void write(byte b[], int off, int len) throws IOException {
+    public void write(byte[] b, int off, int len) throws IOException {
         getStream().write(b, off, len);
     }
 

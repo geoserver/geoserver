@@ -38,7 +38,7 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         GridCoverage2D gc = extractCoverageSubset();
 
         // extract just two isolines
-        final double levels[] = new double[2];
+        final double[] levels = new double[2];
         levels[0] = 1500;
         levels[1] = 1700;
         final ContourProcess process = new ContourProcess();

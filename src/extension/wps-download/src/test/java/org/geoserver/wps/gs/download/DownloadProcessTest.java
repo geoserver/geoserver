@@ -180,7 +180,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     file.mkdir();
                 } else {
                     int count;
-                    byte data[] = new byte[4096];
+                    byte[] data = new byte[4096];
                     // write the files to the disk
 
                     try (FileOutputStream fos = new FileOutputStream(file)) {
@@ -3237,7 +3237,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     }
 
                     int count;
-                    byte data[] = new byte[4096];
+                    byte[] data = new byte[4096];
                     // write the files to the disk
                     FileOutputStream fos = null;
                     try {

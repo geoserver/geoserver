@@ -400,7 +400,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return coverage;
     }
 
-    private boolean pixelsAreNodata(GridCoverage2D coverage, final double values[]) {
+    private boolean pixelsAreNodata(GridCoverage2D coverage, final double[] values) {
         RenderedImage ri = coverage.getRenderedImage();
         ImageWorker worker = new ImageWorker(ri);
         Range nodata = worker.getNoData();

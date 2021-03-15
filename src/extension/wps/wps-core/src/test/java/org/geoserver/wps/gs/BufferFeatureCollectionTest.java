@@ -73,7 +73,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate array[] = new Coordinate[4];
+            Coordinate[] array = new Coordinate[4];
             int j = 0;
             for (int i = 0 + numFeatures; i < 4 + numFeatures; i++) {
                 array[j] = new Coordinate(i, i);
@@ -115,7 +115,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate array[] = new Coordinate[4];
+            Coordinate[] array = new Coordinate[4];
             int j = 0;
             for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
                 array[j] = new Coordinate(i, i);
@@ -165,7 +165,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
-            Coordinate array[] = new Coordinate[4];
+            Coordinate[] array = new Coordinate[4];
             int j = 0;
             for (int i = 0 + numFeatures; i < 3 + numFeatures; i++) {
                 array[j] = new Coordinate(i, i);

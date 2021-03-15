@@ -100,7 +100,7 @@ public class LockFile {
             // find some network info
             try {
                 hostname = InetAddress.getLocalHost().getHostName();
-                InetAddress addrs[] = InetAddress.getAllByName(hostname);
+                InetAddress[] addrs = InetAddress.getAllByName(hostname);
                 for (InetAddress addr : addrs) {
                     if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress())
                         ip = addr.getHostAddress();

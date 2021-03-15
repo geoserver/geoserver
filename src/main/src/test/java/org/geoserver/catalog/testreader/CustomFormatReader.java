@@ -119,7 +119,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                 for (int i = 1; i < size; i++) {
                     worker.addBand(returnValues.get(i).getRenderedImage(), false);
                 }
-                final GridSampleDimension sds[] = new GridSampleDimension[size];
+                final GridSampleDimension[] sds = new GridSampleDimension[size];
                 Arrays.fill(sds, returnValues.get(0).getSampleDimensions()[0]);
                 return new GridCoverageFactory()
                         .create(

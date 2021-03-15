@@ -440,7 +440,7 @@ public class RasterSymbolizerBuilder {
     private double[] getCustomClassifierPercentages(RenderedImage image, Number[] breaks) {
         ImageWorker iw = new ImageWorker(image);
         int classNum = breaks.length - 1;
-        double classMembersAr[] = new double[classNum];
+        double[] classMembersAr = new double[classNum];
         for (int i = 0; i < classNum; i++) {
             double[] low = {(double) breaks[i]};
             double dHigh =

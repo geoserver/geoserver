@@ -93,7 +93,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
         if (params == null) {
             return false;
         }
-        Param arrayParameters[] = getParametersInfo();
+        Param[] arrayParameters = getParametersInfo();
         for (int i = 0; i < arrayParameters.length; i++) {
             Param param = arrayParameters[i];
             Object value;

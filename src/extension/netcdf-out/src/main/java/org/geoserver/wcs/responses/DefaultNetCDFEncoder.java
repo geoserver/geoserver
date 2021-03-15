@@ -368,7 +368,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             int maxTileY = maxY / tileHeight - (maxY < 0 ? (-maxY % tileHeight > 0 ? 1 : 0) : 0);
 
             final Index matrixIndex = matrix.getIndex();
-            final int indexing[] = new int[numDimensions];
+            final int[] indexing = new int[numDimensions];
 
             // Update the NetCDF array indexing to set values for a specific 2D slice
             updateIndexing(indexing, gridCoverage);

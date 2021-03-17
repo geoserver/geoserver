@@ -128,10 +128,18 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         // two
         // cases
         String expectedGetLegendGraphicRequestURL =
-                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + LAYER_NAME;
         String expectedGetLegendGraphicRequestURLHttp =
-                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath = "//Layer[Name='gs:" + LAYER_NAME + "']/Style/LegendURL";

@@ -1578,7 +1578,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Adding GetLegendGraphic call as LegendURL");
             }
-
             AttributesImpl attrs = new AttributesImpl();
             attrs.addAttribute("", "width", "width", "", String.valueOf(legendWidth));
 
@@ -1589,6 +1588,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("Format", defaultFormat);
             attrs.clear();
 
+            // encode the Legend width and height in the URL too if we have a static legend
+            boolean hasExternalGraphic = legend != null && legend.getOnlineResource() != null;
             Map<String, String> params =
                     params(
                             "service",
@@ -1598,9 +1599,15 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             "format",
                             defaultFormat,
                             "width",
-                            String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH),
+                            String.valueOf(
+                                    hasExternalGraphic
+                                            ? legendWidth
+                                            : GetLegendGraphicRequest.DEFAULT_WIDTH),
                             "height",
-                            String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT),
+                            String.valueOf(
+                                    hasExternalGraphic
+                                            ? legendHeight
+                                            : GetLegendGraphicRequest.DEFAULT_HEIGHT),
                             "layer",
                             layerName);
             if (style != null) {

@@ -22,7 +22,11 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
@@ -403,8 +407,54 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         Element onlineResource = (Element) onlineResources.item(0);
         String href = onlineResource.getAttribute("xlink:href");
         assertNotNull(href);
+
         assertTrue(href.contains("width=20"));
         assertTrue(href.contains("height=20"));
+    }
+
+    /**
+     * Tests that width and height in legend online resources are consistent with the ones specified
+     * in legendURL when dealing with static legends.
+     */
+    @Test
+    public void testWidthHeightInHrefConsistentWithLegendURLForStaticLegends() throws Exception {
+        LayerInfo li = getCatalog().getLayerByName("cite:Bridges");
+        StyleInfo styleInfo = li.getDefaultStyle();
+        LegendInfo legend = new LegendInfoImpl();
+        legend.setOnlineResource(
+                getClass().getResource("/legendURL/Bridges.png").toURI().toString());
+        legend.setHeight(10);
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setWidth(50);
+        styleInfo.setLegend(legend);
+        catalog.save(styleInfo);
+        try {
+            TransformerBase tr = createTransformer();
+            tr.setIndentation(2);
+            Document dom = WMSTestSupport.transform(req, tr);
+            NodeList legendURLS = XPATH.getMatchingNodes(getLegendURLXPath("cite:Bridges"), dom);
+            assertEquals(1, legendURLS.getLength());
+            Element legendURL = (Element) legendURLS.item(0);
+            assertTrue(legendURL.hasAttribute("width"));
+            assertTrue(legendURL.hasAttribute("height"));
+            String legendURLWidth = legendURL.getAttribute("width");
+            String legendURLHeight = legendURL.getAttribute("height");
+            assertNotEquals("20", legendURLWidth);
+            assertNotEquals("20", legendURLHeight);
+            NodeList onlineResources =
+                    XPATH.getMatchingNodes(getOnlineResourceXPath("cite:Bridges"), dom);
+            assertEquals(1, onlineResources.getLength());
+            Element onlineResource = (Element) onlineResources.item(0);
+            String href = onlineResource.getAttribute("xlink:href");
+            assertNotNull(href);
+            assertTrue(href.contains("width=" + legendURLWidth));
+            assertTrue(href.contains("height=" + legendURLHeight));
+        } finally {
+            if (styleInfo != null) {
+                styleInfo.setLegend(null);
+                catalog.save(styleInfo);
+            }
+        }
     }
 
     private String getLegendURLXPath(String layerName) {

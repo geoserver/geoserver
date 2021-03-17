@@ -1515,9 +1515,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                             "format",
                             defaultFormat,
                             "width",
-                            String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH),
+                            String.valueOf(legendWidth),
                             "height",
-                            String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT),
+                            String.valueOf(legendHeight),
                             "layer",
                             layerName);
             if (style != null) {

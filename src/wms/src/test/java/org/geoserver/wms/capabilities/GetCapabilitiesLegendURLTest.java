@@ -404,8 +404,37 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         Element onlineResource = (Element) onlineResources.item(0);
         String href = onlineResource.getAttribute("xlink:href");
         assertNotNull(href);
-        assertTrue(href.contains("width=20"));
-        assertTrue(href.contains("height=20"));
+        assertTrue(href.contains("width=50"));
+        assertTrue(href.contains("height=10"));
+    }
+
+    /**
+     * Tests that width and height in legend online resources are consistent with the ones specified
+     * in legendURL and not always with default value of 20.
+     */
+    @Test
+    public void testWidthHeightInHrefConsistentWithLegendURL() throws Exception {
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        NodeList legendURLS = XPATH.getMatchingNodes(getLegendURLXPath("cite:Bridges"), dom);
+        assertEquals(1, legendURLS.getLength());
+        Element legendURL = (Element) legendURLS.item(0);
+        assertTrue(legendURL.hasAttribute("width"));
+        assertTrue(legendURL.hasAttribute("height"));
+        String legendURLWidth = legendURL.getAttribute("width");
+        String legendURLHeight = legendURL.getAttribute("height");
+        assertNotEquals("20", legendURLWidth);
+        assertNotEquals("20", legendURLHeight);
+        NodeList onlineResources =
+                XPATH.getMatchingNodes(getOnlineResourceXPath("cite:Bridges"), dom);
+        assertEquals(1, onlineResources.getLength());
+        Element onlineResource = (Element) onlineResources.item(0);
+        String href = onlineResource.getAttribute("xlink:href");
+        assertNotNull(href);
+        assertTrue(href.contains("width=" + legendURLWidth));
+        assertTrue(href.contains("height=" + legendURLHeight));
     }
 
     private String getLegendURLXPath(String layerName) {

@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -201,6 +203,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         // was the legend painted?
         assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
     }
+
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
@@ -218,6 +221,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
                                 MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+
+        // force antialiasing
+        // note - Mac M1 (ARM mode) does not allow non-antialiased text drawing, so we force to "on"
+        // for consistency
+        // note - Mac M1 (X64 mode) supports non-antialiased text
+        req.setLegendOptions(Collections.singletonMap("fontAntiAliasing", "on"));
 
         this.legendProducer.buildLegendGraphic(req);
 
@@ -242,25 +251,9 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         assertEquals(2 * (height + titleHeight), image.getHeight());
 
-        // first title
-        assertPixel(image, 1, titleHeight / 2, new Color(0, 0, 0));
-
-        // first layer
-        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
-
-        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
-
-        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
-
-        // second title
-        assertPixel(image, 1, 60 + titleHeight + titleHeight / 2, new Color(0, 0, 0));
-
-        // same colors for the second layer
-        assertPixel(image, 10, 70 + titleHeight * 2, new Color(192, 160, 0));
-
-        assertPixel(image, 10, 90 + titleHeight * 2, new Color(0, 0, 0));
-
-        assertPixel(image, 10, 110 + titleHeight * 2, new Color(224, 64, 0));
+        File expectedImage =
+                new File(this.getClass().getResource("testMultipleLayersExpected.png").toURI());
+        ImageAssert.assertEquals(expectedImage, image, 1);
     }
 
     /** Tests that with forceTitles option off no title is rendered */

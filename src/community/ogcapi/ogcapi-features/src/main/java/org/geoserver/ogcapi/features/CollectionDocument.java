@@ -23,9 +23,11 @@ import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.QueryablesDocument;
+import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.http.MediaType;
@@ -40,7 +42,8 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     String mapPreviewURL;
     List<String> crs;
 
-    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs) {
+    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs)
+            throws IOException {
         super(featureType);
         // basic info
         String collectionId = featureType.prefixedName();
@@ -48,7 +51,8 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         this.title = featureType.getTitle();
         this.description = featureType.getAbstract();
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
-        setExtent(new CollectionExtents(bbox));
+        DateRange timeExtent = TimeExtentCalculator.getTimeExtent(featureType);
+        setExtent(new CollectionExtents(bbox, timeExtent));
         this.featureType = featureType;
         this.crs = crs;
 

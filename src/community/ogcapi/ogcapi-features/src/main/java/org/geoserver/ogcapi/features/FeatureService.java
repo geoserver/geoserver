@@ -194,7 +194,8 @@ public class FeatureService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         CollectionDocument collection =
                 new CollectionDocument(geoServer, ft, getFeatureTypeCRS(ft, getServiceCRSList()));
@@ -316,6 +317,7 @@ public class FeatureService {
         return new FeaturesResponse(request.getAdaptee(), response);
     }
 
+    /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */
     private Filter buildTimeFilter(FeatureTypeInfo ft, String time)
             throws ParseException, IOException {
         Collection times = timeParser.parse(time);

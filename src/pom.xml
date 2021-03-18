@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.19-SNAPSHOT</version>
+ <version>2.19.0</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1956,9 +1956,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.19-SNAPSHOT</gs.version>
-  <gt.version>25-SNAPSHOT</gt.version>
-  <gwc.version>1.19-SNAPSHOT</gwc.version>
+  <gs.version>2.19.0</gs.version>
+  <gt.version>25.0</gt.version>
+  <gwc.version>1.19.0</gwc.version>
   <jts.version>1.18.1</jts.version>
   <spring.version>5.1.20.RELEASE</spring.version>
   <spring.security.version>5.1.13.RELEASE</spring.security.version>

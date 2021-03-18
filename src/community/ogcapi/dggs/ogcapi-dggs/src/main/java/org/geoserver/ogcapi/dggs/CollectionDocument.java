@@ -25,6 +25,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ogcapi.features.FeaturesResponse;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.data.Query;
@@ -32,6 +33,7 @@ import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.http.MediaType;
@@ -53,7 +55,8 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         this.title = featureType.getTitle();
         this.description = featureType.getAbstract();
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
-        setExtent(new CollectionExtents(bbox));
+        DateRange timeExtent = TimeExtentCalculator.getTimeExtent(featureType);
+        setExtent(new CollectionExtents(bbox, timeExtent));
         this.featureType = featureType;
 
         String baseUrl = APIRequestInfo.get().getBaseURL();

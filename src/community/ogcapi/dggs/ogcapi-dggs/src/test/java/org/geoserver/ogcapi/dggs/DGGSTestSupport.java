@@ -9,6 +9,8 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
@@ -35,6 +37,9 @@ public class DGGSTestSupport extends OGCApiTestSupport {
         cb.setStore(ds);
         FeatureTypeInfo ft = cb.buildFeatureType(new NameImpl(nsURI, "H3"));
         cb.setupBounds(ft);
+        DimensionInfoImpl time = new DimensionInfoImpl();
+        time.setAttribute("date");
+        ft.getMetadata().put(ResourceInfo.TIME, time);
         catalog.add(ft);
         LayerInfo li = cb.buildLayer(ft);
         catalog.add(li);

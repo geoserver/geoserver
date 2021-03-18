@@ -278,7 +278,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
      * @param image image to look through
      * @param color test color
      * @param tolerance how close the pixel's test color needs to be to be a match (0=exact match)
-     * @paaram onlyGrey only consider grey-scale pixels
+     * @paaram onlyGray Filter all colour pixels leaving only gray pixels to be compared.
      * @param minNumber how many pixels in the image must be the given color
      */
     protected void assertManyPixelsOfColor(

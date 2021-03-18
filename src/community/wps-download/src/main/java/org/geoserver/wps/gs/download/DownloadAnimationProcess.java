@@ -9,19 +9,22 @@ import java.awt.image.RenderedImage;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.PlanarImage;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSException;
@@ -32,7 +35,6 @@ import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.WebMapServer;
-import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -54,6 +56,7 @@ import org.opengis.util.ProgressListener;
 public class DownloadAnimationProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(DownloadAnimationProcess.class);
+    private static BufferedImage STOP = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
 
     public static final String VIDEO_MP4 = "video/mp4";
     private static final Format MAP_FORMAT;
@@ -137,10 +140,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             ProgressListener progressListener)
             throws Exception {
 
-        // avoid NPE on progress listener
-        if (progressListener == null) {
-            progressListener = new DefaultProgressListener();
-        }
+        // avoid NPE on progress listener, make it effectively final for lambda to use below
+        ProgressListener listener =
+                Optional.of(progressListener).orElse(new DefaultProgressListener());
 
         // if height and width are an odd number fix them, cannot encode videos otherwise
         if (width % 2 == 1) {
@@ -160,13 +162,38 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
         Collection parsedTimes = timeParser.parse(time);
         progressListener.started();
-        int count = 1;
         Map<String, WebMapServer> serverCache = new HashMap<>();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        // Have two threads work on encoding. The current thread builds the frames, and submits
+        // them into a small queue that the encoder thread picks from
+        BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
+        BasicThreadFactory threadFactory =
+                new BasicThreadFactory.Builder().namingPattern("animation-encoder-%d").build();
+        ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+        // a way to get out of the encoding loop in case an exception happens during frame rendering
+        AtomicBoolean abortEncoding = new AtomicBoolean(false);
+        Future<Void> future =
+                executor.submit(
+                        () -> {
+                            int totalTimes = parsedTimes.size();
+                            int count = 1;
+                            BufferedImage frame;
+                            while ((frame = renderingQueue.take()) != STOP) {
+                                enc.encodeImage(frame);
+                                listener.progress(90 * (((float) count) / totalTimes));
+                                listener.setTask(
+                                        new SimpleInternationalString(
+                                                "Generated frames "
+                                                        + count
+                                                        + " out of "
+                                                        + totalTimes));
+                                count++;
+                                // handling exit due to WPS cancellation, or to exceptions
+                                if (listener.isCanceled() || abortEncoding.get()) return null;
+                            }
+                            return null;
+                        });
         try {
-            List<Future<Void>> futures = new ArrayList<>();
-            int totalTimes = parsedTimes.size();
             for (Object parsedTime : parsedTimes) {
                 // turn parsed time into a specification and generate a "WMS" like request based on
                 // it
@@ -186,28 +213,18 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 serverCache);
                 BufferedImage frame = toBufferedImage(image);
                 LOGGER.log(Level.FINE, "Got frame %s", frame);
-                Future<Void> future =
-                        executor.submit(
-                                () -> {
-                                    enc.encodeImage(frame);
-                                    return (Void) null;
-                                });
-                futures.add(future);
-                // checking progress
-                progressListener.progress(90 * (((float) count) / totalTimes));
-                progressListener.setTask(
-                        new SimpleInternationalString(
-                                "Generated frames " + count + " out of " + totalTimes));
-                if (progressListener.isCanceled()) {
-                    throw new ProcessException("Bailing out due to progress cancellation");
-                }
-                count++;
+                renderingQueue.put(frame);
+
+                // exit sooner in case of cancellation, encoding abort is handled in finally
+                if (listener.isCanceled()) return null;
             }
-            for (Future<Void> future : futures) {
-                future.get();
-            }
+            renderingQueue.put(STOP);
+            // wait for encoder to finish
+            future.get();
             progressListener.progress(100);
         } finally {
+            // force encoding thread to stop in case we got here due to an exception
+            abortEncoding.set(true);
             executor.shutdown();
         }
         enc.finish();

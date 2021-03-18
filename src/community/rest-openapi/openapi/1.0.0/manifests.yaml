@@ -1,0 +1,84 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Manifests API
+  description: GeoServer provides a REST service to expose a listing of all loaded JARs and resources on the running instance. This is useful for bug reports and to keep track of extensions deployed into the application.
+security:
+- basicAuth: [
+    ]
+tags:
+- name: manifests
+  description: Manifests API
+paths:
+  /about/version:
+    get:
+      description: 'This endpoint shows only the details for the high-level components:
+        GeoServer, GeoTools, and GeoWebCache. Use the "Accept:" header to specify
+        format or append an extension to the endpoint (example "/about/manifest.xml"
+        for XML).'
+      operationId: getComponentVersions
+      tags:
+      - manifests
+      parameters:
+      - name: manifest
+        in: query
+        description: The manifest parameter is used to filter over resulting resource (manifest) names attribute using Java regular expressions.
+        required: false
+        schema:
+          type: string
+      - name: key
+        in: query
+        description: Only return manifest entries with this key in their properties. It can be optionally combined with the value parameter.
+        required: false
+        schema:
+          type: string
+      - name: value
+        in: query
+        description: Only return manifest entries that have this value for the provided key parameter.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/VersionResponse'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+      scheme: basic
+  responses:
+    VersionResponse:
+      description: Main components version
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VersionResponse'
+  schemas:
+    VersionResponse:
+      type: object
+      properties:
+        about:
+          type: object
+          properties:
+            resource:
+              type: array
+              items:
+                $ref: '#/components/schemas/ComponentVersion'
+      example: '{"about":{"resource":[{"@name":"GeoTools","Build-Timestamp":"06-Jun-2019
+        09:18","Version":"21-SNAPSHOT","Git-Revision":"45911eb56bf9560b442b88ed01bf7f540b9f407d"},{"@name":"GeoWebCache","Version":"1.15-SNAPSHOT","Git-Revision":"e9fb27dcc5d0b1256944434a103591755c1423c1\/e9fb27dcc5d0b1256944434a103591755c1423c1"}]}}'
+    ComponentVersion:
+      type: object
+      properties:
+        '@name':
+          type: string
+          example: GeoTools
+        Build-Timestamp:
+          type: string
+          example: 06-Jun-2019 09:18
+        Git-Revision:
+          type: string
+          example: 5911eb56bf9560b442b88ed01bf7f540b9f407d
+        Version:
+          type: string
+          example: 21-SNAPSHOT

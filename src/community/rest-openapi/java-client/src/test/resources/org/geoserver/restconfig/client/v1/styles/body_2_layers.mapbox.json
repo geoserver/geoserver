@@ -1,0 +1,25 @@
+{
+  "version": 8,
+  "name": "violet polygon",
+  "layers": [
+      {
+          "id": "violet polygon",
+          "type": "fill",
+          "filter": [">", "IDN3", 710],
+          "source-layer": "roads",
+          "paint": {
+              "fill-color": "#3300ff",
+              "fill-outline-color":"#000000"
+          }
+      }, {
+          "id": "red polygon",
+          "type": "fill",
+          "source-layer": "roads",
+          "filter": ["<", "IDN3", 710],
+          "paint": {
+              "fill-color": "#aa0000",
+              "fill-outline-color":"#000000"
+          }
+      }
+  ]
+}

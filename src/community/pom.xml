@@ -269,6 +269,7 @@
 		<module>cog</module>
 		<module>cov-json</module>
         <module>smart-data-loader</module>
+        <module>rest-openapi</module>
       </modules>
     </profile>
     <profile>
@@ -705,6 +706,12 @@
       <id>smart-data-loader</id>
       <modules>
         <module>smart-data-loader</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>rest-openapi</id>
+      <modules>
+        <module>rest-openapi</module>
       </modules>
     </profile>
   </profiles>  

@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Config Model
+  description: GeoServer Config Model Objects
+paths:
+  /fake:
+    description: fake operation entry point to pass validation, otherwise codegen will comply there's no paths element
+    get:
+      operationId: fakeOp
+      responses:
+        200:
+          description: nothing really
+components:
+  schemas:
+    GeoServerInfo:
+      title: GeoServer global config object
+      type: object
+      properties:
+#    protected String id;
+        updateSequence:
+          type: integer
+          format: int64
+          description: The update sequence. This value is used by various ogc services to track changes to a capabilities
+            document.
+        useHeadersProxyURL:
+          type: boolean
+          description: The flag to use request headers for the proxy URL
+        settings:
+          $ref: '#/components/schemas/SettingsInfo'
+    ContactInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Object identifier
+        addressType:
+          type: string
+          description: Type of address
+        address:
+          type: string
+          description: Server admin address
+        addressCity:
+          type: string
+          description: Server admin city
+        addressCountry:
+          type: string
+          description: Server admin country
+        addressDeliveryPoint:
+          type: string
+        addressPostalCode:
+          type: string
+        addressState:
+          type: string
+        contactEmail:
+          type: string
+          description: Server admin email
+        contactVoice:
+          type: string
+          description: Server admin phone number
+        contactFacsimile:
+          type: string
+          description: Server admin facsimile number
+        contactOrganization:
+          type: string
+          description: Server admin organization
+        contactPerson:
+          type: string
+          description: Server admin point of contact
+        contactPosition:
+          type: string
+          description: Server admin point of contact job title
+        onlineResource:
+          type: string
+          description: Concat web URL
+    SettingsInfo:
+      title: wrapper object for DataStoreInfo, in order to comply with current API encoding
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          description: The title of the settings instance
+        charset:
+          type: string
+          description: The default character set
+        numDecimals:
+          type: integer
+          format: int32
+          description: A cap on the number of decimals to use when encoding floating point numbers
+        onlineResource:
+          type: string
+          description: Provider web site (used for default contact information, or service provider information if user has
+            not filled in contact details.
+        proxyBaseUrl:
+          type: string
+          description: The url of a proxy in front of the GeoServer instance. This value is used when a reference back to
+            the GeoServer instance must be made in a response.
+        schemaBaseUrl:
+          type: string
+          description: The base url to use when including a reference to an xml schema document in a response.
+        verbose:
+          type: boolean
+          description: When set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
+        localWorkspaceIncludesPrefix:
+          type: boolean
+          description: If true local workspace should keep the namespace prefixes in getCapabilities etc...
+        showCreatedTimeColumnsInAdminList:
+          type: boolean
+          description: Set whether or not a local workspace should keep namespace prefixes in the getCapabilities
+        showModifiedTimeColumnsInAdminList:
+          type: boolean
+        contact:
+          $ref: '#/components/schemas/ContactInfo'
+#MetadataMap getMetadata();
+    ServiceInfo:
+      type: object
+      properties:
+        workspace:
+          $ref: 'catalog.yaml#/components/schemas/WorkspaceInfo'
+        enabled:
+          type: boolean
+          description: Status of the service
+        name:
+          type: string
+          description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+        title:
+          type: string
+          description: Title of the service
+        abstrct:
+          type: string
+          description: description of the service
+        maintainer:
+          type: string
+          description: maintainer of the service
+        accessConstraints:
+          type: string
+        fees:
+          type: string
+#        versions:
+#          type: object
+#          description: The versions of the service that are available.
+#          properties:
+#            org.geotools.util.Version:
+#              type: array
+#              items:
+#                type: string
+#                description: version number
+#        keywords:
+#          type: array
+#          description: Keywords associated with the service.
+#          items:
+#            type: string
+        exceptionFormats:
+          type: array
+          description: Exception formats the service can provide.
+          items:
+            type: string
+#        metadataLink:
+#          $ref: 'catalog.yaml#/components/schemas/MetadataLinkInfo'
+        citeCompliant:
+          type: boolean
+          description: Status of service CITE compliance.
+        onlineResource:
+          type: string
+        schemaBaseURL:
+          type: string
+          description: The base url for the schemas describing the service.
+        outputStrategy:
+          type: string
+          description: This value is an identifier which indicates how the output of a response should behave.
+                       An example might be "performance", indicating that the response should be encoded as quickly as possible.
+        verbose:
+          type: boolean
+          description: Flag indicating if the service should be verbose or not.
+          
+    WMSInfo:
+      allOf:
+        - $ref: "#/components/schemas/ServiceInfo"
+        - type: object
+          properties:
+#            watermark:
+#              type: object
+#              description: Watermarking configuration
+#              properties:
+#                enabled:
+#                  type: boolean
+#                  description: Flag indicating if watermarking is enabled
+#                position:
+#                  type: string
+#                  description: Position of the watermark
+#                  enum:
+#                  - TOP_LEFT
+#                  - TOP_CENTER
+#                  - TOP_RIGHT
+#                  - MID_LEFT
+#                  - MID_CENTER
+#                  - MID_RIGHT
+#                  - BOT_LEFT
+#                  - BOT_CENTER
+#                  - BOT_RIGHT
+#                transparency:
+#                  type: integer
+#                  description: The transparency of the watermark logo, ranging from 0 to 255
+            srs:
+              $ref: "#/components/schemas/SRSListWrapper"
+            interpolation:
+              type: string
+              enum:
+              - Nearest
+              - Bilinear
+              - Bicubic
+            getFeatureInfoMimeTypeCheckingEnabled:
+              type: boolean
+              description: Flag indicating if getFeatureInfo MIME type checking is enabled
+            getMapMimeTypes:
+              title: GetMapMimeTypes
+              description : A set of mime types allowed for a getMap request. Active if getMapMimeTypeCheckingEnabled is true
+              type: object
+              properties:
+                string:
+                  type: array
+                  items:
+                    type: string
+            getMapMimeTypeCheckingEnabled:
+              type: boolean
+              description: Flag indicating if getMap MIME type checking is enabled.
+            dynamicStylingDisabled:
+              type: boolean
+              description: status of dynamic styling (SLD and SLD_BODY params) allowance
+            maxBuffer:
+              type: integer
+              description: Maximum search radius for GetFeatureInfo
+            maxRequestMemory:
+              type: integer
+              description: Max amount of memory, in kilobytes, that each WMS request can allocate (each output format will make
+                a best effort attempt to respect it, but there are no guarantees). 0 indicates no limit.
+            maxRenderingTime:
+              type: integer
+              description: Max time, in seconds, a WMS request is allowed to spend rendering the map. Various output formats will
+                do a best effort to respect it (raster formats, for example, will account just rendering time, but not image encoding
+                time).
+            maxRenderingErrors:
+              type: integer
+              description: Max number of rendering errors that will be tolerated before stating the rendering operation failed
+                by throwing a service exception back to the client
+                
+    SRSListWrapper:
+      description: The srs's that the wms service supports.
+      type: object
+      properties:
+        string:
+          type: array
+          items:
+            type: string
+    WFSInfo:
+      allOf:
+        - $ref: "#/components/schemas/ServiceInfo"
+        - type: object
+          properties:
+            gml:
+              $ref: "#/components/schemas/WFSInfoGmlSettings"
+            serviceLevel:
+              $ref: "#/components/schemas/WFSServiceLevel"
+            maxFeatures:
+              type: integer
+              description: Global cap on the number of features to allow when processing a request
+            featureBounding:
+              type: boolean
+              description: Flag which determines if gml:bounds elements should be encoded at the feature level in GML output
+            canonicalSchemaLocation:
+              type: boolean
+              description: Flag that determines the encoding of the WFS schemaLocation. True if the WFS schemaLocation should
+                refer to the canonical location, false if the WFS schemaLocation should refer to a copy served by GeoServer.
+            encodeFeatureMember:
+              type: boolean
+              description: Flag that determines encoding of featureMember or featureMembers. True if the featureMember should
+                be encoded False if the featureMembers should be encoded.
+            hitsIgnoreMaxFeatures:
+              type: boolean
+              description: Flag that determines if WFS hit requests (counts) will ignore the maximum features limit for this server
+    WCSInfo:
+      allOf:
+        - $ref: "#/components/schemas/ServiceInfo"
+        - type: object
+          properties:
+            gmlPrefixing:
+              type: boolean
+            latLon:
+              type: boolean
+            maxInputMemory:
+              type: boolean
+            maxOutputMemory:
+              type: boolean
+              
+    WMTSInfo:
+      allOf:
+        - $ref: "#/components/schemas/ServiceInfo"
+        - type: object
+
+    WFSServiceLevel:
+      type: string
+      enum:
+        - BASIC
+        - TRANSACTIONAL
+        - COMPLETE
+
+    WFSInfoGmlSettings:
+      type: object
+      properties:
+        entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/GmlInfo'
+      example:
+       {"entry":[{"version":"V_10","gml":{"srsNameStyle":["XML"],"overrideGMLAttributes":true}},{"version":"V_11","gml":{"srsNameStyle":["URN"],"overrideGMLAttributes":false}},{"version":"V_20","gml":{"srsNameStyle":["URN2"],"overrideGMLAttributes":false}}]}
+       
+    GmlInfo:
+      type: object
+      properties:
+        version:
+          type: string
+          description: Service version
+          example: "1.1.1"
+        gml:
+          $ref: "#/components/schemas/GmlSettings"
+      example:
+        {"version":"V_10","gml":{"srsNameStyle":["XML"],"overrideGMLAttributes":true}}
+
+    GmlSettings:
+      type: object
+      properties:
+        srsNameStyle:
+          type: array
+          items:
+            $ref: "#/components/schemas/SrsNameStyle"
+        overrideGMLAttributes:
+          type: boolean
+          description: Controls how attributes are handled with regard to attributes defined in the schema of
+                       AbstractFeatureType, name, description, etc...
+                       When set this flag will cause the attributes to be redefined in the application schema namespace.
+      example:
+        {"srsNameStyle":["XML"],"overrideGMLAttributes":true}
+
+    SrsNameStyle:
+      type: string
+      description: The srs name style to be used when encoding the gml 'srsName' attribute.
+      enum:
+        - NORMAL
+        - XML
+        - URN
+        - URN2
+        - URL
+    

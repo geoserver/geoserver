@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Namespace
+  description: A namespace is a uniquely identifiable grouping of feature types. It is
+    identified by a prefix and a URI.
+
+security:
+  - basicAuth: []
+
+tags:
+  - name: namespaces
+    description: Namespaces API
+
+paths:
+  /namespaces:
+    get:
+      tags:
+        - namespaces
+      operationId: getNamespaces
+      summary: Get a list of namespaces
+      description: Displays a list of all namespaces on the server.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NamespacesResponse"
+              examples:
+                response:
+                  value: >
+                    {
+                      "namespaces": {
+                        "namespace": [
+                          {
+                          "name": "topp",
+                          "href": "http://localhost:8080/geoserver/rest/namespaces/topp.json"
+                          },
+                          {
+                          "name": "it.geosolutions",
+                          "href": "http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.json"
+                          }
+                        ]
+                      }
+                    }
+        "401":
+          description: Unauthorized
+    post:
+      tags:
+        - namespaces
+      operationId: addNamespace
+      summary: Add a new namespace to GeoServer
+      description: Adds a new namespace to the server
+      requestBody:
+        $ref: "#/components/requestBodies/Namespace"
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: URL where the newly created namespace can be found
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unable to add namespace as it already exists
+  "/namespaces/{namespacePrefix}":
+    parameters:
+      - name: namespacePrefix
+        description: The name of the namespace to fetch, or "default" to get the default
+          namespace.
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - namespaces
+      operationId: getNamespace
+      summary: Retrieve a namespace
+      description: Retrieves a single namespace definition.
+      parameters:
+        - in: query
+          name: quietOnNotFound
+          required: false
+          schema:
+             type: boolean
+             default: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NamespaceWrapper"
+              examples:
+                response:
+                  value: '{ "namespace": { "prefix": "topp", "uri":
+                    "http://www.openplans.org/topp", "featureTypes":
+                    "http://localhost:8080/geoserver/rest/workspaces/topp/featuretypes.json"
+                    } }'
+        "404":
+          description: namespace does not exist
+    put:
+      tags:
+        - namespaces
+      summary: Update a namespace
+      description: Takes the body of the put and modifies the namespace from it.
+      operationId: modifyNamespace
+      requestBody:
+        $ref: "#/components/requestBodies/Namespace"
+      responses:
+        "200":
+          description: Modified
+        "404":
+          description: Namespace not found
+        "405":
+          description: Forbidden to change the name of the namespace
+    delete:
+      tags:
+        - namespaces
+      operationId: deleteNamespace
+      summary: Delete a namespace
+      responses:
+        "200":
+          description: Success. Namespace deleted
+        "403":
+          description: Namespace or related Workspace is not empty (and recurse not true)
+        "404":
+          description: Namespace doesn't exist
+        "405":
+          description: Can't delete default namespace
+components:
+  requestBodies:
+    Namespace:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NamespaceWrapper"
+      description: The Namespace body information to upload.
+      required: true
+  schemas:
+    NamespacesResponse:
+      title: Namespaces
+      type: object
+      properties:
+        namespaces:
+          type: object
+          title: NamespacesResponseWrapper
+          properties:
+            namespace:
+              $ref: "catalogresponses.yaml#/components/schemas/NamedLinks"
+    NamespaceWrapper:
+      type: object
+      title: Wrapper object around Namespace, in order to conform to how XStream serializes to JSON in GeoServer
+      properties:
+        namespace:
+          $ref: "catalog.yaml#/components/schemas/NamespaceInfo"

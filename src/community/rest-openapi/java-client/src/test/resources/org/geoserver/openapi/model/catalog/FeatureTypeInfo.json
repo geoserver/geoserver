@@ -1,0 +1,120 @@
+{
+	"name": "tasmania_roads",
+	"nativeName": "tasmania_roads",
+	"namespace": {
+		"prefix": "topp",
+		"uri": "http:\/\/localhost:9090\/geoserver\/rest\/namespaces\/topp.json",
+		"isolated": true
+	},
+	"title": "Tasmania roads",
+	"abstract": "Main Tasmania roads",
+	"description": "Main Tasmania roads",
+	"keywords": [
+		{
+			"value": "Roads"
+		},
+		{
+			"value": "Tasmania"
+		},
+		{
+			"value": "test keyword",
+			"language": "es",
+			"vocabulary": "spanish"
+		}
+	],
+	"metadataLinks": [
+		{
+			"type": "text\/plain",
+			"metadataType": "ISO19115:2003",
+			"content": "http:\/\/geoserver.org"
+		}
+	],
+	"dataLinks": [
+		{
+			"type": "text\/plain",
+			"content": "http:\/\/geoserver.org\/data_link_test"
+		}
+	],
+	"nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+	"srs": "EPSG:4326",
+	"nativeBoundingBox": {
+		"minx": 145.19754,
+		"maxx": 148.27298000000002,
+		"miny": -43.423512,
+		"maxy": -40.852802,
+		"crs": "EPSG:4326"
+	},
+	"latLonBoundingBox": {
+		"minx": 145.19754,
+		"maxx": 148.27298000000002,
+		"miny": -43.423512,
+		"maxy": -40.852802,
+		"crs": "EPSG:4326"
+	},
+	"projectionPolicy": "FORCE_DECLARED",
+	"enabled": true,
+	"metadata": {
+		"entry": [
+			{
+				"@key": "kml.regionateFeatureLimit",
+				"$": "10"
+			},
+			{
+				"@key": "cacheAgeMax",
+				"$": "3600"
+			},
+			{
+				"@key": "cachingEnabled",
+				"$": "true"
+			},
+			{
+				"@key": "indexingEnabled",
+				"$": "false"
+			},
+			{
+				"@key": "dirName",
+				"$": "tasmania_roads"
+			}
+		]
+	},
+	"store": {
+		"name": "taz_shapes",
+		"workspace": {
+			"name": "topp"
+		}
+	},
+	"serviceConfiguration": true,
+	"disabledServices": [
+		"WFS"
+	],
+	"maxFeatures": 1000,
+	"numDecimals": 5,
+	"padWithZeros": true,
+	"forcedDecimal": true,
+	"responseSRS": [
+		"4326",
+		"3857"
+	],
+	"overridingServiceSRS": true,
+	"skipNumberMatched": true,
+	"circularArcPresent": true,
+	"encodeMeasures": true,
+	"linearizationTolerance": 0.5,
+	"attributes": [
+		{
+			"name": "the_geom",
+			"minOccurs": 0,
+			"maxOccurs": 1,
+			"nillable": true,
+			"binding": "org.locationtech.jts.geom.MultiLineString"
+		},
+		{
+			"name": "TYPE",
+			"minOccurs": 0,
+			"maxOccurs": 1,
+			"nillable": true,
+			"binding": "java.lang.String",
+			"length": 7
+		}
+	]
+}

@@ -1,0 +1,113 @@
+{
+	"coverage": {
+		"name": "sfdem",
+		"nativeName": "sfdem",
+		"namespace": {
+			"name": "sf",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/namespaces\/sf.json"
+		},
+		"title": "Spearfish elevation",
+		"description": "Generated from sfdem",
+		"abstract": "Digital elevation model for the Spearfish region.\r\n\r\nsfdem is a Tagged Image File Format with Geographic information",
+		"keywords": {
+			"string": [
+				"WCS",
+				"sfdem",
+				"sfdem"
+			]
+		},
+		"nativeCRS": {
+			"@class": "projected",
+			"$": "PROJCS[\"NAD27 \/ UTM zone 13N\", \n  GEOGCS[\"NAD27\", \n    DATUM[\"North American Datum 1927\", \n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \n      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], \n      AUTHORITY[\"EPSG\",\"6267\"]], \n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n    UNIT[\"degree\", 0.017453292519943295], \n    AXIS[\"Geodetic longitude\", EAST], \n    AXIS[\"Geodetic latitude\", NORTH], \n    AUTHORITY[\"EPSG\",\"4267\"]], \n  PROJECTION[\"Transverse_Mercator\"], \n  PARAMETER[\"central_meridian\", -105.0], \n  PARAMETER[\"latitude_of_origin\", 0.0], \n  PARAMETER[\"scale_factor\", 0.9996], \n  PARAMETER[\"false_easting\", 500000.0], \n  PARAMETER[\"false_northing\", 0.0], \n  UNIT[\"m\", 1.0], \n  AXIS[\"Easting\", EAST], \n  AXIS[\"Northing\", NORTH], \n  AUTHORITY[\"EPSG\",\"26713\"]]"
+		},
+		"srs": "EPSG:26713",
+		"nativeBoundingBox": {
+			"minx": 589980,
+			"maxx": 609000,
+			"miny": 4913700,
+			"maxy": 4928010,
+			"crs": {
+				"@class": "projected",
+				"$": "EPSG:26713"
+			}
+		},
+		"latLonBoundingBox": {
+			"minx": -103.87108701853181,
+			"maxx": -103.62940739432703,
+			"miny": 44.370187074132616,
+			"maxy": 44.5016011535299,
+			"crs": "EPSG:4326"
+		},
+		"enabled": true,
+		"metadata": {
+			"entry": {
+				"@key": "dirName",
+				"$": "sfdem_sfdem"
+			}
+		},
+		"store": {
+			"@class": "coverageStore",
+			"name": "sf:sfdem",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/coveragestores\/sfdem.json"
+		},
+		"serviceConfiguration": false,
+		"nativeFormat": "GeoTIFF",
+		"grid": {
+			"@dimension": "2",
+			"range": {
+				"low": "0 0",
+				"high": "634 477"
+			},
+			"transform": {
+				"scaleX": 30,
+				"scaleY": -30,
+				"shearX": 0,
+				"shearY": 0,
+				"translateX": 589995,
+				"translateY": 4927995
+			},
+			"crs": "EPSG:26713"
+		},
+		"supportedFormats": {
+			"string": [
+				"ARCGRID",
+				"IMAGEMOSAIC",
+				"GEOTIFF",
+				"GIF",
+				"PNG",
+				"JPEG",
+				"TIFF"
+			]
+		},
+		"interpolationMethods": {
+			"string": [
+				"nearest neighbor",
+				"bilinear",
+				"bicubic"
+			]
+		},
+		"defaultInterpolationMethod": "nearest neighbor",
+		"dimensions": {
+			"coverageDimension": [
+				{
+					"name": "GRAY_INDEX",
+					"description": "GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]",
+					"range": {
+						"min": -9.999999933815813E36,
+						"max": -9.999999933815813E36
+					}
+				}
+			]
+		},
+		"requestSRS": {
+			"string": [
+				"EPSG:26713"
+			]
+		},
+		"responseSRS": {
+			"string": [
+				"EPSG:26713"
+			]
+		}
+	}
+}

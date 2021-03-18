@@ -64,3 +64,4 @@ officially part of the GeoServer releases. They are however built along with the
    imagemosaic-jdbc/index
    cog/index
    smart-data-loader/index
+   schemaless-features/index

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.iterator.RandomIter;
+import javax.media.jai.iterator.RandomIterFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -201,6 +203,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         // was the legend painted?
         assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
     }
+
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
@@ -218,6 +221,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
                                 MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+
+        // force antialiasing
+        // note - Mac M1 (ARM mode) does not allow non-antialiased text drawing, so we force to "on"
+        // for consistency
+        // note - Mac M1 (X64 mode) supports non-antialiased text
+        req.setLegendOptions(Collections.singletonMap("fontAntiAliasing", "on"));
 
         this.legendProducer.buildLegendGraphic(req);
 
@@ -238,12 +247,11 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         // was the legend painted?
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
-        // with 2 layers we should have a legend at least 2 times taller (title + 2 layers)
 
+        // with 2 layers we should have a legend at least 2 times taller (title + 2 layers)
         assertEquals(2 * (height + titleHeight), image.getHeight());
 
-        // first title
-        assertPixel(image, 1, titleHeight / 2, new Color(0, 0, 0));
+        // these checks test the line style in the image (i.e. a small colour line for the layer)
 
         // first layer
         assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
@@ -252,15 +260,58 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
 
-        // second title
-        assertPixel(image, 1, 60 + titleHeight + titleHeight / 2, new Color(0, 0, 0));
-
         // same colors for the second layer
         assertPixel(image, 10, 70 + titleHeight * 2, new Color(192, 160, 0));
 
         assertPixel(image, 10, 90 + titleHeight * 2, new Color(0, 0, 0));
 
         assertPixel(image, 10, 110 + titleHeight * 2, new Color(224, 64, 0));
+
+        // 128 * 3 = search for pixels are at least half black  (3 = number of components - RGB)
+        assertManyPixelsOfColor(image, Color.BLACK, 128 * 3, true, 1500);
+    }
+
+    /**
+     * Looks through the image and counts the number of pixels that are approximately the given
+     * color. This must be greater than minNumber.
+     *
+     * @param image image to look through
+     * @param color test color
+     * @param tolerance how close the pixel's test color needs to be to be a match (0=exact match)
+     * @paaram onlyGray Filter all colour pixels leaving only gray pixels to be compared.
+     * @param minNumber how many pixels in the image must be the given color
+     */
+    protected void assertManyPixelsOfColor(
+            BufferedImage image, Color color, int tolerance, boolean onlyGrey, int minNumber) {
+        int[] components = new int[3];
+
+        int testRed = color.getRed();
+        int testGreen = color.getGreen();
+        int testBlue = color.getBlue();
+
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+
+        int numberPixelsMatched = 0; // accumulator
+
+        RandomIter it = RandomIterFactory.create(image, null);
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                it.getPixel(c, r, components);
+
+                // the pixel we are looking at is grey (i.e. [100,100,100])
+                boolean isGrey =
+                        (components[0] == components[1]) && (components[1] == components[2]);
+                if (onlyGrey && !isGrey) continue;
+
+                int diff =
+                        Math.abs(testRed - components[0])
+                                + Math.abs(testGreen - components[1])
+                                + Math.abs(testBlue - components[2]);
+                if (diff <= tolerance) numberPixelsMatched++;
+            }
+        }
+        assertTrue(numberPixelsMatched >= minNumber);
     }
 
     /** Tests that with forceTitles option off no title is rendered */

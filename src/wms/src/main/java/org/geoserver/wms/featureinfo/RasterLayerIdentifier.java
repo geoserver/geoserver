@@ -5,11 +5,16 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.DEFAULT_ATTRIBUTE_NAME;
+import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.getLabelAttributeNameCount;
+import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.isLabelReplacingValue;
+
 import it.geosolutions.jaiext.range.Range;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -83,6 +88,8 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DReader> {
 
+    static final String LABEL_IN_FEATURE_INFO = "labelInFeatureInfo";
+    static final String LABEL_ATTRIBUTE_NAME = "labelAttributeName";
     static final Logger LOGGER = Logging.getLogger(RasterLayerIdentifier.class);
 
     private WMS wms;
@@ -121,13 +128,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         if (parameters == null) return null;
 
         GridCoverage2D coverage = readCoverage(requestParams, reader, parameters);
-
         if (coverage == null) {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine("Unable to load raster data for this request.");
             return null;
         }
-
         FeatureCollection pixel = null;
         try {
             final double[] pixelValues = coverage.evaluate(position, (double[]) null);
@@ -139,7 +144,19 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                     pixelValues[i] = Double.NaN;
                 }
             }
-            pixel = wrapPixelInFeatureCollection(coverage, pixelValues, cinfo.getQualifiedName());
+
+            LabelInFeatureInfoExtractor labelVisitor =
+                    new LabelInFeatureInfoExtractor(requestParams.getScaleDenominator());
+            requestParams.getStyle().accept(labelVisitor);
+            List<LabelInFeatureInfo> labelInFeatureInfoList =
+                    labelVisitor.getLabelInFeatureInfoList();
+
+            pixel =
+                    wrapPixelInFeatureCollection(
+                            coverage,
+                            pixelValues,
+                            cinfo.getQualifiedName(),
+                            labelInFeatureInfoList);
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
@@ -401,13 +418,54 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     private SimpleFeatureCollection wrapPixelInFeatureCollection(
-            GridCoverage2D coverage, double[] pixelValues, Name coverageName)
-            throws SchemaException {
-
+            GridCoverage2D coverage,
+            double[] pixelValues,
+            Name coverageName,
+            List<LabelInFeatureInfo> labelInFeatureInfoList) {
         GridSampleDimension[] sampleDimensions = coverage.getSampleDimensions();
-
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(coverageName);
+
+        boolean isLabelActive = !labelInFeatureInfoList.isEmpty();
+        boolean isLabelReplacingValue = isLabelReplacingValue(labelInFeatureInfoList);
+
+        if (!isLabelReplacingValue) addBandNamesToFeatureType(sampleDimensions, builder);
+
+        if (isLabelActive)
+            addLabelAttributeNameToFeatureType(labelInFeatureInfoList, builder, coverage);
+
+        SimpleFeatureType gridType = builder.buildFeatureType();
+
+        int valuesLength;
+        int labelSize = labelInFeatureInfoList.size();
+        if (isLabelReplacingValue) valuesLength = labelSize;
+        else if (isLabelActive) valuesLength = pixelValues.length + labelSize;
+        else valuesLength = pixelValues.length;
+
+        Object[] values = new Object[valuesLength];
+
+        List<String> labels = new ArrayList<>();
+        int lastOccupiedPosition = 0;
+        for (int i = 0; i < pixelValues.length; i++) {
+            double pixelVal = Double.valueOf(pixelValues[i]);
+            if (isLabelActive)
+                addValueToLabelListByPixel(labels, labelInFeatureInfoList, pixelVal, i);
+            if (!isLabelReplacingValue) {
+                values[i] = pixelVal;
+                lastOccupiedPosition++;
+            }
+        }
+        if (isLabelActive) {
+            for (String label : labels) {
+                values[lastOccupiedPosition] = label;
+                lastOccupiedPosition++;
+            }
+        }
+        return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
+    }
+
+    private void addBandNamesToFeatureType(
+            GridSampleDimension[] sampleDimensions, SimpleFeatureTypeBuilder builder) {
         final Set<String> bandNames = new HashSet<>();
         for (int i = 0; i < sampleDimensions.length; i++) {
             String name = descriptionToNcName(sampleDimensions[i].getDescription().toString());
@@ -420,13 +478,43 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             bandNames.add(name);
             builder.add(name, Double.class);
         }
-        SimpleFeatureType gridType = builder.buildFeatureType();
+    }
 
-        Double[] values = new Double[pixelValues.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = Double.valueOf(pixelValues[i]);
+    private void addLabelAttributeNameToFeatureType(
+            List<LabelInFeatureInfo> labelInFeatureInfoList,
+            SimpleFeatureTypeBuilder builder,
+            GridCoverage2D coverage) {
+        int numLabel = getLabelAttributeNameCount(labelInFeatureInfoList);
+        int indexLabel = 1;
+        for (LabelInFeatureInfo lifi : labelInFeatureInfoList) {
+            String label = lifi.getAttributeName();
+            Integer channelName = lifi.getChannel();
+            if (label.equals(DEFAULT_ATTRIBUTE_NAME)) {
+                // add the index to the attribute name in case we have more  then one
+                // LabelInFeatureInfo with the default attribute name
+                String labelIndexed = numLabel > 1 ? label + indexLabel : label;
+                indexLabel++;
+                GridSampleDimension sampleDimension =
+                        channelName != null
+                                ? coverage.getSampleDimension(channelName.intValue() - 1)
+                                : coverage.getSampleDimensions()[0];
+                String sampleDimDesc = sampleDimension.getDescription().toString();
+                label = labelIndexed + "_" + descriptionToNcName(sampleDimDesc);
+            }
+            builder.add(label, String.class);
         }
-        return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
+    }
+
+    private void addValueToLabelListByPixel(
+            List<String> labels,
+            List<LabelInFeatureInfo> labelInFeatureInfoList,
+            double pixel,
+            int currentPixelIdx) {
+        for (LabelInFeatureInfo lifi : labelInFeatureInfoList) {
+            Integer channelName = lifi.getChannel();
+            if (channelName == null || currentPixelIdx == channelName.intValue() - 1)
+                labels.add(lifi.getLabelForPixel(pixel));
+        }
     }
 
     /**

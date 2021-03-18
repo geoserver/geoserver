@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -57,280 +58,237 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     @Override
-    public T process(T resource) throws Exception {
-        if (resource != null) {
+    public T process(T item) throws Exception {
+        if (item == null) {
+            return null;
+        }
+        authenticate();
 
-            authenticate();
+        if (isNew()) {
+            // Disabling additional validators
+            ((CatalogImpl) getCatalog()).setExtendedValidation(false);
 
-            if (isNew()) {
-                // Disabling additional validators
-                ((CatalogImpl) getCatalog()).setExtendedValidation(false);
-
-                // Resolving Collections
-                OwsUtils.resolveCollections(resource);
-            }
-
-            LOGGER.info(
-                    () ->
-                            "Processing resource: "
-                                    + resource
-                                    + " - Progress: ["
-                                    + getCurrentJobExecution().getProgress()
-                                    + "]");
-
-            if (resource instanceof WorkspaceInfo) {
-                WorkspaceInfo ws = ((WorkspaceInfo) resource);
-
-                if (filteredResource(ws, false) && ws != null) {
-                    return null;
-                }
-
-                if (filterIsValid() && getCatalog().getWorkspaceByName(ws.getName()) == null) {
-                    getCatalog().add(ws);
-                    getCatalog().save(getCatalog().getWorkspace(ws.getId()));
-                }
-
-                if (!filterIsValid() && !validateWorkspace((WorkspaceInfo) resource, isNew())) {
-                    LOGGER.warning("Skipped invalid resource: " + resource);
-                    logValidationExceptions(resource, null);
-                    return null;
-                }
-            } else if (resource instanceof DataStoreInfo) {
-                WorkspaceInfo ws =
-                        ((DataStoreInfo) resource).getWorkspace() != null
-                                ? getCatalog()
-                                        .getWorkspaceByName(
-                                                ((DataStoreInfo) resource).getWorkspace().getName())
-                                : null;
-
-                if (ws == null && filterIsValid()) {
-                    DataStoreInfo source =
-                            backupFacade
-                                    .getCatalog()
-                                    .getDataStoreByName(((DataStoreInfo) resource).getName());
-                    if (source != null && source.getWorkspace() != null) {
-                        ws = getCatalog().getWorkspaceByName(source.getWorkspace().getName());
-                        if (ws == null) {
-                            return null;
-                        }
-                        ((DataStoreInfo) resource).setWorkspace(ws);
-                        getCatalog().add(((DataStoreInfo) resource));
-                        getCatalog()
-                                .save(
-                                        getCatalog()
-                                                .getDataStore(((DataStoreInfo) resource).getId()));
-                    }
-                }
-
-                if (filteredResource(resource, ws, true, StoreInfo.class)) {
-                    return null;
-                }
-
-                if (!filterIsValid() && !validateDataStore((DataStoreInfo) resource, isNew())) {
-                    LOGGER.warning("Skipped invalid resource: " + resource);
-                    logValidationExceptions(resource, null);
-                    return null;
-                }
-            } else if (resource instanceof CoverageStoreInfo) {
-                WorkspaceInfo ws =
-                        ((CoverageStoreInfo) resource).getWorkspace() != null
-                                ? getCatalog()
-                                        .getWorkspaceByName(
-                                                ((CoverageStoreInfo) resource)
-                                                        .getWorkspace()
-                                                        .getName())
-                                : null;
-
-                if (ws == null && filterIsValid()) {
-                    CoverageStoreInfo source =
-                            backupFacade
-                                    .getCatalog()
-                                    .getCoverageStoreByName(
-                                            ((CoverageStoreInfo) resource).getName());
-                    if (source != null && source.getWorkspace() != null) {
-                        ws = getCatalog().getWorkspaceByName(source.getWorkspace().getName());
-                        if (ws == null) {
-                            return null;
-                        }
-                        ((CoverageStoreInfo) resource).setWorkspace(ws);
-                        getCatalog().add(((CoverageStoreInfo) resource));
-                        getCatalog()
-                                .save(
-                                        getCatalog()
-                                                .getCoverageStore(
-                                                        ((CoverageStoreInfo) resource).getId()));
-                    }
-                }
-
-                if (filteredResource(resource, ws, true, StoreInfo.class)) {
-                    return null;
-                }
-
-                if (!filterIsValid()
-                        && !validateCoverageStore((CoverageStoreInfo) resource, isNew())) {
-                    LOGGER.warning("Skipped invalid resource: " + resource);
-                    logValidationExceptions(resource, null);
-                    return null;
-                }
-            } else if (resource instanceof ResourceInfo) {
-                WorkspaceInfo ws =
-                        ((ResourceInfo) resource).getStore() != null
-                                        && ((ResourceInfo) resource).getStore().getWorkspace()
-                                                != null
-                                ? getCatalog()
-                                        .getWorkspaceByName(
-                                                ((ResourceInfo) resource)
-                                                        .getStore()
-                                                        .getWorkspace()
-                                                        .getName())
-                                : null;
-
-                if (((ResourceInfo) resource).getStore() == null && filterIsValid()) {
-                    Class<? extends ResourceInfo> clz = null;
-                    if (resource instanceof FeatureTypeInfo) {
-                        clz = FeatureTypeInfo.class;
-                    } else if (resource instanceof CoverageInfo) {
-                        clz = CoverageInfo.class;
-                    }
-                    ResourceInfo source =
-                            backupFacade
-                                    .getCatalog()
-                                    .getResourceByName(((ResourceInfo) resource).getName(), clz);
-                    if (source != null && source.getStore() != null) {
-                        StoreInfo ds =
-                                getCatalog()
-                                        .getStoreByName(
-                                                source.getStore().getName(), StoreInfo.class);
-                        if (ds == null) {
-                            return null;
-                        }
-                        ((ResourceInfo) resource).setStore(ds);
-                        getCatalog().add(((ResourceInfo) resource));
-                        getCatalog()
-                                .save(
-                                        getCatalog()
-                                                .getResource(
-                                                        ((ResourceInfo) resource).getId(), clz));
-                    }
-                }
-
-                if (filteredResource(resource, ws, true, ResourceInfo.class)) {
-                    return null;
-                }
-
-                /* if (!filterIsValid()
-                        && resource == null
-                        && !validateResource((ResourceInfo) resource, isNew())) {
-                    LOGGER.warning("Skipped invalid resource: " + resource);
-                    logValidationExceptions(resource, null);
-                    return null;
-                } */
-            } else if (resource instanceof LayerInfo) {
-                ValidationResult result = null;
-                try {
-                    WorkspaceInfo ws =
-                            ((LayerInfo) resource).getResource() != null
-                                            && ((LayerInfo) resource).getResource().getStore()
-                                                    != null
-                                            && ((LayerInfo) resource)
-                                                            .getResource()
-                                                            .getStore()
-                                                            .getWorkspace()
-                                                    != null
-                                    ? getCatalog()
-                                            .getWorkspaceByName(
-                                                    ((LayerInfo) resource)
-                                                            .getResource()
-                                                            .getStore()
-                                                            .getWorkspace()
-                                                            .getName())
-                                    : null;
-
-                    if (((LayerInfo) resource).getResource() == null) {
-                        return null;
-                    }
-
-                    if (filteredResource(resource, ws, true, LayerInfo.class)) {
-                        return null;
-                    }
-
-                    if (!filterIsValid() && resource != null) {
-                        result = this.getCatalog().validate((LayerInfo) resource, isNew());
-                        if (!result.isValid()) {
-                            logValidationExceptions(resource, null);
-                            return null;
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.warning(
-                            "Could not validate the resource "
-                                    + resource
-                                    + " due to the following issue: "
-                                    + e.getLocalizedMessage());
-                    logValidationExceptions(result, e);
-                    return null;
-                }
-            } else if (resource instanceof StyleInfo) {
-                ValidationResult result = null;
-                try {
-                    WorkspaceInfo ws =
-                            ((StyleInfo) resource).getWorkspace() != null
-                                    ? getCatalog()
-                                            .getWorkspaceByName(
-                                                    ((StyleInfo) resource).getWorkspace().getName())
-                                    : null;
-
-                    if (filteredResource(resource, ws, false, StyleInfo.class)) {
-                        return null;
-                    }
-
-                    if (!filterIsValid() && resource != null) {
-                        result = this.getCatalog().validate((StyleInfo) resource, isNew());
-                        if (!result.isValid()) {
-                            logValidationExceptions(resource, null);
-                            return null;
-                        }
-                    }
-                } catch (Exception e) {
-                    logValidationExceptions(result, e);
-                    return null;
-                }
-            } else if (resource instanceof LayerGroupInfo) {
-                ValidationResult result = null;
-                try {
-                    WorkspaceInfo ws =
-                            ((LayerGroupInfo) resource).getWorkspace() != null
-                                    ? getCatalog()
-                                            .getWorkspaceByName(
-                                                    ((LayerGroupInfo) resource)
-                                                            .getWorkspace()
-                                                            .getName())
-                                    : null;
-
-                    if (filteredResource(resource, ws, false, LayerGroupInfo.class)) {
-                        return null;
-                    }
-
-                    if (!filterIsValid() && resource != null) {
-                        result = this.getCatalog().validate((LayerGroupInfo) resource, isNew());
-                        if (!result.isValid()) {
-                            logValidationExceptions(resource, null);
-                            return null;
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(
-                            Level.WARNING, "Error occurred while trying to Reload a Resource!", e);
-                    if (getCurrentJobExecution() != null) {
-                        getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
-                    }
-                }
-            }
-
-            return resource;
+            // Resolving Collections
+            OwsUtils.resolveCollections(item);
         }
 
-        return null;
+        LOGGER.info(
+                () ->
+                        String.format(
+                                "Processing resource: %s - Progress: [%s]",
+                                item, getCurrentJobExecution().getProgress()));
+
+        if (item instanceof WorkspaceInfo) return process((WorkspaceInfo) item);
+        if (item instanceof CoverageStoreInfo) return process((CoverageStoreInfo) item);
+        if (item instanceof DataStoreInfo) return process((DataStoreInfo) item);
+        if (item instanceof ResourceInfo) return process((ResourceInfo) item);
+        if (item instanceof LayerInfo) return process((LayerInfo) item);
+        if (item instanceof LayerGroupInfo) return process((LayerGroupInfo) item);
+        if (item instanceof StyleInfo) return process((StyleInfo) item);
+
+        return item;
+    }
+
+    private T process(DataStoreInfo ds) throws Exception {
+        WorkspaceInfo ws = resolveWorkspace(ds);
+
+        if (ws == null && filterIsValid()) {
+            Catalog catalog = getCatalog();
+            DataStoreInfo source = backupFacade.getCatalog().getDataStoreByName(ds.getName());
+            if (source != null && source.getWorkspace() != null) {
+                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                if (ws == null) {
+                    return null;
+                }
+                ds.setWorkspace(ws);
+                catalog.add(ds);
+                catalog.save(catalog.getDataStore(ds.getId()));
+            }
+        }
+
+        if (filteredResource(getClazz().cast(ds), ws, true, StoreInfo.class)) {
+            return null;
+        }
+
+        if (!filterIsValid() && !validateDataStore(ds, isNew())) {
+            LOGGER.warning("Skipped invalid resource: " + ds);
+            logValidationExceptions(getClazz().cast(ds), null);
+            return null;
+        }
+        return getClazz().cast(ds);
+    }
+
+    private T process(StyleInfo style) throws Exception {
+        ValidationResult result = null;
+        try {
+            WorkspaceInfo ws = resolveWorkspace(style);
+
+            if (filteredResource(getClazz().cast(style), ws, false, StyleInfo.class)) {
+                return null;
+            }
+
+            if (!filterIsValid()) {
+                Catalog catalog = getCatalog();
+                result = catalog.validate(style, isNew());
+                if (!result.isValid()) {
+                    logValidationExceptions(getClazz().cast(style), null);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            logValidationExceptions(result, e);
+            return null;
+        }
+        return getClazz().cast(style);
+    }
+
+    private T process(LayerGroupInfo lg) {
+        ValidationResult result = null;
+        try {
+            WorkspaceInfo ws = resolveWorkspace(lg);
+
+            if (filteredResource(getClazz().cast(lg), ws, false, LayerGroupInfo.class)) {
+                return null;
+            }
+
+            if (!filterIsValid()) {
+                Catalog catalog = getCatalog();
+                result = catalog.validate(lg, isNew());
+                if (!result.isValid()) {
+                    logValidationExceptions(getClazz().cast(lg), null);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error occurred while trying to Reload a Resource!", e);
+            if (getCurrentJobExecution() != null) {
+                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+            }
+        }
+        return getClazz().cast(lg);
+    }
+
+    private T process(LayerInfo layer) throws Exception {
+        ValidationResult result = null;
+        try {
+            ResourceInfo layerResouce = layer.getResource();
+            if (layerResouce == null) {
+                return null;
+            }
+
+            WorkspaceInfo ws = resolveWorkspace(layer);
+
+            if (filteredResource(getClazz().cast(layer), ws, true, LayerInfo.class)) {
+                return null;
+            }
+
+            if (!filterIsValid()) {
+                Catalog catalog = getCatalog();
+                result = catalog.validate(layer, isNew());
+                if (!result.isValid()) {
+                    logValidationExceptions(getClazz().cast(layer), null);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warning(
+                    "Could not validate the resource "
+                            + layer
+                            + " due to the following issue: "
+                            + e.getLocalizedMessage());
+            logValidationExceptions(result, e);
+            return null;
+        }
+        return getClazz().cast(layer);
+    }
+
+    private T process(ResourceInfo resource) {
+        StoreInfo itemStore = resource.getStore();
+        WorkspaceInfo ws = resolveWorkspace(resource);
+
+        if (itemStore == null && filterIsValid()) {
+            Catalog catalog = getCatalog();
+            Class<? extends ResourceInfo> clz = null;
+            Class<? extends StoreInfo> storeClz = null;
+            if (resource instanceof FeatureTypeInfo) {
+                clz = FeatureTypeInfo.class;
+                storeClz = DataStoreInfo.class;
+            } else if (resource instanceof CoverageInfo) {
+                clz = CoverageInfo.class;
+                storeClz = CoverageStoreInfo.class;
+            }
+
+            ResourceInfo source =
+                    backupFacade.getCatalog().getResourceByName(resource.getName(), clz);
+            if (source != null && source.getStore() != null) {
+                StoreInfo store = catalog.getStoreByName(source.getStore().getName(), storeClz);
+                if (store == null) {
+                    return null;
+                }
+                resource.setStore(store);
+                catalog.add(resource);
+                catalog.save(catalog.getResource(resource.getId(), clz));
+            }
+        }
+
+        if (filteredResource(getClazz().cast(resource), ws, true, ResourceInfo.class)) {
+            return null;
+        }
+
+        /*
+         * if (!filterIsValid() && resource == null && !validateResource((ResourceInfo) resource,
+         * isNew())) { LOGGER.warning("Skipped invalid resource: " + resource);
+         * logValidationExceptions(resource, null); return null; }
+         */
+        return getClazz().cast(resource);
+    }
+
+    private T process(CoverageStoreInfo store) throws Exception {
+        WorkspaceInfo ws = resolveWorkspace(store);
+
+        if (ws == null && filterIsValid()) {
+            Catalog catalog = getCatalog();
+            CoverageStoreInfo source =
+                    backupFacade.getCatalog().getCoverageStoreByName(store.getName());
+            if (source != null && source.getWorkspace() != null) {
+                ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
+                if (ws == null) {
+                    return null;
+                }
+                store.setWorkspace(ws);
+                catalog.add(store);
+                catalog.save(catalog.getCoverageStore(store.getId()));
+            }
+        }
+
+        if (filteredResource(getClazz().cast(store), ws, true, StoreInfo.class)) {
+            return null;
+        }
+
+        if (!filterIsValid() && !validateCoverageStore(store, isNew())) {
+            LOGGER.warning("Skipped invalid resource: " + store);
+            logValidationExceptions(getClazz().cast(store), null);
+            return null;
+        }
+        return getClazz().cast(store);
+    }
+
+    private T process(WorkspaceInfo item) throws Exception {
+        if (filteredResource(item, false)) {
+            return null;
+        }
+        if (filterIsValid() && null == resolveWorkspace(item)) {
+            Catalog catalog = getCatalog();
+            catalog.add(item);
+            catalog.save(catalog.getWorkspace(item.getId()));
+        }
+
+        if (!filterIsValid() && !validateWorkspace(item, isNew())) {
+            LOGGER.warning("Skipped invalid resource: " + item);
+            logValidationExceptions(getClazz().cast(item), null);
+            return null;
+        }
+        return getClazz().cast(item);
     }
 
     /**
@@ -491,5 +449,28 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                             + e.getLocalizedMessage());
             return logValidationExceptions((T) resource, e);
         }
+    }
+
+    private WorkspaceInfo resolveWorkspace(CatalogInfo item) {
+        WorkspaceInfo ws = null;
+        if (item instanceof WorkspaceInfo) {
+            ws = (WorkspaceInfo) item;
+        } else if (item instanceof StoreInfo) {
+            ws = ((StoreInfo) item).getWorkspace();
+        } else if (item instanceof ResourceInfo) {
+            StoreInfo store = ((ResourceInfo) item).getStore();
+            ws = store == null ? null : store.getWorkspace();
+        } else if (item instanceof LayerInfo) {
+            ResourceInfo resource = ((LayerInfo) item).getResource();
+            StoreInfo store = resource == null ? null : resource.getStore();
+            ws = store == null ? null : store.getWorkspace();
+        } else if (item instanceof LayerGroupInfo) {
+            ws = ((LayerGroupInfo) item).getWorkspace();
+        } else if (item instanceof StyleInfo) {
+            ws = ((StyleInfo) item).getWorkspace();
+        } else {
+            throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
+        }
+        return ws == null ? null : getCatalog().getWorkspaceByName(ws.getName());
     }
 }

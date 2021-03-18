@@ -321,44 +321,36 @@ public abstract class BackupRestoreItem<T> {
     protected boolean filteredResource(
             T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
         // Filtering Resources
-        if (filterIsValid()) {
-            if (resource == null || (clazz != null && clazz == WorkspaceInfo.class)) {
-                if ((strict && ws == null)
-                        || (ws != null
-                                && getFilters()[0] != null
-                                && !getFilters()[0].evaluate(ws))) {
-                    LOGGER.info("Skipped filtered workspace: " + ws);
-                    return true;
-                }
-            }
-
-            if (resource != null && clazz != null && clazz == StoreInfo.class) {
-                if (getFilters()[1] != null && !getFilters()[1].evaluate(resource)) {
-                    LOGGER.info("Skipped filtered resource: " + resource);
-                    return true;
-                }
-            }
-
-            if (resource != null && clazz != null && clazz == LayerInfo.class) {
-                if (getFilters()[2] != null && !getFilters()[2].evaluate(resource)) {
-                    LOGGER.info("Skipped filtered resource: " + resource);
-                    return true;
-                }
-            }
-
-            if (resource != null && clazz != null && clazz == ResourceInfo.class) {
-                if (((ResourceInfo) resource).getStore() == null
-                        ||
-                        // (getFilters()[1] != null && !getFilters()[1].evaluate(((ResourceInfo)
-                        // resource).getStore())) ||
-                        (getFilters()[2] != null && !getFilters()[2].evaluate(resource))) {
-                    LOGGER.info("Skipped filtered resource: " + resource);
-                    return true;
-                }
+        if (!filterIsValid()) {
+            return false;
+        }
+        if (resource == null || clazz == WorkspaceInfo.class) {
+            if ((strict && ws == null)
+                    || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
+                LOGGER.info("Skipped filtered workspace: " + ws);
+                return true;
             }
         }
-
-        return false;
+        boolean skip = false;
+        if (resource != null) {
+            if (clazz == StoreInfo.class) {
+                skip = getFilters()[1] != null && !getFilters()[1].evaluate(resource);
+            } else if (clazz == LayerInfo.class) {
+                skip = getFilters()[2] != null && !getFilters()[2].evaluate(resource);
+            } else if (clazz == ResourceInfo.class) {
+                skip =
+                        ((ResourceInfo) resource).getStore() == null
+                                ||
+                                // (getFilters()[1] != null &&
+                                // !getFilters()[1].evaluate(((ResourceInfo)
+                                // resource).getStore())) ||
+                                (getFilters()[2] != null && !getFilters()[2].evaluate(resource));
+            }
+        }
+        if (skip) {
+            LOGGER.info("Skipped filtered resource: " + resource);
+        }
+        return skip;
     }
 
     /** */

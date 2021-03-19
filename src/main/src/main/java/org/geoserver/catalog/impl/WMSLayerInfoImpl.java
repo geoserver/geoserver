@@ -238,8 +238,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public static StyleInfo getStyleInfo(StyleImpl gtWmsStyle) {
 
         StyleInfoImpl styleInfo = new StyleInfoImpl();
-
-        styleInfo.setId(gtWmsStyle.getName());
+        // do not set an id, this is not a persiste object, it could otherwise confuse custom
+        // catalog facades (e..g, JDBCConfig)
         styleInfo.setName(gtWmsStyle.getName());
         // a hint
         styleInfo.getMetadata().put("isRemote", true);

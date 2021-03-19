@@ -339,7 +339,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
             onSuccessfulSave(doReturn);
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Error saving layer", e);
+            LOGGER.log(Level.SEVERE, "Error saving layer", e);
             error(e.getMessage() == null ? e.toString() : e.getMessage());
         }
     }

@@ -48,7 +48,9 @@
 }
 
 /* Remove opinionated color of links. */
-.leaflet-container a {
+.leaflet-container a,
+.leaflet-container a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button:hover {
   color: initial;
 }
 
@@ -344,10 +346,10 @@
 }
 
 /* Disable pointer events where they'd interfere with the intended action. */
+.leaflet-tooltip,
+.leaflet-crosshair *,
 .mapml-contextmenu-item > *,
 .mapml-control-layers label[for^="o"],
-.leaflet-crosshair > *,
-.leaflet-crosshair .leaflet-control,
 .mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }
@@ -389,6 +391,10 @@ summary {
 .mapml-draggable * {
   cursor: row-resize;
   background-color: white;
+}
+
+.leaflet-crosshair {
+  cursor: crosshair;
 }
 
 /*
@@ -448,17 +454,22 @@ summary {
   position: relative;
 }
 
+/* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
+   refactor TBD in https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/263. */
 .mapml-control-summary-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  display: contents;
+}
+.mapml-control-summary-container .mapml-layer-remove-button {
+  text-decoration: none;
+  float: right;
+}
+.mapml-control-summary-container * {
+  display: inline;
+}
+.mapml-control-summary-container label {
+  margin-right: 15px;
 }
 
-.mapml-layer-remove-button {
-  margin-left: 15px;
-  text-decoration: none;
-}
  
  /* Force printers to include background-images of controls for printing.
    (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
@@ -467,4 +478,10 @@ summary {
     -webkit-print-color-adjust: exact;
                   color-adjust: exact;
   }
+}
+
+.leaflet-pane > svg g.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive g {
+  pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+  pointer-events: auto;
 }

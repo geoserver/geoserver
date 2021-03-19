@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Feature {
 
     //    @XmlElementRefs({
+    //        @XmlElementRef(name = "featurecaption", type = String.class, required = false),
     //        @XmlElementRef(name = "geometry", type = JAXBElement.class, required = false),
     //        @XmlElementRef(name = "bbox", type = JAXBElement.class, required = false),
     //        @XmlElementRef(name = "image", type = Image.class, required = false),
@@ -54,6 +55,13 @@ public class Feature {
     //    })
     //    protected List<Object> bboxOrImageOrGeometry;
     //
+    @XmlElement(
+        name = "featurecaption",
+        required = false,
+        namespace = "http://www.w3.org/1999/xhtml/"
+    )
+    protected String featurecaption;
+
     @XmlElement(name = "geometry", required = false, namespace = "http://www.w3.org/1999/xhtml/")
     protected GeometryContent geometry;
 
@@ -121,6 +129,14 @@ public class Feature {
 
     public void setBbox(JAXBElement bbox) {
         this.bbox = bbox;
+    }
+
+    public String getFeatureCaption() {
+        return featurecaption;
+    }
+
+    public void setFeatureCaption(String featurecaption) {
+        this.featurecaption = featurecaption;
     }
 
     public Image getImage() {

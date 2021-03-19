@@ -376,30 +376,6 @@ public class MapMLController {
             return null;
         }
 
-        //        CoordinateReferenceSystem projSrs =
-        //                CRS.decode(previewTcrsMap.get(projType.value()).getCode());
-        //        Collection<? extends GeographicExtent> geoExtents =
-        //                projSrs.getDomainOfValidity().getGeographicElements();
-        //        // we assume there is only one geoExtent and that it is a GeographicBoundingBox;
-        // otherwise
-        //        // we can't really do anything
-        //        if (geoExtents.size() == 1) {
-        //            for (GeographicExtent ge : geoExtents) {
-        //                if (ge instanceof GeographicBoundingBox) {
-        //                    GeographicBoundingBox gbb = (GeographicBoundingBox) ge;
-        //                    Envelope e =
-        //                            new Envelope(
-        //                                    gbb.getEastBoundLongitude(),
-        //                                    gbb.getWestBoundLongitude(),
-        //                                    gbb.getSouthBoundLatitude(),
-        //                                    gbb.getNorthBoundLatitude());
-        //                    // reduce the data's bbox to fit in the domain of the projection
-        //                    bbox = bbox.intersection(e);
-        //                }
-        //            }
-        //        }
-        //        ReferencedEnvelope cbmBbox = bbox.transform(projSrs, true);
-
         String styleName = style.orElse("");
         String imageFormat = format.orElse("image/png");
         String baseUrl =

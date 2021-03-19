@@ -83,6 +83,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

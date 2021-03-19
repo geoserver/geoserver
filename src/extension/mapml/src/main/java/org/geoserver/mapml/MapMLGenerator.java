@@ -33,7 +33,8 @@ public class MapMLGenerator {
      * @return the feature
      * @throws IOException - IOException
      */
-    public static Feature buildFeature(SimpleFeature sf) throws IOException {
+    public static Feature buildFeature(SimpleFeature sf, String featureCaptionAttribute)
+            throws IOException {
 
         Feature f = new Feature();
         f.setId(sf.getID());
@@ -58,6 +59,12 @@ public class MapMLGenerator {
                         sf.getAttribute(attr.getName()) != null
                                 ? sf.getAttribute(attr.getName()).toString()
                                 : "";
+                if (featureCaptionAttribute != null
+                        && !featureCaptionAttribute.isEmpty()
+                        && featureCaptionAttribute.equalsIgnoreCase(escapedName)
+                        && !value.trim().isEmpty()) {
+                    f.setFeatureCaption(value);
+                }
                 sb.append("<tr><th scope=\"row\">")
                         .append(escapedName)
                         .append("</th>")

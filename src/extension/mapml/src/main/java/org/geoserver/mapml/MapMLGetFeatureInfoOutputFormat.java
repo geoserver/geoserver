@@ -8,6 +8,8 @@ package org.geoserver.mapml;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +28,7 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -33,6 +36,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
@@ -51,9 +55,9 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
     }
 
     /**
-     * @param results
-     * @param request
-     * @param out
+     * @param results the set of FeatureCollections that respond to the query
+     * @param request metadata about the request, including layers maybe involved
+     * @param out put the text out on this, return to client.
      * @throws ServiceException
      * @throws IOException
      */
@@ -85,11 +89,11 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         head.setBase(base);
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
-        meta.setCharset("utf-8");
+        meta.setCharset("UTF-8");
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MapMLConstants.MAPML_MIME_TYPE); // ;projection=" + projType.value());
+        meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
         Meta tcrsMeta = new Meta();
         tcrsMeta.setName("projection");
@@ -108,29 +112,32 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
 
         @SuppressWarnings("unchecked")
         List<FeatureCollection> featureCollections = results.getFeature();
+        HashMap<Name, String> captionAttributes = captionsMap(request.getQueryLayers());
         SimpleFeatureCollection fc;
         if (!featureCollections.isEmpty()) {
-            int lastFeatureCollection = featureCollections.size() - 1;
-            if (!(featureCollections.get(lastFeatureCollection)
-                    instanceof SimpleFeatureCollection)) {
-                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
-            }
-            fc = (SimpleFeatureCollection) featureCollections.get(lastFeatureCollection);
-            List<Feature> features = body.getFeatures();
-            try (SimpleFeatureIterator iterator = fc.features()) {
-                while (iterator.hasNext()) {
-                    SimpleFeature feature;
-                    try {
-                        // this can throw due to the feature not fitting into
-                        // the extent of the CRS when it's transformed. Could
-                        // see if in such a case we could just return the
-                        // scalar properties
-                        feature = iterator.next();
-                        // convert feature to xml
-                        Feature f = MapMLGenerator.buildFeature(feature);
-                        features.add(f);
-                    } catch (IllegalStateException e) {
-                        LOGGER.log(Level.INFO, "Error transforming feature.");
+            Iterator<FeatureCollection> fci = featureCollections.iterator();
+            while (fci.hasNext()) {
+                fc = (SimpleFeatureCollection) fci.next();
+                List<Feature> features = body.getFeatures();
+                try (SimpleFeatureIterator iterator = fc.features()) {
+                    while (iterator.hasNext()) {
+                        SimpleFeature feature;
+                        try {
+                            // this can throw due to the feature not fitting into
+                            // the extent of the CRS when it's transformed. Could
+                            // see if in such a case we could just return the
+                            // scalar properties
+                            feature = iterator.next();
+                            Feature f =
+                                    MapMLGenerator.buildFeature(
+                                            feature,
+                                            captionAttributes.get(fc.getSchema().getName()));
+                            // might be interesting to be able to put features
+                            // from different layers into a layer-specific div
+                            features.add(f);
+                        } catch (IllegalStateException e) {
+                            LOGGER.log(Level.INFO, "Error transforming feature.");
+                        }
                     }
                 }
             }
@@ -140,5 +147,36 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         Result result = new StreamResult(osw);
         mapmlMarshaller.marshal(mapml, result);
         osw.flush();
+    }
+
+    @Override
+    public String getCharset() {
+        // MapML is always encoded as UTF-8; SettingsInfo.getCharset() notwithstanding
+        return "UTF-8";
+    }
+
+    /**
+     * Create a Map wtih key of qualified layer name, possibly null string valued name of an
+     * attribute designated as being the &lt;featurecaption&gt; element
+     *
+     * @param layers a list of all layers that are in the layer / layer group
+     * @return
+     */
+    private HashMap<Name, String> captionsMap(List<MapLayerInfo> layers) {
+        HashMap<Name, String> map = new HashMap<>(layers.size());
+
+        layers.stream()
+                .map(layer -> layer.getLayerInfo().getResource())
+                .forEachOrdered(
+                        r -> {
+                            String fcap =
+                                    r.getMetadata()
+                                            .getOrDefault("mapml.featureCaption", "")
+                                            // aargggh coverage band names can have spaces
+                                            .toString()
+                                            .replaceAll("\\s", "_");
+                            map.put(r.getQualifiedName(), fcap.isEmpty() ? null : fcap);
+                        });
+        return map;
     }
 }

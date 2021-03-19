@@ -656,7 +656,11 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         if (isRelationShip) {
             Info relatedObject = lookUpRelatedObject(info, prop, colIndex);
-            if (relatedObject == null) {
+            // Layer styles might not be actually persisted, in the case of WMS cascaded layers,
+            // where they are created on the fly based on the style names found in the caps
+            // documents. So check if the id is not null, in addition to checking
+            // if the related object is not null.
+            if (relatedObject == null || relatedObject.getId() == null) {
                 concreteTargetPropertyOid = null;
             } else {
                 // the related property may refer to an abstract type (e.g.
@@ -1891,14 +1895,18 @@ public class ConfigDatabase implements ApplicationContextAware {
         @Override
         public void visit(LayerInfo layer) {
             // avoids concurrent modification exceptions on the list contents
+            // Layer styles might not be actually persisted, in the case of WMS cascaded layers,
+            // where they are created on the fly based on the style names found in the caps
+            // documents. So check if the id is not null, in addition to checking if the style is
+            // not null.
             synchronized (layer) {
-                if (layer.getDefaultStyle() != null) {
+                if (layer.getDefaultStyle() != null && layer.getDefaultStyle().getId() != null) {
                     layer.setDefaultStyle(
                             getById(layer.getDefaultStyle().getId(), StyleInfo.class));
                 }
                 Set<StyleInfo> newStyles = new HashSet<>();
                 for (StyleInfo style : new ArrayList<>(layer.getStyles())) {
-                    if (style != null) {
+                    if (style != null && style.getId() != null) {
                         newStyles.add(getById(style.getId(), StyleInfo.class));
                     }
                 }

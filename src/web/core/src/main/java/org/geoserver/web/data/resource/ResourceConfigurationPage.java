@@ -226,10 +226,11 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
             }
 
             catalog.validate(resourceInfo, true).throwIfInvalid();
+            LayerInfo publishedInfo = getPublishedInfo();
             catalog.add(resourceInfo);
             try {
-                catalog.add(getPublishedInfo());
-            } catch (IllegalArgumentException e) {
+                catalog.add(publishedInfo);
+            } catch (Exception e) {
                 catalog.remove(resourceInfo);
                 throw e;
             }
@@ -237,12 +238,13 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
             ResourceInfo oldState = catalog.getResource(resourceInfo.getId(), ResourceInfo.class);
 
             catalog.validate(resourceInfo, true).throwIfInvalid();
+            LayerInfo publishedInfo = getPublishedInfo();
             catalog.save(resourceInfo);
             try {
-                LayerInfo layer = getPublishedInfo();
+                LayerInfo layer = publishedInfo;
                 layer.setResource(resourceInfo);
                 catalog.save(layer);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 catalog.save(oldState);
                 throw e;
             }

@@ -14,6 +14,9 @@ import org.geotools.util.Version;
 
 public class StyleInfoImpl implements StyleInfo {
 
+    /** Marks a remote style, generated on the fly from a capabilites document */
+    public static final String IS_REMOTE = "isRemote";
+
     protected String id;
 
     protected String name;
@@ -106,7 +109,7 @@ public class StyleInfoImpl implements StyleInfo {
         // remote style does not exist in local catalog
         // do not look for this style inside ResourcePool
         if (metadata != null)
-            if (metadata.containsKey("isRemote")) return WMSLayerInfoImpl.getStyleInfo(this);
+            if (metadata.containsKey(IS_REMOTE)) return WMSLayerInfoImpl.getStyleInfo(this);
         return catalog.getResourcePool().getStyle(this);
     }
 

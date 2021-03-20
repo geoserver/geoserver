@@ -23,6 +23,14 @@
             <artifactId>gt-main</artifactId>
             <version>${gt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-wfs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-wms</artifactId>
+        </dependency>
 
         <!--   Third-party dependencies   -->
         <!--   version number defined here as this is a community module -->
@@ -33,14 +41,6 @@
             <artifactId>gt-sample-data</artifactId>
             <version>${gt.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-wfs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-wms</artifactId>
         </dependency>
     </dependencies>
 

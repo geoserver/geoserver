@@ -5,9 +5,11 @@ MongoDB Schemaless Support
 
 By clicking on MongoDB Schemaless we land on the store configuration page. The only needed parameters are the ``workspace`` and the ``MongoDBURI``. For a description of the available MongoDB URI format check `here <https://docs.mongodb.com/manual/reference/connection-string>`_ .
 
+.. figure:: img/schemaless-mongo-configuration-page.png
+
 After saving, it will be possible to serve every MongoDB collection found in the database as a layer, by the layer configuration page.
 
-The default geometry has to be defined by setting a geometry index on the desired geometry attribute in the MongoDB collection.
+The default geometry can be defined by setting a geometry index on the desired geometry attribute in the MongoDB collection.
 
 As an example of the obtained output we will use the Stations use case. In the MongoDB collection we have the following document among the others being served:
 
@@ -109,21 +111,21 @@ The GeoJSON output for that specific document will be the following feature:
  }
 
 
-As it is possible to see, the feature object is very close to the appereance of the corresponding MongoDB document.
+As it is possible to see, the feature object is very close to the appearance of the corresponding MongoDB document.
 
 
 Simplified Property Access
 --------------------------
 
-Behind the scenes the module build a complex feature schema on the fly automatically along with the complex features being served. Every array or object in the document is considered to be a nested feature. This might result in a hard time trying to foreseen the xpath needed to access a feature property for styling or filtering purpose, because the internal nested feature representation follows the GML object property model.
+Behind the scenes the module builds a complex feature schema on the fly automatically along with the complex features being served. Every array or object in the document is considered to be a nested feature. This might result in a hard time trying to foreseen the xpath needed to access a feature property for styling or filtering purpose, because the internal nested feature representation follows the GML object property model.
 
-To clarify this lets assume that we want to filter the stations features on a measurments value greater then 100. 
+To clarify this lets assume that we want to filter the stations features on a measurements value greater then 100. 
 According to the above GeoJSON feature representation the whole filter will look like: ``measurements.MeasurementsFeature.values.ValuesFeature.value > 100``. 
 
 The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the `Feature` suffix.
 
-To avoid users to deal with such complexity a simplfied property access support has been implemented. This allows to reference property with a path that need simply to follow the GeoJSON output format or the document structure.
+To avoid users needing to deal with this complexity, simplified property access support has been implemented. This allows referencing a property with a path that matches the GeoJSON output format or the document structure.
 
-The previously defined filter become thus: ``measurements.values.value > 100``. 
+The previously defined filter could then be: ``measurements.values.value > 100``. 
 
-As it is possible to see the property path can be easily inferred both from the GeoJSON output and from the MongoDB document.
+As can be seen, the property path can be easily inferred both from the GeoJSON output and from the MongoDB document.

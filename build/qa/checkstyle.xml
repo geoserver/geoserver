@@ -15,6 +15,7 @@
       <property name="allowMissingParamTags" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>
     </module>
+    <module name="ArrayTypeStyle"/>
   </module>
   <module name="RegexpHeader">
     <property name="multiLines" value="2,3"/> <!-- Allows to have other copyrights, see line 2 and 3 of the regexp -->

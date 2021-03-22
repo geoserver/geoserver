@@ -15,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -184,6 +185,19 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
     protected AuthResults getNewAuthn(HttpServletRequest request, HttpServletResponse response) {
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.getNewAuthn ENTRY");
         // do some setup and create the authenticator
+        request =
+                new HttpServletRequestWrapper(request) {
+                    @Override
+                    public StringBuffer getRequestURL() {
+                        String url = super.getRequestURL().toString();
+                        String proto = super.getHeader("x-forwarded-proto");
+
+                        if (proto != null && url.startsWith("http://") && proto.equals("https")) {
+                            url = url.replaceAll("^http", "https");
+                        }
+                        return new StringBuffer(url);
+                    }
+                };
         HttpFacade exchange = new SimpleHttpFacade(request, response);
         KeycloakDeployment deployment = keycloakContext.resolveDeployment(exchange);
         deployment.setDelegateBearerErrorResponseSending(true);

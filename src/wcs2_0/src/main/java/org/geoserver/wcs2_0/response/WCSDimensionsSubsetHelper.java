@@ -361,7 +361,11 @@ public class WCSDimensionsSubsetHelper {
                                 reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER));
                 final double scale =
                         axisIndex == 0 ? affineTransform.getScaleX() : -affineTransform.getScaleY();
-                subsettingEnvelope.setRange(axisIndex, slicePoint, slicePoint + scale);
+
+                // Center the tiny rectangle across the slicePoint
+                double min = slicePoint - (scale * 0.5);
+                double max = min + scale;
+                subsettingEnvelope.setRange(axisIndex, min, max);
 
                 // slice point outside coverage
                 if (sourceEnvelopeInSubsettingCRS.getMinimum(axisIndex) > slicePoint

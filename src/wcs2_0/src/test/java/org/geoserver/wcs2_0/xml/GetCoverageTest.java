@@ -468,8 +468,8 @@ public class GetCoverageTest extends WCSTestSupport {
             // 1 dimensional slice along latitude
             final GeneralEnvelope expectedEnvelope =
                     new GeneralEnvelope(
-                            new double[] {146.49999999999477, -43.5},
-                            new double[] {146.99999999999477, -43.49583333333119});
+                            new double[] {146.49999999999477, -43.504166666664524},
+                            new double[] {146.99999999999477, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
@@ -682,8 +682,8 @@ public class GetCoverageTest extends WCSTestSupport {
             // 1 dimensional slice along latitude
             final GeneralEnvelope expectedEnvelope =
                     new GeneralEnvelope(
-                            new double[] {146.49999999999477, -43.499999999997854},
-                            new double[] {147.99999999999474, -43.49583333333119});
+                            new double[] {146.49999999999477, -43.504166666664524},
+                            new double[] {147.99999999999474, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);

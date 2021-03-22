@@ -88,6 +88,14 @@ Dimension Config
 **Dimension**
   The selected dimension (if any) is advertised in the mapml as an input with the appropriate value options or ranges, as configured in the *Dimension* tab of the Layer Configuration page. Only dimensions enabled in the *Dimension* tab are available as options.
 
+Attribute to <featurecaption> mapping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Attribute**
+The dropdown list allows you to select an attribute that will be serialized in MapML vector content as the <featurecaption> element value.  The <featurecaption> is used as the accessible name of the feature, by screen reader software, which will often read out
+this value without the user having to expand a popup; in other words, it will be used as a visual and audible tooltip when the
+visual element is focused.
+
 
 MapML Resources
 ---------------

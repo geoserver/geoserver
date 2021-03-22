@@ -618,6 +618,44 @@ public class MapMLControllerTest extends WMSTestSupport {
     }
 
     @Test
+    public void testGetFeatureInfoMapML() throws Exception {
+
+        // set up mapml layer featurecaption
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta = catalog.getLayerByName(getLayerId(MockData.FORESTS)).getResource();
+        String featureCaptionAttributeName = "NAME";
+        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionAttributeName);
+        catalog.save(layerMeta);
+
+        assertTrue(layerMeta.getMetadata().containsKey("mapml.featureCaption"));
+        assertTrue(
+                layerMeta
+                        .getMetadata()
+                        .get("mapml.featureCaption")
+                        .toString()
+                        .equalsIgnoreCase(featureCaptionAttributeName));
+        String forests = getLayerId(MockData.FORESTS);
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("version", "1.1.1");
+        vars.put("bbox", "-0.002,-0.002,0.002,0.002");
+        vars.put("styles", "");
+        vars.put("format", "jpeg");
+        vars.put("info_format", "text/mapml");
+        vars.put("request", "GetFeatureInfo");
+        vars.put("layers", forests);
+        vars.put("query_layers", forests);
+        vars.put("width", "20");
+        vars.put("height", "20");
+        vars.put("x", "10");
+        vars.put("y", "10");
+        org.w3c.dom.Document doc = getMapML("wms", vars);
+        assertXpathEvaluatesTo("1", "count(//html:feature)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:featurecaption)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:geometry)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:properties)", doc);
+    }
+
+    @Test
     public void testDefaultConfiguredMapMLLayerGetFeatureInfoAsMapML() throws Exception {
         String path =
                 "mapml/"
@@ -625,6 +663,22 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + ":"
                         + MockData.BASIC_POLYGONS.getLocalPart()
                         + "/osmtile/";
+
+        // set up mapml layer featurecaption
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
+
+        String featureCaptionAttributeName = "ID";
+        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionAttributeName);
+        catalog.save(layerMeta);
+        assertTrue(layerMeta.getMetadata().containsKey("mapml.featureCaption"));
+        assertTrue(
+                layerMeta
+                        .getMetadata()
+                        .get("mapml.featureCaption")
+                        .toString()
+                        .equalsIgnoreCase(featureCaptionAttributeName));
 
         org.w3c.dom.Document doc = getMapML(path);
 
@@ -657,6 +711,8 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         doc = getMapML("wms", vars);
         assertXpathEvaluatesTo("2", "count(//html:feature)", doc);
+        // empty attributes (such as ID in this case - all empty) won't be used
+        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
         assertXpathEvaluatesTo("", "//html:feature/html:geometry/@cs", doc);
         assertXpathEvaluatesTo("2", "count(//html:feature//html:polygon[1])", doc);
         assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);

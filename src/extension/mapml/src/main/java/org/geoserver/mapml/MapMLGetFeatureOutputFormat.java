@@ -57,7 +57,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return MapMLConstants.MAPML_MIME_TYPE;
+        return MapMLConstants.MAPML_MIME_TYPE + ";charset=UTF-8";
     }
 
     @Override
@@ -93,11 +93,11 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         // which will impact provision of external style sheets, perhaps TBD
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
-        meta.setCharset("utf-8");
+        meta.setCharset("UTF-8");
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MapMLConstants.MAPML_MIME_TYPE); // ;projection=" + projType.value());
+        meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
         metas.addAll(deduceProjectionAndExtent(getFeature, layerInfo));
         List<Link> links = head.getLinks();
@@ -116,6 +116,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             links.add(link);
         }
 
+        String fCaptionAttribute = layerMeta.get("mapml.featureCaption", String.class);
         mapml.setHead(head);
 
         // build the body
@@ -127,7 +128,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 // convert feature to xml
-                Feature f = MapMLGenerator.buildFeature(feature);
+                Feature f = MapMLGenerator.buildFeature(feature, fCaptionAttribute);
                 features.add(f);
             }
         }

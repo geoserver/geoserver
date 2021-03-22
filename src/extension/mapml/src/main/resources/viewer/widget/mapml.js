@@ -283,27 +283,28 @@
      * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
      */
       initialize: function (mapml, options) {
-      
+
         L.setOptions(this, options);
-        this._container = L.DomUtil.create('div','leaflet-layer', this.options.pane);
-        // must have leaflet-pane class because of new/changed rule in leaflet.css
-        // info: https://github.com/Leaflet/Leaflet/pull/4597 
-        L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
+        if(this.options.static) {
+          this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
+          // must have leaflet-pane class because of new/changed rule in leaflet.css
+          // info: https://github.com/Leaflet/Leaflet/pull/4597
+          L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+          L.setOptions(this.options.renderer, {pane: this._container});
+          let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
+          anim.innerHTML = `@keyframes pathSelect {
+          0% {stroke: white;}
+          50% {stroke: black;}
+        }
+        g:focus > path,
+        path:focus {
+          animation-name: pathSelect;
+          animation-duration: 1s;
+          stroke-width: 5;
+          stroke: black;
+        }`;
+        }
 
-        let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
-        anim.innerHTML = `@keyframes pathSelect {
-        0% {stroke: white;}
-        50% {stroke: black;}
-      }
-      
-      .mapml-path-selected {
-        animation-name: pathSelect;
-        animation-duration: 1s;
-        stroke-width: 5;
-        stroke: black;
-      }`;
-
-        L.setOptions(this.options.renderer, {pane: this._container});
         this._layers = {};
         if(this.options.query){
           this._mapmlFeatures = mapml;
@@ -315,7 +316,7 @@
         if (mapml && !this.options.query) {
           let native = this._getNativeVariables(mapml);
           //needed to check if the feature is static or not, since this method is used by templated also
-          if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
+          if(!mapml.querySelector('extent') && mapml.querySelector('feature') && this.options.static){
             this._features = {};
             this._staticFeature = true;
             this.isVisible = true; //placeholder for when this actually gets updated in the future
@@ -335,7 +336,6 @@
       onAdd: function(map){
         L.FeatureGroup.prototype.onAdd.call(this, map);
         if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
-        this._updateTabIndex();
       },
 
       onRemove: function(map){
@@ -359,34 +359,6 @@
         };
       },
 
-      _updateTabIndex: function(){
-        for(let feature in this._features){
-          for(let path of this._features[feature]){
-            if(path._path){
-              if(path._path.getAttribute("d") !== "M0 0"){
-                path._path.setAttribute("tabindex", 0);
-              } else {
-                path._path.removeAttribute("tabindex");
-              }
-              path._path.setAttribute("aria-label", path.accessibleTitle);
-              path._path.setAttribute("aria-expanded", "false");
-              /* jshint ignore:start */
-              L.DomEvent.on(path._path, "keyup keydown", (e)=>{
-                if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
-                  path._path.classList.add("mapml-path-selected");
-                  path.openTooltip();
-                } else {
-                  path._path.classList.remove("mapml-path-selected");
-                  path.closeTooltip(); 
-                }
-              });
-              path._path.classList.remove("mapml-path-selected");
-              if(path.isTooltipOpen())path.closeTooltip(); 
-              /* jshint ignore:end */
-            }
-          }
-        }
-      },
 
       showPaginationFeature: function(e){
         if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
@@ -396,44 +368,6 @@
           e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
           e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
         }
-      },
-
-      _previousFeature: function(e){
-        let path = this._source._path.previousSibling;
-        if(!path){
-          let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
-          let overlays = this._map.getPane("overlayPane").children;
-          for(let i = overlays.length - 1; i >= 0; i--){
-            let layer = overlays[i];
-            if(layer.style.zIndex >= currentIndex) continue;
-            path = layer.querySelector("path");
-            if(path){
-              path = path.parentNode.lastChild;
-              break;
-            }
-          }
-          if (!path) path = this._source._path; 
-        }
-        path.focus();
-        this._map._targets[path._leaflet_id].openTooltip();
-        this._map.closePopup();
-      },
-
-      _nextFeature: function(e){
-        let path = this._source._path.nextSibling;
-        if(!path){
-          let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
-
-          for(let layer of this._map.getPane("overlayPane").children){
-            if(layer.style.zIndex <= currentIndex) continue;
-            path = layer.querySelector("path");
-            if(path)break;
-          }
-          if (!path) path = this._source._path; 
-        }
-        path.focus();
-        this._map._targets[path._leaflet_id].openTooltip();
-        this._map.closePopup();
       },
 
       _getNativeVariables: function(mapml){
@@ -453,7 +387,6 @@
                               this._map.getPixelBounds(),
                               mapZoom,this._map.options.projection));
         this._removeCSS();
-        this._updateTabIndex();
       },
 
       _handleZoomEnd: function(e){
@@ -592,9 +525,10 @@
         if (mapml.classList.length) {
           options.className = mapml.classList.value;
         }
-        let zoom = mapml.getAttribute("zoom") || nativeZoom;
+        let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
+        title = title ? title.innerHTML : "Feature";
 
-        var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options, nativeCS, +zoom);
+        let layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom, title);
         if (layer) {
           layer.properties = mapml.getElementsByTagName('properties')[0];
           
@@ -607,16 +541,15 @@
           this.resetStyle(layer);
 
           if (options.onEachFeature) {
-            layer.accessibleTitle = mapml.querySelector("featurecaption");
-            layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
             options.onEachFeature(layer.properties, layer);
-            layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+            layer.bindTooltip(title, { interactive:true, sticky: true, });
             if(layer._events){
-                layer._events.keypress.push({
-                  "ctx": layer,
-                  "fn": this._onSpacePress,
-                });
-              }
+              if(!layer._events.keypress) layer._events.keypress = [];
+              layer._events.keypress.push({
+                "ctx": layer,
+                "fn": this._onSpacePress,
+              });
+            }
           }
           if(this._staticFeature){
             let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -667,119 +600,26 @@
           this._openPopup(e);
         }
       },
-  	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions, nativeCS, zoom) {
-      var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-          latlng, latlngs, coordinates, member, members, linestrings;
+    geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom, title) {
+      let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+          cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup;
 
-      coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
-      
-      var cs = geometry.getAttribute("cs") || nativeCS;
+      if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
+        subFeatures = geometry.firstElementChild;
 
-      switch (geometry.firstElementChild.tagName.toUpperCase()) {
-        case 'POINT':
-          coordinates = [];
-          geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-          latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
-          return pointToLayer ? pointToLayer(mapml, latlng) : M.svgMarker(latlng, vectorOptions);
-
-        case 'MULTIPOINT':
-          coordinates = [];
-          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-          latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-          var points = new Array(latlngs.length);
-          for(member=0;member<points.length;member++) {
-            points[member] = M.svgMarker(latlngs[member], vectorOptions);
-          }
-          return new L.featureGroup(points);
-        case 'LINESTRING':
-          coordinates = [];
-          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-          latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-          return new L.Polyline(latlngs, vectorOptions);
-        case 'MULTILINESTRING':
-          members = geometry.getElementsByTagName('coordinates');
-          linestrings = new Array(members.length);
-          for (member=0;member<members.length;member++) {
-            linestrings[member] = coordinatesToArray(members[member]);
-          }
-          latlngs = this.coordsToLatLngs(linestrings, 2, coordsToLatLng, cs, zoom);
-          return new L.Polyline(latlngs, vectorOptions);
-        case 'POLYGON':
-          var rings = geometry.getElementsByTagName('coordinates');
-          latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng, cs, zoom);
-          return new L.Polygon(latlngs, vectorOptions);
-        case 'MULTIPOLYGON':
-          members = geometry.getElementsByTagName('polygon');
-          var polygons = new Array(members.length);
-          for (member=0;member<members.length;member++) {
-            polygons[member] = coordinatesToArray(members[member].querySelectorAll('coordinates'));
-          }
-          latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng, cs, zoom);
-          return new L.Polygon(latlngs, vectorOptions);
-        case 'GEOMETRYCOLLECTION':
-          console.log('GEOMETRYCOLLECTION Not implemented yet');
-          break;
-      //			for (i = 0, len = geometry.geometries.length; i < len; i++) {
-      //
-      //				layers.push(this.geometryToLayer({
-      //					geometry: geometry.geometries[i],
-      //					type: 'Feature',
-      //					properties: geojson.properties
-      //				}, pointToLayer, coordsToLatLng, vectorOptions));
-      //			}
-      //			return new L.FeatureGroup(layers);
-
-        default:
-          console.log('Invalid GeoJSON object.');
-          break;
+      for(let geo of subFeatures.children){
+        if(group.length > 0) multiGroup = group[group.length - 1].group;
+        group.push(M.feature(geo, Object.assign(vectorOptions,
+          { nativeCS: cs,
+            nativeZoom: zoom,
+            projection: this.options.projection,
+            featureID: mapml.id,
+            multiGroup: multiGroup,
+            accessibleTitle: title,
+          })));
       }
-      function coordinatesToArray(coordinates) {
-        var a = new Array(coordinates.length);
-        for (var i=0;i<a.length;i++) {
-          a[i]=[];
-          (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
-        }
-        return a;
-      }
+      return M.featureGroup(group);
     },
-          
-
-    coordsToLatLng: function (coords, cs, zoom, projection) { // (Array[, Boolean]) -> LatLng
-      let pcrs;
-      switch(cs.toUpperCase()){
-        case "PCRS":
-          pcrs = coords;
-          break;
-        case "TILEMATRIX":
-          let pixels = coords.map((value)=>{
-            return value * M[projection].options.crs.tile.bounds.max.x;
-          });
-          pcrs = M[projection].transformation.untransform(L.point(pixels),M[projection].scale(+zoom));
-          break;
-        case "TCRS":
-          pcrs = M[projection].transformation.untransform(L.point(coords),M[projection].scale(+zoom));
-          break;
-        default:
-          return new L.LatLng(coords[1], coords[0], coords[2]);
-      }
-
-      return M[projection].unproject(L.point(pcrs), +zoom);
-    },
-
-    coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng, cs, zoom) { // (Array[, Number, Function]) -> Array
-      var latlng, i, len,
-          latlngs = [];
-
-      for (i = 0, len = coords.length; i < len; i++) {
-       latlng = levelsDeep ?
-               this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng, cs, zoom) :
-               (coordsToLatLng || this.coordsToLatLng)(coords[i], cs, zoom, this.options.projection);
-
-       latlngs.push(latlng);
-      }
-
-      return latlngs;
-    }
   });
   var mapMlFeatures = function (mapml, options) {
   	return new MapMLFeatures(mapml, options);
@@ -870,12 +710,7 @@
           // the tile here, unless there can be a callback associated to the element
           // that will render the content in the alread-placed tile
           // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-          var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          this._fetchTile(coords, tile);
-          tile.setAttribute("width", `${tileSize}`);
-          tile.setAttribute("height", `${tileSize}`);
-          L.DomUtil.addClass(tile, "leaflet-tile");
-          tileGroup.appendChild(tile);
+          this._fetchTile(coords, tileGroup);
         }
         return tileGroup;
       },
@@ -887,328 +722,6 @@
       // a child of the overlay pane and always has a set of sub-layers)
       getPane: function() {
         return this.options.pane;
-      },
-      _drawTile: function(mapml, coords, tile) {
-          var stylesheets = mapml.querySelector('link[rel=stylesheet],style');
-          if (stylesheets) {
-            var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
-                new URL(mapml.querySelector('base').getAttribute('href')).href : 
-                mapml.URL;
-          M.parseStylesheetAsHTML(mapml,base,tile);
-          }
-          var features = mapml.querySelectorAll('feature');
-          for (var i=0; i< features.length; i++) {
-            this._draw(features[i], coords, tile);
-          }
-          this._mapmlTileReady(tile);
-      },
-    	 _draw: function (feature, tileCoords, tile) {
-        var geometry = feature.tagName.toUpperCase() === 'FEATURE' ? feature.getElementsByTagName('geometry')[0] : feature,
-            pt, coordinates, member, members, crs = this.options.crs;
-    
-          feature.classList.add("_"+ feature.id.substring(feature.id.indexOf(".")+1));
-          feature.classList.forEach(val => geometry.classList.add(val));
-        
-        // if (feature.id !== "fclass.71" || (tileCoords.z !== 2 && tileCoords.x !== 1 && tileCoords.y !== 1)) return;
-          
-        // because we are creating SVG shapes as proxies for <feature> geometries,
-        // we have to establish a convention for where the author can set up classes
-        // that are to be copied onto the proxy elements.  Going with <coordinates>
-        // at this time.  In the case of multiple <coordinates> per geometry, we
-        // will look for class attribute on the first <coordinates> element.
-        // var cl; // classList -> DOMTokenList https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
-        switch (geometry.firstElementChild.tagName.toUpperCase()) {
-          case 'POINT':
-            coordinates = [];
-            geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-            pt = this.coordsToPoint(coordinates, tileCoords);
-            renderPoint(pt, geometry);
-            break;
-          case 'MULTIPOINT':
-            coordinates = [];
-            // TODO the definition of multipoint geometry was modified in testbed 15
-            // to align with geojson a bit better.  
-            // this modification requires one <coordinates> element with 1 or more
-            // text string coordinate pairs, per the model for <coordinates> in a
-            // linestring (but with different semantics). As such, in order to separately
-            // select and style a coordinate, the user has to wrap it in a <span class="...>
-            // The code below does not  support that yet.  the renderPoint code
-            // will have to use treewalker (as the polygon code does), and copy the
-            // classes from the geometry element to each child svg element
-            // created i.e. onto the circle or path(s) that are created.
-            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-            members = this.coordsToPoints(coordinates, 0, tileCoords);
-            for(member=0;member<members.length;member++) {
-              // propagate the classes from the feature to each geometry
-              const g = geometry;
-              feature.classList.forEach(val => g.getElementsByTagName('coordinates')[0].classList.add(val));
-              renderPoint(members[member], g.getElementsByTagName('coordinates')[0]);
-            }
-            break;
-          case 'LINESTRING':
-            coordinates = [];
-            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-            renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-            break;
-          case 'MULTILINESTRING':
-            members = geometry.getElementsByTagName('coordinates');
-            for (member=0;member<members.length;member++) {
-              coordinates = [];
-            // propagate the classes from the feature to each geometry
-              const m = members[member];
-              feature.classList.forEach(val => m.classList.add(val));
-              m.textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-              renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-            }
-            break;
-          case 'POLYGON':
-            renderPolygon(this.coordsToPoints(coordinatesToArray(geometry.getElementsByTagName('coordinates')), 1, tileCoords), geometry);
-            break;
-          case 'MULTIPOLYGON':
-            members = geometry.getElementsByTagName('polygon');
-            for (member=0;member<members.length;member++) {
-              // propagate the classes from the feature to each geometry
-              const m = members[member];
-              feature.classList.forEach(val => m.classList.add(val));
-              renderPolygon(
-                this.coordsToPoints(coordinatesToArray(
-                m.getElementsByTagName('coordinates')), 1 ,tileCoords), m
-              );
-            }
-            break;
-          case 'GEOMETRYCOLLECTION':
-            console.log('GEOMETRYCOLLECTION Not implemented yet');
-            break;
-          default:
-            console.log('Invalid geometry');
-            break;
-        }
-
-        function renderPolygon(p, f) {
-          var poly = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
-              path = "";
-          for(var ring=0;ring<p.length;ring++) {
-            path = path + "M " + Math.round(p[ring][0].x) + "," + Math.round(p[ring][0].y) + " ";
-            for (var pt=1;pt<p[ring].length;pt++) {
-              path = path + Math.round(p[ring][pt].x) + "," + Math.round(p[ring][pt].y) + " ";
-            }
-          }
-          poly.setAttribute("d", path);
-
-          // copy the classes from the feature to its proxy svg path
-          f.classList.forEach(val => poly.classList.add(val));
-          poly.style.display = "none";
-          tile.appendChild(poly);
-          // if the outline of the polygon is to be drawn, need to see if it
-          // is composed of differently styled segments, and if so, create
-          // individual segments with appropriate classes (copied from the
-          // input <span class="">nnn nnnn...nnnN nnnN</span> segments.
-          if (window.getComputedStyle(poly).stroke !== "none") {
-            if (f.querySelector('coordinates span')) {
-              // recursively parse the coordinates element (c) for path segments
-              // and create them as individual path elements with corresponding 
-              // class list values copied from the input <span> or parent 
-              // <coordinates>
-              // stroke the polygon's outline as is...
-               poly.style.stroke = "none";
-               var coordinates = f.querySelectorAll('coordinates');
-              _renderOutline(coordinates, f.classList);
-            }
-          }
-          poly.style.display = ""; // fill it
-        }
-        /* jshint ignore:start */
-        function _renderOutline(c, classList) {
-          for (var i=0;i<c.length;i++) {
-            const nf = NodeFilter;
-            _coordinatesToPaths(
-                document.createTreeWalker(c[i],
-                  nf.SHOW_ELEMENT+nf.SHOW_TEXT,
-                  {
-                    acceptNode: function(node) {
-                      if (node.nodeType === Node.ELEMENT_NODE) return nf.FILTER_ACCEPT;
-                      var re = /(\S+ \S+)/gim;
-                      if (node.nodeType === Node.TEXT_NODE && re.test(node.data)) 
-                        return nf.FILTER_ACCEPT;
-                      return nf.FILTER_REJECT;
-                    }
-                  }), classList);
-          }
-        }
-        /* jshint ignore:end */
-        function _coordinatesToPaths(tw,cl) {
-          var coordinatesAsArrays = [];
-          var n,i;
-          
-          // make an array of each coordinates text node, regardless of parentage,
-          // so that we can easily redistribute the beginning and ending 
-          // coordinate pairs as required (see below).
-          for (n=tw.currentNode;n;n=tw.nextNode()) {
-            const node = n;
-            if (node.nodeType === Node.TEXT_NODE ) {
-              coordinatesAsArrays.push(coordinatesToArray([node])[0]);
-            } else {
-              // copy the class list from the feature to this boundary segment
-              cl.forEach(val => node.classList.add(val));
-            }
-          }
-          // reset
-          tw.currentNode = tw.root;
-          for (n=tw.currentNode,i=0;n;n=tw.nextNode()) {
-            var cn=tw.currentNode;
-            if (n.nodeType === Node.TEXT_NODE ) {
-              
-              // logic to modify the coordinate array for this node, based on 
-              // preceding/following and parentNode 
-              // these methods modify the state of the treewalker, so we need
-              // to keep track of the node and reset so our loop will work
-              var parentNode = tw.parentNode();
-              tw.currentNode = cn;
-              var nextNode = tw.nextNode();
-              tw.currentNode = cn;
-              var previousSibling = tw.previousSibling();
-              tw.currentNode = cn;
-              
-              
-              if (parentNode && parentNode.nodeName === 'coordinates') {
-                if (previousSibling && previousSibling.nodeName === 'span') {
-                  // copy the last element of the previous coordinates array into 
-                  // the current coordinates array at the beginning of the current
-                  // coordinates array
-                  var last = coordinatesAsArrays[i-1].length - 1;
-                  coordinatesAsArrays[i].unshift(coordinatesAsArrays[i-1][last]);
-                }
-                // copy the first element of the next coordinates array into the
-                // current coordinates array at the last position of the current
-                // coordinates array
-                if (nextNode && nextNode.nodeName === 'span') {
-                  coordinatesAsArrays[i].push(coordinatesAsArrays[i+1][0]);
-                }
-              }
-  //            var rawpoints = coordsToPointsDBG(coordinatesAsArrays[i], tileCoords);
-  //            var wgs84line = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
-  //                wgs84path = "M ";
-  //            for(var c=0;c<rawpoints.length;c++) {
-  //              wgs84path +=  rawpoints[c].x + " " + rawpoints[c].y + " ";
-  //            }
-  //            wgs84line.setAttribute("d", wgs84path);
-  //            parentNode.classList.forEach(val => wgs84line.classList.add(val));
-  //            wgs84line.classList.add('span');
-  //            wgs84line.style.stroke = "none";
-  //            wgs84line.style.fill = "none";
-  //            tile.appendChild(wgs84line);
-              // should be preceding sibling of its drawn match:
-
-              var points = coordsToPoints(coordinatesAsArrays[i], tileCoords);
-              const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              var path = "M ";
-              for(var c=0;c<points.length;c++) {
-                path += Math.round(points[c].x) + "," + Math.round(points[c].y) + " ";
-              }            
-              line.setAttribute("d", path);
-              parentNode.classList.forEach(val => line.classList.add(val));
-              line.classList.add('span');
-              tile.appendChild(line);
-              i++;
-            }
-          }
-        }
-        function renderLinestring(l, f) {
-          if (f.querySelector('coordinates span')) ; else { // create a single path element, draw it
-            var line = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
-                path = "";
-             path =  path + "M " + Math.round(l[0].x) + "," + Math.round(l[0].y) + " ";
-            for(var c=1;c<l.length;c++) {
-              path =  path + Math.round(l[c].x) + "," + Math.round(l[c].y) + " ";
-            }
-            line.setAttribute("d", path);
-
-            f.classList.forEach(val => line.classList.add(val));
-            // because polygons and linestrings are rendered as paths, need to
-            // add a class to differentiate.  This is kind of a stop-gap measure
-            // until I figure out a model for how all this should work...
-            line.classList.add('linestring');
-            tile.appendChild(line);
-          }
-        }
-        function renderPoint(p, f) {
-          var point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          point.setAttribute("cx", Math.round(p.x));
-          point.setAttribute("cy", Math.round(p.y));
-          point.setAttribute("r", "5");
-          f.classList.forEach(val => point.classList.add(val));
-          tile.appendChild(point);
-        }
-        function coordinatesToArray(coordinates) {
-          var a = new Array(coordinates.length);
-          for (var i=0;i<a.length;i++) {
-            a[i]=[];
-            (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
-          }
-          return a;
-        }
-        function coordsToPoints(coords, tileCoords) {
-          var point, i, len, points = [];
-          for (i = 0, len = coords.length; i < len; i++) {
-           point = coordsToPoint(coords[i], tileCoords);
-           points.push(point);
-          }
-          return points;
-        }
-        // coords is a location in x,y coordinate order, parsed from the <coordinates> element
-        function coordsToPoint(coords, tileCoords) {
-          // pcrs2tile is hard-coded, for now
-          return pcrs2tile(L.point(coords[0],coords[1]), tileCoords);
-        }
-        function pcrs2tile(coords,tile) {
-          // look up the scale factor from the layer's crs for the tile.z
-          // transform to tcrs at tile.z
-          // subtract the tcrs origin from tile.x,tile.y
-          var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-              tileSize = crs.options.crs.tile.bounds.max.x,
-              tilePoint = L.point(tcrsCoords.x - (tile.x*tileSize), tcrsCoords.y - (tile.y*tileSize));
-
-          return tilePoint;
-        }
-      },
-      coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
-       return new L.LatLng(coords[1], coords[0], coords[2]);
-      },
-      pcrs2tile: function (coords,tile) {
-        var crs = this.options.crs,
-            tileSize = crs.options.crs.tile.bounds.max.x;
-        // look up the scale factor from the layer's crs for the tile.z
-        // transform to tcrs at tile.z
-        // subtract the tcrs origin from tile.x,tile.y
-        var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-            tilePoint = L.point(tcrsCoords.x - (tile.x*tileSize), tcrsCoords.y - (tile.y*tileSize));
-
-        return tilePoint;
-      },
-  // coords is a location in x,y coordinate order, parsed from the <coordinates> element
-      coordsToPoint: function (coords, tileCoords) {
-        // pcrs2tile is hard-coded, for now
-        return this.pcrs2tile(L.point(coords[0],coords[1]), tileCoords);
-      },
-      coordsToPoints: function (coords, levelsDeep, tileCoords) {
-        var point, i, len, points = [];
-        for (i = 0, len = coords.length; i < len; i++) {
-         point = levelsDeep ?
-                 this.coordsToPoints(coords[i], levelsDeep - 1, tileCoords) :
-                 this.coordsToPoint(coords[i], tileCoords);
-         points.push(point);
-        }
-        return points;
-      },
-      coordsToPointsDBG: function (coords, levelsDeep, tileCoords) {
-        var point, i, len, points = [];
-        for (i = 0, len = coords.length; i < len; i++) {
-          point = levelsDeep ?
-                 this.coordsToPointsDBG(coords[i], levelsDeep - 1, tileCoords) :
-                        point = L.point(coords[i][0],coords[i][1]);
-          points.push(point);
-        }
-        return points;
       },
       _fetchTile:  function (coords, tile) {
          fetch(this.getTileUrl(coords),{redirect: 'follow'}).then(
@@ -1225,9 +738,44 @@
               var parser = new DOMParser();
                   return parser.parseFromString(text, "application/xml");
             }).then(mapml => {
-              this._drawTile(mapml, coords, tile);
-            }).catch(function(err) {});
+              this._createFeatures(mapml, coords, tile);
+              this._mapmlTileReady(tile);
+            }).catch(err => {console.log("Error Creating Tile");});
       },
+
+      _createFeatures: function(markup, coords, tile){
+        let stylesheets = markup.querySelector('link[rel=stylesheet],style');
+        if (stylesheets) {
+          let base = markup.querySelector('base') && markup.querySelector('base').hasAttribute('href') ?
+            new URL(markup.querySelector('base').getAttribute('href')).href :
+            markup.URL;
+          M.parseStylesheetAsHTML(markup,base,tile);
+        }
+
+        let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,
+            xOffset = coords.x * tileSize, yOffset = coords.y * tileSize;
+
+        let tileFeatures = M.mapMlFeatures(markup, {
+          projection: this._map.options.projection,
+          static: false,
+          interactive: false,
+        });
+
+        for(let groupID in tileFeatures._layers){
+          for(let featureID in tileFeatures._layers[groupID]._layers){
+            let layer = tileFeatures._layers[groupID]._layers[featureID];
+            M.FeatureRenderer.prototype._initPath(layer, false);
+            layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
+            M.FeatureRenderer.prototype._addPath(layer, g, false);
+            M.FeatureRenderer.prototype._updateFeature(layer);
+          }
+        }
+        svg.setAttribute('width', tileSize.toString());
+        svg.setAttribute('height', tileSize.toString());
+        svg.appendChild(g);
+        tile.appendChild(svg);
+      },
+
       getTileUrl: function (coords) {
           if (coords.z >= this._template.tilematrix.bounds.length || 
                   !this._template.tilematrix.bounds[coords.z].contains(coords)) {
@@ -1815,13 +1363,14 @@
           this._features = M.mapMlFeatures( null, {
             // pass the vector layer a renderer of its own, otherwise leaflet
             // puts everything into the overlayPane
-            renderer: L.svg(),
+            renderer: M.featureRenderer(),
             // pass the vector layer the container for the parent into which
             // it will append its own container for rendering into
             pane: container,
             opacity: opacity,
             imagePath: this.options.imagePath,
             projection:map.options.projection,
+            static: true,
             onEachFeature: function(properties, geometry) {
               // need to parse as HTML to preserve semantics and styles
               var c = document.createElement('div');
@@ -2382,7 +1931,7 @@
               this._mapmlvectors = M.mapMlFeatures(this._content, {
                 // pass the vector layer a renderer of its own, otherwise leaflet
                 // puts everything into the overlayPane
-                renderer: L.svg(),
+                renderer: M.featureRenderer(),
                 // pass the vector layer the container for the parent into which
                 // it will append its own container for rendering into
                 pane: this._container,
@@ -2391,6 +1940,7 @@
                 projection:map.options.projection,
                 // each owned child layer gets a reference to the root layer
                 _leafletLayer: this,
+                static: true,
                 onEachFeature: function(properties, geometry) {
                   // need to parse as HTML to preserve semantics and styles
                   if (properties) {
@@ -2413,7 +1963,7 @@
                 this._mapmlvectors = M.mapMlFeatures(this._content, {
                     // pass the vector layer a renderer of its own, otherwise leaflet
                     // puts everything into the overlayPane
-                    renderer: L.svg(),
+                    renderer: M.featureRenderer(),
                     // pass the vector layer the container for the parent into which
                     // it will append its own container for rendering into
                     pane: this._container,
@@ -2422,6 +1972,7 @@
                     projection:map.options.projection,
                     // each owned child layer gets a reference to the root layer
                     _leafletLayer: this,
+                    static: true,
                     onEachFeature: function(properties, geometry) {
                       // need to parse as HTML to preserve semantics and styles
                       if (properties) {
@@ -2798,11 +2349,9 @@
           opacityControlSummary = document.createElement('summary'),
           opacityControlSummaryLabel = document.createElement('label'),
           mapEl = this._layerEl.parentNode;
-
-          summary.style.display = 'flex';
-          summary.style.alignItems = 'center';
+          
           summaryContainer.classList.add('mapml-control-summary-container');
-
+          
           let removeButton = document.createElement('a');
           removeButton.href = '#';
           removeButton.role = 'button';
@@ -3481,7 +3030,7 @@
           }
       },
       _attachSkipButtons: function(e){
-        let popup = e.popup, map = e.target, layer, path,
+        let popup = e.popup, map = e.target, layer, group,
             content = popup._container.getElementsByClassName("mapml-popup-content")[0];
 
         content.setAttribute("tabindex", "-1");
@@ -3489,7 +3038,7 @@
 
         if(popup._source._eventParents){ // check if the popup is for a feature or query
           layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
-          path = popup._source._path;
+          group = popup._source.group;
         } else {
           layer = popup._source._templatedLayer;
         }
@@ -3528,11 +3077,6 @@
         let featureCount = L.DomUtil.create("p", "mapml-feature-count", div),
             totalFeatures = this._totalFeatureCount ? this._totalFeatureCount : 1;
         featureCount.innerText = (popup._count + 1)+"/"+totalFeatures;
-        //for(let feature of e.popup._source._path.parentNode.children){
-        //  if(feature === e.popup._source._path)break;
-        //  currentFeature++;
-        //}
-        //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
 
         // creates > button, focuses next feature, if none exists focuses the current feature
         let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
@@ -3566,10 +3110,10 @@
         
         content.focus();
 
-        if(path) {
+        if(group) {
           // e.target = this._map
           // Looks for keydown, more specifically tab and shift tab
-          path.setAttribute("aria-expanded", "true");
+          group.setAttribute("aria-expanded", "true");
           map.on("keydown", focusFeature);
         } else {
           map.on("keydown", focusMap);
@@ -3581,12 +3125,12 @@
           if((focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
             L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
-            path.focus();
+            group.focus();
           } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
             setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
               L.DomEvent.stop(focusEvent);
               map.closePopup(popup);
-              path.focus();
+              group.focus();
             }, 0);
           }
         }
@@ -3618,7 +3162,7 @@
             map.off("keydown", focusFeature);
             map.off("keydown", focusMap);
             map.off('popupclose', removeHandlers);
-            if(path) path.setAttribute("aria-expanded", "false");
+            if(group) group.setAttribute("aria-expanded", "false");
           }
         }
       },
@@ -3990,12 +3534,24 @@
           });
         }
         function handleMapMLResponse(mapml, loc) {
-          var parser = new DOMParser(),
-              mapmldoc = parser.parseFromString(mapml, "application/xml"),
-              f = M.mapMlFeatures(mapmldoc, {
+          let parser = new DOMParser(),
+            mapmldoc = parser.parseFromString(mapml, "application/xml");
+
+          for(let feature of mapmldoc.querySelectorAll('feature')){
+            if(!feature.querySelector('geometry')){
+              let geo = document.createElement('geometry'), point = document.createElement('point'),
+                coords = document.createElement('coordinates');
+              coords.innerHTML = `${loc.lng} ${loc.lat}`;
+              point.appendChild(coords);
+              geo.appendChild(point);
+              feature.appendChild(geo);
+            }
+          }
+
+          let f = M.mapMlFeatures(mapmldoc, {
               // pass the vector layer a renderer of its own, otherwise leaflet
               // puts everything into the overlayPane
-              renderer: L.svg(),
+              renderer: M.featureRenderer(),
               // pass the vector layer the container for the parent into which
               // it will append its own container for rendering into
               pane: container,
@@ -4007,6 +3563,7 @@
               _leafletLayer: layer,
               imagePath: M.detectImagePath(map.getContainer()),
               query: true,
+              static:true,
           });
           f.addTo(map);
 
@@ -4909,34 +4466,38 @@
       }
     },
 
-    boundsToPCRSBounds: function(bounds, zoom, projection,cs){
-      if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+    pointToPCRSPoint: function(p, zoom, projection, cs){
+      if(!p || !zoom && +zoom !== 0 || !cs || !projection) return undefined;
       let tileSize = M[projection].options.crs.tile.bounds.max.x;
       switch(cs.toUpperCase()){
         case "TILEMATRIX":
-          let tileToPixelBounds = L.bounds(L.point(bounds.min.x*tileSize,bounds.min.y*tileSize),
-                                    L.point(bounds.max.x*tileSize,bounds.max.y*tileSize));
-          return M.pixelToPCRSBounds(tileToPixelBounds,zoom,projection);
+          return M.pixelToPCRSPoint(L.point(p.x*tileSize,p.y*tileSize),zoom,projection);
         case "PCRS":
-          return bounds;
+          return p;
         case "TCRS" :
-          return M.pixelToPCRSBounds(bounds,zoom,projection);
+          return M.pixelToPCRSPoint(p,zoom,projection);
         case "GCRS":
-          let minPoint = this[projection].project(L.latLng(bounds.min.y,bounds.min.x));
-          let maxPoint = this[projection].project(L.latLng(bounds.max.y,bounds.max.x));
-          return L.bounds(minPoint,maxPoint);
+          return this[projection].project(L.latLng(p.y,p.x));
         default:
           return undefined;
       }
+    },
+
+    pixelToPCRSPoint: function(p, zoom, projection){
+      if(!p || !zoom && +zoom !== 0) return undefined;
+      return this[projection].transformation.untransform(p,this[projection].scale(zoom));
+    },
+
+    boundsToPCRSBounds: function(bounds, zoom, projection, cs){
+      if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+      return L.bounds(M.pointToPCRSPoint(bounds.min, zoom, projection, cs), M.pointToPCRSPoint(bounds.max, zoom, projection, cs));
     },
 
     //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
     //important to consider when working with pcrs where the origin is not topleft but rather bottomleft, could lead to confusion
     pixelToPCRSBounds : function(bounds, zoom, projection){
       if(!bounds || !bounds.max || !bounds.min ||zoom === undefined || zoom === null || zoom instanceof Object) return undefined;
-      let min = this[projection].transformation.untransform(bounds.min,this[projection].scale(zoom));
-      let max = this[projection].transformation.untransform(bounds.max,this[projection].scale(zoom));
-      return L.bounds(min,max);
+      return L.bounds(M.pixelToPCRSPoint(bounds.min, zoom, projection), M.pixelToPCRSPoint(bounds.max, zoom, projection));
     },
     //meta content is the content attribute of meta
     // input "max=5,min=4" => [[max,5][min,5]]
@@ -5185,46 +4746,600 @@
     return new Crosshair(options);
   };
 
-  var SVGMarker = L.Path.extend({
+  /**
+   * M.Feature is a extension of L.Path that understands mapml feature markup
+   * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
+   *  this._outlinePath = HTMLElement;
+   *  this._parts = [
+   *    {
+   *      path: HTMLElement,
+   *      rings:[
+   *        {points:[{x:1,y:1}, ...]},
+   *        ...
+   *      ],
+   *      subrings:[
+   *        {points:[{x:2, y:2}, ...], cls:"Span Class Name", path: HTMLElement,},
+   *        ...
+   *      ],
+   *      cls:"className",
+   *    },
+   *    ...
+   *  ];
+   */
+  var Feature = L.Path.extend({
     options: {
-      fillColor: '#2e91bf',
-      color: '#ffffff',
-      fill: true,
-      className: "mapml-marker",
-      fillOpacity: 1,
-      weight: 1,
+      accessibleTitle: "Feature",
     },
 
-    initialize: function (latlng, options) {
+    /**
+     * Initializes the M.Feature
+     * @param {HTMLElement} markup - The markup representation of the feature
+     * @param {Object} options - The options of the feature
+     */
+    initialize: function (markup, options) {
+      this.type = markup.tagName.toUpperCase();
       L.setOptions(this, options);
-      this._latlng = L.latLng(latlng);
+
+      this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
+
+      this._parts = [];
+      this._markup = markup;
+      this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
+
+      this._generateOutlinePoints();
+      this._convertMarkup();
+
+      this.isClosed = this._isClosed();
     },
 
-    _project: function () {
-      this._point = this._map.latLngToLayerPoint(this._latlng);
+    /**
+     * Removes the focus handler, and calls the leaflet L.Path.onRemove
+     */
+    onRemove: function () {
+      L.DomEvent.off(this.group, "keyup keydown mousedown", this._handleFocus, this);
+      L.Path.prototype.onRemove.call(this);
     },
 
+    /**
+     * Creates the <g> conditionally and also applies event handlers
+     * @private
+     */
+    _createGroup: function(){
+      if(this.options.multiGroup){
+        this.group = this.options.multiGroup;
+      } else {
+        this.group = L.SVG.create('g');
+        this.group.setAttribute('role', 'region');
+        if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
+        this.group.setAttribute('aria-label', this.options.accessibleTitle);
+        if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
+        L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
+      }
+    },
+
+    /**
+     * Handler for focus events
+     * @param {L.DOMEvent} e - Event that occured
+     * @private
+     */
+    _handleFocus: function(e) {
+      if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g"){
+        this.openTooltip();
+      } else {
+        this.closeTooltip();
+      }
+    },
+
+    /**
+     * Updates internal structure of the feature to the new map state, the structure can be found in this._parts
+     * @param {L.Map} addedMap - The map that the feature is part of, can be left blank in the case of static features
+     * @param {L.Point} tileOrigin - The tile origin for the feature, if blank then it takes the maps pixel origin in the function
+     * @param {int} zoomingTo - The zoom the map is animating to, if left blank then it takes the map zoom, its provided because in templated tiles zoom is delayed
+     * @private
+     */
+    _project: function (addedMap, tileOrigin = undefined, zoomingTo = undefined) {
+      let map = addedMap || this._map, origin = tileOrigin || map.getPixelOrigin(), zoom = zoomingTo === undefined ? map.getZoom() : zoomingTo;
+      for (let p of this._parts) {
+        p.pixelRings = this._convertRing(p.rings, map, origin, zoom);
+        for (let subP of p.subrings) {
+          subP.pixelSubrings = this._convertRing([subP], map, origin, zoom);
+        }
+      }
+      if (!this._outline) return;
+      this.pixelOutline = [];
+      for (let o of this._outline) {
+        this.pixelOutline = this.pixelOutline.concat(this._convertRing(o, map, origin, zoom));
+      }
+    },
+
+    /**
+     * Converts the PCRS points to pixel points that can be used to create the SVG
+     * @param {L.Point[][]} r - Is the rings of a feature, either the mainParts, subParts or outline
+     * @param {L.Map} map - The map that the feature is part of
+     * @param {L.Point} origin - The origin used to calculate the pixel points
+     * @param {int} zoom - The current zoom level of the map
+     * @returns {L.Point[][]}
+     * @private
+     */
+    _convertRing: function (r, map, origin, zoom) {
+      // TODO: Implement Ramer-Douglas-Peucer Algo for simplifying points
+      let scale = map.options.crs.scale(zoom), parts = [];
+      for (let sub of r) {
+        let interm = [];
+        for (let p of sub.points) {
+          let conv = map.options.crs.transformation.transform(p, scale);
+          interm.push(L.point(conv.x, conv.y)._subtract(origin).round());
+        }
+        parts.push(interm);
+      }
+      return parts;
+    },
+
+    /**
+     * Updates the features
+     * @private
+     */
     _update: function () {
       if (!this._map) return;
-      this._path.setAttribute("d", this.defineMarker(this._point));
+      this._renderer._updateFeature(this);
     },
 
-    getLatLngs: function () {
-      return this._latlng;
+    /**
+     * Converts this._markup to the internal structure of features
+     * @private
+     */
+    _convertMarkup: function () {
+      if (!this._markup) return;
+      let attrMap = {}, attr = this._markup.attributes;
+      for(let i = 0; i < attr.length; i++){
+        if(attr[i].name === "class") continue;
+        attrMap[attr[i].name] = attr[i].value;
+      }
+
+      this.featureAttributes = attrMap;
+      let first = true;
+      for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
+        let ring = [], subrings = [];
+        this._coordinateToArrays(c, ring, subrings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
+        if (!first && this.type === "POLYGON") {
+          this._parts[0].rings.push(ring[0]);
+          if (subrings.length > 0)
+            this._parts[0].subrings = this._parts[0].subrings.concat(subrings);
+        } else if (this.type === "MULTIPOINT") {
+          for (let point of ring[0].points.concat(subrings)) {
+            this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
+          }
+        } else {
+          this._parts.push({ rings: ring, subrings: subrings, cls: this.options.className });
+        }
+        first = false;
+      }
     },
 
+    /**
+     * Generates the feature outline, subtracting the spans to generate those separately
+     * @private
+     */
+    _generateOutlinePoints: function () {
+      if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+
+      this._outline = [];
+      for (let coords of this._markup.querySelectorAll('coordinates')) {
+        let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
+        for (let n of nodes) {
+          let line = [];
+          if (!n.tagName) {  //no tagName means it's text content
+            let c = '';
+            if (cur - 1 > 0 && nodes[cur - 1].tagName) {
+              let prev = nodes[cur - 1].textContent.split(' ');
+              c += `${prev[prev.length - 2]} ${prev[prev.length - 1]} `;
+            }
+            c += n.textContent;
+            if (cur + 1 < nodeLength && nodes[cur + 1].tagName) {
+              let next = nodes[cur + 1].textContent.split(' ');
+              c += `${next[0]} ${next[1]} `;
+            }
+            tempDiv.innerHTML = c;
+            this._coordinateToArrays(tempDiv, line, [], true, this.options.className);
+            this._outline.push(line);
+          }
+          cur++;
+        }
+      }
+    },
+
+    /**
+     * Converts coordinates element to an object representing the parts and subParts
+     * @param {HTMLElement} coords - A single coordinates element
+     * @param {Object[]} main - An empty array representing the main parts
+     * @param {Object[]} subParts - An empty array representing the sub parts
+     * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
+     * @param {string} cls - The class of the coordinate/span
+     * @private
+     */
+    _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = undefined) {
+      for (let span of coords.children) {
+        this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"));
+      }
+      let noSpan = coords.textContent.replace(/(<([^>]+)>)/ig, ''),
+          pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [];
+      for (let p of pairs) {
+        let numPair = [];
+        p.split(/\s+/gim).forEach(M.parseNumber, numPair);
+        let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.nativeCS);
+        local.push(point);
+        this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
+      }
+      if (isFirst) {
+        main.push({ points: local });
+      } else {
+        let attrMap = {}, attr = coords.attributes;
+        for(let i = 0; i < attr.length; i++){
+          if(attr[i].name === "class") continue;
+          attrMap[attr[i].name] = attr[i].value;
+        }
+        subParts.unshift({ points: local, cls: cls || this.options.className, attr: attrMap});
+      }
+    },
+
+    /**
+     * Returns if the feature is closed or open, useful when styling
+     * @returns {boolean}
+     * @private
+     */
+    _isClosed: function () {
+      switch (this.type) {
+        case 'POLYGON':
+        case 'MULTIPOLYGON':
+        case 'POINT':
+        case 'MULTIPOINT':
+          return true;
+        case 'LINESTRING':
+        case 'MULTILINESTRING':
+          return false;
+        default:
+          return false;
+      }
+    },
+
+    /**
+     * Returns the center of the entire feature
+     * @returns {L.Point}
+     */
     getCenter: function () {
-      return this._latlng;
+      if (!this._bounds) return null;
+      return this._map.options.crs.unproject(this._bounds.getCenter());
+    },
+  });
+
+  /**
+   *
+   * @param {HTMLElement} markup - The markup of the feature
+   * @param {Object} options - Options of the feature
+   * @returns {M.Feature}
+   */
+  var feature = function (markup, options) {
+    return new Feature(markup, options);
+  };
+
+  /**
+   * Returns a new Feature Renderer
+   * @param {Object} options - Options for the renderer
+   * @returns {*}
+   */
+  var FeatureRenderer = L.SVG.extend({
+
+    /**
+     * Creates all the appropriate path elements for a M.Feature
+     * @param {M.Feature} layer - The M.Feature that needs paths generated
+     * @param {boolean} stampLayer - Whether or not a layer should be stamped and stored in the renderer layers
+     * @private
+     */
+    _initPath: function (layer, stampLayer = true) {
+
+      let outlinePath = L.SVG.create('path');
+      if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
+      L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
+      outlinePath.style.fill = "none";
+      layer.outlinePath = outlinePath;
+
+      //creates the main parts and sub parts paths
+      for (let p of layer._parts) {
+        if (p.rings) this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+        if (p.subrings) {
+          for (let r of p.subrings) {
+            this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
+            if(r.attr && r.attr.tabindex){
+              p.path.setAttribute('tabindex', r.attr.tabindex || '0');
+            }
+          }
+        }
+        this._updateStyle(layer);
+      }
+      if(stampLayer){
+        let stamp = L.stamp(layer);
+        this._layers[stamp] = layer;
+        layer.group.setAttribute('tabindex', '0');
+        L.DomUtil.addClass(layer.group, "leaflet-interactive");
+      }
     },
 
-    defineMarker: function (p) {
+    /**
+     * Creates paths for either mainParts, subParts or outline of a feature
+     * @param {Object} ring - The ring the current path is being generated for
+     * @param {string} title - The accessible aria-label of a path
+     * @param {string} cls - The class of the path
+     * @param {boolean} interactive - The boolean representing whether a feature is interactive or not
+     * @param {Object} attr - Attributes map
+     * @private
+     */
+    _createPath: function (ring, cls, title, interactive = false, attr = undefined) {
+      let p = L.SVG.create('path');
+      ring.path = p;
+      if(!attr) {
+        if (title) p.setAttribute('aria-label', title);
+      } else {
+        for(let [name, value] of Object.entries(attr)){
+          if(name === "id") continue;
+          p.setAttribute(name, value);
+        }
+      }
+      if (ring.cls || cls) {
+        L.DomUtil.addClass(p, ring.cls || cls);
+      }
+      if (interactive) {
+        L.DomUtil.addClass(p, 'leaflet-interactive');
+      }
+    },
+
+    /**
+     * Adds all the paths needed for a feature
+     * @param {M.Feature} layer - The feature that needs it's paths added
+     * @param {HTMLElement} container - The location the paths need to be added to
+     * @param {boolean} interactive - Whether a feature is interactive or not
+     * @private
+     */
+    _addPath: function (layer, container = undefined, interactive = true) {
+      if (!this._rootGroup && !container) { this._initContainer(); }
+      let c = container || this._rootGroup;
+      if (layer.pixelOutline) layer.group.appendChild(layer.outlinePath);
+      if(interactive) {
+        layer.addInteractiveTarget(layer.group);
+        layer.group.style.stroke = "none";
+      }
+      for (let p of layer._parts) {
+        if (p.path) {
+          layer.group.appendChild(p.path);
+        }
+
+        for (let subP of p.subrings) {
+          if (subP.path)
+            layer.group.appendChild(subP.path);
+        }
+      }
+      c.appendChild(layer.group);
+    },
+
+    /**
+     * Removes all the paths related to a feature
+     * @param {M.Feature} layer - The feature who's paths need to be removed
+     * @private
+     */
+    _removePath: function (layer) {
+      for (let p of layer._parts) {
+        if (p.path) {
+          layer.removeInteractiveTarget(p.path);
+          L.DomUtil.remove(p.path);
+        }
+        for (let subP of p.subrings) {
+          if (subP.path)
+            L.DomUtil.remove(subP.path);
+        }
+      }
+      if(layer.outlinePath) L.DomUtil.remove(layer.outlinePath);
+      layer.removeInteractiveTarget(layer.group);
+      L.DomUtil.remove(layer.group);
+      delete this._layers[L.stamp(layer)];
+    },
+
+    /**
+     * Updates the d attribute of all paths of a feature
+     * @param {M.Feature} layer - The Feature that needs updating
+     * @private
+     */
+    _updateFeature: function (layer) {
+      if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPath(layer.pixelOutline, false));
+      for (let p of layer._parts) {
+        this._setPath(p.path, this.geometryToPath(p.pixelRings, layer.isClosed));
+        for (let subP of p.subrings) {
+          this._setPath(subP.path, this.geometryToPath(subP.pixelSubrings, false));
+        }
+      }
+    },
+
+    /**
+     * Generates the marker d attribute for a given point
+     * @param {L.Point} p - The point of the marker
+     * @returns {string}
+     * @private
+     */
+    _pointToMarker: function (p) {
       return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
     },
 
+    /**
+     * Updates the styles of all paths of a feature
+     * @param {M.Feature} layer - The feature that needs styles updated
+     * @private
+     */
+    _updateStyle: function (layer) {
+      this._updatePathStyle(layer.outlinePath, layer.options, layer.isClosed, true);
+      for (let p of layer._parts) {
+        if (p.path) {
+          this._updatePathStyle(p.path, layer.options, layer.isClosed);
+        }
+        for (let subP of p.subrings) {
+          if (subP.path)
+            this._updatePathStyle(subP.path, layer.options, false);
+        }
+      }
+    },
+
+    /**
+     * Updates the style of a single path
+     * @param {HTMLElement} path - The path that needs updating
+     * @param {Object} options - The options of a feature
+     * @param {boolean} isClosed - Whether a feature is closed or not
+     * @param {boolean} isOutline - Whether a path is an outline or not
+     * @private
+     */
+    _updatePathStyle: function (path, options, isClosed, isOutline = false) {
+      if (!path) { return; }
+
+      if (options.stroke && (!isClosed || isOutline)) {
+        path.setAttribute('stroke', options.color);
+        path.setAttribute('stroke-opacity', options.opacity);
+        path.setAttribute('stroke-width', options.weight);
+        path.setAttribute('stroke-linecap', options.lineCap);
+        path.setAttribute('stroke-linejoin', options.lineJoin);
+
+        if (options.dashArray) {
+          path.setAttribute('stroke-dasharray', options.dashArray);
+        } else {
+          path.removeAttribute('stroke-dasharray');
+        }
+
+        if (options.dashOffset) {
+          path.setAttribute('stroke-dashoffset', options.dashOffset);
+        } else {
+          path.removeAttribute('stroke-dashoffset');
+        }
+      } else {
+        path.setAttribute('stroke', 'none');
+      }
+
+      if(isClosed && !isOutline) {
+        if (!options.fill) {
+          path.setAttribute('fill', options.fillColor || options.color);
+          path.setAttribute('fill-opacity', options.fillOpacity);
+          path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+        } else {
+          path.setAttribute('fill', options.color);
+        }
+      } else {
+        path.setAttribute('fill', 'none');
+      }
+    },
+
+    /**
+     * Sets the d attribute of a path
+     * @param {HTMLElement} path - The path that is being updated
+     * @param {string} def - The new d attribute of the path
+     * @private
+     */
+    _setPath: function (path, def) {
+      path.setAttribute('d', def);
+    },
+
+    /**
+     * Generates the d string of a feature part
+     * @param {L.Point[]} rings - The points making up a given part of a feature
+     * @param {boolean} closed - Whether a feature is closed or not
+     * @returns {string}
+     */
+    geometryToPath: function (rings, closed) {
+      let str = '', i, j, len, len2, points, p;
+
+      for (i = 0, len = rings.length; i < len; i++) {
+        points = rings[i];
+        if (points.length === 1) {
+          return this._pointToMarker(points[0]);
+        }
+        for (j = 0, len2 = points.length; j < len2; j++) {
+          p = points[j];
+          str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
+        }
+        str += closed ? 'z' : '';
+      }
+      return str || 'M0 0';
+    },
   });
 
-  var svgMarker = function (latlng, options) {
-    return new SVGMarker(latlng, options);
+  /**
+   * Returns new M.FeatureRenderer
+   * @param {Object} options - Options for the renderer
+   * @returns {M.FeatureRenderer}
+   */
+  var featureRenderer = function (options) {
+    return new FeatureRenderer(options);
+  };
+
+  var FeatureGroup = L.FeatureGroup.extend({
+    /**
+     * Adds layer to feature group
+     * @param {M.Feature} layer - The layer to be added
+     */
+    addLayer: function (layer) {
+      layer.openTooltip = () => { this.openTooltip(); };         // needed to open tooltip of child features
+      layer.closeTooltip = () => { this.closeTooltip(); };       // needed to close tooltip of child features
+      L.FeatureGroup.prototype.addLayer.call(this, layer);
+    },
+
+    /**
+     * Focuses the previous function in the sequence on previous button press
+     * @param e
+     * @private
+     */
+    _previousFeature: function(e){
+      let group = this._source.group.previousSibling;
+      if(!group){
+        let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
+        let overlays = this._map.getPane("overlayPane").children;
+        for(let i = overlays.length - 1; i >= 0; i--){
+          let layer = overlays[i];
+          if(layer.style.zIndex >= currentIndex) continue;
+          group = layer.querySelector("g.leaflet-interactive");
+          if(group){
+            group = group.parentNode.lastChild;
+            break;
+          }
+        }
+        if (!group) group = this._source.group;
+      }
+      group.focus();
+      this._map.closePopup();
+    },
+
+    /**
+     * Focuses next feature in sequence
+     * @param e
+     * @private
+     */
+    _nextFeature: function(e){
+      let group = this._source.group.nextSibling;
+      if(!group){
+        let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
+
+        for(let layer of this._map.getPane("overlayPane").children){
+          if(layer.style.zIndex <= currentIndex) continue;
+          group = layer.querySelectorAll("g.leaflet-interactive");
+          if(group.length > 0)break;
+        }
+        group = group && group.length > 0 ? group[0] : this._source.group;
+      }
+      group.focus();
+      this._map.closePopup();
+    },
+  });
+
+  /**
+   * Returns new M.FeatureGroup
+   * @param {M.Feature[]} layers - Layers belonging to feature group
+   * @param {Object} options - Options for the feature group
+   * @returns {M.FeatureGroup}
+   */
+  var featureGroup = function (layers, options) {
+    return new FeatureGroup(layers, options);
   };
 
   /* 
@@ -5801,6 +5916,8 @@
   M.metaContentToObject = Util.metaContentToObject;
   M.coordsToArray = Util.coordsToArray;
   M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
+  M.pointToPCRSPoint = Util.pointToPCRSPoint;
+  M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 
   M.QueryHandler = QueryHandler;
   M.ContextMenu = ContextMenu;
@@ -5845,8 +5962,14 @@
   M.Crosshair = Crosshair;
   M.crosshair = crosshair;
 
-  M.SVGMarker = SVGMarker;
-  M.svgMarker = svgMarker;
+  M.Feature = Feature;
+  M.feature = feature;
+
+  M.FeatureRenderer = FeatureRenderer;
+  M.featureRenderer = featureRenderer;
+
+  M.FeatureGroup = FeatureGroup;
+  M.featureGroup = featureGroup;
 
   }(window));
 

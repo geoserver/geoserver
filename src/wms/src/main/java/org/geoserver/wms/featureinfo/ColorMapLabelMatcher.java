@@ -11,13 +11,9 @@ import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 
 /**
- * This class represents two <RasterSymbolizer></RasterSymbolizer> vendor options used to control
- * the presence of a style a label in a GetFeatureInfo request, namely <VendorOption
- * name="labelInFeatureInfo">add</VendorOption> <VendorOption name="labelAttributeName">custom
- * name</VendorOption> It provides also the necessary functionality to match a pixel value on a
- * ColorMapEntry label
+ * This class provides the necessary functionality to match a pixel value on a ColorMapEntry label.
  */
-class LabelInFeatureInfo {
+class ColorMapLabelMatcher {
 
     static final String DEFAULT_ATTRIBUTE_NAME = "Label";
 
@@ -26,7 +22,7 @@ class LabelInFeatureInfo {
     String labelInclusion;
     Integer channel;
 
-    LabelInFeatureInfo(
+    ColorMapLabelMatcher(
             String attributeName, ColorMap colorMap, String labelInclusion, Integer channel) {
 
         String labelInclusionUpper = labelInclusion.toUpperCase();
@@ -83,6 +79,7 @@ class LabelInFeatureInfo {
                 label = current.getLabel();
                 break;
             } else if (pixel <= currentVal) {
+                // matching with the nearest value
                 ColorMapEntry prev = entries[i - 1];
                 double prevValue = prev.getQuantity().evaluate(null, Double.class);
                 double diffWithCurr = Math.abs(pixel - currentVal);
@@ -90,6 +87,8 @@ class LabelInFeatureInfo {
                 if (diffWithCurr < diffWithPrev) label = current.getLabel();
                 else label = prev.getLabel();
                 break;
+            } else if (i == entries.length - 1 && pixel > currentVal) {
+                label = current.getLabel();
             }
         }
         return label;
@@ -121,6 +120,8 @@ class LabelInFeatureInfo {
                 label = current.getLabel();
                 break;
             }
+            // Raster Symbolizer will not produce results for pixel values > then the last
+            // ColorMapEntry quantity, in case of ColorMap of type interval
         }
         return label;
     }
@@ -129,18 +130,18 @@ class LabelInFeatureInfo {
         return labelInclusion;
     }
 
-    static int getLabelAttributeNameCount(List<LabelInFeatureInfo> labelInFeatureInfos) {
+    static int getLabelAttributeNameCount(List<ColorMapLabelMatcher> colorMapLabelMatchers) {
         return Long.valueOf(
-                        labelInFeatureInfos
+                        colorMapLabelMatchers
                                 .stream()
-                                .map(l -> l.getAttributeName() == "Label")
+                                .filter(l -> l.getAttributeName() == "Label")
                                 .count())
                 .intValue();
     }
 
-    static boolean isLabelReplacingValue(List<LabelInFeatureInfo> labelInFeatureInfos) {
-        return !labelInFeatureInfos.isEmpty()
-                && labelInFeatureInfos
+    static boolean isLabelReplacingValue(List<ColorMapLabelMatcher> colorMapLabelMatchers) {
+        return !colorMapLabelMatchers.isEmpty()
+                && colorMapLabelMatchers
                         .stream()
                         .allMatch(
                                 l ->

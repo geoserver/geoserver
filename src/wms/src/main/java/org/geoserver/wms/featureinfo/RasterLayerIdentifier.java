@@ -5,9 +5,9 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.DEFAULT_ATTRIBUTE_NAME;
-import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.getLabelAttributeNameCount;
-import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.isLabelReplacingValue;
+import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.DEFAULT_ATTRIBUTE_NAME;
+import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.getLabelAttributeNameCount;
+import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.isLabelReplacingValue;
 
 import it.geosolutions.jaiext.range.Range;
 import java.awt.Rectangle;
@@ -88,8 +88,6 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DReader> {
 
-    static final String LABEL_IN_FEATURE_INFO = "labelInFeatureInfo";
-    static final String LABEL_ATTRIBUTE_NAME = "labelAttributeName";
     static final Logger LOGGER = Logging.getLogger(RasterLayerIdentifier.class);
 
     private WMS wms;
@@ -145,18 +143,18 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 }
             }
 
-            LabelInFeatureInfoExtractor labelVisitor =
-                    new LabelInFeatureInfoExtractor(requestParams.getScaleDenominator());
+            ColorMapLabelMatcherExtractor labelVisitor =
+                    new ColorMapLabelMatcherExtractor(requestParams.getScaleDenominator());
             requestParams.getStyle().accept(labelVisitor);
-            List<LabelInFeatureInfo> labelInFeatureInfoList =
-                    labelVisitor.getLabelInFeatureInfoList();
+            List<ColorMapLabelMatcher> colorMapLabelMatcherList =
+                    labelVisitor.getColorMapLabelMatcherList();
 
             pixel =
                     wrapPixelInFeatureCollection(
                             coverage,
                             pixelValues,
                             cinfo.getQualifiedName(),
-                            labelInFeatureInfoList);
+                            colorMapLabelMatcherList);
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
@@ -421,23 +419,23 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             GridCoverage2D coverage,
             double[] pixelValues,
             Name coverageName,
-            List<LabelInFeatureInfo> labelInFeatureInfoList) {
+            List<ColorMapLabelMatcher> colorMapLabelMatcherList) {
         GridSampleDimension[] sampleDimensions = coverage.getSampleDimensions();
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(coverageName);
 
-        boolean isLabelActive = !labelInFeatureInfoList.isEmpty();
-        boolean isLabelReplacingValue = isLabelReplacingValue(labelInFeatureInfoList);
+        boolean isLabelActive = !colorMapLabelMatcherList.isEmpty();
+        boolean isLabelReplacingValue = isLabelReplacingValue(colorMapLabelMatcherList);
 
         if (!isLabelReplacingValue) addBandNamesToFeatureType(sampleDimensions, builder);
 
         if (isLabelActive)
-            addLabelAttributeNameToFeatureType(labelInFeatureInfoList, builder, coverage);
+            addLabelAttributeNameToFeatureType(colorMapLabelMatcherList, builder, coverage);
 
         SimpleFeatureType gridType = builder.buildFeatureType();
 
         int valuesLength;
-        int labelSize = labelInFeatureInfoList.size();
+        int labelSize = colorMapLabelMatcherList.size();
         if (isLabelReplacingValue) valuesLength = labelSize;
         else if (isLabelActive) valuesLength = pixelValues.length + labelSize;
         else valuesLength = pixelValues.length;
@@ -449,7 +447,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         for (int i = 0; i < pixelValues.length; i++) {
             double pixelVal = Double.valueOf(pixelValues[i]);
             if (isLabelActive)
-                addValueToLabelListByPixel(labels, labelInFeatureInfoList, pixelVal, i);
+                addValueToLabelListByPixel(labels, colorMapLabelMatcherList, pixelVal, i);
             if (!isLabelReplacingValue) {
                 values[i] = pixelVal;
                 lastOccupiedPosition++;
@@ -481,12 +479,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     private void addLabelAttributeNameToFeatureType(
-            List<LabelInFeatureInfo> labelInFeatureInfoList,
+            List<ColorMapLabelMatcher> colorMapLabelMatcherList,
             SimpleFeatureTypeBuilder builder,
             GridCoverage2D coverage) {
-        int numLabel = getLabelAttributeNameCount(labelInFeatureInfoList);
+        int numLabel = getLabelAttributeNameCount(colorMapLabelMatcherList);
         int indexLabel = 1;
-        for (LabelInFeatureInfo lifi : labelInFeatureInfoList) {
+        for (ColorMapLabelMatcher lifi : colorMapLabelMatcherList) {
             String label = lifi.getAttributeName();
             Integer channelName = lifi.getChannel();
             if (label.equals(DEFAULT_ATTRIBUTE_NAME)) {
@@ -507,10 +505,10 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
     private void addValueToLabelListByPixel(
             List<String> labels,
-            List<LabelInFeatureInfo> labelInFeatureInfoList,
+            List<ColorMapLabelMatcher> colorMapLabelMatcherList,
             double pixel,
             int currentPixelIdx) {
-        for (LabelInFeatureInfo lifi : labelInFeatureInfoList) {
+        for (ColorMapLabelMatcher lifi : colorMapLabelMatcherList) {
             Integer channelName = lifi.getChannel();
             if (channelName == null || currentPixelIdx == channelName.intValue() - 1)
                 labels.add(lifi.getLabelForPixel(pixel));

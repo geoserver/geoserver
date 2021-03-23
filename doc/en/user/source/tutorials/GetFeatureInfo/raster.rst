@@ -3,7 +3,7 @@
 Raster GetFeatureInfo Response Customization
 ============================================
 
-The default output for a ``GetFeatureInfo`` request over a raster layer, comprises just the value of the selected pixel for each band of the image.
+The default output for a ``GetFeatureInfo`` request on a raster layer contains just the value of the selected pixel, one for each band of the image.
 For instance in case of an ``application/json`` output format:
 
 .. code-block:: json
@@ -26,22 +26,22 @@ For instance in case of an ``application/json`` output format:
   "crs": null
  }
 
-If the raster layer is served with a Style having a ``ColorMap``, GeoServer provides the possibility to include in the output the label of the ``ColorMapEntry`` matching the pixel value, thanks to a ``VendorOption`` to be added inside the ``RasterSymbolizer`` holding the ``ColorMap``
+If the raster layer is associated with a Style based on a ``ColorMap``, GeoServer allows to include in the output the labels of each ``ColorMapEntry`` matching the pixel. This is controlled by a ``VendorOption``, that needs to be added inside the ``RasterSymbolizer`` holding the ``ColorMap``.
 
 .. code-block:: xml
   
  <sld:RasterSymbolizer>
     <sld:ColorMap>
-        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="label is 1"/>
-        <sld:ColorMapEntry color="#FFFF00" quantity="124.81173566700335" label="label is 124.811736"/>
-        <sld:ColorMapEntry color="#FF7F00" quantity="559.2041949413946" label="label is 559.204195"/>
-        <sld:ColorMapEntry color="#FF0000" quantity="55537.0" label="label is 55537"/>
+        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="low"/>
+        <sld:ColorMapEntry color="#FFFF00" quantity="124.81173566700335" label="mid"/>
+        <sld:ColorMapEntry color="#FF7F00" quantity="559.2041949413946" label="high"/>
+        <sld:ColorMapEntry color="#FF0000" quantity="55537.0" label="veryhigh"/>
     </sld:ColorMap>
     <sld:ContrastEnhancement/>
     <VendorOption name="labelInFeatureInfo">add</VendorOption>
  </sld:RasterSymbolizer>
 
-With the example ``RasterSymbolizer`` we will obtain something like:
+The output produced by the above ``RasterSymbolizer`` looks as follows:
 
 .. code-block:: json
   
@@ -54,7 +54,7 @@ With the example ``RasterSymbolizer`` we will obtain something like:
       "geometry": null,
       "properties": {
         "GRAY_INDEX": 124,
-        "Label_GRAY_INDEX": "label is 124.811736"
+        "Label_GRAY_INDEX": "mid"
       }
     }
   ],
@@ -72,7 +72,7 @@ The ``VendorOption labelInFeatureInfo`` supports the following values:
 
 * ``replace`` the label value replaces the pixel value in the output.
 
-* ``none`` no label is added to the output. We obtain a normal ``GetFeaturInfo`` response.
+*  ``none`` no label is added to the output. We obtain a normal ``GetFeatureInfo`` response.
 
 
 Additionally it is possible to customize the attribute name of the label value, by means of a second ``VendorOption``: 
@@ -84,10 +84,10 @@ Assuming to have a ``RasterSymbolizer`` like this
   
  <sld:RasterSymbolizer>
     <sld:ColorMap>
-        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="label is 1"/>
-        <sld:ColorMapEntry color="#FFFF00" quantity="124.81173566700335" label="label is 124.811736"/>
-        <sld:ColorMapEntry color="#FF7F00" quantity="559.2041949413946" label="label is 559.204195"/>
-        <sld:ColorMapEntry color="#FF0000" quantity="55537.0" label="label is 55537"/>
+        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="low"/>
+        <sld:ColorMapEntry color="#FFFF00" quantity="124.81173566700335" label="mid"/>
+        <sld:ColorMapEntry color="#FF7F00" quantity="559.2041949413946" label="high"/>
+        <sld:ColorMapEntry color="#FF0000" quantity="55537.0" label="very high"/>
     </sld:ColorMap>
     <sld:ContrastEnhancement/>
     <VendorOption name="labelInFeatureInfo">add</VendorOption>
@@ -108,7 +108,7 @@ we would obtain the following output, where the attribute name of the label valu
       "geometry": null,
       "properties": {
         "GRAY_INDEX": 159,
-        "custom name": "label is 124.811736"
+        "custom name": "mid"
       }
     }
   ],
@@ -119,7 +119,4 @@ we would obtain the following output, where the attribute name of the label valu
  }
 
 
-We have been using the ``JSON`` output format for the example above, but the two ``VendorOptions`` work also with ``HTML`` output.
-
-.. figure:: getfeatureinfo_label.png
-   :align: center
+We have been using the ``JSON`` output format for the example above, but the two ``VendorOptions`` work for all other GetFeatureInfo output formats.

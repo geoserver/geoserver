@@ -937,7 +937,6 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // <VendorOption name="labelAttributeName">first symbolizer</VendorOption>
         // <VendorOption name="labelInFeatureInfo">replace</VendorOption>
         //
-        // <VendorOption name="labelAttributeName">second symbolizer</VendorOption>
         // <VendorOption name="labelInFeatureInfo">replace</VendorOption>
         Catalog cat = getCatalog();
         LayerInfo tazDem =
@@ -970,7 +969,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // we have replace size should be 2
         assertEquals(2, properties.size());
         assertEquals(">= 1 AND < 124.811736", properties.getString("first symbolizer"));
-        assertEquals("value is 1", properties.getString("second symbolizer"));
+        assertEquals("value is 1", properties.getString("Label_GRAY_INDEX"));
     }
 
     @Test

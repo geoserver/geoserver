@@ -27,7 +27,6 @@
                                                     <sld:ColorMapEntry color="#FF0000" quantity="55537.0" label="value is 55537"/>
                                                 </sld:ColorMap>
                         <sld:ContrastEnhancement/>
-                        <VendorOption name="labelAttributeName">second symbolizer</VendorOption>
                         <VendorOption name="labelInFeatureInfo">replace</VendorOption>
                     </sld:RasterSymbolizer>
                 </sld:Rule>

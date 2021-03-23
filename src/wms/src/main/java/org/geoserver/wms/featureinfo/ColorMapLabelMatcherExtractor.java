@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.geoserver.wms.featureinfo.LabelInFeatureInfo.DEFAULT_ATTRIBUTE_NAME;
+import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.DEFAULT_ATTRIBUTE_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,20 @@ import org.geotools.styling.ColorMap;
 import org.geotools.styling.RasterSymbolizer;
 
 /**
- * A visitor able to produce LabelInFeatureInfo object from a Style having vendor options
+ * A visitor able to produce ColorMapLabelMatcher objects from a Style having vendor options
  * <VendorOption name="labelInFeatureInfo">add</VendorOption> <VendorOption
  * name="labelAttributeName">custom name</VendorOption>
  */
-class LabelInFeatureInfoExtractor extends RasterSymbolizerVisitor {
+class ColorMapLabelMatcherExtractor extends RasterSymbolizerVisitor {
 
     static final String LABEL_IN_FEATURE_INFO = "labelInFeatureInfo";
     static final String LABEL_ATTRIBUTE_NAME = "labelAttributeName";
 
-    List<LabelInFeatureInfo> labelInFeatureInfoList;
+    List<ColorMapLabelMatcher> colorMapLabelMatcherList;
 
-    LabelInFeatureInfoExtractor(double scaleDenominator) {
+    ColorMapLabelMatcherExtractor(double scaleDenominator) {
         super(scaleDenominator, null);
-        this.labelInFeatureInfoList = new ArrayList<>();
+        this.colorMapLabelMatcherList = new ArrayList<>();
     }
 
     @Override
@@ -44,16 +44,16 @@ class LabelInFeatureInfoExtractor extends RasterSymbolizerVisitor {
         if (labelIncluded != null
                 && !labelIncluded
                         .toUpperCase()
-                        .equals(LabelInFeatureInfo.LabelInFeatureInfoMode.NONE.name())) {
+                        .equals(ColorMapLabelMatcher.LabelInFeatureInfoMode.NONE.name())) {
             Integer channelName = extractChannelSelectionName(raster.getChannelSelection());
-            LabelInFeatureInfo labelInFeatureInfo =
-                    new LabelInFeatureInfo(targetAttributeName, cm, labelIncluded, channelName);
-            labelInFeatureInfoList.add(labelInFeatureInfo);
+            ColorMapLabelMatcher colorMapLabelMatcher =
+                    new ColorMapLabelMatcher(targetAttributeName, cm, labelIncluded, channelName);
+            colorMapLabelMatcherList.add(colorMapLabelMatcher);
         }
     }
 
-    public List<LabelInFeatureInfo> getLabelInFeatureInfoList() {
-        return labelInFeatureInfoList;
+    public List<ColorMapLabelMatcher> getColorMapLabelMatcherList() {
+        return colorMapLabelMatcherList;
     }
 
     private Integer extractChannelSelectionName(ChannelSelection channelSelection) {

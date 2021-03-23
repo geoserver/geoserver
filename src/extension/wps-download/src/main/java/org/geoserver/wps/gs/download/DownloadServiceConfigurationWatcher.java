@@ -5,8 +5,21 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.COMPRESSION_LEVEL_NAME;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.DEFAULT_MAX_ANIMATION_FRAMES;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.DEFAULT_MAX_FEATURES;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.DEFAULT_WRITE_LIMITS;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.HARD_OUTPUT_LIMITS_NAME;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.MAX_ANIMATION_FRAMES_NAME;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.MAX_FEATURES_NAME;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME;
+import static org.geoserver.wps.gs.download.DownloadServiceConfiguration.WRITE_LIMITS_NAME;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -186,35 +199,25 @@ public class DownloadServiceConfigurationWatcher extends TimerTask
         }
         // Initialize the configuration fields with default values
         long maxFeatures =
-                getLongValue(
-                        downloadProcessProperties,
-                        DownloadServiceConfiguration.MAX_FEATURES_NAME,
-                        DownloadServiceConfiguration.DEFAULT_MAX_FEATURES);
+                getLongValue(downloadProcessProperties, MAX_FEATURES_NAME, DEFAULT_MAX_FEATURES);
         long rasterSizeLimits =
                 getLongValue(
                         downloadProcessProperties,
-                        DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME,
-                        DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS);
+                        RASTER_SIZE_LIMITS_NAME,
+                        DEFAULT_RASTER_SIZE_LIMITS);
         long writeLimits =
                 getLongValue(
-                        downloadProcessProperties,
-                        DownloadServiceConfiguration.WRITE_LIMITS_NAME,
-                        DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS);
+                        downloadProcessProperties, WRITE_LIMITS_NAME, DEFAULT_RASTER_SIZE_LIMITS);
         long hardOutputLimit =
-                getLongValue(
-                        downloadProcessProperties,
-                        "hardOutputLimit",
-                        DownloadServiceConfiguration.DEFAULT_WRITE_LIMITS);
+                getLongValue(downloadProcessProperties, "hardOutputLimit", DEFAULT_WRITE_LIMITS);
         int compressionLevel =
                 getIntValue(
-                        downloadProcessProperties,
-                        "compressionLevel",
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL);
+                        downloadProcessProperties, "compressionLevel", DEFAULT_COMPRESSION_LEVEL);
         int maxFrames =
                 getIntValue(
                         downloadProcessProperties,
-                        DownloadServiceConfiguration.MAX_ANIMATION_FRAMES_NAME,
-                        DownloadServiceConfiguration.DEFAULT_MAX_ANIMATION_FRAMES);
+                        MAX_ANIMATION_FRAMES_NAME,
+                        DEFAULT_MAX_ANIMATION_FRAMES);
 
         // create the configuration object
         return new DownloadServiceConfiguration(
@@ -273,14 +276,18 @@ public class DownloadServiceConfigurationWatcher extends TimerTask
     @Override
     public void run() {
         if (watcher.isStale()) {
-            // reload
-            DownloadServiceConfiguration newConfiguration = loadConfiguration();
-            if (newConfiguration != null) {
-                synchronized (newConfiguration) {
-                    configuration = newConfiguration;
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("New configuration loaded:\n" + configuration);
-                    }
+            reloadConfiguration();
+        }
+    }
+
+    private void reloadConfiguration() {
+        // reload
+        DownloadServiceConfiguration newConfiguration = loadConfiguration();
+        if (newConfiguration != null) {
+            synchronized (newConfiguration) {
+                configuration = newConfiguration;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("New configuration loaded:\n" + configuration);
                 }
             }
         }
@@ -301,5 +308,31 @@ public class DownloadServiceConfigurationWatcher extends TimerTask
                 LOGGER.log(Level.FINE, t.getLocalizedMessage(), t);
             }
         }
+    }
+
+    @Override
+    public void setConfiguration(DownloadServiceConfiguration configuration) throws IOException {
+        Properties props = configurationToProperties(configuration);
+        Resource resource = watcher.getResource();
+        try (OutputStream os = resource.out()) {
+            props.store(os, null);
+        }
+        reloadConfiguration();
+    }
+
+    private Properties configurationToProperties(DownloadServiceConfiguration configuration) {
+        Properties props = new Properties();
+        setProperty(props, MAX_FEATURES_NAME, configuration.getMaxFeatures());
+        setProperty(props, RASTER_SIZE_LIMITS_NAME, configuration.getRasterSizeLimits());
+        setProperty(props, WRITE_LIMITS_NAME, configuration.getWriteLimits());
+        setProperty(props, HARD_OUTPUT_LIMITS_NAME, configuration.getHardOutputLimit());
+        setProperty(props, MAX_ANIMATION_FRAMES_NAME, configuration.getMaxAnimationFrames());
+        setProperty(props, MAX_ANIMATION_FRAMES_NAME, configuration.getMaxAnimationFrames());
+        setProperty(props, COMPRESSION_LEVEL_NAME, configuration.getCompressionLevel());
+        return props;
+    }
+
+    private void setProperty(Properties props, String name, long value) {
+        props.setProperty(name, String.valueOf(value));
     }
 }

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps.gs.download;
 
+import java.io.IOException;
+
 /**
  * Simple interface to get the {@link DownloadServiceConfiguration}.
  *
@@ -13,5 +15,9 @@ package org.geoserver.wps.gs.download;
 public interface DownloadServiceConfigurationGenerator {
 
     /** @return the {@link DownloadServiceConfiguration} object */
-    public DownloadServiceConfiguration getConfiguration();
+    DownloadServiceConfiguration getConfiguration();
+
+    default void setConfiguration(DownloadServiceConfiguration configuration) throws IOException {
+        throw new UnsupportedOperationException("The download configuration is read only");
+    }
 }

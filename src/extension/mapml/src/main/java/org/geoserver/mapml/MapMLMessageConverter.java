@@ -16,7 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-/** @author prushforth */
+/**
+ * @author Chris Hodgson
+ * @author prushforth
+ */
 public class MapMLMessageConverter extends BaseMessageConverter<Object> {
 
     @Autowired private Jaxb2Marshaller mapmlMarshaller;

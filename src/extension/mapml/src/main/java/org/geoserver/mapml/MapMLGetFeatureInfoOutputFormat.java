@@ -40,7 +40,10 @@ import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-/** @author prushforth */
+/**
+ * @author Chris Hodgson
+ * @author prushforth
+ */
 public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
@@ -112,7 +115,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
 
         @SuppressWarnings("unchecked")
         List<FeatureCollection> featureCollections = results.getFeature();
-        HashMap<Name, String> captionAttributes = captionsMap(request.getQueryLayers());
+        HashMap<Name, String> captionTemplates = captionsMap(request.getQueryLayers());
         SimpleFeatureCollection fc;
         if (!featureCollections.isEmpty()) {
             Iterator<FeatureCollection> fci = featureCollections.iterator();
@@ -131,7 +134,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                             Feature f =
                                     MapMLGenerator.buildFeature(
                                             feature,
-                                            captionAttributes.get(fc.getSchema().getName()));
+                                            captionTemplates.get(fc.getSchema().getName()));
                             // might be interesting to be able to put features
                             // from different layers into a layer-specific div
                             features.add(f);
@@ -156,8 +159,8 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
     }
 
     /**
-     * Create a Map wtih key of qualified layer name, possibly null string valued name of an
-     * attribute designated as being the &lt;featurecaption&gt; element
+     * Create a Map wtih key of qualified layer name, to a possibly null, string-valued template to
+     * be processed to substitute ${placeholders} with attribute or dimension/band values
      *
      * @param layers a list of all layers that are in the layer / layer group
      * @return
@@ -172,9 +175,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                             String fcap =
                                     r.getMetadata()
                                             .getOrDefault("mapml.featureCaption", "")
-                                            // aargggh coverage band names can have spaces
-                                            .toString()
-                                            .replaceAll("\\s", "_");
+                                            .toString();
                             map.put(r.getQualifiedName(), fcap.isEmpty() ? null : fcap);
                         });
         return map;

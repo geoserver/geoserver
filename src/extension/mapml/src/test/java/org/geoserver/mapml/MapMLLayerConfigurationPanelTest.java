@@ -11,8 +11,8 @@ import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
@@ -57,7 +57,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
         // check that the attributes dropdown is available
-        tester.assertComponent("form:panel:featurecaption", DropDownChoice.class);
+        tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
         FormTester ft = tester.newFormTester("form");
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
@@ -66,7 +66,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:shardList", null);
         tester.assertModelValue("form:panel:shardServerPattern", null);
         tester.assertModelValue("form:panel:dimension", null);
-        tester.assertModelValue("form:panel:featurecaption", null);
+        tester.assertModelValue("form:panel:featurecaptionattributes", null);
+        tester.assertModelValue("form:panel:featureCaptionTemplate", null);
 
         ft.setValue("panel:licenseTitle", "A Fake Title");
         ft.setValue("panel:licenseLink", "https://example.org/mapml");
@@ -83,7 +84,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         }
 
         // select the "NAME" attribute from Ponds, map to featurecaption in MapML
-        ft.select("panel:featurecaption", 2);
+        ft.select("panel:featurecaptionattributes", 2);
+        ft.setValue("panel:featureCaptionTemplate", "This is a ${test}");
 
         ft.submit();
         tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
@@ -92,7 +94,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:enableSharding", true);
         tester.assertModelValue("form:panel:shardList", "a,b,c");
         tester.assertModelValue("form:panel:shardServerPattern", "{s}");
-        tester.assertModelValue("form:panel:featurecaption", "NAME");
+        //        tester.assertModelValue("form:panel:featurecaptionattributes", "[NAME]");
+        tester.assertModelValue("form:panel:featureCaptionTemplate", "This is a ${test}");
     }
 
     @Test
@@ -108,9 +111,9 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
         // check that the "attributes" (works with raster dimensions) dropdown is available
-        tester.assertComponent("form:panel:featurecaption", DropDownChoice.class);
+        tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
         FormTester ft = tester.newFormTester("form");
-        tester.assertModelValue("form:panel:featurecaption", null);
+        tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
@@ -118,7 +121,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:shardList", null);
         tester.assertModelValue("form:panel:shardServerPattern", null);
         tester.assertModelValue("form:panel:dimension", null);
-        tester.assertModelValue("form:panel:featurecaption", null);
+        tester.assertModelValue("form:panel:featurecaptionattributes", null);
+        tester.assertModelValue("form:panel:featureCaptionTemplate", null);
 
         ft.setValue("panel:licenseTitle", "A Fake Title");
         ft.setValue("panel:licenseLink", "https://example.org/mapml");
@@ -126,6 +130,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         ft.setValue("panel:enableSharding", true);
         ft.setValue("panel:shardList", "a,b,c");
         ft.setValue("panel:shardServerPattern", "{s}");
+        ft.setValue("panel:featureCaptionTemplate", "This is a ${test}");
 
         // no dimension set up yet should not be able to select one...
         try {
@@ -135,7 +140,8 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
 
         }
         // select the "Blue band" from Mosaic, map to featurecaption in MapML
-        ft.select("panel:featurecaption", 2);
+        ft.select("panel:featurecaptionattributes", 2);
+        ft.setValue("panel:featureCaptionTemplate", "This is the ${BLUE_BAND}");
 
         ft.submit();
         tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
@@ -144,6 +150,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:enableSharding", true);
         tester.assertModelValue("form:panel:shardList", "a,b,c");
         tester.assertModelValue("form:panel:shardServerPattern", "{s}");
-        tester.assertModelValue("form:panel:featurecaption", "BLUE_BAND");
+        //      tester.assertModelValue("form:panel:featurecaptionattributes", "[BLUE_BAND]");
+        tester.assertModelValue("form:panel:featureCaptionTemplate", "This is the ${BLUE_BAND}");
     }
 }

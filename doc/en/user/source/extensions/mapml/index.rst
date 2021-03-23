@@ -91,10 +91,16 @@ Dimension Config
 Attribute to <featurecaption> mapping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Attribute**
-The dropdown list allows you to select an attribute that will be serialized in MapML vector content as the <featurecaption> element value.  The <featurecaption> is used as the accessible name of the feature, by screen reader software, which will often read out
-this value without the user having to expand a popup; in other words, it will be used as a visual and audible tooltip when the
-visual element is focused.
+**List of attributes**
+The list allows you to read the names of the layer attributes, it doesn't really do more than that. 
+
+**Feature Caption Template String**
+
+To cause an attribute to be serialized in MapML vector content as the <featurecaption> element value,
+you must enter its name as a ${placeholder} in the text box immediately below the attributes list. You can also add (a small amount of) plain text that will be 
+copied verbatim into the <featurecaption> content.  <featurecaption> is used as the accessible name of features by screen reader software, which will often 
+read out this value without the user having to expand a popup; in other words, it will be used as a visual and audible tooltip when the 
+feature is focused.
 
 
 MapML Resources
@@ -136,23 +142,25 @@ MapML visualization is supported by the Web-Map-Custom-Element project. The MapM
 
 .. code-block:: html
 
-    <html>
-        <head>
-            <title>MapML Test Map</title>
-            <meta charset="utf-8" />
-            <script type="module" src="http://localhost:8080/geoserver/mapml/viewer/widget/mapml-viewer.js"></script>
-            <style>
-              html, body { height: 100%; }
-              * { margin: 0; padding: 0; }
-              mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }
-              mapml-viewer:not(:defined) > * { display: none; } layer- { display: none; }
-            </style>
-        </head>
-        <body>
-            <mapml-viewer projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
-                <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
-            </apml-viewer>
-        </body>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" >
+        <title>MapML Test Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="module" src="http://localhost:8080/geoserver/mapml/viewer/widget/mapml-viewer.js"></script>
+        <style>
+          html, body { height: 100%; }
+          * { margin: 0; padding: 0; }
+          mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }
+          mapml-viewer:not(:defined) > * { display: none; } layer- { display: none; }
+        </style>
+      </head>
+      <body>
+        <mapml-viewer projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
+          <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
+        </mapml-viewer>
+      </body>
     </html>
     
 In the above example, the place-holders ``topp:states``, ``localhost:8080``, ``osmtile``, and ``population`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.  You may also like to "View Source" on the preview page to see what the markup looks like for any layer.  This code can be copied and pasted without harm, and you should try it and see what works and what the limitations are.  For further information about MapML, and the Maps for HTML Community Group, please visit http://maps4html.org.

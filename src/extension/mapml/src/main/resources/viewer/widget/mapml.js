@@ -4503,7 +4503,7 @@
     // input "max=5,min=4" => [[max,5][min,5]]
     metaContentToObject: function(input){
       if(!input || input instanceof Object)return {};
-      let content = input.split(" ").join("");
+      let content = input.split(/\s+/).join("");
       let contentArray = {};
       let stringSplit = content.split(',');
 
@@ -4778,6 +4778,8 @@
      */
     initialize: function (markup, options) {
       this.type = markup.tagName.toUpperCase();
+
+      if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
       L.setOptions(this, options);
 
       this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
@@ -4786,8 +4788,11 @@
       this._markup = markup;
       this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
 
-      this._generateOutlinePoints();
       this._convertMarkup();
+
+      if(markup.querySelector('span') || markup.querySelector('a')){
+        this._generateOutlinePoints();
+      }
 
       this.isClosed = this._isClosed();
     },
@@ -4809,7 +4814,6 @@
         this.group = this.options.multiGroup;
       } else {
         this.group = L.SVG.create('g');
-        this.group.setAttribute('role', 'region');
         if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
         this.group.setAttribute('aria-label', this.options.accessibleTitle);
         if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
@@ -4890,13 +4894,13 @@
      */
     _convertMarkup: function () {
       if (!this._markup) return;
-      let attrMap = {}, attr = this._markup.attributes;
+
+      let attr = this._markup.attributes;
+      this.featureAttributes = {};
       for(let i = 0; i < attr.length; i++){
-        if(attr[i].name === "class") continue;
-        attrMap[attr[i].name] = attr[i].value;
+        this.featureAttributes[attr[i].name] = attr[i].value;
       }
 
-      this.featureAttributes = attrMap;
       let first = true;
       for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
         let ring = [], subrings = [];
@@ -4910,7 +4914,7 @@
             this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
           }
         } else {
-          this._parts.push({ rings: ring, subrings: subrings, cls: this.options.className });
+          this._parts.push({ rings: ring, subrings: subrings, cls: this.featureAttributes.class || this.options.className });
         }
         first = false;
       }
@@ -4929,18 +4933,19 @@
         for (let n of nodes) {
           let line = [];
           if (!n.tagName) {  //no tagName means it's text content
-            let c = '';
-            if (cur - 1 > 0 && nodes[cur - 1].tagName) {
-              let prev = nodes[cur - 1].textContent.split(' ');
+            let c = '', ind = (((cur - 1)%nodes.length) + nodes.length) % nodes.length; // this equation turns Javascript's % to how it behaves in C for example
+            if (nodes[ind].tagName) {
+              let prev = nodes[ind].textContent.trim().split(/\s+/);
               c += `${prev[prev.length - 2]} ${prev[prev.length - 1]} `;
             }
             c += n.textContent;
-            if (cur + 1 < nodeLength && nodes[cur + 1].tagName) {
-              let next = nodes[cur + 1].textContent.split(' ');
+            ind = (((cur + 1)%nodes.length) + nodes.length) % nodes.length; // this is equivalent to C/C++'s (cur + 1) % nodes.length
+            if (nodes[ind].tagName) {
+              let next = nodes[ind].textContent.trim().split(/\s+/);
               c += `${next[0]} ${next[1]} `;
             }
             tempDiv.innerHTML = c;
-            this._coordinateToArrays(tempDiv, line, [], true, this.options.className);
+            this._coordinateToArrays(tempDiv, line, [], true, this.featureAttributes.class || this.options.className);
             this._outline.push(line);
           }
           cur++;
@@ -5037,15 +5042,20 @@
      */
     _initPath: function (layer, stampLayer = true) {
 
-      let outlinePath = L.SVG.create('path');
-      if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
-      L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
-      outlinePath.style.fill = "none";
-      layer.outlinePath = outlinePath;
+      if(layer._outline) {
+        let outlinePath = L.SVG.create('path');
+        if (layer.options.className) L.DomUtil.addClass(outlinePath, layer.featureAttributes.class || layer.options.className);
+        L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
+        outlinePath.style.fill = "none";
+        layer.outlinePath = outlinePath;
+      }
 
       //creates the main parts and sub parts paths
       for (let p of layer._parts) {
-        if (p.rings) this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+        if (p.rings){
+          this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+          if(layer.outlinePath) p.path.style.stroke = "none";
+        }
         if (p.subrings) {
           for (let r of p.subrings) {
             this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
@@ -5101,15 +5111,17 @@
      */
     _addPath: function (layer, container = undefined, interactive = true) {
       if (!this._rootGroup && !container) { this._initContainer(); }
-      let c = container || this._rootGroup;
-      if (layer.pixelOutline) layer.group.appendChild(layer.outlinePath);
+      let c = container || this._rootGroup, outlineAdded = false;
       if(interactive) {
         layer.addInteractiveTarget(layer.group);
-        layer.group.style.stroke = "none";
       }
       for (let p of layer._parts) {
-        if (p.path) {
+        if (p.path)
           layer.group.appendChild(p.path);
+
+        if(!outlineAdded && layer.pixelOutline) {
+          layer.group.appendChild(layer.outlinePath);
+          outlineAdded = true;
         }
 
         for (let subP of p.subrings) {
@@ -5173,14 +5185,14 @@
      * @private
      */
     _updateStyle: function (layer) {
-      this._updatePathStyle(layer.outlinePath, layer.options, layer.isClosed, true);
+      this._updatePathStyle(layer.outlinePath, layer, false, true);
       for (let p of layer._parts) {
         if (p.path) {
-          this._updatePathStyle(p.path, layer.options, layer.isClosed);
+          this._updatePathStyle(p.path, layer, true);
         }
         for (let subP of p.subrings) {
           if (subP.path)
-            this._updatePathStyle(subP.path, layer.options, false);
+            this._updatePathStyle(subP.path, layer);
         }
       }
     },
@@ -5188,15 +5200,15 @@
     /**
      * Updates the style of a single path
      * @param {HTMLElement} path - The path that needs updating
-     * @param {Object} options - The options of a feature
-     * @param {boolean} isClosed - Whether a feature is closed or not
+     * @param {M.Feature} layer - The feature layer
+     * @param {boolean} isMain - Whether it's the main parts or not
      * @param {boolean} isOutline - Whether a path is an outline or not
      * @private
      */
-    _updatePathStyle: function (path, options, isClosed, isOutline = false) {
-      if (!path) { return; }
-
-      if (options.stroke && (!isClosed || isOutline)) {
+    _updatePathStyle: function (path, layer, isMain = false, isOutline = false) {
+      if (!path || !layer) { return; }
+      let options = layer.options, isClosed = layer.isClosed;
+      if ((options.stroke && (!isClosed || isOutline)) || (isMain && !layer.outlinePath)) {
         path.setAttribute('stroke', options.color);
         path.setAttribute('stroke-opacity', options.opacity);
         path.setAttribute('stroke-width', options.weight);

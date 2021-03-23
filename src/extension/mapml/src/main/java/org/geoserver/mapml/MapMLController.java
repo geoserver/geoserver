@@ -68,6 +68,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Spring MVC controller for MapML requests
+ *
+ * @author Chris Hodgson
  * @author prushforth
  *     <p>This controller has two methods which map requests for layers depending on the MIME media
  *     type requested by the client. The first returns HTML (text/html) representing a layer

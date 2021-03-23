@@ -30,6 +30,7 @@
   <bean id="mapMLGetFeatureOutputFormat" class="org.geoserver.mapml.MapMLGetFeatureOutputFormat">
     <constructor-arg ref="geoServer" />
   </bean>
+  <bean id="getFeatureMapMLCallback" class="org.geoserver.mapml.MapMLGetFeatureCallback"/>
   <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">
     <constructor-arg ref="wms"/>
   </bean>

@@ -185,6 +185,10 @@ public class GetCoverageTest extends WCSTestSupport {
                 "//gml:rangeSet/gml:File/gml:fileReference",
                 gml);
         XMLAssert.assertXpathEvaluatesTo("image/tiff", "//gml:rangeSet/gml:File/gml:mimeType", gml);
+        XMLAssert.assertXpathEvaluatesTo(
+                "RED_BAND",
+                "//gmlcov:rangeType/swe:DataRecord/swe:field[@name='RED_BAND']/swe:Quantity/swe:description",
+                gml);
 
         BodyPart coveragePart = multipart.getBodyPart(1);
         assertEquals("/coverages/wcs__BlueMarble.tif", coveragePart.getHeader("Content-ID")[0]);

@@ -797,7 +797,7 @@ class GMLTransformer extends TransformerBase {
          * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
         private void handleRangeType(GridCoverage2D gc2d) {
-            start("gml:rangeType");
+            start("gmlcov:rangeType");
             start("swe:DataRecord");
 
             // get bands
@@ -849,7 +849,7 @@ class GMLTransformer extends TransformerBase {
             }
 
             end("swe:DataRecord");
-            end("gml:rangeType");
+            end("gmlcov:rangeType");
         }
 
         /** @param sd */

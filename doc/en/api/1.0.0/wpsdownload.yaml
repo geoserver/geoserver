@@ -1,0 +1,95 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: WPS download configuration
+  description: The WPS download module allows to perform large data, map and animation downloads sing asynchronous requests
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+
+  /services/wps/download:
+
+    get:
+      operationId: getDownloadServiceConfiguration
+      tags:
+        - "WPS"
+      description: Retrieves the WPS Download configuration.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/DownloadServiceConfiguration"
+          examples:
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?><DownloadServiceConfiguration>
+                <maxFeatures>100000</maxFeatures>
+                <rasterSizeLimits>64000000</rasterSizeLimits>
+                <writeLimits>64000000</writeLimits>
+                <hardOutputLimit>52428800</hardOutputLimit>
+                <compressionLevel>4</compressionLevel>
+                <maxAnimationFrames>1000</maxAnimationFrames>
+              </DownloadServiceConfiguration>
+            application/json: |
+              {"DownloadServiceConfiguration": {
+                "maxFeatures": 123,
+                "rasterSizeLimits": 456000,
+                "writeLimits": 789000,
+                "hardOutputLimit": 123456,
+                "compressionLevel": 8,
+                "maxAnimationFrames": 56
+              }}
+
+    put:
+      operationId: getDownloadServiceConfiguration
+      tags:
+        - "WPS"
+      description: Retrieves the WPS Download configuration.
+      parameters:
+        - name: getDownloadServiceConfigurationBody
+          in: body
+          description: Body of the WPS download configuration
+          required: true
+          schema:
+            $ref: "#/definitions/DownloadServiceConfiguration"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: Updated
+
+definitions:
+  DownloadServiceConfiguration:
+    xml:
+      name: DownloaServiceConfiguration
+    type: object
+    properties:
+      maxFeatures:
+        type: number
+        description: maximum number of features to download
+      rasterSizeLimits:
+        type: number
+        description: maximum pixel size of the Raster to read
+      writeLimits:
+        type: number
+        description: maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band’s pixel sample_type size in bytes, for all bands
+      hardOutputLimit:
+        type: number
+        description: maximum file size to download
+      compressionLevel:
+        type: integer
+        description: compression level for the output zip file
+      maxAnimationFrames:
+        type: integer
+        description: maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)
+
+     

@@ -56,6 +56,22 @@ public class DownloadServiceConfiguration {
 
     private int maxAnimationFrames = DEFAULT_MAX_ANIMATION_FRAMES;
 
+    /**
+     * Returns the same configuration found in the sample property file
+     *
+     * @return
+     */
+    public static DownloadServiceConfiguration getDemoConfiguration() {
+        DownloadServiceConfiguration config = new DownloadServiceConfiguration();
+        config.setMaxFeatures(100000);
+        config.setRasterSizeLimits(64000000l);
+        config.setWriteLimits(64000000l);
+        config.setHardOutputLimit(52428800l);
+        config.setMaxAnimationFrames(1000);
+        config.setCompressionLevel(4);
+        return config;
+    }
+
     /** Constructor: */
     public DownloadServiceConfiguration(
             long maxFeatures,
@@ -120,5 +136,29 @@ public class DownloadServiceConfiguration {
                 + ", compressionLevel="
                 + compressionLevel
                 + "]";
+    }
+
+    public void setMaxFeatures(long maxFeatures) {
+        this.maxFeatures = maxFeatures;
+    }
+
+    public void setRasterSizeLimits(long rasterSizeLimits) {
+        this.rasterSizeLimits = rasterSizeLimits;
+    }
+
+    public void setWriteLimits(long writeLimits) {
+        this.writeLimits = writeLimits;
+    }
+
+    public void setHardOutputLimit(long hardOutputLimit) {
+        this.hardOutputLimit = hardOutputLimit;
+    }
+
+    public void setCompressionLevel(int compressionLevel) {
+        this.compressionLevel = compressionLevel;
+    }
+
+    public void setMaxAnimationFrames(int maxAnimationFrames) {
+        this.maxAnimationFrames = maxAnimationFrames;
     }
 }

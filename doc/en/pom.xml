@@ -467,6 +467,15 @@
               <output>${project.build.directory}/api/workspaces</output>
             </configuration>
           </execution>
+          <execution>
+            <id>wpsdownload</id>
+            <phase>process-resources</phase>
+            <goals><goal>generate</goal></goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/wpsdownload.yaml</inputSpec>
+              <output>${project.build.directory}/api/wpsdownload</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       

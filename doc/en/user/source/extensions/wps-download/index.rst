@@ -39,10 +39,23 @@ This module provides the following WPS process:
 Configuring the limits
 ----------------------
 
-The first step to reach for using this module is to create a new file called **download.properties** and save it in the GeoServer data directory. If the file is not present
-GeoServer will automatically create a new one with the default properties:
+The user interface provides a way to configure the WPS download in the WPS administration page:
 
- .. code-block:: xml
+  .. figure:: images/admin.png
+    :align: center
+
+Where the available limits are:
+
+ * Maximum features : maximum number of features to download
+ * Raster size limits : maximum pixel size of the Raster to read (in square pixels, width by height)
+ * Write limits : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band's pixel sample_type size in bytes, for all bands
+ * Hard output limit : maximum file size to download (will be checked while writing the output, post compression)
+ * ZIP compresion level : compression level for the output zip file
+ * Maximum frames in animation : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)
+
+The configuration is stored in a **download.properties** file found in the root of the GeoServer data directory.
+
+ .. code-block::
  
   # Max #of features
   maxFeatures=100000
@@ -56,17 +69,11 @@ GeoServer will automatically create a new one with the default properties:
   compressionLevel=4
   # When set to 0 or below, no limit
   maxAnimationFrames=1000
-  
-Where the available limits are:
 
- * ``maxFeatures`` : maximum number of features to download
- * ``rasterSizeLimits`` : maximum pixel size of the Raster to read
- * ``writeLimits`` : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumated sum of each band's pixel sample_type size in bytes, for all bands
- * ``hardOutputLimit`` : maximum file size to download
- * ``compressionLevel`` : compression level for the output zip file
- * ``maxAnimationFrames`` : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)
+The file can also be manually modified while GeoServer is running, the file is under watch and gets
+reloaded on modification.
 
-.. note:: Note that limits can be changed when GeoServer is running. Periodically the server will reload the properties file. 
+The configuration can also be edited via :api:`the REST API <wpsdownload.yaml>`.
  
 The processes and their usage
 -----------------------------

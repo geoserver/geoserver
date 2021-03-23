@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="org.geoserver.wps.gs.download.rest"/>
 
 	<!--
-		====================================================================
-	-->
+    ====================================================================
+-->
 	<!-- Property config files -->
 	<!-- Any customization should go in the property file -->
 	<!--
 		====================================================================
+		
 	-->
 	<bean id="downloadServiceConfigurationWatcher" 
 		class="org.geoserver.wps.gs.download.DownloadServiceConfigurationWatcher" destroy-method="stop"/>
@@ -67,6 +78,13 @@
 				<value>org.geoserver.catalog.CoverageInfo</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="wpsDownloadAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+		<property name="id" value="wpsDownloadAdminPanel"/>
+		<property name="titleKey" value="wpsDownload"/>
+		<property name="componentClass" value="org.geoserver.web.wps.DownloadLimitsPanel"/>
+		<property name="serviceClass" value="org.geoserver.wps.WPSInfo"/>
 	</bean>
     
 </beans>

@@ -1,0 +1,53 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <ul>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="wpsDownload">WPS download</wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <label for="maxFeatures">
+                            <wicket:message key="maxFeatures">maxFeatures</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="maxFeatures"></input>
+                    </li>
+                    <li>
+                        <label for="rasterSizeLimits">
+                            <wicket:message key="rasterSizeLimits">rasterSizeLimits</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="rasterSizeLimits"></input>
+                    </li>
+                    <li>
+                        <label for="writeLimits">
+                            <wicket:message key="writeLimits">writeLimits</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="writeLimits"></input>
+                    </li>
+                    <li>
+                        <label for="hardOutputLimit">
+                            <wicket:message key="hardOutputLimit">hardOutputLimit</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="hardOutputLimit"></input>
+                    </li>
+                    <li>
+                        <label for="maxAnimationFrames">
+                            <wicket:message key="maxAnimationFrames">maxAnimationFrames</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="maxAnimationFrames"></input>
+                    </li>
+                    <li>
+                        <label for="compressionLevel">
+                            <wicket:message key="compressionLevel">compressionLevel</wicket:message>
+                        </label>
+                        <input type="text" wicket:id="compressionLevel"></input>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

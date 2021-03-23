@@ -8,7 +8,7 @@
 	<wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
     <wcs:DimensionSlice>
 		<wcs:Dimension>Lat</wcs:Dimension>
-        <wcs:SlicePoint>-43.5</wcs:SlicePoint>
+        <wcs:SlicePoint>-43.501</wcs:SlicePoint>
     </wcs:DimensionSlice>	
 	<wcs:DimensionTrim>
 		<wcs:Dimension>Long</wcs:Dimension>

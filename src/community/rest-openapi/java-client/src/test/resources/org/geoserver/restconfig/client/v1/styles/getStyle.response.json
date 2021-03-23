@@ -1,0 +1,13 @@
+{
+	"style": 
+	{
+		"name": "roads_style",
+		"format": "sld",
+		"languageVersion": 
+		{
+			"version": "1.0.0"
+		},
+
+		"filename": "roads.sld"
+	}
+}

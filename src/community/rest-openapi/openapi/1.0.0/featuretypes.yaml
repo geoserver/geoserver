@@ -1,0 +1,415 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Feature Types
+  description: A feature type is a vector based spatial resource or data set that
+    originates from a data store. In some cases, such as with a shapefile, a
+    feature type has a one-to-one relationship with its data store. In other
+    cases, such as PostGIS, the relationship of feature type to data store is
+    many-to-one, feature types corresponding to a table in the database.
+
+servers:
+  - url: http://localhost:8080/geoserver/rest
+  - url: https://localhost:8080/geoserver/rest
+
+security:
+  - basicAuth:
+      []
+tags:
+  - name: featuretypes
+    description: FeatureTypes API
+
+paths:
+  "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes":
+    parameters:
+      - name: workspaceName
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: storeName
+        in: path
+        description: The name of the datastore
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getFeatureTypesByStore
+      tags:
+        - featuretypes
+      description: >
+        Get a list of feature types for the workspace and datastore.
+      parameters:
+        - name: list
+          description: >
+            The list parameter is used to control the category of feature types
+            that are returned. Must be one of "configured", "available",
+            "available_with_geom", "all"
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - configured
+              - available
+              - available_with_geom
+              - all
+        - in: query
+          name: quietOnNotFound
+          required: false
+          schema:
+             type: boolean
+             default: true
+      responses:
+        "200":
+          $ref: '#/components/responses/FeatureTypeList'
+    post:
+      operationId: createFeatureTypeOnStore
+      tags:
+        - featuretypes
+      description: >
+        Create a new feature type. Note -  when creating a new feature type via
+        POST, if no underlying dataset with the specified name exists an attempt
+        will be made to create it. This will work only in cases where the
+        underlying data format supports the creation of new types (such as a
+        database). When creating a feature type in this manner the client should
+        include all attribute information in the feature type representation.
+      requestBody:
+        $ref: "#/components/requestBodies/FeatureTypeInfo"
+      responses:
+        "201":
+          description: The feature type was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created feature type.
+              schema:
+                type: string
+
+  "/workspaces/{workspaceName}/featuretypes":
+    parameters:
+      - name: workspaceName
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getFeatureTypesByWorkspace
+      tags:
+        - featuretypes
+      description: >
+        Get a list of all feature types for all datastors in the workspace.
+      parameters:
+        - name: list
+          description: >
+            The list parameter is used to control the category of feature types
+            that are returned. Must be one of "configured", "available",
+            "available_with_geom", "all"
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - configured
+              - available
+              - available_with_geom
+              - all
+      responses:
+        "200":
+          $ref: '#/components/responses/FeatureTypeList'
+    post:
+      operationId: createFeatureType
+      tags:
+        - featuretypes
+      description: >
+        Create a new feature type, the feature type definition needs to
+        reference a store. Note -  when creating a new feature type via POST, if
+        no underlying dataset with the specified name exists an attempt will be
+        made to create it. This will work only in cases where the underlying
+        data format supports the creation of new types (such as a database).
+        When creating a feature type in this manner the client should include
+        all attribute information in the feature type representation.
+      requestBody:
+        $ref: "#/components/requestBodies/FeatureTypeInfo"
+      responses:
+        "201":
+          description: The feature type was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created feature type.
+              schema:
+                type: string
+  "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}.":
+    parameters:
+      - name: workspaceName
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: storeName
+        in: path
+        description: The name of the datastore
+        required: true
+        schema:
+          type: string
+      - name: featureTypeName
+        in: path
+        description: The name of the feature type
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getFeatureType
+      tags:
+        - featuretypes
+      description: Get an individual feature type
+      parameters:
+        - name: quietOnNotFound
+          in: query
+          description: Prevents logging an Exception when the feature type is not present.
+            Note that 404 status code will be returned anyway. Defaults to
+            "false".
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          $ref: '#/components/responses/FeatureType'
+    put:
+      operationId: modifyFeatureTypeByStore
+      tags:
+        - featuretypes
+      description: Update an individual feature type
+      parameters:
+        - name: recalculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a feature
+            type. Some properties of feature types are automatically
+            recalculated when necessary. In particular, the native bounding box
+            is recalculated when the projection or projection policy are
+            changed, and the lat/lon bounding box is recalculated when the
+            native bounding box is recalculated, or when a new native bounding
+            box is explicitly provided in the request. (The native and lat/lon
+            bounding boxes are not automatically recalculated when they are
+            explicitly included in the request.) In addition, the client may
+            explicitly request a fixed set of fields to calculate, by including
+            a comma-separated list of their names in the recalculate
+            parameter.  The empty parameter 'recalculate=' is useful avoid slow
+            recalculation when operating against large datasets as
+            'recalculate=' avoids calculating any fields, regardless of any
+            changes to projection, projection policy, etc. The nativebbox
+            parameter 'recalculate=nativebbox' is used recalculates the native
+            bounding box, while avoiding recalculating the lat/lon bounding box.
+            Recalculate parameters can be used in together -
+            'recalculate=nativebbox,latlonbbox' can be used after a bulk import
+            to  to recalculates both the native bounding box and the lat/lon
+            bounding box.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - nativebbox
+                - latlonbbox
+            minItems: 0
+            maxItems: 2
+      requestBody:
+        $ref: "#/components/requestBodies/FeatureTypeInfo"
+      responses:
+        "200":
+          description: The feature type was successfully updated.
+    delete:
+      operationId: deleteFeatureTypeByStore
+      tags:
+        - featuretypes
+      description: Delete a feature type (optionally recursively deleting layers).
+      parameters:
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified
+            featuretype. Allowed values for this parameter are true or false.
+            The default value is false. A request with 'recurse=false' will fail
+            if any layers reference the featuretype.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: The feature type was successfully deleted.
+  "/workspaces/{workspaceName}/featuretypes/{featureTypeName}":
+    parameters:
+      - name: workspaceName
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: featureTypeName
+        in: path
+        description: The name of the feature type
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getFeatureTypeByDefaultStore
+      tags:
+        - featuretypes
+      description: Get an individual feature type in the default data store for the
+        workspace
+      parameters:
+        - name: quietOnNotFound
+          in: query
+          description: Prevents logging an Exception when the feature type is not present.
+            Note that 404 status code will be returned anyway. Defaults to
+            "false".
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          $ref: '#/components/responses/FeatureType'
+    put:
+      operationId: modifyFeatureType
+      tags:
+        - featuretypes
+      description: Update an individual feature type in the default data store for the
+        workspace
+      parameters:
+        - name: recalculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a feature
+            type. Some properties of feature types are automatically
+            recalculated when necessary. In particular, the native bounding box
+            is recalculated when the projection or projection policy are
+            changed, and the lat/lon bounding box is recalculated when the
+            native bounding box is recalculated, or when a new native bounding
+            box is explicitly provided in the request. (The native and lat/lon
+            bounding boxes are not automatically recalculated when they are
+            explicitly included in the request.) In addition, the client may
+            explicitly request a fixed set of fields to calculate, by including
+            a comma-separated list of their names in the recalculate
+            parameter.  The empty parameter 'recalculate=' is useful avoid slow
+            recalculation when operating against large datasets as
+            'recalculate=' avoids calculating any fields, regardless of any
+            changes to projection, projection policy, etc. The nativebbox
+            parameter 'recalculate=nativebbox' is used recalculates the native
+            bounding box, while avoiding recalculating the lat/lon bounding box.
+            Recalculate parameters can be used in together -
+            'recalculate=nativebbox,latlonbbox' can be used after a bulk import
+            to  to recalculates both the native bounding box and the lat/lon
+            bounding box.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - nativebbox
+                - latlonbbox
+            minItems: 0
+            maxItems: 2
+      requestBody:
+        $ref: "#/components/requestBodies/FeatureTypeInfo"
+      responses:
+        "200":
+          description: The feature type was successfully updated.
+    delete:
+      operationId: deleteFeatureType
+      tags:
+        - featuretypes
+      description: Delete a feature type in the default data store for the workspace
+        (optionally recursively deleting layers).
+      parameters:
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified
+            featuretype. Allowed values for this parameter are true or false.
+            The default value is false. A request with 'recurse=false' will fail
+            if any layers reference the featuretype.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: The feature type was successfully deleted.
+components:
+  requestBodies:
+    FeatureTypeInfo:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureTypeInfoWrapper"
+      description: The body of the feature type to POST
+      required: true
+  securitySchemes:
+    basicAuth:
+      type: http
+      description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+      scheme: basic
+  responses:
+    FeatureTypeList:
+      description: Successful response containing featuretype list.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FeatureTypeList'
+    FeatureType:
+      description: Successful response containing feature type.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FeatureTypeResponseWrapper'
+  schemas:
+    FeatureTypeList:
+      type: object
+      description: ''
+      properties:
+        featureTypes:
+          $ref: "#/components/schemas/FeatureTypesListWrapper"
+      example:
+        {"featureTypes": {
+            "featureType": [
+              {
+                "name": "PrimitiveGeoFeature",
+                "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json"
+              },
+              {
+                "name": "archsites",
+                "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.json"
+              }
+            ]
+          }
+        }
+
+    FeatureTypesListWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - featureType
+      properties:
+        featureType:
+          $ref: "catalogresponses.yaml#/components/schemas/NamedLinks"
+
+    FeatureTypeResponseWrapper:
+      type: object
+      properties:
+        featureType:
+          $ref: "catalogresponses.yaml#/components/schemas/FeatureTypeResponse"
+
+    FeatureTypeInfoWrapper:
+      type: object
+      properties:
+        featureType:
+          $ref: "catalog.yaml#/components/schemas/FeatureTypeInfo"
+

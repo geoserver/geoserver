@@ -1,0 +1,29 @@
+{
+	"layer": {
+		"name": "streams",
+		"path": "\/",
+		"type": "VECTOR",
+		"defaultStyle": {
+			"name": "simple_streams",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/styles\/simple_streams.json"
+		},
+		"styles": {
+			"@class": "linked-hash-set",
+			"style": [
+				{
+					"name": "line",
+					"href": "http:\/\/localhost:8080\/geoserver\/rest\/styles\/line.json"
+				}
+			]
+		},
+		"resource": {
+			"@class": "featureType",
+			"name": "sf:streams",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/datastores\/sf\/featuretypes\/streams.json"
+		},
+		"attribution": {
+			"logoWidth": 0,
+			"logoHeight": 0
+		}
+	}
+}

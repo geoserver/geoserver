@@ -1,0 +1,264 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Coverages
+  description: A coverage is a raster data set which originates from a coverage store.
+
+tags:
+  - name: coverages
+    description: Coverage API
+
+paths:
+  /workspaces/{workspace}/coveragestores/{store}/coverages:
+    parameters:
+      - name: workspace
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: store
+        in: path
+        description: The name of the coverage data store
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - coverages
+      operationId: findCoveragesByStore
+      description: Get the coverages available for the provided workspace and data store.
+      parameters:
+        - name: list
+          description:  If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+      responses:
+        200:
+          $ref: "#/components/responses/CoveragesResponse"
+    post:
+      tags:
+        - coverages
+      operationId: createCoverageAtStore
+      description: Create a new coverage, the underlying data store must exists.
+      requestBody:
+        $ref: "#/components/requestBodies/CoverageInfo"
+      responses:
+        201:
+          description: The coverage was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created coverage.
+              schema:
+                type: string
+
+  /workspaces/{workspace}/coverages:
+    parameters:
+      - name: workspace
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - coverages
+      operationId: findCoveragesByWorkspace
+      description: Get the coverages available for the provided workspace.
+      parameters:
+        - name: list
+          description:  If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+      responses:
+        200:
+          $ref: "#/components/responses/CoveragesResponse"
+    post:
+      tags:
+        - coverages
+      operationId: createCoverageAtWorkspace
+      description:  Create a new coverage, the coverage definition needs to reference a store.
+      requestBody:
+        $ref: "#/components/requestBodies/CoverageInfo"
+      responses:
+        201:
+          description: The coverage was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created coverage.
+              schema:
+                type: string
+                
+  /workspaces/{workspace}/coverages/{coverage}:
+    parameters:
+      - name: workspace
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: coverage
+        in: path
+        description: The name of the coverage
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - coverages
+      operationId: getCoverageAtWorkspace
+      description: Get an individual coverage.
+      parameters:
+        - name: quietOnNotFound
+          in: query
+          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        200:
+          $ref: "#/components/responses/CoverageResponse"
+
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}:
+    parameters:
+      - name: workspace
+        in: path
+        description: The name of the workspace
+        required: true
+        schema:
+          type: string
+      - name: store
+        in: path
+        description: The name of the coverage datastore
+        required: true
+        schema:
+          type: string
+      - name: coverage
+        in: path
+        description: The name of the coverage
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - coverages
+      operationId: findCoverageByStore
+      description: Get an individual coverage.
+      parameters:
+        - name: quietOnNotFound
+          in: query
+          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          $ref: "#/components/responses/CoverageResponse"
+    put:
+      tags:
+        - coverages
+      operationId: updateCoverage
+      description: Update an individual coverage
+      parameters:
+        - name: calculate
+          in: query
+          description: 'Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - nativebbox
+                - latlonbbox
+            minItems: 0
+            maxItems: 2
+      requestBody:
+        $ref: "#/components/requestBodies/CoverageInfo"
+      responses:
+        200:
+          description: The coverage was successfully updated.
+    delete:
+      tags:
+        - coverages
+      operationId: deleteCoverage
+      description: Delete a coverage (optionally recursively deleting layers).
+      parameters:
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: Successfully deleted.
+components:
+  requestBodies:
+    CoverageInfo:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CoverageInfoWrapper"
+      description: The body of the coverage to POST
+      required: true
+  responses:
+    CoveragesResponse:
+      description: list of coverages
+      content:
+        application/json:
+          schema:
+            type: object
+            title: CoveragesResponse
+            required:
+              - coverages
+            properties:
+              coverageStores:
+                $ref: "#/components/schemas/CoverageListWrapper"
+    CoverageResponse:
+      description: The requested coverage store information6
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CoverageResponseWrapper"
+  schemas:
+    CoverageListWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - coverage
+      properties:
+        coverage:
+          $ref: "catalogresponses.yaml#/components/schemas/NamedLinks"
+    
+    CoverageResponseWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - coverage
+      properties:
+        coverage:
+          $ref: "catalogresponses.yaml#/components/schemas/CoverageResponse"
+          
+    CoverageInfoWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - coverage
+      properties:
+        coverage:
+          $ref: "catalog.yaml#/components/schemas/CoverageInfo"
+

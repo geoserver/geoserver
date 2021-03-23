@@ -1,0 +1,327 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Catalog Responses Model
+  description: GeoServer Catalog responses differ from their counterpart *Info objects (e.g. a response that should be a FeatureTypeInfo
+    cannot be directly mapped due to differences in the elements. This model the responses, when can then be mapped to the
+    corresponding *Info object in order to provide an homogeneous client API
+paths:
+  /fake:
+    description: fake operation entry point to pass validation, otherwise codegen will comply there's no paths element
+    get:
+      operationId: fakeOp
+      responses:
+        200:
+          description: nothing really
+components:
+  schemas:
+    NamedLink:
+      type: object
+      properties:
+        '@class':
+          type: string
+        name:
+          type: string
+        href:
+          type: string
+        link:
+          type: string
+    NamedLinks:
+      type: array
+      items:
+        $ref: "#/components/schemas/NamedLink"
+    EnvelopeResponse:
+      type: object
+#          type: array
+      properties:
+        minx:
+          type: number
+          format: double
+          nullable: false
+        maxx:
+          type: number
+          format: double
+          nullable: false
+        miny:
+          type: number
+          format: double
+          nullable: false
+        maxy:
+          type: number
+          format: double
+          nullable: false
+        crs:
+          $ref: '#/components/schemas/CRSResponse'
+    CRSResponse:
+      type: object
+      description: 'left as a free form object because geoserver returns a  plain string if it is a geographic crs (e.g. "EPSG:4326")
+        or an object like this: {"@class":"projected","$":"EPSG:26986"}'
+    ResourceResponse:
+      type: object
+      properties:
+        name:
+          type: string
+#          enum:
+        nativeName:
+          type: string
+        alias:
+          type: array
+          items:
+            type: string
+        namespace:
+          $ref: "#/components/schemas/NamedLink"
+        title:
+          type: string #/components/schemas/NamespaceInfo #/components/schemas/NamespaceInfo #/components/schemas/NamespaceInfo
+        abstract:
+          type: string
+        description:
+          type: string
+        enabled:
+          type: boolean
+        advertised:
+          type: boolean
+        keywords:
+          type: object
+          properties:
+            string:
+              type: array
+              items:
+                type: string
+#        metadatalinks:
+#          type: object
+#          description: Wraps a collection of metadata links for the resource.
+#          properties:
+#            metadataLink:
+#              type: array
+#              description: A collection of metadata links for the resource.
+#              items:
+#                type: object
+#                properties:
+#                  type:
+#                    type: string
+#                    description: The MIME type
+#                  metadataType:
+#                    type: string
+#                    description: The type of metadata, e.g. "FGDC"
+#                  content:
+#                    type: string
+#                    description: The link URL
+# REVISIT: currently geoserver encodes as dataLinks: {org.geoserver.catalog.impl.DataLinkInfoImpl: [{type:"", content:""}]}
+#        dataLinks:
+#          type: object
+#          description: Wraps a collection of data links for the resource.
+#          properties:
+#            metadataLink:
+#              type: array
+#              description: A collection of data links for the resource.
+#              items:
+#                type: object
+#                properties:
+#                  type:
+#                    type: string
+#                    description: The MIME type
+#                  content:
+#                    type: string
+#                    description: The link URL
+        nativeBoundingBox:
+          $ref: '#/components/schemas/EnvelopeResponse'
+        latLonBoundingBox:
+          $ref: '#/components/schemas/EnvelopeResponse'
+        srs:
+          type: string
+        nativeCRS:
+          $ref: '#/components/schemas/CRSResponse'
+        projectionPolicy:
+          $ref: "catalog.yaml#/components/schemas/ProjectionPolicy"
+#TODO: metadata comes as an array or a single object, sigh. e.g. "metadata": {"entry": {"@key": "k1","$": "v1"}} or "metadata": {"entry": [{"@key": "k1","$": "v1"},{"@key": "k2","$": "v2"}]}
+#metadata:
+#  $ref: '#/components/schemas/MetadataResponse'
+        store:
+          $ref: '#/components/schemas/NamedLink'
+        serviceConfiguration:
+          type: boolean
+        disabledServices:
+          $ref: '#/components/schemas/StringArrayResponse'
+    FeatureTypeResponse:
+      allOf: #note: Not using inheritance on purpose, there seems not to be a need so far, and would rather avoid the nasty discriminator
+      - $ref: '#/components/schemas/ResourceResponse'
+      - type: object
+        properties:
+          cqlFilter:
+            type: string
+          maxFeatures:
+            type: integer
+            format: int32
+          numDecimals:
+            type: integer
+            format: int32
+          padWithZeros:
+            type: boolean
+          forcedDecimal:
+            type: boolean
+          responseSRS:
+            $ref: '#/components/schemas/StringArrayResponse'
+          overridingServiceSRS:
+            type: boolean
+          skipNumberMatched:
+            type: boolean
+          circularArcPresent:
+            type: boolean
+          encodeMeasures:
+            type: boolean
+          linearizationTolerance:
+            type: number
+          attributes:
+            type: object
+            title: AttributeTypeInfoResponse
+            properties:
+              attribute:
+                type: array
+                items:
+                  $ref: 'catalog.yaml#/components/schemas/AttributeTypeInfo'
+    CoverageResponse:
+      allOf: #note: Not using inheritance on purpose, there seems not to be a need so far, and would rather avoid the nasty discriminator
+      - $ref: '#/components/schemas/ResourceResponse'
+      - type: object
+        properties:
+          nativeCoverageName:
+            description: the native coverage name (used to pick up a specific coverage from within a reader)
+            type: string
+          nativeFormat:
+            type: string
+          supportedFormats:
+            $ref: '#/components/schemas/StringArrayResponse'
+          requestSRS:
+            $ref: '#/components/schemas/StringArrayResponse'
+          responseSRS:
+            $ref: '#/components/schemas/StringArrayResponse'
+          defaultInterpolationMethod:
+            type: string
+          interpolationMethods:
+            $ref: '#/components/schemas/StringArrayResponse'
+          parameters:
+            type: object
+            title: CoverageResponseParameters
+            additionalProperties:
+              type: object              
+          dimensions:
+            type: object
+            title: CoverageDimensionsWrapper
+            properties:
+              coverageDimension:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoverageDimensionResponse'
+          grid:
+            $ref: '#/components/schemas/GridInfoResponse'
+
+    CoverageDimensionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        range:
+          $ref: "#/components/schemas/NumberRangeResponse"
+        nullValues:
+          $ref: '#/components/schemas/DoubleArrayResponse'
+        unit:
+          type: string
+        #dimensionType: TODO, add property of type SampleDimensionType?
+    
+    NumberRangeResponse:
+      type: object
+      description: a range of numbers as string, as it can return either a double or "inf"|"-inf"
+      properties:
+        min:
+          type: string
+        max:
+          type: string
+
+    GridInfoResponse:
+      type: object
+      description: contains information about how to translate from the raster plan to a coordinate reference system
+      properties:
+        "@dimension":
+          type: string
+        crs:
+          type: string
+        range:
+          type: object
+          title: GridRangeInfoResponse
+          properties:
+            high:
+              type: string
+            low:
+              type: string
+        transform:
+          type: object
+          title: TransformInfoResponse
+          properties:
+            scaleX:
+              type: number
+              format: double
+            scaleY:
+              type: number
+              format: double
+            shearX:
+              type: number
+              format: double
+            shearY:
+              type: number
+              format: double
+            translateX:
+              type: number
+              format: double
+            translateY:
+              type: number
+              format: double
+
+    MetadataResponse:
+      type: object
+      properties:
+        entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataEntry'
+      example:
+        entry:
+        - '@key': kml.regionateFeatureLimit
+          $: '10'
+        - '@key': cacheAgeMax
+          $: '3600'
+        - '@key': cachingEnabled
+          $: 'true'
+        - '@key': indexingEnabled
+          $: 'false'
+        - '@key': dirName
+          $: tasmania_roads
+    MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+        $:
+          title: text
+          type: string
+    StringArrayResponse:
+      type: object
+      properties:
+        string:
+          type: array
+          items:
+            type: string
+    DoubleArrayResponse:
+      type: object
+      properties:
+        double:
+          type: array
+          items:
+            type: number
+            format: double
+            

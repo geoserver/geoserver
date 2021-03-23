@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor
+    xmlns="http://www.opengis.net/sld"
+    xmlns:sld="http://www.opengis.net/sld"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
+    <sld:NamedLayer>
+        <sld:Name>mb2</sld:Name>
+        <sld:UserStyle>
+            <sld:Name>mb2</sld:Name>
+            <sld:FeatureTypeStyle>
+                <sld:Name>violet polygon</sld:Name>
+                <sld:Title>MBStyle violet polygon</sld:Title>
+                <sld:Abstract>Generated for testing</sld:Abstract>
+                <sld:SemanticTypeIdentifier>POLYGON</sld:SemanticTypeIdentifier>
+                <sld:Rule>
+                    <sld:Name>violet polygon</sld:Name>
+                    <sld:PolygonSymbolizer
+                        uom="http://www.opengeospatial.org/se/units/pixel">
+                        <sld:Fill>
+                            <sld:CssParameter
+                                name="fill">#3300FF</sld:CssParameter>
+                        </sld:Fill>
+                        <sld:Stroke />
+                    </sld:PolygonSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+    </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

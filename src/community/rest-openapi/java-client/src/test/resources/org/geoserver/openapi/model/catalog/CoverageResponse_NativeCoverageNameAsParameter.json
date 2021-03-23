@@ -1,0 +1,148 @@
+{
+	"coverage": {
+		"name": "PublishedName",
+		"nativeName": "PublishedName",
+		"parameters": {
+			"entry": [
+				{
+					"string": [
+						"InputTransparentColor",
+						""
+					]
+				},
+				{
+					"string": [
+						"SUGGESTED_TILE_SIZE",
+						"512,512"
+					]
+				},
+				{
+					"string": [
+						"RescalePixels",
+						true
+					]
+				}
+			],
+			"nativeCoverageName": "sfdem"
+		},
+		"namespace": {
+			"name": "createMinimalInformationNativeAndPublishedName-ws1-235035",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/namespaces\/createMinimalInformationNativeAndPublishedName-ws1-235035.json"
+		},
+		"title": "PublishedName",
+		"description": "Generated from GeoTIFF",
+		"keywords": {
+			"string": [
+				"PublishedName",
+				"WCS",
+				"GeoTIFF"
+			]
+		},
+		"nativeCRS": {
+			"@class": "projected",
+			"$": "PROJCS[\"NAD27 \/ UTM zone 13N\", \n  GEOGCS[\"NAD27\", \n    DATUM[\"North American Datum 1927\", \n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \n      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], \n      AUTHORITY[\"EPSG\",\"6267\"]], \n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n    UNIT[\"degree\", 0.017453292519943295], \n    AXIS[\"Geodetic longitude\", EAST], \n    AXIS[\"Geodetic latitude\", NORTH], \n    AUTHORITY[\"EPSG\",\"4267\"]], \n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \n  PARAMETER[\"central_meridian\", -105.0], \n  PARAMETER[\"latitude_of_origin\", 0.0], \n  PARAMETER[\"scale_factor\", 0.9996], \n  PARAMETER[\"false_easting\", 500000.0], \n  PARAMETER[\"false_northing\", 0.0], \n  UNIT[\"m\", 1.0], \n  AXIS[\"Easting\", EAST], \n  AXIS[\"Northing\", NORTH], \n  AUTHORITY[\"EPSG\",\"26713\"]]"
+		},
+		"srs": "EPSG:26713",
+		"nativeBoundingBox": {
+			"minx": 589980,
+			"maxx": 609000,
+			"miny": 4913700,
+			"maxy": 4928010,
+			"crs": {
+				"@class": "projected",
+				"$": "EPSG:26713"
+			}
+		},
+		"latLonBoundingBox": {
+			"minx": -103.87100615361031,
+			"maxx": -103.62932676908186,
+			"miny": 44.37021187004215,
+			"maxy": 44.50162561960653,
+			"crs": "EPSG:4326"
+		},
+		"projectionPolicy": "REPROJECT_TO_DECLARED",
+		"enabled": true,
+		"metadata": {
+			"entry": {
+				"@key": "dirName",
+				"$": "sfdem_sfdem"
+			}
+		},
+		"store": {
+			"@class": "coverageStore",
+			"name": "createMinimalInformationNativeAndPublishedName-ws1-235035:sfdem",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/createMinimalInformationNativeAndPublishedName-ws1-235035\/coveragestores\/sfdem.json"
+		},
+		"serviceConfiguration": false,
+		"nativeFormat": "GeoTIFF",
+		"grid": {
+			"@dimension": "2",
+			"range": {
+				"low": "0 0",
+				"high": "634 477"
+			},
+			"transform": {
+				"scaleX": 30,
+				"scaleY": -30,
+				"shearX": 0,
+				"shearY": 0,
+				"translateX": 589995,
+				"translateY": 4927995
+			},
+			"crs": "EPSG:26713"
+		},
+		"supportedFormats": {
+			"string": [
+				"ArcGrid",
+				"GeoPackage (mosaic)",
+				"StaticRaster",
+				"GEOTIFF",
+				"org.geoserver.catalog.testreader.CustomFormat",
+				"ImageMosaic",
+				"GIF",
+				"PNG",
+				"JPEG",
+				"TIFF",
+				"ImagePyramid"
+			]
+		},
+		"interpolationMethods": {
+			"string": [
+				"nearest neighbor",
+				"bilinear",
+				"bicubic"
+			]
+		},
+		"defaultInterpolationMethod": "nearest neighbor",
+		"dimensions": {
+			"coverageDimension": [
+				{
+					"name": "GRAY_INDEX",
+					"description": "GridSampleDimension[-Infinity,Infinity]",
+					"range": {
+						"min": "-inf",
+						"max": "inf"
+					},
+					"nullValues": {
+						"double": [
+							-9.999999933815813E36
+						]
+					},
+					"dimensionType": {
+						"name": "REAL_32BITS"
+					}
+				}
+			]
+		},
+		"requestSRS": {
+			"string": [
+				"EPSG:26713"
+			]
+		},
+		"responseSRS": {
+			"string": [
+				"EPSG:26713"
+			]
+		}
+	}
+}

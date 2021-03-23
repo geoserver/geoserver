@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer CoverageStores
+  description: A coverage store describes how access a raster data source.
+
+tags:
+  - name: coveragestores
+    description: CoverageStores API
+
+paths:
+  /workspaces/{workspace}/coveragestores:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        description: The name of the worskpace containing the coverage stores.
+        schema:
+          type: string
+    get:
+      tags:
+        - coveragestores
+      operationId: getCoverageStores
+      summary: Get a list of all coverage stores in {workspace}
+      description: Displays a list of all styles on the server.
+      responses:
+        200:
+          $ref: "#/components/responses/CoverageStoresResponse"
+        401:
+          description: Unauthorized
+    post:
+      tags:
+        - coveragestores
+      operationId: createCoverageStore
+      summary: Add a new coverage store
+      description: Adds a new coverage store entry to the server.
+      requestBody:
+        $ref: '#/components/requestBodies/CoverageStoreInfo'
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: URL where the newly created store can be found
+              schema:
+                type: string
+          content:
+            "*/*":
+              schema:
+                type: string
+        401:
+          description: Unauthorized
+
+  /workspaces/{workspace}/coveragestores/{store}:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        description: The name of the worskpace containing the coverage stores.
+        schema:
+          type: string
+      - name: store
+        in: path
+        required: true
+        description: The name of the store to be retrieved
+        schema:
+          type: string
+    get:
+      tags:
+        - coveragestores
+      operationId: getCoverageStore
+      summary: Get a coverage store named {store} in the {workspace} workspace
+      description: Displays a representation of the coverage store.
+      parameters:
+        - name: quietOnNotFound
+          in: query
+          required: false
+          description: When set to true, avoids to log an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
+          schema:
+            type: boolean
+      responses:
+        200:
+          $ref: "#/components/responses/CoverageStoreResponse"
+        401:
+          description: Unauthorized
+    put:
+      tags:
+        - coveragestores
+      operationId: modifyCoverageStore
+      summary: Modify a single coverage store.
+      description: Modifies a single coverage store.
+      requestBody:
+        $ref: '#/components/requestBodies/CoverageStoreInfo'
+      responses:
+        200:
+          description: The coverage store was successfully updated.
+        401:
+          description: Unauthorized
+    delete:
+      tags:
+        - coveragestores
+      operationId: deleteCoverageStore
+      summary: Delete coverage store
+      description: Deletes a coverage store
+      parameters:
+        - name: purge
+          in: query
+          required: false
+          description: The purge parameter specifies if and how the underlying raster data source is deleted. 
+            Allowable values for this parameter are "none", "metadata", "all". 
+            When set to "none" data and auxiliary files are preserved. 
+            When set to "metadata" delete only auxiliary files and metadata. It’s recommended when data files (such as granules) should not be deleted from disk. 
+            Finally, when set to "all" both data and auxiliary files are removed.
+          schema:
+            $ref: "#/components/schemas/PurgeOption"
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all resources contained in the store are also removed. The default value is "false".
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+
+#  "/workspaces/{workspace}/coveragestores/{store}/{method}.{format}":
+#    parameters:
+#      - name: workspace
+#        in: path
+#        required: true
+#        description: The name of the worskpace containing the coverage stores.
+#        schema:
+#          type: string
+#      - name: store
+#        in: path
+#        required: true
+#        description: The name of the store to be retrieved
+#        schema:
+#          type: string
+#      - name: method
+#        in: path
+#        required: true
+#        description: The upload method. Can be "url", "file", "external". "file" uploads
+#          a file from a local source. The body of the request is the file
+#          itself. "url" uploads a file from an remote source. The body of the
+#          request is a URL pointing to the file to upload. This URL must be
+#          visible from the server. "external" uses an existing file on the
+#          server. The body of the request is the absolute path to the existing
+#          file.
+#        schema:
+#          type: string
+#      - name: format
+#        in: path
+#        required: true
+#        description: The type of target coverage store (e.g., "imagemosaic")
+#        schema:
+#          type: string
+#    post:
+#      operationId: postCoverageStoreUpload
+#      description: Used to harvest new granules in a writable structured grid coverage
+#        reader (e.g., image mosaic). Attempting to harvest a file into any other
+#        reader will result in a HTTP 405, method not allowed. Multiple granules
+#        can be uploaded by wrapping them in a ZIP file.
+#      parameters:
+#        - name: filename
+#          in: query
+#          required: false
+#          description: The filename parameter specifies the target file name for a file
+#            that needs to harvested as part of a mosaic. This is important to
+#            avoid clashes and to make sure the right dimension values are
+#            available in the name for multidimensional mosaics to work. Only
+#            used if method="file".
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The coverage store was successfully updated.
+#        "401":
+#          description: Unauthorized
+#    put:
+#      operationId: putCoverageStoreUpload
+#      summary: Creates or overwrites the files for a coverage store
+#      description: Creates or modified a single coverage store by uploading its raster data
+#        files. Multi-file stores like mosaic can be created by uploading a zip
+#        file and setting the content type to "application/zip"
+#      parameters:
+#        - name: configure
+#          in: query
+#          required: false
+#          description: The configure parameter controls if a coverage/layer are configured
+#            upon file upload, in addition to creating the store. It can have a
+#            value of "none" to avoid configuring coverages.
+#          schema:
+#            type: string
+#        - name: USE_JAI_IMAGEREAD
+#          in: query
+#          required: false
+#          description: Whether to use deferred loading while configuring the coverage/layer.
+#          schema:
+#            type: string
+#        - name: coverageName
+#          in: query
+#          required: false
+#          description: Name of the newly created coverage/layer.
+#          schema:
+#            type: string
+#        - name: filename
+#          in: query
+#          required: false
+#          description: The filename parameter specifies the target file name for a file
+#            that needs to harvested as part of a mosaic. This is important to
+#            avoid clashes and to make sure the right dimension values are
+#            available in the name for multidimensional mosaics to work. Only
+#            used if method="file".
+#          schema:
+#            type: string
+#      responses:
+#        "200":
+#          description: The coverage store was successfully updated.
+#        "401":
+#          description: Unauthorized
+components:
+  requestBodies:
+    CoverageStoreInfo:
+      required: true
+      description: The coverage store body information to upload.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CoverageStoreInfoWrapper"
+  responses:
+    CoverageStoresResponse:
+      description: list of coverage stores
+      content:
+        application/json:
+          schema:
+            type: object
+            title: CoverageStoresResponse
+            required:
+              - coverageStores
+            properties:
+              coverageStores:
+                $ref: "#/components/schemas/CoverageStoreListWrapper"
+    CoverageStoreResponse:
+      description: The requested coverage store information6
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CoverageStoreResponseWrapper"
+          examples:
+            response:
+              value: >
+                {
+                  "coverageStore": {
+                    "name": "arcGridSample",
+                    "description": "Sample ASCII GRID coverage of Global rainfall.",
+                    "type": "ArcGrid",
+                    "enabled": true,
+                    "workspace": {
+                      "name": "nurc",
+                      "href": "http://localhost:8080/geoserver/restng/workspaces/nurc.json"
+                    },
+                    "_default": false,
+                    "url": "file:coverages/arc_sample/precip30min.asc",
+                    "coverages": "http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/arcGridSample/coverages.json"
+                  }
+                }
+  schemas:
+    PurgeOption:
+      type: string
+      enum:
+        - none
+        - metadata
+        - all
+    CoverageStoreListWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - coverageStore
+      properties:
+        coverageStore:
+          $ref: "catalogresponses.yaml#/components/schemas/NamedLinks"
+          
+    CoverageStoreResponseWrapper:
+      title: wrapper object in order to comply with current API encoding
+      type: object
+      required:
+        - coverageStore
+      properties:
+        coverageStore:
+          $ref: "#/components/schemas/CoverageStoreResponse"
+
+    CoverageStoreResponse:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Name of the coverage store
+        description:
+          type: string
+          description: Description of the coverage store
+        type:
+          type: string
+          description: Type of coverage store
+        enabled:
+          type: boolean
+          description: Whether the store is enabled, or not
+        workspace:
+          $ref: "catalogresponses.yaml#/components/schemas/NamedLink"
+        url:
+          type: string
+          description: Location of the raster data source (often, but not necessarily, a file). Can be relative to the data directory.
+        coverages:
+          type: string
+          description: URL to the list of coverages contained in this store
+          example: http://localhost:8080/geoserver/rest/workspaces/sf/coveragestores/sfdem/coverages.json
+          
+    CoverageStoreInfoWrapper:
+      title: wrapper object for CoverageStoreInfo, in order to comply with current API encoding
+      type: object
+      required:
+        - coverageStore
+      properties:
+        coverageStore:
+          $ref: "catalog.yaml#/components/schemas/CoverageStoreInfo"
+
+    CoverageStoreListItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of coverage store
+        href:
+          type: string
+          description: URL to coverage store definition
+    CoverageStoreList:
+      type: array
+      items:
+        $ref: "#/components/schemas/CoverageStoreListItem"

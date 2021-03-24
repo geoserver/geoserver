@@ -240,4 +240,31 @@ public class GeoServerKeycloakFilterTest {
             assertFalse(a.getAuthority().startsWith("ROLE_"));
         }
     }
+
+    @Test
+    public void testHttps() throws Exception {
+        // set up the object under test
+        GeoServerKeycloakFilter filter = new GeoServerKeycloakFilter();
+        filter.initializeFromConfig(config);
+
+        // set up the test inputs
+        when(response.getStatus()).thenReturn(HttpStatus.MOVED_PERMANENTLY.value());
+        when(request.getHeader("x-forwarded-proto")).thenReturn("https");
+
+        // run the test
+        filter.doFilter(request, response, chain);
+
+        // simulate execution of the AEP
+        ArgumentCaptor<AuthenticationEntryPoint> aep =
+                ArgumentCaptor.forClass(AuthenticationEntryPoint.class);
+        verify(request).setAttribute(eq(AEP_HEADER), aep.capture());
+        aep.getValue().commence(request, response, null);
+
+        // check the results
+        verify(chain).doFilter(request, response);
+        ArgumentCaptor<Integer> status = ArgumentCaptor.forClass(Integer.class);
+        verify(response).setStatus(status.capture());
+        assertTrue(HttpStatus.valueOf(status.getValue()).is3xxRedirection());
+        verify(response).setHeader(eq(HttpHeaders.LOCATION), contains("redirect_uri=https"));
+    }
 }

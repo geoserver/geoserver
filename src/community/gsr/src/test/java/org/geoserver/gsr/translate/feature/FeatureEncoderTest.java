@@ -7,8 +7,8 @@ package org.geoserver.gsr.translate.feature;
 
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.feature.Feature;
@@ -24,8 +24,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FeatureEncoderTest extends GeoServerSystemTestSupport {
 
@@ -43,10 +41,10 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
                                 "intfield:Integer,"
                                 + // <- a Integer attribute
                                 "doublefield:Double");
-        						// <- a Double attribute
+        // <- a Double attribute
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
-        
+
         Point point = geometryFactory.createPoint(new Coordinate(-112.6653, 34.54645645));
         featureBuilder.add(point);
         featureBuilder.add("t0002");
@@ -55,12 +53,11 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
         SimpleFeature feature = featureBuilder.buildFeature(null);
 
         Feature encodedFeature =
-                FeatureEncoder.feature(
-                        feature, true, new SpatialReferenceWKID(32615), "id");
+                FeatureEncoder.feature(feature, true, new SpatialReferenceWKID(32615), "id");
         String featureJson = mapper.writeValueAsString(encodedFeature);
 
-        //Check the JSON to ensure the number attributes for the feature 
-        //aren't encoded as strings
+        // Check the JSON to ensure the number attributes for the feature
+        // aren't encoded as strings
         assertTrue(featureJson.contains("\"intfield\":2"));
         assertTrue(featureJson.contains("\"doublefield\":2.54"));
     }

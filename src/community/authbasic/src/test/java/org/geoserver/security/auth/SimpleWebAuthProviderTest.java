@@ -21,8 +21,7 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geotools.data.Base64;
-import org.junit.Ignore;
+import org.geotools.util.Base64;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -31,7 +30,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Ignore
 public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTest {
     public static final String testFilterName = "basicAuthTestFilter";
 
@@ -53,7 +51,6 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
         config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
         config.setUseRememberMe(false);
         config.setName(testFilterName);
-
         getSecurityManager().saveFilter(config);
 
         String response = "\"user\":\"" + testUserName + "\",\"roles\":\"WEB_SERVICE_ROLE\"";

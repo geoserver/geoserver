@@ -62,14 +62,14 @@ public class SimpleWebAuthProviderPanel
         RadioGroup sl = new RadioGroup("authorizationOption");
         // form.add(sl);
         sl.add(
-                new Radio(
+                new Radio<>(
                         "roleService",
-                        new Model(
+                        new Model<>(
                                 SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_SERVICE)));
         sl.add(
-                new Radio(
+                new Radio<>(
                         "webResponse",
-                        new Model(SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_WEB)));
+                        new Model<>(SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_WEB)));
 
         //        final RadioChoice<String> radioChoice =
         //                new RadioChoice<String>(

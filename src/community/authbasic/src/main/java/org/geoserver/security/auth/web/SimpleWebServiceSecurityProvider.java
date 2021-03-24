@@ -9,8 +9,6 @@ import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 import org.geoserver.security.validation.SecurityConfigValidator;
 
 public class SimpleWebServiceSecurityProvider extends GeoServerSecurityProvider {
@@ -37,11 +35,6 @@ public class SimpleWebServiceSecurityProvider extends GeoServerSecurityProvider 
             SecurityNamedServiceConfig config) {
 
         return new SimpleWebServiceAuthenticationProvider();
-    }
-
-    @Override
-    public Class<? extends GeoServerSecurityFilter> getFilterClass() {
-        return GeoServerUserNamePasswordAuthenticationFilter.class;
     }
 
     @Override

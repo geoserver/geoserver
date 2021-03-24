@@ -22,14 +22,11 @@ import org.geoserver.security.web.auth.SimpleWebAuthProviderPanel;
 import org.geoserver.security.web.auth.SimpleWebAuthProviderPanelInfo;
 import org.geoserver.security.web.role.RoleServiceChoice;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTest {
 
     static String webAuthProviderName = "web_auth";
-    static String webAuthProviderName2 = "web_auth2";
 
     @Override
     protected AbstractSecurityPage getBasePage() {
@@ -180,8 +177,6 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
 
         // select role serice radio button
         formTester.select("panel:content:authorizationOption", 0);
-
-        String roleServiceName = getSecurityManager().getActiveRoleService().getName();
         // set url value
         formTester.setValue(
                 "panel:content:connectionURL",

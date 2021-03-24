@@ -7,6 +7,7 @@ package org.geoserver.security.auth.web;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,16 +16,15 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.collections.map.HashedMap;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.util.IOUtils;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.HTTPResponse;
-import org.geotools.data.ows.SimpleHttpClient;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPResponse;
+import org.geotools.http.SimpleHttpClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -60,7 +60,7 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request) {
 
-        Set<GrantedAuthority> roles = new TreeSet<GrantedAuthority>();
+        Set<GrantedAuthority> roles = new TreeSet<>();
         roles.addAll(authentication.getAuthorities());
 
         String responseBody = null;
@@ -156,7 +156,7 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
 
     private HTTPClient getHTTPClient(SimpleWebAuthenticationConfig config) {
         // support for unit testing
-        if (TestHttpClientProvider.testModeEnabled()
+        if (TestHttpClientProvider.isTestModeEnabled()
                 && config.getConnectionURL().startsWith(TestHttpClientProvider.MOCKSERVER)) {
             HTTPClient client = TestHttpClientProvider.get(config.getConnectionURL());
 
@@ -182,7 +182,7 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
     }
 
     private Set<GrantedAuthority> extractRoles(final String responseBody, final String rolesRegex) {
-        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        final Set<GrantedAuthority> authorities = new HashSet<>();
         final Pattern searchRolesRegex = Pattern.compile(rolesRegex);
         verboseLog("extracting roles using Regex:" + rolesRegex);
         Matcher matcher = searchRolesRegex.matcher(responseBody);
@@ -214,7 +214,7 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
     }
 
     private Map<String, String> getHeader(Authentication authentication) {
-        Map<String, String> headerMap = new HashedMap();
+        Map<String, String> headerMap = new HashMap<>();
 
         String credentials = authentication.getPrincipal() + ":" + authentication.getCredentials();
         headerMap.put(HTTP_AUTHORIZATION_HEADER, credentials);
@@ -232,13 +232,15 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
         // checking if role assigned to user are confgured as ADMIN or Group Admin in selected role
         // service
 
-        final Set<GrantedAuthority> adminAuthorities = new HashSet<GrantedAuthority>();
+        final Set<GrantedAuthority> adminAuthorities = new HashSet<>();
 
         boolean isAdmin = false;
         boolean isGroupAdmin = false;
         for (GrantedAuthority role : userRoles) {
-            if (roleService.getAdminRole().equals(role)) isAdmin = true;
-            if (roleService.getGroupAdminRole().equals(role)) isGroupAdmin = true;
+            GeoServerRole adminRole = roleService.getAdminRole();
+            GeoServerRole groupAdminRole = roleService.getGroupAdminRole();
+            if (adminRole != null && adminRole.equals(role)) isAdmin = true;
+            if (groupAdminRole != null && groupAdminRole.equals(role)) isGroupAdmin = true;
         }
         // mark the role as Admin or Group Admin if any of its roles are marked as Admin or Group
         // Admin

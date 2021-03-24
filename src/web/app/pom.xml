@@ -1795,5 +1795,15 @@
         </dependency>
       </dependencies>
     </profile>
+   <profile>
+      <id>authbasic</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-authbasic</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 </profiles>
 </project>

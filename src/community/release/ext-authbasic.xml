@@ -8,16 +8,8 @@
     <fileSet>
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
-      <includes/>        
-    </fileSet>
-    <fileSet>
-      <directory>release</directory>
-      <outputDirectory></outputDirectory>
       <includes>
-         <include>LGPL.md</include>
-         <include>GEOTOOLS_NOTICE.txt</include>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+        <include>gs-authbasic*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

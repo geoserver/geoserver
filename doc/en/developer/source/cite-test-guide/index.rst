@@ -17,7 +17,7 @@ Check out CITE suite tools
 Requirements:
 -------------
 
-- `GeoServer <https://github.com/geosolutions-it/geoserver>`_.
+- `GeoServer <https://github.com/geoserver/geoserver>`_.
 
 - :ref:`Teamengine Web Application<Teamengine Web Application>`
 
@@ -66,7 +66,7 @@ Requirements:
    .. code:: shell
 
      cd <root of geoserver install>
-     export GEOSERVER_DATA_DIR=<root of geoserver sources>/data/citewfs-1.0
+     export GEOSERVER_DATA_DIR=<root of geoserver sources>/build/cite/wfs11/citewfs-1.1
      ./bin/startup.sh
 
 #. Change directory back to the cite tools and run the tests:
@@ -119,7 +119,7 @@ Requirements:
    .. code:: SHELL
 
      cd <root of geoserver install>
-     export GEOSERVER_DATA_DIR=<root of geoserver sources>/data/citewfs-1.1
+     export GEOSERVER_DATA_DIR=<root of geoserver sources>/build/cite/wfs11/citewfs-1.1
      ./bin/startup.sh
 
 #. Change directory back to the cite tools and run the tests:

@@ -24,7 +24,7 @@ Steps:
 
        .. code:: shell
 
-          git clone https://github.com/randomorder/geoserver.git --branch GSIP-176
+          git clone https://github.com/geoserver/geoserver.git
 
    #.  go the cite directory.
 
@@ -152,7 +152,7 @@ How to run TEAM Engine standalone
 
   .. code:: SHELL
 
-     docker run -d --name standalone_teamengine -p 8080:8080 geosolutionsit/teamengine:latest
+     docker run -d --name standalone_teamengine -p 8080:8080 geoserver-docker.osgeo.org/geoserver-cite:teamengine_latest
 
 - TEAM Engine will be accessible on http://localhost:8080/teamengine/
 
@@ -160,7 +160,7 @@ How to run TEAM Engine standalone
 
   .. code:: SHELL
 
-     docker run -d --name standalone_teamengine -p 9090:8080 geosolutionsit/teamengine:latest
+     docker run -d --name standalone_teamengine -p 9090:8080 geoserver-docker.osgeo.org/geoserver-cite:teamengine_latest
 
 - To stop TEAM Engine:
 

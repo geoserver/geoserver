@@ -22,7 +22,7 @@ services:
     - gs_gwc_cache_dir:/var/geoserver/gwc_cache_dir:rw
 
   teamengine:
-    image: geosolutionsit/teamengine:${TEAMENGINE_TAG:-latest}
+    image: geoserver-docker.osgeo.org/geoserver-cite:${TEAMENGINE_TAG:-teamengine_5.3}
     ports:
       - 8080
     depends_on:
